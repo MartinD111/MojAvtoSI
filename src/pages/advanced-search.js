@@ -224,9 +224,9 @@ function bindSearchLogic(catContext) {
 
     // ── Dynamic Brand Data Loading ──
     function fetchBrandData(category) {
-        let jsonFile = "/json/brands_models_global.json";
-        if (category === 'moto') jsonFile = "/json/brands_models_moto.json";
-        if (category === 'gospodarska') jsonFile = "/json/brands_models_gospodarska.json";
+        let jsonFile = "json/brands_models_global.json";
+        if (category === 'moto') jsonFile = "json/brands_models_moto.json";
+        if (category === 'gospodarska') jsonFile = "json/brands_models_gospodarska.json";
 
         return fetch(jsonFile)
             .then(r => r.json())

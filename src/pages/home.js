@@ -215,9 +215,9 @@ function reloadBrands(category) {
     const modelSelect = document.getElementById("home-model");
     if (!brandSelect || !modelSelect) return;
 
-    let jsonFile = "/json/brands_models_global.json";
-    if (category === 'motor') jsonFile = "/json/brands_models_moto.json";
-    if (category === 'gospodarska') jsonFile = "/json/brands_models_gospodarska.json";
+    let jsonFile = "json/brands_models_global.json";
+    if (category === 'motor') jsonFile = "json/brands_models_moto.json";
+    if (category === 'gospodarska') jsonFile = "json/brands_models_gospodarska.json";
 
     fetch(jsonFile)
         .then(res => res.json())

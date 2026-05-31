@@ -61,7 +61,7 @@ async function loadView(viewName) {
             // JS-only pages: clear container and let the page init render into it.
             APP.innerHTML = '';
         } else {
-            const res = await fetch(`/views/${viewName}.html?v=${new Date().getTime()}`);
+            const res = await fetch(`views/${viewName}.html?v=${new Date().getTime()}`);
             if (!res.ok) throw new Error(`View not found: ${viewName}`);
             APP.innerHTML = await res.text();
         }

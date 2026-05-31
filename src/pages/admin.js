@@ -541,9 +541,9 @@ async function doToggleBan(uid, users) {
 // ── 4. TAXONOMY — unified tree view (source: JSON files) ─────────────────────
 
 const TAX_SOURCES = {
-    avto:        { file: '/json/brands_models_global.json',     label: 'Avtomobili' },
-    moto:        { file: '/json/brands_models_moto.json',       label: 'Motorji' },
-    gospodarska: { file: '/json/brands_models_gospodarska.json', label: 'Gospodarska' },
+    avto:        { file: 'json/brands_models_global.json',     label: 'Avtomobili' },
+    moto:        { file: 'json/brands_models_moto.json',       label: 'Motorji' },
+    gospodarska: { file: 'json/brands_models_gospodarska.json', label: 'Gospodarska' },
 };
 const _taxCache = {};
 let _taxUnsaved = false;

@@ -744,7 +744,7 @@ async function initSidebarFiltering() {
     }
 
     // Brands
-    fetch("/json/brands_models_global.json")
+    fetch("json/brands_models_global.json")
       .then(res => res.json())
       .then(data => {
           window._sidebarBrandModelData = data;

@@ -37,7 +37,7 @@ function bindEvaluationLogic() {
     }
 
     // --- Populate Makes and Models ---
-    fetch("/json/brands_models_global.json")
+    fetch("json/brands_models_global.json")
         .then(res => res.json())
         .then(brandModelData => {
             Object.keys(brandModelData).sort().forEach(brand => {

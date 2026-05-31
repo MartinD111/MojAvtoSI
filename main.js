@@ -23,7 +23,7 @@ registerDefaultExtensions();
 initHeader();
 
 // Boot footer
-fetch('/views/footer.html')
+fetch('views/footer.html')
     .then(r => r.text())
     .then(html => {
         const footerEl = document.getElementById('footer');

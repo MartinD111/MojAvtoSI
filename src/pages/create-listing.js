@@ -199,7 +199,7 @@ export async function initCreateListingPage() {
     console.log('[CreateListing] init');
 
     // Load brands JSON in background
-    fetch('/json/brands_models_global.json')
+    fetch('json/brands_models_global.json')
         .then(r => r.json())
         .then(d => { brandModelData = d; })
         .catch(() => { });
