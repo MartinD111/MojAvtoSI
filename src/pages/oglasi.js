@@ -8,10 +8,8 @@ import { sampleCars } from '../data/sampleListings.js';
 import { auth } from '../firebase.js';
 import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite, getFavourites } from '../services/garageService.js';
-// import { useSearchStore } from '../store/useSearchStore.js'; // TODO: module not yet created
-// import React from 'react';
-// import ReactDOM from 'react-dom/client';
-// import AdvancedSearch from './AdvancedSearch.jsx'; // TODO: component not yet created
+import { getListings } from '../services/listingService.js';
+import { initCustomSelects } from '../utils/customSelect.js';
 
 import {
     getFuelPill,
@@ -626,9 +624,14 @@ function applyUrlFilters(params) {
 }
 
 // ── View Mode ────────────────────────────────────────────────
+let currentViewMode = localStorage.getItem('mojavto_viewmode') || 'list';
+
 function applyViewMode(mode) {
     const container = document.getElementById('carListingsContainer');
     if (!container) return;
+    currentViewMode = mode;
+    localStorage.setItem('mojavto_viewmode', mode);
+
     container.classList.toggle('grid-layout', mode === 'grid');
     container.classList.toggle('list-layout', mode === 'list');
 
@@ -638,12 +641,11 @@ function applyViewMode(mode) {
 }
 
 function initViewToggle() {
-    const { viewMode } = useSearchStore.getState();
-    applyViewMode(viewMode);
+    applyViewMode(currentViewMode);
 
     document.querySelectorAll('.view-toggle-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            useSearchStore.getState().setViewMode(btn.dataset.view);
+            applyViewMode(btn.dataset.view);
         });
     });
 }
@@ -657,21 +659,13 @@ export function initOglasiPage() {
         console.error('[OglasiPage] carListingsContainer NOT FOUND!');
     }
 
-    // Mount React sidebar filters
-    // mountSidebarFilters(); // TODO: module not yet created
-
-    // Parse URL parameters for initial filtering
-    const params = parseHashParams();
-    if (params.size > 0) {
-        applyUrlFilters(params);
-    } else if (sampleCars && sampleCars.length > 0) {
-        renderListings(sampleCars);
-    } else {
-        console.warn('[OglasiPage] No sampleCars found to render');
-        if (container) container.innerHTML = '<p class="no-results">Ni oglasov za prikaz.</p>';
-    }
+    // Initialize dynamic sidebar filters (handles loading user listings, population, prefill & events)
+    initSidebarFiltering();
 
     if (window.updateHeaderCompare) window.updateHeaderCompare();
+
+    // Initialize Grid/List view toggle with persistent settings
+    initViewToggle();
 
     // Subscribe to store — re-render on filter changes, swap layout on viewMode changes.
     /*
@@ -695,20 +689,7 @@ export function initOglasiPage() {
     window._oglasiUnsubscribe = unsubscribe;
     */
 
-    // Mobile filter toggle
-    const mobileToggle = document.getElementById('mobileFilterToggle');
-    const filtersCard = document.getElementById('filtersCard');
-    const chevron = document.getElementById('mobileFilterChevron');
 
-    if (mobileToggle && filtersCard) {
-        mobileToggle.addEventListener('click', () => {
-            filtersCard.classList.toggle('mobile-open');
-            if (chevron) {
-                chevron.style.transform = filtersCard.classList.contains('mobile-open')
-                    ? 'rotate(180deg)' : '';
-            }
-        });
-    }
 
     // Payment toggle
     document.querySelectorAll('.payment-toggle button').forEach(btn => {
@@ -720,7 +701,194 @@ export function initOglasiPage() {
 
     initLegendPopup();
 
+    // Mobile filter panel toggle (collapsed by default on phones)
+    const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+    const oglasiSidebar = document.querySelector('.oglasi-sidebar');
+    if (mobileFilterToggle && oglasiSidebar) {
+        mobileFilterToggle.addEventListener('click', () => {
+            const open = oglasiSidebar.classList.toggle('filters-open');
+            mobileFilterToggle.classList.toggle('open', open);
+            mobileFilterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+    }
+
     if (window.lucide) window.lucide.createIcons();
+}
+
+// ── Sidebar dynamic filtering implementation ──────────────────────────────────
+let _allActiveListings = [];
+
+async function initSidebarFiltering() {
+    // 1. Fetch all listings
+    try {
+        const userListings = await getListings();
+        _allActiveListings = [...sampleCars, ...userListings];
+    } catch (e) {
+        console.error("Failed to load user listings, using sampleCars only:", e);
+        _allActiveListings = sampleCars;
+    }
+
+    // 2. Populate fields
+    const makeSelect = document.getElementById("sidebarMake");
+    const yearFromSelect = document.getElementById("sidebarYearFrom");
+    const yearToSelect = document.getElementById("sidebarYearTo");
+    if (!makeSelect) return;
+
+    // Years
+    const currentYear = new Date().getFullYear();
+    yearFromSelect.innerHTML = '<option value="">Od</option>';
+    yearToSelect.innerHTML = '<option value="">Do</option>';
+    for (let y = currentYear; y >= 1980; y--) {
+        const o1 = document.createElement("option"); o1.value = y; o1.textContent = y; yearFromSelect.appendChild(o1);
+        const o2 = document.createElement("option"); o2.value = y; o2.textContent = y; yearToSelect.appendChild(o2);
+    }
+
+    // Brands
+    fetch("/json/brands_models_global.json")
+      .then(res => res.json())
+      .then(data => {
+          window._sidebarBrandModelData = data;
+          makeSelect.innerHTML = '<option value="">Vse znamke</option>';
+          Object.keys(data).sort().forEach(brand => {
+              const o = document.createElement("option");
+              o.value = brand;
+              o.textContent = brand;
+              makeSelect.appendChild(o);
+          });
+
+          // Sync custom selects once populated
+          initCustomSelects();
+
+          // Prefill from URL
+          prefillSidebarFromUrl();
+      });
+
+    // 3. Bind events
+    const modelSelect = document.getElementById("sidebarModel");
+    const form = document.getElementById("sidebarFiltersForm");
+    const resetBtn = document.getElementById("sidebarResetBtn");
+
+    makeSelect.addEventListener("change", () => {
+        const data = window._sidebarBrandModelData;
+        const brand = makeSelect.value;
+        modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+        modelSelect.disabled = true;
+
+        if (brand && data && data[brand]) {
+            const models = data[brand];
+            const keys = typeof models === 'object' && !Array.isArray(models) ? Object.keys(models).sort() : (Array.isArray(models) ? models.sort() : []);
+            keys.forEach(m => {
+                const o = document.createElement("option");
+                o.value = m;
+                o.textContent = m;
+                modelSelect.appendChild(o);
+            });
+            if (keys.length) modelSelect.disabled = false;
+        }
+
+        // Notify custom select to update
+        modelSelect.dispatchEvent(new Event('change'));
+        applySidebarFilters();
+    });
+
+    if (form) {
+        form.querySelectorAll("input, select").forEach(el => {
+            if (el !== makeSelect) {
+                el.addEventListener("change", applySidebarFilters);
+                el.addEventListener("input", applySidebarFilters);
+            }
+        });
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+            if (form) form.reset();
+            if (modelSelect) {
+                modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+                modelSelect.disabled = true;
+                modelSelect.dispatchEvent(new Event('change'));
+            }
+            if (makeSelect) makeSelect.dispatchEvent(new Event('change'));
+            applySidebarFilters();
+        });
+    }
+}
+
+function applySidebarFilters() {
+    const make = document.getElementById("sidebarMake")?.value || '';
+    const model = document.getElementById("sidebarModel")?.value || '';
+    const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
+    const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
+    const priceTo = parseInt(document.getElementById("sidebarPriceTo")?.value, 10) || Infinity;
+    const fuel = document.getElementById("sidebarFuel")?.value || '';
+    const transmission = document.getElementById("sidebarTransmission")?.value || '';
+
+    // Check category context from URL
+    const params = parseHashParams();
+    const cat = params.get('cat');
+    const najem = params.get('najem');
+
+    const filtered = _allActiveListings.filter(car => {
+        if (cat && car.category !== cat) return false;
+        if (najem === '1' && !car.isRental) return false;
+
+        if (make && car.make !== make) return false;
+        if (model && car.model !== model) return false;
+
+        const carYear = parseInt(car.year, 10) || 0;
+        if (carYear < yearFrom || (yearTo !== Infinity && carYear > yearTo)) return false;
+
+        const carPrice = car.priceRaw || car.priceEur || 0;
+        if (carPrice > priceTo) return false;
+
+        if (fuel && car.fuel !== fuel) return false;
+        if (transmission && car.transmission !== transmission) return false;
+
+        return true;
+    });
+
+    renderListings(filtered);
+
+    // Update count in header
+    const countEl = document.querySelector(".results-header h1 span");
+    if (countEl) {
+        countEl.textContent = `(${filtered.length} vozil)`;
+    }
+}
+
+function prefillSidebarFromUrl() {
+    const params = parseHashParams();
+    const make = params.get("make");
+    const model = params.get("model");
+    const yearFrom = params.get("yearFrom");
+    const priceTo = params.get("priceTo");
+
+    const makeSelect = document.getElementById("sidebarMake");
+    const modelSelect = document.getElementById("sidebarModel");
+    const yearFromSelect = document.getElementById("sidebarYearFrom");
+    const priceToInput = document.getElementById("sidebarPriceTo");
+
+    if (make && makeSelect) {
+        makeSelect.value = make;
+        makeSelect.dispatchEvent(new Event('change'));
+        
+        setTimeout(() => {
+            if (model && modelSelect) {
+                modelSelect.value = model;
+                modelSelect.dispatchEvent(new Event('change'));
+                applySidebarFilters();
+            }
+        }, 50);
+    }
+    if (yearFrom && yearFromSelect) {
+        yearFromSelect.value = yearFrom;
+        yearFromSelect.dispatchEvent(new Event('change'));
+    }
+    if (priceTo && priceToInput) {
+        priceToInput.value = priceTo;
+    }
+
+    applySidebarFilters();
 }
 
 export function destroyOglasiPage() {

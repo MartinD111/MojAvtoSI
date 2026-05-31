@@ -77,6 +77,10 @@ export function initHeader() {
               <button class="pill-btn secondary btn-icon" id="themeToggleBtn" aria-label="Preklopi temo">
                 <i data-lucide="${document.body.classList.contains('dark-mode') ? 'sun' : 'moon'}"></i>
               </button>
+
+              <button class="burger-btn" id="burgerBtn" aria-label="Meni" aria-expanded="false" aria-controls="navLinks">
+                <i data-lucide="menu"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -92,6 +96,33 @@ export function initHeader() {
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             render(user);
         });
+
+        // ── Mobile hamburger: toggle category nav ──
+        const burgerBtn = document.getElementById('burgerBtn');
+        const navLinks = document.getElementById('navLinks');
+        if (burgerBtn && navLinks) {
+            burgerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const open = navLinks.classList.toggle('open');
+                burgerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                burgerBtn.innerHTML = `<i data-lucide="${open ? 'x' : 'menu'}"></i>`;
+                if (window.lucide) window.lucide.createIcons();
+            });
+            // Close when a category link is tapped
+            navLinks.addEventListener('click', (e) => {
+                if (e.target.closest('a')) navLinks.classList.remove('open');
+            });
+            // Close on outside click
+            document.addEventListener('click', (e) => {
+                if (navLinks.classList.contains('open') &&
+                    !navLinks.contains(e.target) && !burgerBtn.contains(e.target)) {
+                    navLinks.classList.remove('open');
+                    burgerBtn.setAttribute('aria-expanded', 'false');
+                    burgerBtn.innerHTML = '<i data-lucide="menu"></i>';
+                    if (window.lucide) window.lucide.createIcons();
+                }
+            });
+        }
 
         // ── User dropdown ──
         const menuBtn = document.getElementById('userMenuBtn');

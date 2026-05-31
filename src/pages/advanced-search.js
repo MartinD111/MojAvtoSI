@@ -419,6 +419,56 @@ function bindSearchLogic(catContext) {
         updateLiveCount();
     }));
 
+    // ── Power Unit Toggle Logic ──
+    let activePowerUnit = 'kw';
+    const powerUnitToggle = document.getElementById('advPowerUnitToggle');
+    const powerFromInput = document.getElementById('powerFromInput');
+    const powerToInput = document.getElementById('powerToInput');
+    const powerFromLabel = document.getElementById('powerFromLabel');
+    const powerToLabel = document.getElementById('powerToLabel');
+
+    if (powerUnitToggle && powerFromInput && powerToInput) {
+        const btns = powerUnitToggle.querySelectorAll('.unit-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const newUnit = btn.dataset.unit;
+                if (newUnit === activePowerUnit) return;
+
+                btns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Convert current values
+                const valFrom = parseFloat(powerFromInput.value);
+                const valTo = parseFloat(powerToInput.value);
+
+                if (newUnit === 'km') {
+                    // kW -> KM (multiply by 1.35962)
+                    if (!isNaN(valFrom)) powerFromInput.value = Math.round(valFrom * 1.35962);
+                    if (!isNaN(valTo)) powerToInput.value = Math.round(valTo * 1.35962);
+                    
+                    // Update Labels and placeholders
+                    if (powerFromLabel) powerFromLabel.textContent = 'Moč motorja od (KM)';
+                    if (powerToLabel) powerToLabel.textContent = 'Moč motorja do (KM)';
+                    powerFromInput.placeholder = '0 KM';
+                    powerToInput.placeholder = 'Brez omejitve';
+                } else {
+                    // KM -> kW (divide by 1.35962)
+                    if (!isNaN(valFrom)) powerFromInput.value = Math.round(valFrom / 1.35962);
+                    if (!isNaN(valTo)) powerToInput.value = Math.round(valTo / 1.35962);
+
+                    // Update Labels and placeholders
+                    if (powerFromLabel) powerFromLabel.textContent = 'Moč motorja od (kW)';
+                    if (powerToLabel) powerToLabel.textContent = 'Moč motorja do (kW)';
+                    powerFromInput.placeholder = '0 kW';
+                    powerToInput.placeholder = 'Brez omejitve';
+                }
+
+                activePowerUnit = newUnit;
+                updateLiveCount();
+            });
+        });
+    }
+
     const curYear = new Date().getFullYear();
     for (let y = curYear; y >= 1980; y--) {
         const o1 = document.createElement("option"); o1.value = y; o1.textContent = y; yearFromSelect.appendChild(o1);
@@ -429,16 +479,25 @@ function bindSearchLogic(catContext) {
         try {
             const fd = new FormData(searchForm);
             const selectedBodyTypes = bodyTypeHidden ? (bodyTypeHidden.value ? bodyTypeHidden.value.split(',') : []) : [];
+            
+            let powerFromVal = parseFloat(fd.get('powerFrom')) || 0;
+            let powerToVal = parseFloat(fd.get('powerTo')) || Infinity;
+            if (activePowerUnit === 'km') {
+                if (powerFromVal > 0) powerFromVal = Math.round(powerFromVal / 1.35962);
+                if (powerToVal !== Infinity) powerToVal = Math.round(powerToVal / 1.35962);
+            }
+
             const filters = {
                 vehicles, excludes: excludedVehicles, bodyTypes: selectedBodyTypes,
                 conditions: fd.getAll('condition'), damaged: fd.get('damaged'),
-                fuels: fd.getAll('fuel'), gears: fd.getAll('transmission'), drivetrain: fd.getAll('drivetrain'),
+                fuels: fd.getAll('fuel').filter(Boolean), gears: fd.getAll('transmission').filter(Boolean), drivetrain: fd.getAll('drivetrain'),
                 stroke: fd.get('stroke'), cylinders: fd.get('cylinders'), cylinderLayout: fd.get('cylinderLayout'),
                 features: fd.getAll('features'),
                 priceFrom: parseFormattedNumber(fd.get('priceFrom')), priceTo: parseFormattedNumber(fd.get('priceTo')) || Infinity,
                 includeCallForPrice: fd.get('includeCallForPrice') === '1',
                 yearFrom: Number(fd.get('yearFrom')) || 0, yearTo: Number(fd.get('yearTo')) || Infinity,
                 mileageFrom: parseFormattedNumber(fd.get('mileageFrom')), mileageTo: parseFormattedNumber(fd.get('mileageTo')) || Infinity,
+                powerFrom: powerFromVal, powerTo: powerToVal,
                 cat: catContext.cat, sub: catContext.sub, searchType: catContext.searchType, vtype: catContext.vtype, najem: catContext.najem, activeTab
             };
             let all = await getListings();
@@ -575,6 +634,13 @@ function matchesFilters(l, filters) {
     }
     if (l.year < filters.yearFrom || (filters.yearTo !== Infinity && l.year > filters.yearTo)) return false;
     if (l.mileage < filters.mileageFrom || (filters.mileageTo !== Infinity && l.mileage > filters.mileageTo)) return false;
+
+    // Power (kW) filter
+    if (l.powerKw !== undefined) {
+        if (l.powerKw < filters.powerFrom || (filters.powerTo !== Infinity && l.powerKw > filters.powerTo)) return false;
+    } else if (filters.powerFrom > 0) {
+        return false;
+    }
 
     // Fuel, Transmission, Drivetrain
     if (filters.fuels.length > 0 && !filters.fuels.includes(l.fuel)) return false;

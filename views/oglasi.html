@@ -3,16 +3,78 @@
 
     <!-- ═══ SIDEBAR: Filtri ════════════════════════════════════ -->
     <aside class="oglasi-sidebar">
-        <button class="mobile-filter-toggle" id="mobileFilterToggle">
-            <span class="toggle-left">
-                <i data-lucide="sliders-horizontal"></i>
-                Show filters
-            </span>
-            <i data-lucide="chevron-down" id="mobileFilterChevron"></i>
+
+        <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
+        <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
+            <span><i data-lucide="sliders-horizontal"></i> Filtri</span>
+            <i data-lucide="chevron-down" class="mft-chevron"></i>
         </button>
 
         <div class="oglasi-sidebar-card glass-card" id="filtersCard">
-            <div id="react-sidebar-filters-root"></div>
+            <div class="sidebar-filters-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+                <h3 style="margin:0; font-size:1.1rem; font-weight:700;" data-i18n-key="sidebar_filters_title">Filtri</h3>
+                <button type="button" id="sidebarResetBtn" style="background:none; border:none; color:var(--color-primary-start); font-size:0.85rem; font-weight:600; cursor:pointer;" data-i18n-key="sidebar_reset">Počisti vse</button>
+            </div>
+
+            <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:1.25rem;">
+                <!-- Znamka -->
+                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="make">Znamka</label>
+                    <select id="sidebarMake" name="make" class="glass-select">
+                        <option value="">Vse znamke</option>
+                    </select>
+                </div>
+
+                <!-- Model -->
+                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="model">Model</label>
+                    <select id="sidebarModel" name="model" class="glass-select" disabled>
+                        <option value="">Vsi modeli</option>
+                    </select>
+                </div>
+
+                <!-- Letnik od / do -->
+                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Letnik</label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                        <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
+                            <option value="">Od</option>
+                        </select>
+                        <select id="sidebarYearTo" name="yearTo" class="glass-select">
+                            <option value="">Do</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Cena do -->
+                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Cena do (€)</label>
+                    <input type="number" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20000" class="pill-input" style="width:100%; box-sizing:border-box;">
+                </div>
+
+                <!-- Gorivo -->
+                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Gorivo</label>
+                    <select id="sidebarFuel" name="fuel" class="glass-select">
+                        <option value="">Vsa goriva</option>
+                        <option value="Bencin">Bencin</option>
+                        <option value="Dizel">Dizel</option>
+                        <option value="Hibrid">Hibrid</option>
+                        <option value="Elektrika">Elektrika</option>
+                        <option value="LPG">LPG / Plin</option>
+                    </select>
+                </div>
+
+                <!-- Menjalnik -->
+                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Menjalnik</label>
+                    <select id="sidebarTransmission" name="transmission" class="glass-select">
+                        <option value="">Vsi</option>
+                        <option value="Ročni">Ročni</option>
+                        <option value="Avtomatski">Avtomatski</option>
+                    </select>
+                </div>
+            </form>
         </div>
     </aside>
 
@@ -23,7 +85,7 @@
             <div class="sort-wrap">
                 <span class="sort-label">Sort by:</span>
                 <div class="pill-select-wrapper">
-                    <select class="pill-input" id="sortSelect">
+                    <select class="pill-input" id="sortSelect" data-no-search="true">
                         <option>Default</option>
                         <option>Price: Lowest first</option>
                         <option>Price: Highest first</option>

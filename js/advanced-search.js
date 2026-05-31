@@ -144,7 +144,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Reset model select (disable)
-        modelSelect.innerHTML = `<option value="" data-i18n-key="all_models">All Models</option>`;
+        modelSelect.innerHTML = `<option value="" data-i18n-key="all_models">Vsi modeli</option>`;
+        variantSelect.innerHTML = `<option value="" data-i18n-key="cl_trim_variant">Vse oblike</option>`;
         modelSelect.disabled = true;
 
         // Hide hybrid options

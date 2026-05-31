@@ -42,7 +42,7 @@ body.dark-mode .transport-grid .glass-card:hover {
 
 body.dark-mode .pill-input, 
 body.dark-mode .glass-select {
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
   background: rgba(30, 41, 59, 0.6) !important;
   color: #f1f5f9 !important;
 }

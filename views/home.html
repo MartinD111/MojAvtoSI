@@ -146,32 +146,37 @@
       gap: 0;
       margin: 0;
       padding: 0;
-      animation: hero-word-rotate 20s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+      animation: hero-word-rotate 22s cubic-bezier(0.76, 0, 0.24, 1) infinite;
     }
 
     .hero-word-items span {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 1.4em;
-      line-height: 1.4em;
-      margin: 0;
-      padding: 0;
-      white-space: nowrap;
-      color: inherit;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 1.4em !important;
+      min-height: 1.4em !important;
+      max-height: 1.4em !important;
+      line-height: 1.4em !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      color: inherit !important;
     }
 
     @keyframes hero-word-rotate {
-      0%, 8% { transform: translateY(0); }
-      10%, 18% { transform: translateY(-1.4em); }
-      20%, 28% { transform: translateY(-2.8em); }
-      30%, 38% { transform: translateY(-4.2em); }
-      40%, 48% { transform: translateY(-5.6em); }
-      50%, 58% { transform: translateY(-7.0em); }
-      60%, 68% { transform: translateY(-8.4em); }
-      70%, 78% { transform: translateY(-9.8em); }
-      80%, 88% { transform: translateY(-11.2em); }
-      90%, 98% { transform: translateY(-12.6em); }
+      0%, 7.5% { transform: translateY(0); }
+      9%, 16.5% { transform: translateY(-1.4em); }
+      18%, 25.5% { transform: translateY(-2.8em); }
+      27%, 34.5% { transform: translateY(-4.2em); }
+      36%, 43.5% { transform: translateY(-5.6em); }
+      45%, 52.5% { transform: translateY(-7.0em); }
+      54%, 61.5% { transform: translateY(-8.4em); }
+      63%, 70.5% { transform: translateY(-9.8em); }
+      72%, 79.5% { transform: translateY(-11.2em); }
+      81%, 88.5% { transform: translateY(-12.6em); }
+      90%, 97.5% { transform: translateY(-14.0em); }
       100% { transform: translateY(-14.0em); }
     }
 
