@@ -1,0 +1,147 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(uid())).data.role;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && userRole() == 'admin';
+    }
+
+    function isModerator() {
+      return isSignedIn() && (userRole() == 'admin' || userRole() == 'moderator');
+    }
+
+    function isEditor() {
+      return isSignedIn() && (userRole() == 'admin' || userRole() == 'editor');
+    }
+
+    // ── Users ─────────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if true;
+      // Users write their own doc; admins write any
+      allow write: if (isSignedIn() && uid() == userId) || isAdmin();
+    }
+
+    // ── Listings ──────────────────────────────────────────────────────────────
+    match /listings/{listingId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == uid();
+      // Author can update their own; moderators/admins can update any
+      allow update: if (isSignedIn() && resource.data.authorId == uid())
+                    || isModerator();
+      allow delete: if (isSignedIn() && resource.data.authorId == uid())
+                    || isModerator();
+    }
+
+    // ── Brands (taxonomy) ─────────────────────────────────────────────────────
+    match /brands/{brandId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    // ── Models (taxonomy) ─────────────────────────────────────────────────────
+    match /models/{modelId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    // ── Reports ───────────────────────────────────────────────────────────────
+    match /reports/{reportId} {
+      // Signed-in users can create reports
+      allow create: if isSignedIn()
+        && request.resource.data.reporterId == uid();
+      // Moderators can read and update (resolve/dismiss)
+      allow read, update: if isModerator();
+      allow delete: if isAdmin();
+    }
+
+    // ── Audit log ─────────────────────────────────────────────────────────────
+    match /auditLog/{logId} {
+      allow read: if isAdmin();
+      allow create: if isModerator();
+      allow update, delete: if false; // immutable
+    }
+
+    // ── Site config ───────────────────────────────────────────────────────────
+    match /siteConfig/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── SEO pages ─────────────────────────────────────────────────────────────
+    match /seoPages/{pageId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    // ── Payments ──────────────────────────────────────────────────────────────
+    match /payments/{paymentId} {
+      // Users read their own payments; admins read all
+      allow read: if (isSignedIn() && resource.data.userId == uid()) || isAdmin();
+      // Only backend (Cloud Functions) writes payments — deny direct client writes
+      allow write: if false;
+    }
+
+    // ── Search logs (analytics) ───────────────────────────────────────────────
+    match /searchLogs/{logId} {
+      allow read: if isModerator();
+      // Written by client on every search — any auth or guest
+      allow create: if true;
+      allow update: if true;  // increment counter
+      allow delete: if isAdmin();
+    }
+
+    // ── Garages ───────────────────────────────────────────────────────────────
+    match /garages/{userId}/cars/{carId} {
+      allow read: if resource.data.isPublic == true
+        || (isSignedIn() && uid() == userId);
+      allow write: if isSignedIn() && uid() == userId;
+    }
+
+    // ── Reviews ───────────────────────────────────────────────────────────────
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == uid()
+        && request.resource.data.sellerId != uid();
+      allow update: if isSignedIn() && resource.data.authorId == uid();
+      allow delete: if (isSignedIn() && resource.data.authorId == uid())
+                    || isModerator();
+    }
+
+    // ── Saved searches ────────────────────────────────────────────────────────
+    match /savedSearches/{searchId} {
+      allow read, write: if isSignedIn() && resource.data.userId == uid();
+      allow create: if isSignedIn() && request.resource.data.userId == uid();
+    }
+
+    // ── Tire orders ───────────────────────────────────────────────────────────
+    match /tire_orders/{orderId} {
+      // Buyer creates and reads their own orders
+      allow create: if isSignedIn() && request.resource.data.buyerId == uid();
+      allow read: if isSignedIn() &&
+                     (resource.data.buyerId == uid() ||
+                      resource.data.vulcanizerId == uid());
+      // Vulcanizer confirms (status → confirmed, bookingUrl set)
+      allow update: if isSignedIn() && resource.data.vulcanizerId == uid();
+    }
+
+    // ── Deny everything else ──────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

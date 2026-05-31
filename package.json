@@ -1,0 +1,31 @@
+{
+  "name": "mojavto",
+  "version": "1.0.0",
+  "description": "Slovenian car marketplace",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^11.0.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.2",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^3.4.19",
+    "vite": "^8.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unfab/MojAvto.git"
+  },
+  "license": "ISC"
+}

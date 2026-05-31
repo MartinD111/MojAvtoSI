@@ -1,0 +1,57 @@
+/**
+ * TCO Settings Page
+ * Allow users to configure their ownership cost preferences
+ */
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import TCOPreferencesPanel from '../components/TCOPreferencesPanel.jsx';
+import { auth } from '../firebase.js';
+import { t } from '../core/i18n.js';
+
+export async function initTCOSettingsPage() {
+    const container = document.getElementById('app-container');
+    if (!container) return;
+
+    const user = auth.currentUser;
+    if (!user) {
+        window.location.hash = '/prijava';
+        return;
+    }
+
+    // Render container
+    container.innerHTML = `
+        <div style="min-height:100vh;padding:2rem 1rem;">
+            <div style="max-width:700px;margin:0 auto;">
+                <!-- Header -->
+                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:3rem;">
+                    <a href="#/dashboard" style="font-size:1.5rem;text-decoration:none;color:#64748b;">←</a>
+                    <div>
+                        <h1 style="margin:0;font-size:1.8rem;font-weight:700;color:#1e293b;">
+                            ${t('tco_settings_title') || 'TCO Settings'}
+                        </h1>
+                        <p style="margin:0.25rem 0 0;color:#64748b;font-size:0.9rem;">
+                            ${t('tco_settings_subtitle') || 'Configure your vehicle cost estimates'}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Preferences Panel -->
+                <div id="tco-settings-root"></div>
+            </div>
+        </div>
+    `;
+
+    // Mount React component
+    const settingsRoot = document.getElementById('tco-settings-root');
+    ReactDOM.createRoot(settingsRoot).render(
+        React.createElement(TCOPreferencesPanel, {
+            onSave: () => {
+                // Notify parent app that preferences were updated
+                if (window.updateTCOPreferences) {
+                    window.updateTCOPreferences();
+                }
+            }
+        })
+    );
+}

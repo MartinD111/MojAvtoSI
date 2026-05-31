@@ -1,0 +1,48 @@
+<div class="sticky-nav">
+  <div class="nav-container">
+    <div class="glass-card rounded-pill nav-inner">
+      <!-- Logo -->
+      <a href="/#/" class="logo-text">
+        MojAvto<span class="logo-accent">.si</span>
+      </a>
+
+      <!-- Desktop Links -->
+      <div class="desktop-links">
+        <a href="#/parts" class="nav-pill" style="display:flex;align-items:center;gap:0.35rem;">
+          <i data-lucide="wrench" style="width:14px;height:14px;"></i> Parts & Accessories
+        </a>
+        <a href="#/search" class="nav-pill" data-i18n-key="nav_advanced_search">Advanced Search</a>
+        <a href="#/about" class="nav-pill" data-i18n-key="nav_about">About Us</a>
+        <a href="#/contact" class="nav-pill" data-i18n-key="nav_contact">Contact</a>
+        <a href="#/faq" class="nav-pill" data-i18n-key="nav_faq">Help</a>
+        <a href="#/compare" id="compareLink" class="nav-pill">
+          <i data-lucide="scale"></i> <span data-i18n-key="nav_compare">Compare</span>
+        </a>
+      </div>
+
+      <!-- Auth and Language -->
+      <div class="nav-actions">
+        <!-- Language Switcher -->
+        <div class="lang-switcher text-sm font-medium">
+          <a href="?lang=sl" data-lang="sl">SL</a> | <a href="?lang=en" data-lang="en">EN</a>
+        </div>
+        
+        <span id="userMenu" style="display:none;" class="relative">
+          <button id="userDropdownBtn" class="pill-btn secondary user-btn">
+            <i data-lucide="user"></i><span data-i18n-key="my_account">My Account</span>
+          </button>
+          <div id="userDropdown" class="glass-dropdown">
+            <a href="#/profile" id="profileLink" data-i18n-key="my_profile">My Profile</a>
+            <a href="#/dashboard" id="dashboardLink" style="display: none;" data-i18n-key="dashboard_link">Dashboard</a>
+            <a href="#/create-listing" data-i18n-key="create_listing">Create Listing</a>
+            <a href="#/admin" id="adminLink" style="display: none;" data-i18n-key="administration">Administration</a>
+            <a href="#" id="logoutBtn" data-i18n-key="logout">Sign Out</a>
+          </div>
+        </span>
+        <a href="#/login" id="loginLink" class="nav-login"><i data-lucide="user"></i> Sign In</a>
+        <a href="#/register" class="pill-btn primary btn-sm">Sign Up</a>
+        <button id="burgerBtn" class="burger-btn hidden-md"><i data-lucide="menu"></i></button>
+      </div>
+    </div>
+  </div>
+</div>

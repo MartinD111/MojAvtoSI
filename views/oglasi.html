@@ -1,0 +1,149 @@
+<!-- Oglasna deska — MojAvto.si -->
+<div class="oglasi-layout">
+
+    <!-- ═══ SIDEBAR: Filtri ════════════════════════════════════ -->
+    <aside class="oglasi-sidebar">
+        <button class="mobile-filter-toggle" id="mobileFilterToggle">
+            <span class="toggle-left">
+                <i data-lucide="sliders-horizontal"></i>
+                Show filters
+            </span>
+            <i data-lucide="chevron-down" id="mobileFilterChevron"></i>
+        </button>
+
+        <div class="oglasi-sidebar-card glass-card" id="filtersCard">
+            <div id="react-sidebar-filters-root"></div>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN: Rezultati ═══════════════════════════════════ -->
+    <main class="oglasi-main">
+        <div class="results-header">
+            <h1>Search Results <span>(1,471 vehicles)</span></h1>
+            <div class="sort-wrap">
+                <span class="sort-label">Sort by:</span>
+                <div class="pill-select-wrapper">
+                    <select class="pill-input" id="sortSelect">
+                        <option>Default</option>
+                        <option>Price: Lowest first</option>
+                        <option>Price: Highest first</option>
+                        <option>Year: Newest</option>
+                        <option>Mileage: Lowest</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="select-icon"></i>
+                </div>
+                <button class="legend-btn" id="legendBtn" title="Icon legend">
+                    <i data-lucide="help-circle"></i>
+                </button>
+                <div class="view-toggle-group">
+                    <button class="view-toggle-btn" data-view="list" title="List view" aria-label="List view">
+                        <i data-lucide="list"></i>
+                    </button>
+                    <button class="view-toggle-btn" data-view="grid" title="Grid view" aria-label="Grid view">
+                        <i data-lucide="layout-grid"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="carListingsContainer">
+            <!-- Listings are dynamically generated via JS -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrap">
+            <div class="pagination">
+                <button class="page-btn page-btn-glass"><i data-lucide="chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <span class="page-dots">...</span>
+                <button class="page-btn">48</button>
+                <button class="page-btn page-btn-glass"><i data-lucide="chevron-right"></i></button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Legend popup (icons reference) -->
+<div class="legend-overlay" id="legendOverlay">
+    <div class="legend-card">
+        <div class="legend-card-header">
+            <h3>Listing Icon Legend</h3>
+            <button class="legend-close-btn" id="legendCloseBtn" aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Fuel types -->
+        <p class="legend-section-title">Fuel Type</p>
+        <div class="legend-rows">
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-P"><i data-lucide="fuel" style="width:12px;height:12px;"></i>
+                    P</span>
+                <span class="legend-row-desc">Petrol</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-D"><i data-lucide="fuel" style="width:12px;height:12px;"></i>
+                    D</span>
+                <span class="legend-row-desc">Diesel</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-H"><i data-lucide="zap" style="width:12px;height:12px;"></i>
+                    H</span>
+                <span class="legend-row-desc">Hybrid (Self-charging)</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-HB"><i data-lucide="zap" style="width:12px;height:12px;"></i>
+                    HB</span>
+                <span class="legend-row-desc">Plug-in Hybrid</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-E"><i data-lucide="zap" style="width:12px;height:12px;"></i>
+                    E</span>
+                <span class="legend-row-desc">Electric Vehicle (BEV)</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-LPG"><i data-lucide="help-circle"
+                        style="width:12px;height:12px;"></i> LPG</span>
+                <span class="legend-row-desc">Liquefied Petroleum Gas</span>
+            </div>
+        </div>
+
+        <!-- Other icons -->
+        <p class="legend-section-title">Technical Data</p>
+        <div class="legend-rows">
+            <div class="legend-row">
+                <span class="legend-pill-demo"
+                    style="background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);color:#4f46e5;">
+                    <i data-lucide="zap" style="width:13px;height:13px;"></i>
+                    kW
+                </span>
+                <span class="legend-row-desc">Engine Power — <strong id="powerToggleLabel">show in HP</strong></span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo consumption-pill">
+                    <i data-lucide="droplet" style="width:13px;height:13px;"></i>
+                    l/100
+                </span>
+                <span class="legend-row-desc">Fuel Consumption</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo"
+                    style="background:rgba(241,245,249,0.5);border-color:#e2e8f0;color:#475569;">
+                    <i data-lucide="layers" style="width:13px;height:13px;"></i>
+                    M/A
+                </span>
+                <span class="legend-row-desc">Transmission (Manual / Automatic)</span>
+            </div>
+        </div>
+
+        <!-- Power unit toggle -->
+        <div class="power-unit-toggle">
+            <button class="power-unit-btn active" data-unit="kw" id="puBtnKw">kW</button>
+            <button class="power-unit-btn" data-unit="km" id="puBtnKm">KM</button>
+        </div>
+    </div>
+</div>
