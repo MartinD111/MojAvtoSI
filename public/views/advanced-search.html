@@ -372,10 +372,9 @@
                     </div>
                 </div>
 
-                <!-- Vehicle Selector (up to 3 vehicles) -->
+                <!-- Vehicle Selector -->
                 <div class="adv-field-group">
-                    <label class="adv-label">Vozila za iskanje (do 3)</label>
-                    <div id="vehicleSelectorRow" class="search-grid" style="margin-bottom:0.75rem;">
+                    <div id="vehicleSelectorRow" class="search-grid" style="margin-bottom:1.5rem;">
                         <div class="form-group">
                             <label for="make" class="adv-label" data-i18n-key="form_make">Znamka</label>
                             <div class="pill-select-wrapper">
@@ -393,71 +392,22 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="variant" class="adv-label" data-i18n-key="cl_trim_variant">Oblika</label>
+                            <label for="variant" class="adv-label" data-i18n-key="cl_trim_variant">Oblika / različica</label>
                             <div class="pill-select-wrapper">
                                 <select id="variant" name="variant" disabled class="pill-input">
-                                    <option value="" data-i18n-key="cl_trim_variant">Oblika</option>
+                                    <option value="" data-i18n-key="cl_trim_variant">Oblika / različica</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:flex-start; align-items:center; gap:1rem; margin-bottom:1rem;">
                         <button type="button" id="addVehicleBtn" class="pill-btn primary"
                             style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px;">
                             <i data-lucide="plus" style="width:14px;height:14px;"></i> Dodaj
                         </button>
-                        <button type="button" id="toggleExcludeBtn" class="pill-btn secondary"
-                            style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px; border-style: dashed; background: transparent;">
-                            <i data-lucide="minus-circle" style="width:14px;height:14px;"></i> Izključi določena vozila?
-                        </button>
-                        <p class="brand-limit-note" id="brandLimitNote" style="margin:0;"></p>
+                        <p class="brand-limit-note" id="brandLimitNote" style="margin:0; text-align:left;"></p>
                     </div>
-                    <div id="vehicleCards" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.5rem;">
-                    </div>
-                </div>
-
-                <!-- Exclude vehicles Section (initially hidden) -->
-                <div id="excludeSection"
-                    style="display:none; flex-direction:column; padding-top:1.5rem; border-top: 1.5px dashed rgba(0,0,0,0.1); border-bottom: 1.5px dashed rgba(0,0,0,0.1); margin-top:0.25rem; margin-bottom:1.5rem; padding-bottom:1.5rem;">
-                    <div class="adv-field-group">
-                        <label class="adv-label">Izključi vozilo</label>
-
-                        <div id="excludeSelectorRow" class="search-grid" style="margin-bottom:0.75rem;">
-                            <div class="form-group">
-                                <label for="excludeMake" class="adv-label" data-i18n-key="form_make">Znamka</label>
-                                <div class="pill-select-wrapper">
-                                    <select id="excludeMake" name="excludeMake" class="pill-input">
-                                        <option value="" data-i18n-key="all_brands">Znamka</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="excludeModel" class="adv-label" data-i18n-key="form_model">Model</label>
-                                <div class="pill-select-wrapper">
-                                    <select id="excludeModel" name="excludeModel" disabled class="pill-input">
-                                        <option value="" data-i18n-key="all_models">Model</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="excludeVariant" class="adv-label" data-i18n-key="cl_trim_variant">Oblika</label>
-                                <div class="pill-select-wrapper">
-                                    <select id="excludeVariant" name="excludeVariant" disabled class="pill-input">
-                                        <option value="" data-i18n-key="cl_trim_variant">Oblika</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
-                            <button type="button" id="addExcludeBtn" class="pill-btn primary"
-                                style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px; background:linear-gradient(135deg,#ef4444,#dc2626) !important; color:white !important; box-shadow:0 10px 20px -5px rgba(220, 38, 38, 0.35) !important;">
-                                <i data-lucide="minus-circle" style="width:14px;height:14px;"></i> Izključi
-                            </button>
-                        </div>
-
-                        <div id="excludeChips" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
-                        </div>
+                    <div id="vehicleCards" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.5rem;">
                     </div>
                 </div>
 
@@ -553,23 +503,22 @@
                 </button>
             </div>
             <div class="adv-acc-body" style="display:none;">
-                <div class="adv-field-group">
+                <div class="adv-field-group" style="margin-bottom: 1.5rem;">
                     <label class="adv-label">Vrsta goriva</label>
-                    <select name="fuel" class="glass-select" data-no-search="true">
-                        <option value="">Vsa goriva</option>
-                        <option value="Petrol">Bencin</option>
-                        <option value="Dizel">Dizel</option>
-                        <option value="Hibrid">Hibrid</option>
-                        <option value="Elektrika">Elektrika</option>
-                        <option value="LPG">LPG / Plin</option>
-                        <option value="CNG">CNG</option>
-                        <option value="Vodik">Vodik</option>
-                        <option value="Etanol">Etanol</option>
-                    </select>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Petrol"> Bencin</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Hibrid"> Hibrid</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Elektrika"> Elektrika</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="LPG"> LPG / Plin</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="CNG"> CNG</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Vodik"> Vodik</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Etanol"> Etanol</label>
+                    </div>
                 </div>
 
                 <div class="power-unit-toggle-wrapper">
-                    <span class="adv-sub-label" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Enota za moč:</span>
+                    <span class="adv-sub-label" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin: 0;">Enota za moč:</span>
                     <div class="unit-toggle-pill" id="advPowerUnitToggle">
                         <button type="button" class="unit-btn active" data-unit="kw">kW</button>
                         <button type="button" class="unit-btn" data-unit="km">KM</button>
@@ -587,14 +536,21 @@
                     </div>
                 </div>
 
-                <div class="adv-field-group">
-                    <label class="adv-label">Menjalnik</label>
-                    <select name="transmission" class="glass-select" data-no-search="true">
-                        <option value="">Vsi menjalniki</option>
-                        <option value="Ročni">Ročni</option>
-                        <option value="Avtomatski">Avtomatski</option>
-                        <option value="Polavtomatski">Polavtomatski</option>
-                    </select>
+                <div class="adv-grid-2">
+                    <div class="adv-field-group">
+                        <label class="adv-label">Menjalnik</label>
+                        <select name="transmission" class="glass-select" data-no-search="true">
+                            <option value="">Vsi menjalniki</option>
+                            <option value="Ročni">Ročni</option>
+                            <option value="Avtomatski">Avtomatski</option>
+                            <option value="Polavtomatski">Polavtomatski</option>
+                        </select>
+                    </div>
+                    <div class="adv-field-group car-only-field">
+                        <label class="adv-label">Poraba goriva do (L/100 km)</label>
+                        <input type="number" name="consumptionTo" placeholder="npr. 6.0" step="0.1"
+                            class="adv-input">
+                    </div>
                 </div>
 
                 <div class="adv-grid-2">
@@ -608,20 +564,13 @@
                     </div>
                 </div>
 
-                <div class="car-only-field">
-                    <div class="adv-grid-2">
-                        <div class="adv-field-group">
-                            <label class="adv-label">Pogonski sklop</label>
-                            <div class="adv-chip-group">
-                                <label class="adv-chip"><input type="checkbox" name="drivetrain" value="FWD"> Prednji (FWD)</label>
-                                <label class="adv-chip"><input type="checkbox" name="drivetrain" value="RWD"> Zadnji (RWD)</label>
-                                <label class="adv-chip"><input type="checkbox" name="drivetrain" value="AWD"> 4x4 / Vsekolesni (AWD)</label>
-                            </div>
-                        </div>
-                        <div class="adv-field-group">
-                            <label class="adv-label">Poraba goriva do (L/100 km)</label>
-                            <input type="number" name="consumptionTo" placeholder="npr. 6.0" step="0.1"
-                                class="adv-input">
+                <div class="car-only-field" style="width: 100%;">
+                    <div class="adv-field-group" style="margin-bottom: 1.5rem;">
+                        <label class="adv-label">Pogonski sklop</label>
+                        <div class="adv-chip-group">
+                            <label class="adv-chip"><input type="checkbox" name="drivetrain" value="FWD"> Prednji (FWD)</label>
+                            <label class="adv-chip"><input type="checkbox" name="drivetrain" value="RWD"> Zadnji (RWD)</label>
+                            <label class="adv-chip"><input type="checkbox" name="drivetrain" value="AWD"> 4x4 / Vsekolesni (AWD)</label>
                         </div>
                     </div>
                 </div>

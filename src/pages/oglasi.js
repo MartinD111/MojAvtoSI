@@ -309,6 +309,9 @@ function renderCarCard(car) {
                     <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
                         <i data-lucide="scale"></i>
                     </button>
+                    <button class="action-pill-btn contact-btn accent grid-contact-btn" data-car-id="${car.id}" title="Contact">
+                        <i data-lucide="phone"></i>
+                    </button>
                 </div>
             </div>
 
@@ -329,7 +332,7 @@ function renderCarCard(car) {
                     <span>"${note}"</span>
                 </div>
                 ` : '<div style="flex: 1;"></div>'}
-                <button class="action-pill-btn contact-btn accent" data-car-id="${car.id}" onclick="showContactPopup('${car.id}'); event.stopPropagation();" title="Contact">
+                <button class="action-pill-btn contact-btn accent list-contact-btn" data-car-id="${car.id}" title="Contact">
                     <i data-lucide="phone"></i>
                 </button>
             </div>
@@ -820,8 +823,16 @@ function applySidebarFilters() {
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
     const priceTo = parseInt(document.getElementById("sidebarPriceTo")?.value, 10) || Infinity;
-    const fuel = document.getElementById("sidebarFuel")?.value || '';
-    const transmission = document.getElementById("sidebarTransmission")?.value || '';
+
+    // Parse multi-select checkboxes for fuel and transmission
+    const form = document.getElementById("sidebarFiltersForm");
+    let fuels = [];
+    let transmissions = [];
+    if (form) {
+        const fd = new FormData(form);
+        fuels = fd.getAll("fuel").filter(Boolean);
+        transmissions = fd.getAll("transmission").filter(Boolean);
+    }
 
     // Check category context from URL
     const params = parseHashParams();
@@ -841,8 +852,8 @@ function applySidebarFilters() {
         const carPrice = car.priceRaw || car.priceEur || 0;
         if (carPrice > priceTo) return false;
 
-        if (fuel && car.fuel !== fuel) return false;
-        if (transmission && car.transmission !== transmission) return false;
+        if (fuels.length > 0 && !fuels.includes(car.fuel)) return false;
+        if (transmissions.length > 0 && !transmissions.includes(car.transmission)) return false;
 
         return true;
     });

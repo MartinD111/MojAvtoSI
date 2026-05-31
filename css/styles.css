@@ -2295,6 +2295,12 @@ body.dark-mode .custom-select-container.disabled .custom-select-trigger {
   overflow-y: auto;
   padding: 8px;
   flex: 1;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.custom-select-options::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .custom-select-option {
@@ -3321,6 +3327,17 @@ body.dark-mode .sponsored-specs span {
   align-items: center;
   justify-content: center;
   transform: translateY(-2px); /* Slight nudge up for perfect alignment */
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+.note-contact-row .contact-btn:hover {
+  box-shadow: none !important;
+  transform: translateY(-2px) !important;
+}
+
+.grid-contact-btn {
+  display: none !important;
 }
 
 .seller-note-card i,
@@ -5619,28 +5636,19 @@ body.dark-mode .cl-smart-import-hint {
 }
 
 #carListingsContainer.grid-layout .note-contact-row {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  width: 100%;
-}
-
-#carListingsContainer.grid-layout .seller-note-card {
-  width: 100% !important;
-  max-width: 100% !important;
-  justify-content: center !important;
-  text-align: center !important;
-  padding: 0.5rem 0.75rem !important;
-  margin-top: 0 !important;
-  font-size: 0.75rem !important;
-  border-radius: 0.75rem !important;
-  flex-shrink: 0 !important;
-}
-
-#carListingsContainer.grid-layout .seller-note-card i {
   display: none !important;
-  /* Hide icon in grid note to save space */
+}
+
+#carListingsContainer.grid-layout .grid-contact-btn {
+  display: flex !important;
+  margin: 0 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: none !important;
+}
+
+#carListingsContainer.grid-layout .grid-contact-btn:hover {
+  box-shadow: none !important;
+  transform: translateY(-2px) !important;
 }
 
 /* --- Premium Language Dropdown --- */
@@ -5736,4 +5744,42 @@ body.dark-mode .unit-btn.active {
   background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
   color: #ffffff !important;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Center all advanced search labels */
+#advancedSearchForm .adv-label {
+  text-align: center;
+}
+
+/* Keep labels left-aligned for multi-select chip groups */
+#advancedSearchForm .adv-field-group:has(.adv-chip-group) .adv-label {
+  text-align: left;
+}
+
+/* Center text inside all inputs, dropdowns, and custom select pills globally */
+.adv-input,
+.glass-select,
+.pill-input,
+.custom-select-trigger {
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+.custom-select-trigger {
+  position: relative !important;
+}
+
+.custom-select-trigger .select-icon {
+  position: absolute !important;
+  right: 20px !important;
+}
+
+/* Make vehicle selector row perfectly span 3 columns */
+#vehicleSelectorRow.search-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Force all home page search form labels to be white in both light and dark modes */
+#homeSearchForm .form-group label {
+  color: #ffffff !important;
 }

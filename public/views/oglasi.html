@@ -55,24 +55,22 @@
                 <!-- Gorivo -->
                 <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                     <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Gorivo</label>
-                    <select id="sidebarFuel" name="fuel" class="glass-select">
-                        <option value="">Vsa goriva</option>
-                        <option value="Bencin">Bencin</option>
-                        <option value="Dizel">Dizel</option>
-                        <option value="Hibrid">Hibrid</option>
-                        <option value="Elektrika">Elektrika</option>
-                        <option value="LPG">LPG / Plin</option>
-                    </select>
+                    <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
+                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Bencin"> Bencin</label>
+                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
+                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Hibrid"> Hibrid</label>
+                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Elektrika"> Elektrika</label>
+                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="LPG"> LPG / Plin</label>
+                    </div>
                 </div>
 
                 <!-- Menjalnik -->
                 <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                     <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Menjalnik</label>
-                    <select id="sidebarTransmission" name="transmission" class="glass-select">
-                        <option value="">Vsi</option>
-                        <option value="Ročni">Ročni</option>
-                        <option value="Avtomatski">Avtomatski</option>
-                    </select>
+                    <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
+                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Ročni"> Ročni</label>
+                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Avtomatski"> Avtomatski</label>
+                    </div>
                 </div>
             </form>
         </div>

@@ -12,6 +12,228 @@
 .profile-form input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; }
 .btn-primary { background-color: #f97316; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; }
 
+/* ── Premium Glassmorphic Cards for Dashboard ── */
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-glass);
+}
+
+.dashboard-card .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-card .card-title {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.05rem;
+    transition: color 0.3s ease;
+}
+
+.dashboard-card .card-desc {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 4px;
+    transition: color 0.3s ease;
+}
+
+/* Hover effects */
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Hover accent border colors */
+.dashboard-card-new-listing:hover { border-color: var(--color-primary-start) !important; }
+.dashboard-card-garage:hover { border-color: #6366f1 !important; }
+.dashboard-card-compare:hover { border-color: #2563eb !important; }
+.dashboard-card-profile:hover { border-color: #22c55e !important; }
+.dashboard-card-service:hover { border-color: #16a34a !important; }
+
+/* Dashboard Section Containers */
+.dashboard-section {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-glass);
+    margin-bottom: 3rem;
+}
+
+.dashboard-section h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+/* Listing / Active Item Cards */
+.dashboard-item-card {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 1.5rem;
+    gap: 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.dashboard-item-card:hover {
+    transform: scale(1.01);
+}
+
+.dashboard-item-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: #1f2937;
+    transition: color 0.3s ease;
+}
+
+.dashboard-item-card .item-specs {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+    transition: color 0.3s ease;
+}
+
+/* Bookings / Services Book Cards */
+.dashboard-booking-card {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.65rem;
+    background: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s ease;
+}
+
+.dashboard-booking-card .booking-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.2rem;
+    transition: color 0.3s ease;
+}
+
+.dashboard-booking-card .booking-services {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin-bottom: 0.15rem;
+    transition: color 0.3s ease;
+}
+
+.dashboard-booking-card .booking-price {
+    font-size: 0.88rem;
+    font-weight: 900;
+    color: #1e293b;
+    transition: color 0.3s ease;
+}
+
+.btn-cancel {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    background: #fde2e2;
+    transform: translateY(-1px);
+}
+
+/* ── Dark Mode Overrides for Dashboard ── */
+body.dark-mode .dashboard-card {
+    background: rgba(15, 23, 42, 0.45);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .dashboard-card .card-title {
+    color: #ffffff;
+}
+
+body.dark-mode .dashboard-card .card-desc {
+    color: #94a3b8;
+}
+
+body.dark-mode .dashboard-card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    background: rgba(15, 23, 42, 0.65);
+}
+
+body.dark-mode .dashboard-section {
+    background: rgba(15, 23, 42, 0.45);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .dashboard-section h2 {
+    color: #ffffff;
+}
+
+body.dark-mode .dashboard-item-card {
+    background: rgba(30, 41, 59, 0.3);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .dashboard-item-card h3 {
+    color: #ffffff;
+}
+
+body.dark-mode .dashboard-item-card .item-specs {
+    color: #94a3b8;
+}
+
+body.dark-mode .dashboard-booking-card {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(30, 41, 59, 0.4);
+}
+
+body.dark-mode .dashboard-booking-card .booking-title {
+    color: #ffffff;
+}
+
+body.dark-mode .dashboard-booking-card .booking-services {
+    color: #94a3b8;
+}
+
+body.dark-mode .dashboard-booking-card .booking-price {
+    color: #ffffff;
+}
+
+body.dark-mode .btn-cancel {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.4);
+    color: #f87171;
+}
+
+body.dark-mode .btn-cancel:hover {
+    background: rgba(220, 38, 38, 0.25);
+    border-color: rgba(220, 38, 38, 0.6);
+}
+
 /* ── Print-to-Sell: skrito med brskanjem ────────────────────── */
 #print-template { display: none; }
 

@@ -32,7 +32,6 @@ export async function initDashboardPage() {
     ? "<img src='" + user.photoURL + "' style='width:56px;height:56px;border-radius:50%;object-fit:cover;' />"
     : "<div style='width:56px;height:56px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:1.5rem;'>👤</div>";
 
-  // Initial render with loading state for listings
   container.innerHTML = `
     <div class="dashboard-page" style="max-width:900px;margin:2rem auto;padding:0 1rem;">
       <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
@@ -44,41 +43,36 @@ export async function initDashboardPage() {
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
-        <a href="#/novi-oglas" style="display:flex;flex-direction:column;align-items:flex-start;padding:1.5rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:var(--shadow-glass);" onmouseover="this.style.borderColor='var(--color-primary-start)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)';this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-glass)'">
-          <span style="font-size:1.8rem;margin-bottom:0.5rem;">➕</span>
-          <span style="font-weight:700;color:#1e293b;">${t('dashboard_post_listing')}</span>
-          <span style="font-size:0.8rem;color:#64748b;margin-top:4px;">${t('dashboard_post_new_vehicle')}</span>
+        <a href="#/novi-oglas" class="dashboard-card dashboard-card-new-listing">
+          <span class="card-icon">➕</span>
+          <span class="card-title">${t('dashboard_post_listing')}</span>
+          <span class="card-desc">${t('dashboard_post_new_vehicle')}</span>
         </a>
-        <a href="#/garaža" style="display:flex;flex-direction:column;align-items:flex-start;padding:1.5rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:var(--shadow-glass);" onmouseover="this.style.borderColor='#6366f1';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)';this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-glass)'">
-          <span style="font-size:1.8rem;margin-bottom:0.5rem;">🏎️</span>
-          <span style="font-weight:700;color:#1e293b;">${t('my_garage')}</span>
-          <span style="font-size:0.8rem;color:#64748b;margin-top:4px;">${t('dashboard_manage_vehicles')}</span>
+        <a href="#/garaža" class="dashboard-card dashboard-card-garage">
+          <span class="card-icon">🏎️</span>
+          <span class="card-title">${t('my_garage')}</span>
+          <span class="card-desc">${t('dashboard_manage_vehicles')}</span>
         </a>
-        <a href="#/primerjava" style="display:flex;flex-direction:column;align-items:flex-start;padding:1.5rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:var(--shadow-glass);" onmouseover="this.style.borderColor='#2563eb';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)';this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-glass)'">
-          <span style="font-size:1.8rem;margin-bottom:0.5rem;">⚖️</span>
-          <span style="font-weight:700;color:#1e293b;">${t('compare_corner')}</span>
-          <span style="font-size:0.8rem;color:#64748b;margin-top:4px;">${t('dashboard_compare_selected')}</span>
+        <a href="#/primerjava" class="dashboard-card dashboard-card-compare">
+          <span class="card-icon">⚖️</span>
+          <span class="card-title">${t('compare_corner')}</span>
+          <span class="card-desc">${t('dashboard_compare_selected')}</span>
         </a>
-        <a href="#/profil" style="display:flex;flex-direction:column;align-items:flex-start;padding:1.5rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:var(--shadow-glass);" onmouseover="this.style.borderColor='#22c55e';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)';this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-glass)'">
-          <span style="font-size:1.8rem;margin-bottom:0.5rem;">👤</span>
-          <span style="font-weight:700;color:#1e293b;">${t('my_profile')}</span>
-          <span style="font-size:0.8rem;color:#64748b;margin-top:4px;">${t('dashboard_edit_details')}</span>
-        </a>
-        <a href="#/nastavitve-tco" style="display:flex;flex-direction:column;align-items:flex-start;padding:1.5rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:var(--shadow-glass);" onmouseover="this.style.borderColor='#1caf3f';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)';this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-glass)'">
-          <span style="font-size:1.8rem;margin-bottom:0.5rem;">💰</span>
-          <span style="font-weight:700;color:#1e293b;">TCO Settings</span>
-          <span style="font-size:0.8rem;color:#64748b;margin-top:4px;">Configure cost estimates</span>
+        <a href="#/profil" class="dashboard-card dashboard-card-profile">
+          <span class="card-icon">👤</span>
+          <span class="card-title">${t('my_profile')}</span>
+          <span class="card-desc">${t('dashboard_edit_details')}</span>
         </a>
         ${isVerifiedBusiness(user) ? `
-        <a href="#/servis/vnos" style="display:flex;flex-direction:column;align-items:flex-start;padding:1.5rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:var(--shadow-glass);" onmouseover="this.style.borderColor='#16a34a';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)';this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-glass)'">
-          <span style="font-size:1.8rem;margin-bottom:0.5rem;">🔧</span>
-          <span style="font-weight:700;color:#1e293b;">${t('dashboard_service_record')}</span>
-          <span style="font-size:0.8rem;color:#64748b;margin-top:4px;">${t('dashboard_add_service_entry')}</span>
+        <a href="#/servis/vnos" class="dashboard-card dashboard-card-service">
+          <span class="card-icon">🔧</span>
+          <span class="card-title">${t('dashboard_service_record')}</span>
+          <span class="card-desc">${t('dashboard_add_service_entry')}</span>
         </a>` : ''}
       </div>
 
-      <div style="background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;padding:1.5rem;box-shadow:var(--shadow-glass);margin-bottom:3rem;">
-        <h2 style="margin:0 0 1.5rem;font-size:1.1rem;font-weight:800;color:#1e293b;">📋 ${t('dashboard_my_active_listings')}</h2>
+      <div class="dashboard-section">
+        <h2>📋 ${t('dashboard_my_active_listings')}</h2>
         <div id="user-listings-container" style="min-height: 100px;">
           <div style="text-align:center;padding:2rem;color:#9ca3af;">
             <i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-bottom:0.5rem;"></i>
@@ -88,10 +82,10 @@ export async function initDashboardPage() {
       </div>
 
       <!-- Reservations section -->
-      <div style="background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;padding:1.5rem;box-shadow:var(--shadow-glass);margin-bottom:3rem;" id="bookings-section">
+      <div class="dashboard-section" id="bookings-section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-          <h2 style="margin:0;font-size:1rem;font-weight:700;color:#1e293b;">📅 ${t('dashboard_my_bookings')}</h2>
-          <a href="#/zemljevid" style="font-size:0.85rem;font-weight:700;color:#2563eb;text-decoration:none;padding:8px 16px;background:rgba(37,99,235,0.1);border-radius:9999px;transition:all 0.2s;">+ ${t('dashboard_new_booking')}</a>
+          <h2 style="margin:0;">📅 ${t('dashboard_my_bookings')}</h2>
+          <a href="#/zemljevid" style="font-size:0.85rem;font-weight:700;color:#2563eb;text-decoration:none;padding:8px 16px;background:rgba(37,99,235,0.1);border-radius:9999px;transition:all 0.2s;" onmouseover="this.style.background='rgba(37,99,235,0.2)'" onmouseout="this.style.background='rgba(37,99,235,0.1)'">+ ${t('dashboard_new_booking')}</a>
         </div>
         <div id="bookings-container">
           <div style="text-align:center;padding:1.5rem;color:#9ca3af;font-size:0.85rem;">${t('dashboard_loading_bookings')}</div>
@@ -99,8 +93,8 @@ export async function initDashboardPage() {
       </div>
 
       <!-- Service history section -->
-      <div style="background:rgba(255,255,255,0.4);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.5);border-radius:2rem;padding:1.5rem;box-shadow:var(--shadow-glass);" id="service-history-section">
-        <h2 style="margin:0 0 1rem;font-size:1rem;font-weight:700;color:#1e293b;">🔧 ${t('dashboard_service_book')}</h2>
+      <div class="dashboard-section" id="service-history-section">
+        <h2 style="margin:0 0 1rem;">🔧 ${t('dashboard_service_book')}</h2>
         <div id="service-history-container">
           <div style="text-align:center;padding:1.5rem;color:#9ca3af;font-size:0.85rem;">${t('dashboard_loading_service_history')}</div>
         </div>
@@ -129,11 +123,11 @@ export async function initDashboardPage() {
         const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(listing.price);
 
         html += `
-          <div style="display:flex;align-items:center;padding:1.25rem;background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.4);border-radius:1.5rem;gap:1.25rem;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
+          <div class="dashboard-item-card">
               <img src="${imgUrl}" style="width:120px;height:80px;object-fit:cover;border-radius:6px;" alt="${listing.title}">
               <div style="flex:1;">
-                  <h3 style="margin:0 0 0.5rem;font-size:1.1rem;color:#1f2937;">${listing.make} ${listing.model} ${listing.type}</h3>
-                  <div style="display:flex;gap:1rem;font-size:0.85rem;color:#6b7280;">
+                  <h3>${listing.make} ${listing.model} ${listing.type}</h3>
+                  <div class="item-specs">
                       <span>${listing.year}</span>
                       <span>${listing.mileage ? (getCurrentLang() === 'en' ? t('unit_mi', { val: Math.round(listing.mileage * 0.621371).toLocaleString('en-US') }) : t('unit_km', { val: listing.mileage.toLocaleString('sl-SI') })) : ''}</span>
                       <span>${listing.fuel}</span>
@@ -291,18 +285,18 @@ function renderBookingsSection(userId) {
         const sc = statusColors[cls] || { bg: '#f8fafc', color: '#64748b', border: '#e2e8f0' };
 
         return `
-        <div style="border:1.5px solid #e2e8f0;border-radius:1rem;padding:1rem 1.25rem;margin-bottom:0.65rem;background:rgba(255,255,255,0.8);">
+        <div class="dashboard-booking-card">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
                 <span style="font-size:0.7rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:9999px;background:${sc.bg};color:${sc.color};border:1px solid ${sc.border};">${label}</span>
                 <span style="font-size:0.75rem;color:#94a3b8;font-weight:500;">${formatBookingDate(b.date)} ob ${b.time || ''}</span>
             </div>
-            <div style="font-size:0.92rem;font-weight:800;color:#1e293b;margin-bottom:0.2rem;">${b.businessName || 'Unknown business'}</div>
-            <div style="font-size:0.78rem;color:#64748b;margin-bottom:0.15rem;">${services}</div>
+            <div class="booking-title">${b.businessName || 'Unknown business'}</div>
+            <div class="booking-services">${services}</div>
             <div style="font-size:0.75rem;color:#94a3b8;">${b.vehicleLabel || ''}</div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.65rem;flex-wrap:wrap;gap:0.5rem;">
-                <span style="font-size:0.88rem;font-weight:900;color:#1e293b;">${b.totalPrice > 0 ? (getCurrentLang() === 'en' ? '$' : '€') + b.totalPrice : t('dashboard_quote_on_inspection')}</span>
+                <span class="booking-price">${b.totalPrice > 0 ? (getCurrentLang() === 'en' ? '$' : '€') + b.totalPrice : t('dashboard_quote_on_inspection')}</span>
                 ${(b.status === 'pending' || b.status === 'confirmed')
-                    ? `<button onclick="window._cancelBooking('${b.id}','${userId}')" style="font-size:0.75rem;padding:0.3rem 0.75rem;border-radius:9999px;border:1px solid #fecaca;background:#fef2f2;color:#dc2626;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;">${t('cancel')}</button>`
+                    ? `<button onclick="window._cancelBooking('${b.id}','${userId}')" class="btn-cancel">${t('cancel')}</button>`
                     : ''}
             </div>
         </div>`;
@@ -338,11 +332,11 @@ function renderServiceHistorySection(userId) {
     container.innerHTML = sorted.map(b => {
         const services = b.services.map(s => serviceLabels[s] || s).join(' · ');
         return `
-        <div style="border:1.5px solid #e2e8f0;border-radius:1rem;padding:1rem 1.25rem;margin-bottom:0.65rem;background:rgba(255,255,255,0.8);display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-            <div style="width:40px;height:40px;border-radius:0.75rem;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">✓</div>
+        <div class="dashboard-booking-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <div style="width:40px;height:40px;border-radius:0.75rem;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">✓</div>
             <div style="flex:1;min-width:0;">
-                <div style="font-size:0.92rem;font-weight:800;color:#1e293b;margin-bottom:0.15rem;">${b.businessName || 'Unknown business'}</div>
-                <div style="font-size:0.78rem;color:#64748b;">${services}</div>
+                <div class="booking-title" style="margin-bottom:0.15rem;">${b.businessName || 'Unknown business'}</div>
+                <div class="booking-services">${services}</div>
                 <div style="font-size:0.72rem;color:#94a3b8;margin-top:0.1rem;">${b.vehicleLabel || ''} · ${formatBookingDate(b.date)}</div>
             </div>
             <div style="font-size:0.9rem;font-weight:800;color:#16a34a;flex-shrink:0;">${b.totalPrice > 0 ? (getCurrentLang() === 'en' ? '$' : '€') + b.totalPrice : t('dashboard_quote_on_inspection')}</div>

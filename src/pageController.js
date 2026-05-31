@@ -20,7 +20,6 @@ const pageModules = {
     map: () => import('./pages/map.js').then(m => m.initMapPage()),
     'business-profile': () => import('./pages/business-profile.js').then(m => m.initBusinessProfilePage()),
     booking: () => import('./pages/booking.js').then(m => m.initBookingPage()),
-    transport: () => import('./pages/transport.js').then(m => m.initTransportPage()),
     admin: () => import('./pages/admin.js').then(m => m.initAdminPage()),
     'service-entry': () => import('./pages/service-entry.js').then(m => m.initServiceEntryPage()),
     'b2b-evaluate': () => import('./pages/b2b-evaluate.js').then(m => m.initB2bEvaluatePage()),

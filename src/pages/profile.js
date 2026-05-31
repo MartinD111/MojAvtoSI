@@ -23,46 +23,46 @@ export async function initProfilePage() {
           <h1 style="margin:0;font-size:1.5rem;font-weight:700;">${user.displayName || t('profile_user_fallback')}</h1>
           <p style="margin:0;color:#6b7280;font-size:0.9rem;">${user.email}</p>
         </div>
-        <a href="#/dashboard" style="margin-left:auto;font-size:0.85rem;font-weight:600;color:#2563eb;text-decoration:none;">${t('profile_back_to_dashboard')}</a>
+        <a href="#/dashboard" class="profile-back-link" style="margin-left:auto;font-size:0.85rem;font-weight:600;color:#2563eb;text-decoration:none;">${t('profile_back_to_dashboard')}</a>
       </div>
 
       <!-- Moja garaža -->
-      <div style="background:var(--bg-glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:var(--border-glass);border-radius:2rem;padding:1.5rem;box-shadow:var(--shadow-glass);margin-bottom:2rem;">
+      <div class="profile-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
-          <h2 style="margin:0;font-size:1.1rem;font-weight:800;color:#1e293b;">${t('profile_my_garage')}</h2>
+          <h2>${t('profile_my_garage')}</h2>
           <button id="btn-add-vehicle" style="font-size:0.85rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#4f46e5);border:none;padding:8px 20px;border-radius:9999px;cursor:pointer;transition:all 0.2s;">${t('profile_add_vehicle')}</button>
         </div>
 
         <!-- Add/edit form (hidden by default) -->
         <div id="vehicle-form-wrap" style="display:none;margin-bottom:1.5rem;">
-          <div style="background:rgba(255,255,255,0.6);border:1.5px solid #e2e8f0;border-radius:1.25rem;padding:1.25rem;">
-            <h3 id="vehicle-form-title" style="margin:0 0 1rem;font-size:1rem;font-weight:700;color:#1e293b;">${t('profile_new_vehicle')}</h3>
+          <div class="profile-form-container">
+            <h3 id="vehicle-form-title">${t('profile_new_vehicle')}</h3>
             <form id="vehicle-form" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
               <div style="grid-column:1/-1;">
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_nickname_label')}</label>
-                <input id="vf-nickname" type="text" placeholder="${t('profile_nickname_placeholder')}" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;">
+                <label>${t('profile_nickname_label')}</label>
+                <input id="vf-nickname" type="text" placeholder="${t('profile_nickname_placeholder')}">
               </div>
 
               <div>
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_make_label')}</label>
-                <select id="vf-make" required style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;background:#fff;">
+                <label>${t('profile_make_label')}</label>
+                <select id="vf-make" required>
                   <option value="">${t('profile_select_make')}</option>
                 </select>
               </div>
               <div>
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_model_label')}</label>
-                <select id="vf-model" required style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;background:#fff;">
+                <label>${t('profile_model_label')}</label>
+                <select id="vf-model" required>
                   <option value="">${t('profile_select_make_first')}</option>
                 </select>
               </div>
 
               <div>
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_year_label')}</label>
-                <input id="vf-year" type="number" min="1950" max="2026" required placeholder="${t('profile_year_placeholder')}" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;">
+                <label>${t('profile_year_label')}</label>
+                <input id="vf-year" type="number" min="1950" max="2026" required placeholder="${t('profile_year_placeholder')}">
               </div>
               <div>
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_fuel_label')}</label>
-                <select id="vf-fuel" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;background:#fff;">
+                <label>${t('profile_fuel_label')}</label>
+                <select id="vf-fuel">
                   <option value="">${t('profile_select_generic')}</option>
                   <option value="Petrol">${t('profile_fuel_petrol')}</option>
                   <option value="Dizel">${t('profile_fuel_diesel')}</option>
@@ -75,24 +75,24 @@ export async function initProfilePage() {
               </div>
 
               <div>
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_plate_label')}</label>
-                <input id="vf-plate" type="text" placeholder="${t('profile_plate_placeholder')}" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;text-transform:uppercase;">
+                <label>${t('profile_plate_label')}</label>
+                <input id="vf-plate" type="text" placeholder="${t('profile_plate_placeholder')}" style="text-transform:uppercase;">
               </div>
               <div>
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_mileage_label')}</label>
-                <input id="vf-km" type="number" min="0" placeholder="${t('profile_mileage_placeholder')}" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;">
+                <label>${t('profile_mileage_label')}</label>
+                <input id="vf-km" type="number" min="0" placeholder="${t('profile_mileage_placeholder')}">
               </div>
 
               <!-- Tire section -->
               <div style="grid-column:1/-1;margin-top:0.5rem;">
-                <div style="border-top:1.5px solid #e2e8f0;padding-top:1rem;">
-                  <h4 style="margin:0 0 0.75rem;font-size:0.9rem;font-weight:700;color:#1e293b;">${t('profile_tires_title')}</h4>
+                <div style="border-top:1.5px solid rgba(255,255,255,0.1);padding-top:1rem;">
+                  <h4 style="margin:0 0 0.75rem;font-size:0.9rem;font-weight:700;">${t('profile_tires_title')}</h4>
                 </div>
               </div>
 
               <div style="grid-column:1/-1;">
-                <label style="font-size:0.78rem;font-weight:600;color:#475569;display:block;margin-bottom:4px;">${t('profile_current_tire_type')}</label>
-                <select id="vf-tire-season" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.9rem;font-family:inherit;background:#fff;">
+                <label>${t('profile_current_tire_type')}</label>
+                <select id="vf-tire-season">
                   <option value="">${t('profile_select_generic')}</option>
                   <option value="letne">${t('profile_tire_summer')}</option>
                   <option value="zimske">${t('profile_tire_winter')}</option>
@@ -105,20 +105,20 @@ export async function initProfilePage() {
                 <p style="font-size:0.78rem;font-weight:700;color:#f59e0b;margin:0.5rem 0 0.4rem;">${t('profile_summer_tires_label')}</p>
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_width')}</label>
-                <input id="vf-summer-width" type="number" placeholder="205" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_width')}</label>
+                <input id="vf-summer-width" type="number" placeholder="205">
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_profile')}</label>
-                <input id="vf-summer-profile" type="number" placeholder="55" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_profile')}</label>
+                <input id="vf-summer-profile" type="number" placeholder="55">
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_rim')}</label>
-                <input id="vf-summer-rim" type="number" placeholder="16" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_rim')}</label>
+                <input id="vf-summer-rim" type="number" placeholder="16">
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_brand')}</label>
-                <input id="vf-summer-brand" type="text" placeholder="Michelin" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_brand')}</label>
+                <input id="vf-summer-brand" type="text" placeholder="Michelin">
               </div>
 
               <!-- Zimske pnevmatike -->
@@ -126,20 +126,20 @@ export async function initProfilePage() {
                 <p style="font-size:0.78rem;font-weight:700;color:#3b82f6;margin:0.5rem 0 0.4rem;">${t('profile_winter_tires_label')}</p>
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_width')}</label>
-                <input id="vf-winter-width" type="number" placeholder="195" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_width')}</label>
+                <input id="vf-winter-width" type="number" placeholder="195">
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_profile')}</label>
-                <input id="vf-winter-profile" type="number" placeholder="65" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_profile')}</label>
+                <input id="vf-winter-profile" type="number" placeholder="65">
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_rim')}</label>
-                <input id="vf-winter-rim" type="number" placeholder="15" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_rim')}</label>
+                <input id="vf-winter-rim" type="number" placeholder="15">
               </div>
               <div>
-                <label style="font-size:0.75rem;color:#64748b;display:block;margin-bottom:3px;">${t('profile_tire_brand')}</label>
-                <input id="vf-winter-brand" type="text" placeholder="Continental" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:0.75rem;font-size:0.85rem;font-family:inherit;">
+                <label style="font-size:0.75rem;display:block;margin-bottom:3px;">${t('profile_tire_brand')}</label>
+                <input id="vf-winter-brand" type="text" placeholder="Continental">
               </div>
 
               <!-- Buttons -->
@@ -160,9 +160,27 @@ export async function initProfilePage() {
         </div>
       </div>
 
+      <!-- Nastavitve TCO -->
+      <div class="profile-card" style="margin-top:2rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+          <div>
+            <h2>💰 ${t('tco_settings_title') || 'TCO Settings'}</h2>
+            <p style="margin:0.25rem 0 0;color:#64748b;font-size:0.85rem;">
+              ${t('tco_settings_subtitle') || 'Configure your vehicle cost estimates'}
+            </p>
+          </div>
+          <a href="#/nastavitve-tco" style="font-size:0.85rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#16a34a,#15803d);padding:8px 20px;border-radius:9999px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+            ${t('cl_edit') || 'Edit'}
+          </a>
+        </div>
+        <p style="margin:0;font-size:0.82rem;color:#64748b;">
+          ${t('tco_settings_card_desc') || 'Adjust annual mileage, fuel prices, and other parameters to calculate the total cost of ownership (TCO) for vehicles.'}
+        </p>
+      </div>
+
       <!-- Back link -->
       <div style="text-align:center;margin-top:1.5rem;">
-        <a href="#/dashboard" style="font-size:0.9rem;color:#6b7280;text-decoration:none;">${t('profile_back_to_dashboard_link')}</a>
+        <a href="#/dashboard" class="profile-back-link" style="font-size:0.9rem;color:#6b7280;text-decoration:none;">${t('profile_back_to_dashboard_link')}</a>
       </div>
     </div>
     `;
@@ -302,17 +320,17 @@ export async function initProfilePage() {
                     : '';
 
                 return `
-                <div style="border:1.5px solid #e2e8f0;border-radius:1.25rem;padding:1.25rem;margin-bottom:0.75rem;background:rgba(255,255,255,0.7);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
+                <div class="profile-vehicle-card">
                     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
                         <div style="flex:1;min-width:0;">
                             <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                                 <span style="font-size:1.3rem;">🚗</span>
-                                <h3 style="margin:0;font-size:1.05rem;font-weight:800;color:#1e293b;">
+                                <h3>
                                     ${v.nickname || (v.make + ' ' + v.model)}
                                 </h3>
                                 ${seasonBadge}
                             </div>
-                            <p style="margin:0.2rem 0 0;font-size:0.82rem;color:#64748b;">
+                            <p>
                                 ${v.nickname ? `${v.make} ${v.model}` : ''}
                                 ${v.year ? (v.nickname ? ' · ' : '') + t('profile_year_label_short') + ' ' + v.year : ''}
                                 ${v.fuel ? ' · ' + fuelText(v.fuel) : ''}

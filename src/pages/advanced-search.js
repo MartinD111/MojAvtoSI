@@ -172,17 +172,7 @@ function bindSearchLogic(catContext) {
     const variantSelect = document.getElementById("variant");
     const addVehicleBtn = document.getElementById("addVehicleBtn");
     const vehicleCardsEl = document.getElementById("vehicleCards");
-    const selectorRow = document.getElementById("brand-selector-row");
-    const brandLimitNote = document.getElementById("brand-limit-note");
-    
-    const excludeSelect = document.getElementById("excludeMake");
-    const excludeModelSelect = document.getElementById("excludeModel");
-    const excludeVariantSelect = document.getElementById("excludeVariant");
-    const addExcludeBtn = document.getElementById("addExcludeBtn");
-    const toggleExcludeBtn = document.getElementById("toggleExcludeBtn");
-    const excludeSection = document.getElementById("excludeSection");
-    const excludeChipsEl = document.getElementById("excludeChips");
-
+    const brandLimitNote = document.getElementById("brandLimitNote");
     const tabBtns = document.querySelectorAll('.tabs-glass .tab-btn');
     const bodyTypeHidden = document.getElementById('bodyTypeHidden');
     const allBodyTypeCards = document.querySelectorAll('.body-type-card');
@@ -193,7 +183,6 @@ function bindSearchLogic(catContext) {
 
     let activeTab = catContext.cat || 'avto';
     let vehicles = [];
-    let excludedVehicles = [];
     const MAX_VEHICLES = 3;
 
     // ── Dynamic Field Visibility ──
@@ -233,18 +222,16 @@ function bindSearchLogic(catContext) {
             .then(data => {
                 window._brandModelData = data;
                 const prevMake = makeSelect.value;
-                makeSelect.innerHTML = '<option value="">Make</option>';
-                if (excludeSelect) excludeSelect.innerHTML = '<option value="">Make</option>';
+                makeSelect.innerHTML = '<option value="">Znamka</option>';
                 const sorted = Object.keys(data).sort();
                 sorted.forEach(brand => {
                     const o1 = document.createElement("option"); o1.value = brand; o1.textContent = brand;
                     if (brand === prevMake) o1.selected = true;
                     makeSelect.appendChild(o1);
-                    if (excludeSelect) { const o2 = document.createElement("option"); o2.value = brand; o2.textContent = brand; excludeSelect.appendChild(o2); }
                 });
                 if (!data[prevMake]) {
                     modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-                    variantSelect.innerHTML = '<option value="">Trim</option>'; variantSelect.disabled = true;
+                    variantSelect.innerHTML = '<option value="">Oblika / različica</option>'; variantSelect.disabled = true;
                 }
                 return data;
             });
@@ -307,47 +294,13 @@ function bindSearchLogic(catContext) {
         });
     }
 
-    addVehicleBtn.addEventListener('click', () => {
-        const make = makeSelect.value;
-        if (!make) return;
-        if (vehicles.length >= MAX_VEHICLES) return;
-        const model = modelSelect.value || '';
-        const variant = variantSelect.value || '';
-        vehicles.push({ make, model, variant });
-        makeSelect.value = '';
-        modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-        variantSelect.innerHTML = '<option value="">Trim</option>'; variantSelect.disabled = true;
-        renderVehicleCards();
-        updateLiveCount();
-    });
-
-    function renderVehicleCards() {
-        vehicleCardsEl.innerHTML = vehicles.map((v, i) => {
-            const parts = [v.make]; if (v.model) parts.push(v.model); if (v.variant) parts.push(v.variant);
-            return `<div class="vehicle-entry-card"><div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div><button type="button" class="vec-remove" data-idx="${i}">&times;</button></div>`;
-        }).join('');
-        vehicleCardsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => { vehicles.splice(+btn.dataset.idx, 1); renderVehicleCards(); updateLiveCount(); }));
-        const atLimit = vehicles.length >= MAX_VEHICLES;
-        if (selectorRow) selectorRow.style.display = atLimit ? 'none' : '';
-        if (addVehicleBtn) addVehicleBtn.style.display = atLimit ? 'none' : '';
-        if (brandLimitNote) brandLimitNote.textContent = atLimit ? 'Limit reached.' : vehicles.length > 0 ? `Added: ${vehicles.length}/${MAX_VEHICLES}` : '';
-    }
-
-    function renderExcludeChips() {
-        excludeChipsEl.innerHTML = excludedVehicles.map((v, i) => {
-            const parts = [v.make]; if (v.model) parts.push(v.model); if (v.variant) parts.push(v.variant);
-            return `<div class="vehicle-entry-card" style="background:linear-gradient(135deg, #ef4444, #dc2626) !important; box-shadow:0 6px 15px rgba(239, 68, 68, 0.25);"><div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div><button type="button" class="vec-remove" data-idx="${i}">&times;</button></div>`;
-        }).join('');
-        excludeChipsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => { excludedVehicles.splice(+btn.dataset.idx, 1); renderExcludeChips(); updateLiveCount(); }));
-    }
-
     fetchBrandData(activeTab);
 
     makeSelect.addEventListener("change", () => {
         const data = window._brandModelData;
         const val = makeSelect.value;
         modelSelect.innerHTML = '<option value="">Model</option>';
-        variantSelect.innerHTML = '<option value="">Trim</option>';
+        variantSelect.innerHTML = '<option value="">Oblika / različica</option>';
         modelSelect.disabled = true; variantSelect.disabled = true;
         if (val && data && data[val]) {
             const models = data[val];
@@ -360,7 +313,7 @@ function bindSearchLogic(catContext) {
     modelSelect.addEventListener("change", () => {
         const data = window._brandModelData;
         const mk = makeSelect.value, md = modelSelect.value;
-        variantSelect.innerHTML = '<option value="">Trim</option>';
+        variantSelect.innerHTML = '<option value="">Oblika / različica</option>';
         variantSelect.disabled = true;
         if (mk && md && data && data[mk] && data[mk][md] && Array.isArray(data[mk][md])) {
             data[mk][md].forEach(v => { const o = document.createElement("option"); o.value = v; o.textContent = v; variantSelect.appendChild(o); });
@@ -368,48 +321,44 @@ function bindSearchLogic(catContext) {
         }
     });
 
-    if (excludeSelect) {
-        excludeSelect.addEventListener("change", () => {
-            const data = window._brandModelData;
-            const mk = excludeSelect.value;
-            excludeModelSelect.innerHTML = '<option value="">Model</option>';
-            excludeVariantSelect.innerHTML = '<option value="">Trim</option>';
-            excludeModelSelect.disabled = true; excludeVariantSelect.disabled = true;
-            if (mk && data && data[mk]) {
-                Object.keys(data[mk]).sort().forEach(m => {
-                    const o = document.createElement("option"); o.value = m; o.textContent = m; excludeModelSelect.appendChild(o);
-                });
-                excludeModelSelect.disabled = false;
-            }
-        });
-        excludeModelSelect.addEventListener("change", () => {
-            const data = window._brandModelData;
-            const mk = excludeSelect.value, md = excludeModelSelect.value;
-            excludeVariantSelect.innerHTML = '<option value="">Trim</option>';
-            excludeVariantSelect.disabled = true;
-            if (mk && md && data && data[mk] && data[mk][md] && Array.isArray(data[mk][md])) {
-                data[mk][md].forEach(v => { const o = document.createElement("option"); o.value = v; o.textContent = v; excludeVariantSelect.appendChild(o); });
-                if (data[mk][md].length) excludeVariantSelect.disabled = false;
-            }
-        });
-        addExcludeBtn.addEventListener('click', () => {
-            const make = excludeSelect.value; if (!make) return;
-            const model = excludeModelSelect.value || '';
-            const variant = excludeVariantSelect.value || '';
-            excludedVehicles.push({ make, model, variant });
-            excludeSelect.value = '';
-            excludeModelSelect.innerHTML = '<option value="">Model</option>'; excludeModelSelect.disabled = true;
-            excludeVariantSelect.innerHTML = '<option value="">Trim</option>'; excludeVariantSelect.disabled = true;
-            renderExcludeChips(); updateLiveCount();
+    if (addVehicleBtn) {
+        addVehicleBtn.addEventListener('click', () => {
+            const make = makeSelect.value;
+            if (!make) return;
+            if (vehicles.length >= MAX_VEHICLES) return;
+            const model = modelSelect.value || '';
+            const variant = variantSelect.value || '';
+            vehicles.push({ make, model, variant });
+            makeSelect.value = '';
+            modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
+            variantSelect.innerHTML = '<option value="">Oblika / različica</option>'; variantSelect.disabled = true;
+            
+            // Dispatch dynamic change event for custom select triggers so they reset visually!
+            makeSelect.dispatchEvent(new Event('change'));
+            modelSelect.dispatchEvent(new Event('change'));
+            variantSelect.dispatchEvent(new Event('change'));
+
+            renderVehicleCards();
+            updateLiveCount();
         });
     }
 
-    if (toggleExcludeBtn && excludeSection) {
-        toggleExcludeBtn.addEventListener('click', () => {
-            const isHidden = excludeSection.style.display === 'none';
-            excludeSection.style.display = isHidden ? 'flex' : 'none';
-            toggleExcludeBtn.style.display = isHidden ? 'none' : 'flex';
-        });
+    function renderVehicleCards() {
+        if (!vehicleCardsEl) return;
+        vehicleCardsEl.innerHTML = vehicles.map((v, i) => {
+            const parts = [v.make]; if (v.model) parts.push(v.model); if (v.variant) parts.push(v.variant);
+            return `<div class="vehicle-entry-card"><div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div><button type="button" class="vec-remove" data-idx="${i}">&times;</button></div>`;
+        }).join('');
+        
+        vehicleCardsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => { 
+            vehicles.splice(+btn.dataset.idx, 1); 
+            renderVehicleCards(); 
+            updateLiveCount(); 
+        }));
+        
+        const atLimit = vehicles.length >= MAX_VEHICLES;
+        if (addVehicleBtn) addVehicleBtn.style.display = atLimit ? 'none' : 'flex';
+        if (brandLimitNote) brandLimitNote.textContent = atLimit ? 'Omejitev dosežena (3).' : vehicles.length > 0 ? `Dodano: ${vehicles.length}/${MAX_VEHICLES}` : '';
     }
 
     allBodyTypeCards.forEach(card => card.addEventListener('click', () => {
@@ -488,7 +437,11 @@ function bindSearchLogic(catContext) {
             }
 
             const filters = {
-                vehicles, excludes: excludedVehicles, bodyTypes: selectedBodyTypes,
+                vehicles,
+                make: fd.get('make') || '',
+                model: fd.get('model') || '',
+                variant: fd.get('variant') || '',
+                bodyTypes: selectedBodyTypes,
                 conditions: fd.getAll('condition'), damaged: fd.get('damaged'),
                 fuels: fd.getAll('fuel').filter(Boolean), gears: fd.getAll('transmission').filter(Boolean), drivetrain: fd.getAll('drivetrain'),
                 stroke: fd.get('stroke'), cylinders: fd.get('cylinders'), cylinderLayout: fd.get('cylinderLayout'),
@@ -515,21 +468,18 @@ function bindSearchLogic(catContext) {
 
     searchForm.addEventListener('reset', () => {
         setTimeout(() => {
-            vehicles = []; excludedVehicles = [];
-            renderVehicleCards(); renderExcludeChips();
+            vehicles = [];
+            renderVehicleCards();
             makeSelect.value = '';
             modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-            variantSelect.innerHTML = '<option value="">Trim</option>'; variantSelect.disabled = true;
-            if (excludeSelect) {
-                excludeSelect.value = '';
-                excludeModelSelect.innerHTML = '<option value="">Model</option>'; excludeModelSelect.disabled = true;
-                excludeVariantSelect.innerHTML = '<option value="">Trim</option>'; excludeVariantSelect.disabled = true;
-            }
-            if (excludeSection) excludeSection.style.display = 'none';
-            if (toggleExcludeBtn) toggleExcludeBtn.style.display = 'flex';
+            variantSelect.innerHTML = '<option value="">Oblika / različica</option>'; variantSelect.disabled = true;
+            
+            makeSelect.dispatchEvent(new Event('change'));
+            modelSelect.dispatchEvent(new Event('change'));
+            variantSelect.dispatchEvent(new Event('change'));
+            
             allBodyTypeCards.forEach(c => c.classList.remove('active'));
             bodyTypeHidden.value = '';
-            if (hybridSub) { hybridSub.classList.remove('visible'); hybridSub.querySelectorAll('input').forEach(c => c.checked = false); }
             updateLiveCount();
         }, 0);
     });
@@ -544,6 +494,17 @@ function bindSearchLogic(catContext) {
         if (catContext.vtype) params.set('vtype', catContext.vtype);
         if (catContext.najem) params.set('najem', catContext.najem);
         params.set('tab', activeTab);
+
+        if (vehicles.length > 0) {
+            params.set('vehicles', JSON.stringify(vehicles));
+        } else {
+            const make = makeSelect.value;
+            const model = modelSelect.value;
+            const variant = variantSelect.value;
+            if (make) params.set('make', make);
+            if (model) params.set('model', model);
+            if (variant) params.set('variant', variant);
+        }
 
         // Collect selected body types
         const selectedBT = bodyTypeHidden.value;
@@ -569,7 +530,7 @@ function matchesFilters(l, filters) {
     }
 
     // Vehicle multi-match (OR between entries)
-    if (filters.vehicles.length > 0) {
+    if (filters.vehicles && filters.vehicles.length > 0) {
         const match = filters.vehicles.some(v => {
             if (v.make && l.make !== v.make) return false;
             if (v.model && l.model !== v.model) return false;
@@ -577,19 +538,11 @@ function matchesFilters(l, filters) {
             return true;
         });
         if (!match) return false;
-    }
-
-    // Excludes (Vehicles)
-    if (filters.excludes && filters.excludes.length > 0) {
-        const isExcluded = filters.excludes.some(v => {
-            if (l.make !== v.make) return false;
-            // If model is specified, it must match. If NO model specified, match entire make.
-            if (v.model && l.model !== v.model) return false;
-            // If variant is specified, it must be contained in the title.
-            if (v.variant && l.title && !l.title.includes(v.variant)) return false;
-            return true;
-        });
-        if (isExcluded) return false;
+    } else {
+        // Single vehicle matching
+        if (filters.make && l.make !== filters.make) return false;
+        if (filters.model && l.model !== filters.model) return false;
+        if (filters.variant && l.title && !l.title.includes(filters.variant)) return false;
     }
 
     // Body Types (OR between tiles)

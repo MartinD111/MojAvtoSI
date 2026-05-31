@@ -26,7 +26,6 @@ const routes = {
     '/zemljevid': { view: 'map', protected: false },
     '/poslovni-profil': { view: 'business-profile', protected: false },
     '/booking': { view: 'booking', protected: false },
-    '/prevoz': { view: 'transport', protected: false },
     '/servis/vnos': { view: 'service-entry', protected: true },
     '/b2b/oceni': { view: 'b2b-evaluate', protected: false },
     '/nastavitve-tco': { view: 'tco-settings', protected: true },
