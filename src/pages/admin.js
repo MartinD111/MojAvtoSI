@@ -605,6 +605,7 @@ async function renderTaxonomy() {
               ${Object.entries(TAX_SOURCES).map(([k, v]) => `
                 <button class="adm-tab${k === 'avto' ? ' active' : ''}" data-tax-cat="${k}">${v.label}</button>
               `).join('')}
+              <button class="adm-tab" data-tax-cat="izpuhi">🏍 Izpuhi</button>
             </div>
             <select id="tax-type-filter" class="adm-select adm-input-sm" style="width:140px;display:none">
               <option value="">Vse vrste</option>
@@ -628,7 +629,18 @@ async function renderTaxonomy() {
         document.getElementById('tax-search').value = '';
         document.getElementById('tax-type-filter').value = '';
         _taxPage = 1;
-        renderTaxTable(activeCat);
+        if (activeCat === 'izpuhi') {
+            document.getElementById('tax-search').style.display = 'none';
+            document.getElementById('tax-type-filter').style.display = 'none';
+            document.getElementById('tax-export-btn').style.display = 'none';
+            document.getElementById('tax-add-brand-btn').style.display = 'none';
+            renderExhaustTab();
+        } else {
+            document.getElementById('tax-search').style.display = '';
+            document.getElementById('tax-export-btn').style.display = '';
+            document.getElementById('tax-add-brand-btn').style.display = '';
+            renderTaxTable(activeCat);
+        }
     }));
 
     document.getElementById('tax-search').addEventListener('input', debounce(() => { _taxPage = 1; renderTaxTable(activeCat); }, 200));
@@ -637,6 +649,86 @@ async function renderTaxonomy() {
     document.getElementById('tax-add-brand-btn').addEventListener('click', () => openTaxAddBrandModal(activeCat));
 
     renderTaxTable('avto');
+}
+
+// ── Exhaust brands management ─────────────────────────────────────────────────
+let _exhaustCache = null;
+
+async function loadExhaustBrands() {
+    if (_exhaustCache) return _exhaustCache;
+    const res = await fetch('json/exhaust_brands.json');
+    if (!res.ok) throw new Error('Napaka pri nalaganju exhaust_brands.json');
+    _exhaustCache = await res.json();
+    return _exhaustCache;
+}
+
+async function renderExhaustTab() {
+    const wrap = document.getElementById('tax-tree');
+    const stats = document.getElementById('tax-stats');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam…</div>';
+    try {
+        const brands = await loadExhaustBrands();
+        if (stats) stats.textContent = `${brands.length} znamk izpuhov`;
+
+        wrap.innerHTML = `
+          <div style="padding:1rem">
+            <div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap;">
+              <input id="exhaust-new-input" class="adm-input adm-input-sm" style="width:220px" placeholder="Nova znamka izpuha…">
+              <button class="adm-btn adm-btn-sm adm-btn-primary" id="exhaust-add-btn">+ Dodaj</button>
+              <button class="adm-btn adm-btn-sm adm-btn-green" id="exhaust-download-btn">⬇ Shrani JSON</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.5rem" id="exhaust-chips">
+              ${brands.map((b, i) => `
+                <span class="adm-badge adm-badge-gray" style="font-size:.82rem;padding:.35rem .75rem;display:inline-flex;align-items:center;gap:.4rem">
+                  ${escHtml(b)}
+                  <button class="exhaust-del-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;line-height:1;padding:0 0 0 .25rem" title="Izbriši">×</button>
+                </span>`).join('')}
+            </div>
+          </div>`;
+
+        document.getElementById('exhaust-add-btn').addEventListener('click', () => {
+            const input = document.getElementById('exhaust-new-input');
+            const name = input.value.trim();
+            if (!name) { showToast('Vnesite ime znamke.', 'error'); return; }
+            if (_exhaustCache.includes(name)) { showToast('Znamka že obstaja.', 'warn'); return; }
+            _exhaustCache.push(name);
+            _taxUnsaved = true;
+            updateUnsavedBadge();
+            input.value = '';
+            renderExhaustTab();
+            showToast(`"${name}" dodano.`, 'success');
+        });
+
+        document.getElementById('exhaust-new-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('exhaust-add-btn').click();
+        });
+
+        document.getElementById('exhaust-download-btn').addEventListener('click', () => {
+            const json = JSON.stringify(_exhaustCache, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'exhaust_brands.json';
+            a.click();
+            _taxUnsaved = false;
+            updateUnsavedBadge();
+            showToast('exhaust_brands.json prenesen. Kopirajte v public/json/.', 'success');
+        });
+
+        wrap.querySelectorAll('.exhaust-del-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.dataset.idx, 10);
+                const name = _exhaustCache[idx];
+                if (!confirm(`Izbrisati "${name}"?`)) return;
+                _exhaustCache.splice(idx, 1);
+                _taxUnsaved = true;
+                updateUnsavedBadge();
+                renderExhaustTab();
+                showToast(`"${name}" izbrisano.`, 'success');
+            });
+        });
+    } catch (e) { wrap.innerHTML = errBox(e); }
 }
 
 async function loadTaxTree(cat) {

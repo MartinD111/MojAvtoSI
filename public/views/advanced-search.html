@@ -503,7 +503,7 @@
                 </button>
             </div>
             <div class="adv-acc-body" style="display:none;">
-                <div class="adv-field-group" style="margin-bottom: 1.5rem;">
+                <div class="adv-field-group car-only-field" style="margin-bottom: 1.5rem;">
                     <label class="adv-label">Vrsta goriva</label>
                     <div class="adv-chip-group">
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="Petrol"> Bencin</label>
@@ -551,6 +551,16 @@
                         <input type="number" name="consumptionTo" placeholder="npr. 6.0" step="0.1"
                             class="adv-input">
                     </div>
+                    <div class="adv-field-group moto-only-field adv-a2-cell" style="display:none;">
+                        <label class="adv-label">A2 izpit</label>
+                        <div class="adv-a2-pill-wrap">
+                            <div class="unit-toggle-pill" id="advA2Toggle">
+                                <button type="button" class="unit-btn active" data-a2="all">Vse</button>
+                                <button type="button" class="unit-btn" data-a2="yes">Samo A2</button>
+                            </div>
+                            <input type="hidden" name="a2Eligible" id="a2EligibleInput" value="">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="adv-grid-2">
@@ -586,10 +596,10 @@
                                 <option value="4T">4-taktni</option>
                             </select>
                         </div>
-                        <div class="adv-field-group" style="grid-column: span 2;">
+                        <div class="adv-field-group engine-cyl-field">
                             <label class="adv-label">Vrsta motorja / Valji</label>
-                            <div style="display:flex; gap:0.75rem; align-items:flex-end;">
-                                <div style="width: 140px;">
+                            <div class="cyl-row">
+                                <div class="cyl-count">
                                     <select name="cylinders" id="moto-cylinders" class="glass-select" data-no-search="true">
                                         <option value="">Valji</option>
                                         <option value="1">1</option>
@@ -600,7 +610,7 @@
                                     </select>
                                 </div>
                                 <!-- Layout appears to the RIGHT when shown -->
-                                <div id="cylinder-layout-group" style="display:none; flex: 1;">
+                                <div id="cylinder-layout-group" class="cyl-layout" style="display:none;">
                                     <select name="cylinderLayout" id="moto-cylinder-layout" class="glass-select" data-no-search="true">
                                         <!-- Populated via JS -->
                                     </select>
@@ -842,10 +852,26 @@
                         <label class="adv-chip"><input type="checkbox" name="features" value="ElecSuspension"> Elektronsko vzmetenje</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="MotoNavigation"> Navigacija</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="Panniers"> Kovčki</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="SportExhaust"> Športni izpuh</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="TPMS"> Nadzor tlaka (TPMS)</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="Quickshifter"> Quickshifter</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="HeatedGrips"> Ogrevane ročke</label>
+
+                        <!-- Športni izpuh — at end with brand sub-dropdown -->
+                        <div class="exhaust-chip-wrap" style="width:100%; margin-top:0.25rem;">
+                            <label class="adv-chip" style="display:inline-flex;">
+                                <input type="checkbox" name="features" value="SportExhaust" id="sport-exhaust-check"> Športni izpuh
+                            </label>
+                            <div id="exhaust-brand-sub" style="display:none; margin-top:0.5rem; padding-left:1.5rem; border-left:2px solid rgba(0,0,0,0.05);">
+                                <div class="adv-chip-group" style="gap:0.4rem; margin-bottom:0.5rem;">
+                                    <label class="adv-chip"><input type="radio" name="exhaustType" value="" checked> Vse vrste</label>
+                                    <label class="adv-chip"><input type="radio" name="exhaustType" value="slip-on"> Slip-on</label>
+                                    <label class="adv-chip"><input type="radio" name="exhaustType" value="full-system"> Full System</label>
+                                </div>
+                                <select name="exhaustBrand" id="exhaust-brand-select" class="glass-select" style="width:auto !important; max-width:fit-content; display:inline-block;" data-no-search="true">
+                                    <option value="">Vse znamke izpuhov</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <!-- 6-axis IMU with Info logic -->
                         <div class="adv-toggle-row" style="width:100%; margin-top:0.5rem;">

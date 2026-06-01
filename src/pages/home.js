@@ -6,7 +6,8 @@ import {
     getConsumptionPill, 
     getTransmissionPill,
     getYearPill,
-    getKmPill
+    getKmPill,
+    getDisplacementPill
 } from '../utils/listingUtils.js';
 import { t } from '../core/i18n.js';
 
@@ -86,8 +87,8 @@ function setupRotatingAds() {
                             ${getKmPill(car.mileage)}
                         </div>
                         <div class="spec-row centered">
-                            ${getFuelPill(car.fuel)}
-                            ${getTransmissionPill(car.transmission)}
+                            ${getFuelPill(car)}
+                            ${getTransmissionPill(car)}
                         </div>
                         <div class="spec-row centered">
                             ${getConsumptionPill(car)}
@@ -168,11 +169,11 @@ function renderListingsSection(containerId, sectionId, listings, hideIfEmpty = f
                             <div class="spec-row centered">
                                 ${getYearPill(listing.year)}
                                 ${getKmPill(listing.mileage)}
-                                <div class="spec-pill"><i data-lucide="cog"></i> ${(listing.engineCc / 1000).toFixed(1)}L</div>
+                                ${getDisplacementPill(listing.engineCc)}
                             </div>
                             <div class="spec-row centered">
-                                ${getFuelPill(listing.fuel)}
-                                ${getTransmissionPill(listing.transmission)}
+                                ${getFuelPill(listing)}
+                                ${getTransmissionPill(listing)}
                                 ${getConsumptionPill(listing)}
                             </div>
                         </div>

@@ -10,6 +10,7 @@ import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite, getFavourites } from '../services/garageService.js';
 import { getListings } from '../services/listingService.js';
 import { initCustomSelects } from '../utils/customSelect.js';
+import { getCurrentLang } from '../core/i18n.js';
 
 import {
     getFuelPill,
@@ -17,7 +18,9 @@ import {
     getConsumptionPill,
     getTransmissionPill,
     getYearPill,
-    getKmPill
+    getKmPill,
+    getDisplacementPill,
+    formatDisplacement
 } from '../utils/listingUtils.js';
 
 import { getVehicleRating } from '../utils/valuationScore.js';
@@ -125,6 +128,9 @@ function addToCompare(car) {
         location: car.location,
         seller: car.seller,
         sellerType: car.sellerType,
+        category: car.category,
+        engineType: car.engineType,
+        engineStroke: car.engineStroke,
         priceRating: rating
     });
     saveCompareState();
@@ -300,6 +306,7 @@ function renderCarCard(car) {
                     ${getYearPill(car.year)}
                     ${getKmPill(car.mileage)}
                     ${getPowerPill(car.powerKw)}
+                    ${getDisplacementPill(car.engineCc)}
                 </div>
 
                 <div class="listing-card-actions">
@@ -318,8 +325,8 @@ function renderCarCard(car) {
             <div class="listing-card-specs">
                 <div class="spec-row secondary">
                     <div class="spec-group-left">
-                        ${getFuelPill(car.fuel)}
-                        ${getTransmissionPill(car.transmission)}
+                        ${getFuelPill(car)}
+                        ${getTransmissionPill(car)}
                         ${getConsumptionPill(car)}
                     </div>
                 </div>
@@ -546,6 +553,33 @@ function initLegendPopup() {
     document.getElementById('powerToggleLabel')?.addEventListener('click', () => {
         applyPowerUnit(currentPowerUnit === 'kw' ? 'km' : 'kw');
     });
+
+    // Displacement unit buttons inside legend
+    const duBtnCc = document.getElementById('duBtnCc');
+    const duBtnL = document.getElementById('duBtnL');
+
+    function applyDisplacementUnit(unit) {
+        localStorage.setItem('mojavto_displacement_unit', unit);
+        if (duBtnCc) duBtnCc.classList.toggle('active', unit === 'cc');
+        if (duBtnL) duBtnL.classList.toggle('active', unit === 'l');
+
+        document.querySelectorAll('.displacement-pill').forEach(pill => {
+            const cc = Number(pill.dataset.cc);
+            const valSpan = pill.querySelector('.displacement-val');
+            if (valSpan && cc) {
+                valSpan.textContent = formatDisplacement(cc, unit, getCurrentLang());
+            }
+        });
+    }
+
+    if (duBtnCc && duBtnL) {
+        const initialUnit = localStorage.getItem('mojavto_displacement_unit') || 'cc';
+        duBtnCc.classList.toggle('active', initialUnit === 'cc');
+        duBtnL.classList.toggle('active', initialUnit === 'l');
+
+        duBtnCc.addEventListener('click', () => applyDisplacementUnit('cc'));
+        duBtnL.addEventListener('click', () => applyDisplacementUnit('l'));
+    }
 
     overlay.style.display = 'none';
 }

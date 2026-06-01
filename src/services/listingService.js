@@ -62,6 +62,9 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         // Category
         category: draft.category || 'avto',
         subcategory: draft.subcategory || '',
+        // Vehicle body type (vrsta vozila) — canonical value; auto-filled from
+        // taxonomy when available, else falls back to the manual subcategory pick.
+        bodyType: draft.bodyType || draft.subcategory || '',
 
         // Basic
         make: draft.make || '',
@@ -97,6 +100,10 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         equipment: Array.isArray(draft.equipment)
             ? draft.equipment.filter(v => v && ALL_EQUIPMENT_VALUES.includes(v))
             : [],
+
+        // Exhaust details (moto only)
+        exhaustBrand: draft.exhaustBrand || null,
+        exhaustType: draft.exhaustType || null,
 
         // Media
         images: {

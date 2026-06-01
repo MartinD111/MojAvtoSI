@@ -13,6 +13,7 @@ import { parseListingWithGemini } from '../services/geminiService.js';
 import { getCurrentUserDoc } from '../auth/auth.js';
 import { t, getCurrentLang } from '../core/i18n.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
+import { getModelBodyType } from '../utils/bodyType.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -72,14 +73,17 @@ let state = {
     vinOverrides: {},
     category: 'avto',
     subcategory: '',
+    bodyType: '',
     make: '', model: '', variant: '', year: '', mileageKm: '',
     color: '', colorType: 'solid', doorsCount: '', seatsCount: '',
     condition: 'Rabljeno', firstRegistration: '', previousOwnersCount: '',
     fuel: '', hybridType: null, transmission: '', driveType: '',
     engineCc: '', powerKw: '', co2: '', emissionClass: '',
     fuelL100kmCombined: '', fuelL100kmCity: '', fuelL100kmHighway: '',
-    batteryKwh: '', rangeKm: '', towingKg: '',
+    batteryKwh: '', rangeKm: '', towingKg: '', a2Eligible: false,
     equipment: [],
+    exhaustBrand: '',
+    exhaustType: '',
     _exteriorFiles: [],
     _exteriorUrls: [],
     _interiorFiles: [],
@@ -192,6 +196,23 @@ function applyTrimAutoFill(selectedTrim, make, model) {
     if (specs.electric_range_km)         fillField('rangeKm',            specs.electric_range_km,         'fRange');
     // Commercial: fuel_consumption maps to fuelL100kmCombined (closest listing field)
     if (specs.fuel_consumption)          fillField('fuelL100kmCombined', specs.fuel_consumption, 'fConsCombined');
+}
+
+// ── Body type (vrsta vozila) auto-fill ────────────────────────────────────────
+/**
+ * Auto-fills state.bodyType from the taxonomy when a model is selected, and
+ * pre-selects the matching subcategory pill — unless the user has manually
+ * changed the body type this session (tracked via state._bodyTypeManual).
+ * If the taxonomy has no body_type for this model, nothing is overwritten so
+ * the manual category selection remains the source of truth.
+ */
+function applyBodyTypeAutoFill(make, model) {
+    if (state._bodyTypeManual) return;
+    const canonical = getModelBodyType(brandModelData, make, model);
+    if (!canonical) return;
+    state.bodyType = canonical;
+    state.subcategory = canonical;
+    state._autoFillFields?.add?.('bodyType');
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -676,15 +697,15 @@ const CATEGORIES = [
         label: 'cl_cat_avto',
         icon: 'car',
         subs: [
-            { name: 'cl_sub_limuzina', icon: 'car' },
-            { name: 'cl_sub_suv', icon: 'mountain' },
-            { name: 'cl_sub_karavan', icon: 'layout-template' },
-            { name: 'cl_sub_kombilimuzina', icon: 'car' },
-            { name: 'cl_sub_kabriolet', icon: 'sun' },
-            { name: 'cl_sub_coupe', icon: 'zap' },
-            { name: 'cl_sub_enoprostorec', icon: 'users' },
-            { name: 'cl_sub_pickup', icon: 'truck' },
-            { name: 'cl_sub_oldtimer', icon: 'history' }
+            { name: 'cl_sub_limuzina', value: 'Limuzina', icon: 'car' },
+            { name: 'cl_sub_suv', value: 'Terensko', icon: 'mountain' },
+            { name: 'cl_sub_karavan', value: 'Karavan', icon: 'layout-template' },
+            { name: 'cl_sub_kombilimuzina', value: 'Kombilimuzina', icon: 'car' },
+            { name: 'cl_sub_kabriolet', value: 'Kabriolet', icon: 'sun' },
+            { name: 'cl_sub_coupe', value: 'Coupe', icon: 'zap' },
+            { name: 'cl_sub_enoprostorec', value: 'Enoprostorec', icon: 'users' },
+            { name: 'cl_sub_pickup', value: 'Pick-up', icon: 'truck' },
+            { name: 'cl_sub_oldtimer', value: 'Oldtimer', icon: 'history' }
         ]
     },
     {
@@ -801,6 +822,11 @@ function renderSubcategories() {
             row.querySelectorAll('.cl-subcategory-pill').forEach(pp => pp.classList.remove('selected'));
             p.classList.add('selected');
             state.subcategory = p.dataset.sub;
+            // For cars, the subcategory IS the body type — manual pick wins over taxonomy auto-fill
+            if (state.category === 'avto') {
+                state.bodyType = p.dataset.sub;
+                state._bodyTypeManual = true;
+            }
         });
     });
 }
@@ -1059,6 +1085,8 @@ function renderBasicStep() {
         if (state.variant) {
             applyTrimAutoFill(state.variant, makeSel.value, modelSel.value);
         }
+        // Body type (vrsta vozila) from taxonomy — runs on init + model change
+        applyBodyTypeAutoFill(makeSel.value, modelSel.value);
     }
 
     makeSel.addEventListener('change', () => {
@@ -1216,6 +1244,15 @@ function renderTechnicalStep() {
                 </div>
             </div>
 
+            ${state.category === 'moto' ? `
+            <div class="cl-a2-row">
+                <span class="cl-a2-label">Primerno za A2 izpit</span>
+                <div class="cl-unit-toggle" id="a2EligibleToggle">
+                    <button type="button" class="cl-unit-btn ${!state.a2Eligible ? 'active' : ''}" data-val="false">Ne</button>
+                    <button type="button" class="cl-unit-btn ${state.a2Eligible ? 'active' : ''}" data-val="true">Da</button>
+                </div>
+            </div>` : ''}
+
             <div class="cl-row">
                 <div class="cl-field">
                     <label class="cl-label">${t('cl_label_emission')}</label>
@@ -1349,6 +1386,18 @@ function renderTechnicalStep() {
         });
     });
 
+    // A2 toggle (moto only)
+    const a2Toggle = document.getElementById('a2EligibleToggle');
+    if (a2Toggle) {
+        a2Toggle.querySelectorAll('.cl-unit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                a2Toggle.querySelectorAll('.cl-unit-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.a2Eligible = btn.dataset.val === 'true';
+            });
+        });
+    }
+
     document.getElementById('btnTechBack').addEventListener('click', goPrev);
     document.getElementById('btnTechNext').addEventListener('click', () => {
         const engineCc = document.getElementById('fEngineCC').value;
@@ -1380,6 +1429,8 @@ function renderTechnicalStep() {
 // ── Step 5: Equipment ─────────────────────────────────────────────────────────
 function renderEquipmentStep() {
     const groups = getEquipmentForCategory(state.category);
+    const isMoto = state.category === 'moto';
+    const showExhaustSub = isMoto && state.equipment.includes('SportExhaust');
 
     const groupHtml = groups.map(g => `
         <div class="cl-equipment-group">
@@ -1391,11 +1442,25 @@ function renderEquipmentStep() {
             </div>
         </div>`).join('');
 
+    const exhaustSubHtml = isMoto ? `
+        <div id="cl-exhaust-sub" style="${showExhaustSub ? '' : 'display:none;'}background:rgba(0,0,0,0.03);border-radius:1rem;padding:1rem 1.25rem;margin-bottom:1rem;">
+            <p class="cl-equipment-group-title" style="margin-bottom:.75rem;"><i data-lucide="wind"></i> Podrobnosti izpuha</p>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem;">
+                <button type="button" class="cl-chip${state.exhaustType === '' ? ' active' : ''}" data-exhaust-type="">Vse vrste</button>
+                <button type="button" class="cl-chip${state.exhaustType === 'slip-on' ? ' active' : ''}" data-exhaust-type="slip-on">Slip-on</button>
+                <button type="button" class="cl-chip${state.exhaustType === 'full-system' ? ' active' : ''}" data-exhaust-type="full-system">Full System</button>
+            </div>
+            <select id="cl-exhaust-brand" class="cl-input" style="max-width:280px;">
+                <option value="">Znamka izpuha (opcijsko)</option>
+            </select>
+        </div>` : '';
+
     setHtml(`
         <div class="cl-card">
             <h2 class="cl-step-title">${t('cl_eq_title')}</h2>
             <p class="cl-step-sub">${t('cl_eq_sub')}</p>
             ${groupHtml}
+            ${exhaustSubHtml}
             <div class="cl-nav">
                 <button class="cl-btn cl-btn--ghost" id="btnEqBack">${t('cl_back')}</button>
                 <button class="cl-btn cl-btn--primary" id="btnEqNext">${t('cl_continue')}</button>
@@ -1405,18 +1470,56 @@ function renderEquipmentStep() {
 
     if (window.lucide) window.lucide.createIcons();
 
-    document.querySelectorAll('.cl-chip').forEach(chip => {
+    document.querySelectorAll('.cl-chip[data-val]').forEach(chip => {
         chip.addEventListener('click', () => {
             const val = chip.dataset.val;
             if (state.equipment.includes(val)) {
                 state.equipment = state.equipment.filter(v => v !== val);
                 chip.classList.remove('active');
+                if (val === 'SportExhaust') {
+                    const sub = document.getElementById('cl-exhaust-sub');
+                    if (sub) sub.style.display = 'none';
+                    state.exhaustType = '';
+                    state.exhaustBrand = '';
+                }
             } else {
                 state.equipment = [...state.equipment, val];
                 chip.classList.add('active');
+                if (val === 'SportExhaust') {
+                    const sub = document.getElementById('cl-exhaust-sub');
+                    if (sub) sub.style.display = '';
+                }
             }
         });
     });
+
+    // Exhaust type chips
+    document.querySelectorAll('.cl-chip[data-exhaust-type]').forEach(chip => {
+        chip.addEventListener('click', () => {
+            state.exhaustType = chip.dataset.exhaustType;
+            document.querySelectorAll('.cl-chip[data-exhaust-type]').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+        });
+    });
+
+    // Exhaust brand dropdown — load from JSON
+    if (isMoto) {
+        fetch('json/exhaust_brands.json')
+            .then(r => r.json())
+            .then(brands => {
+                const sel = document.getElementById('cl-exhaust-brand');
+                if (!sel) return;
+                brands.forEach(b => {
+                    const o = document.createElement('option');
+                    o.value = b; o.textContent = b;
+                    if (b === state.exhaustBrand) o.selected = true;
+                    sel.appendChild(o);
+                });
+                sel.value = state.exhaustBrand || '';
+                sel.addEventListener('change', () => { state.exhaustBrand = sel.value; });
+            })
+            .catch(() => {});
+    }
 
     document.getElementById('btnEqBack').addEventListener('click', goPrev);
     document.getElementById('btnEqNext').addEventListener('click', goNext);

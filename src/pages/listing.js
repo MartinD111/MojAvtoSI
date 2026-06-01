@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { getListingById, incrementViewCount, formatPrice, getListings } from '../services/listingService.js';
-import { kmToMiles, kwToHp, l100kmToMpg } from '../utils/listingUtils.js';
+import { kmToMiles, kwToHp, l100kmToMpg, formatDisplacement } from '../utils/listingUtils.js';
 import { getVehicleRating } from '../utils/valuationScore.js';
 import { getEquipmentLabel, EQUIPMENT_GROUPS } from '../data/equipment.js';
 import { auth } from '../firebase.js';
@@ -168,6 +168,14 @@ function renderStarsHtml(stars, dim) {
     return html;
 }
 
+// ── Animation helper — re-triggers on every click ────────────────────────────
+function popBtn(btn) {
+    btn.classList.remove('lp-btn-pop');
+    void btn.offsetWidth; // force reflow so animation restarts
+    btn.classList.add('lp-btn-pop');
+    btn.addEventListener('animationend', () => btn.classList.remove('lp-btn-pop'), { once: true });
+}
+
 // ── Favourite button ──────────────────────────────────────────────────────────
 async function initFavBtn(l) {
     const btn = document.getElementById('lpFavBtn');
@@ -199,6 +207,7 @@ async function initFavBtn(l) {
                 await addToFavourites(currentUser.uid, { id: l.id, title: l.make + ' ' + l.model, price: l.priceEur || l.price, images: l.images });
                 btn.classList.add('active');
             }
+            popBtn(btn);
         } finally {
             btn.disabled = false;
         }
@@ -238,6 +247,7 @@ function initCompareBtn(l) {
             list.push({ id: l.id, title: l.make + ' ' + l.model, image: l.images?.exterior?.[0] || '', price: l.priceEur || l.price });
             btn.classList.add('active');
         }
+        popBtn(btn);
         localStorage.setItem('mojavto_compare', JSON.stringify(list));
         if (window.updateHeaderCompare) window.updateHeaderCompare();
     });
@@ -557,11 +567,17 @@ function initGallery(exteriorImages, interiorImages) {
 function renderKeyStripHtml(l) {
     const km = l.mileageKm || l.mileage;
     const kw = l.powerKw || l.power;
+    const fuelStr = (l.fuel || '').toLowerCase().trim();
+    const isElectric = fuelStr === 'elektrika' || fuelStr === 'električno' || fuelStr === 'electric' || fuelStr === 'e';
+    const isMoto = l.category === 'moto' || l.category === 'motor';
+
     const items = [
         km ? { icon: 'gauge', label: fmtKm(km) } : null,
         l.year ? { icon: 'calendar', label: l.year } : null,
-        l.fuel ? { icon: 'fuel', label: escHtml(l.fuel) } : null,
-        l.transmission ? { icon: 'settings-2', label: escHtml(l.transmission) } : null,
+        isElectric ? { icon: 'zap', label: 'E' } : null,
+        (l.transmission && !isElectric) ? { icon: 'settings-2', label: escHtml(l.transmission) } : null,
+        (isMoto && l.engineStroke) ? { icon: 'activity', label: escHtml(l.engineStroke) } : null,
+        (isMoto && l.engineType) ? { icon: 'cpu', label: escHtml(l.engineType) } : null,
         kw ? { icon: 'zap', label: t('hp_val', { val: Math.round(kw * 1.34102) }) } : null,
         l.driveType ? { icon: 'navigation', label: escHtml(l.driveType) } : null,
         l.color ? { icon: 'palette', label: escHtml(l.color) } : null,
@@ -610,7 +626,7 @@ function renderVinBlockHtml(l) {
             <div class="lp-vin-rows">
                 ${d.make || d.model ? vinRow('🏭', t('make_model'), `${d.make || ''} ${d.model || ''}`.trim(), '') : ''}
                 ${d.year ? vinRow('📅', t('year_of_manufacture'), d.year, '') : ''}
-                ${d.engineType ? vinRow('⚙️', t('engine'), `${d.engineType}${d.engineCc ? ' / ' + t('unit_cc', { val: d.engineCc }) : ''}${d.powerKw ? ' / ' + t('hp_val', { val: Math.round(d.powerKw * 1.34102) }) : ''}`, '') : ''}
+                ${d.engineType ? vinRow('⚙️', t('engine'), `${d.engineType}${d.engineCc ? ' / ' + formatDisplacement(d.engineCc, localStorage.getItem('mojavto_displacement_unit') || 'cc', getCurrentLang()) : ''}${d.powerKw ? ' / ' + t('hp_val', { val: Math.round(d.powerKw * 1.34102) }) : ''}`, '') : ''}
                 ${d.countryOfOrigin ? vinRow('🌍', t('country_of_origin'), d.countryOfOrigin, '') : ''}
                 ${d.previousOwners !== null && d.previousOwners !== undefined ? vinRow('👤', t('previous_owners'), d.previousOwners, '') : ''}
                 ${accRow()}
@@ -641,21 +657,27 @@ function renderSpecsHtml(l) {
         ? t('hp_val', { val: Math.round(powerKw * 1.34102) })
         : null;
 
+    const fuelStr = (l.fuel || '').toLowerCase().trim();
+    const isElectric = fuelStr === 'elektrika' || fuelStr === 'električno' || fuelStr === 'electric' || fuelStr === 'e';
+    const isMoto = l.category === 'moto' || l.category === 'motor';
+
     // 1. Key Specs for the primary box
     const keySpecs = [
         { label: t('spec_first_registration'), value: l.firstRegistration || l.year, icon: 'calendar-days' },
         { label: t('spec_vehicle_type'), value: l.subcategory || l.segment, icon: 'car' },
         { label: t('spec_mileage'), value: km ? fmtKm(km) : null, icon: 'gauge' },
         { label: t('spec_power'), value: powerLabel, icon: 'zap' },
-        { label: t('spec_fuel'), value: l.fuel, icon: 'fuel' },
-        { label: t('spec_gearbox'), value: l.transmission, icon: 'settings-2' },
-        { label: t('spec_displacement'), value: l.engineCc ? t('unit_cc', { val: l.engineCc }) : null, icon: 'pipette' },
+        { label: t('spec_fuel'), value: isElectric ? 'E' : null, icon: 'fuel' },
+        { label: t('spec_gearbox'), value: !isElectric ? l.transmission : null, icon: 'settings-2' },
+        isMoto && l.engineStroke ? { label: 'Takt motorja', value: l.engineStroke, icon: 'activity' } : null,
+        isMoto && l.engineType ? { label: 'Vrsta motorja', value: l.engineType, icon: 'cpu' } : null,
+        { label: t('spec_displacement'), value: l.engineCc ? formatDisplacement(l.engineCc, localStorage.getItem('mojavto_displacement_unit') || 'cc', getCurrentLang()) : null, icon: 'cpu' },
         {
-            label: (l.fuel === 'Elektrika' || l.fuel === 'electric' || l.fuel === 'Electric') ? t('spec_range') : t('spec_fuel_economy'),
+            label: isElectric ? t('spec_range') : t('spec_fuel_economy'),
             value: buildConsumptionLabel(l),
-            icon: (l.fuel === 'Elektrika' || l.fuel === 'electric' || l.fuel === 'Electric') ? 'battery-charging' : 'droplet'
+            icon: isElectric ? 'battery-charging' : 'droplet'
         },
-    ].filter(s => s.value !== null && s.value !== undefined && s.value !== '');
+    ].filter(s => s && s.value !== null && s.value !== undefined && s.value !== '');
 
     // 2. All other specs for the accordion
     const secondarySpecs = [

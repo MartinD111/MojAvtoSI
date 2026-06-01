@@ -4,6 +4,7 @@ import { getListings } from '../services/listingService.js';
 import { resolveCategory, SEARCH_TYPE_OPTIONS } from '../data/categories.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { initCustomSelects } from '../utils/customSelect.js';
+import { getModelBodyType, getModelVariants } from '../utils/bodyType.js';
 
 export function initAdvancedSearchPage() {
     console.log('[AdvancedSearchPage] init');
@@ -252,6 +253,29 @@ function bindSearchLogic(catContext) {
         });
     });
 
+    // ── Exhaust Brand Sub-dropdown ──
+    const exhaustCheck = document.getElementById('sport-exhaust-check');
+    const exhaustSub   = document.getElementById('exhaust-brand-sub');
+    const exhaustSelect = document.getElementById('exhaust-brand-select');
+    if (exhaustCheck && exhaustSub && exhaustSelect) {
+        fetch('json/exhaust_brands.json')
+            .then(r => r.json())
+            .then(brands => {
+                brands.forEach(b => {
+                    const o = document.createElement('option');
+                    o.value = b; o.textContent = b;
+                    exhaustSelect.appendChild(o);
+                });
+            })
+            .catch(() => {});
+        exhaustCheck.addEventListener('change', () => {
+            exhaustSub.style.display = exhaustCheck.checked ? 'block' : 'none';
+            if (!exhaustCheck.checked) exhaustSelect.value = '';
+            updateLiveCount();
+        });
+        exhaustSelect.addEventListener('change', updateLiveCount);
+    }
+
     const cylindersSelect = document.getElementById('moto-cylinders');
     const layoutGroup = document.getElementById('cylinder-layout-group');
     const layoutSelect = document.getElementById('moto-cylinder-layout');
@@ -315,11 +339,32 @@ function bindSearchLogic(catContext) {
         const mk = makeSelect.value, md = modelSelect.value;
         variantSelect.innerHTML = '<option value="">Oblika / različica</option>';
         variantSelect.disabled = true;
-        if (mk && md && data && data[mk] && data[mk][md] && Array.isArray(data[mk][md])) {
-            data[mk][md].forEach(v => { const o = document.createElement("option"); o.value = v; o.textContent = v; variantSelect.appendChild(o); });
-            if (data[mk][md].length) variantSelect.disabled = false;
+        if (mk && md && data && data[mk]) {
+            const variants = getModelVariants(data[mk][md]);
+            variants.forEach(v => {
+                const trim = typeof v === 'string' ? v : (v && v.trim) ? v.trim : '';
+                if (!trim) return;
+                const o = document.createElement("option"); o.value = trim; o.textContent = trim;
+                variantSelect.appendChild(o);
+            });
+            if (variants.length) variantSelect.disabled = false;
         }
+        // Auto-select the body-type card from the taxonomy (cars only)
+        autoSelectBodyType(mk, md);
     });
+
+    // ── Auto-select the matching VRSTA VOZILA card when a known model is chosen ──
+    function autoSelectBodyType(mk, md) {
+        if (activeTab !== 'avto') return;
+        const canonical = getModelBodyType(window._brandModelData, mk, md);
+        if (!canonical) return; // unknown → leave the user's manual selection untouched
+        const target = document.querySelector(`#grid-cars .body-type-card[data-value="${canonical}"]`);
+        if (!target) return;
+        allBodyTypeCards.forEach(c => c.classList.remove('active'));
+        target.classList.add('active');
+        if (bodyTypeHidden) bodyTypeHidden.value = canonical;
+        updateLiveCount();
+    }
 
     if (addVehicleBtn) {
         addVehicleBtn.addEventListener('click', () => {
@@ -418,6 +463,20 @@ function bindSearchLogic(catContext) {
         });
     }
 
+    // ── A2 Izpit Toggle Logic ──
+    const a2Toggle = document.getElementById('advA2Toggle');
+    const a2Input = document.getElementById('a2EligibleInput');
+    if (a2Toggle && a2Input) {
+        a2Toggle.querySelectorAll('.unit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                a2Toggle.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                a2Input.value = btn.dataset.a2 === 'yes' ? 'yes' : '';
+                updateLiveCount();
+            });
+        });
+    }
+
     const curYear = new Date().getFullYear();
     for (let y = curYear; y >= 1980; y--) {
         const o1 = document.createElement("option"); o1.value = y; o1.textContent = y; yearFromSelect.appendChild(o1);
@@ -445,7 +504,10 @@ function bindSearchLogic(catContext) {
                 conditions: fd.getAll('condition'), damaged: fd.get('damaged'),
                 fuels: fd.getAll('fuel').filter(Boolean), gears: fd.getAll('transmission').filter(Boolean), drivetrain: fd.getAll('drivetrain'),
                 stroke: fd.get('stroke'), cylinders: fd.get('cylinders'), cylinderLayout: fd.get('cylinderLayout'),
+                a2Eligible: fd.get('a2Eligible') || '',
                 features: fd.getAll('features'),
+                exhaustBrand: fd.get('exhaustBrand') || '',
+                exhaustType: fd.get('exhaustType') || '',
                 priceFrom: parseFormattedNumber(fd.get('priceFrom')), priceTo: parseFormattedNumber(fd.get('priceTo')) || Infinity,
                 includeCallForPrice: fd.get('includeCallForPrice') === '1',
                 yearFrom: Number(fd.get('yearFrom')) || 0, yearTo: Number(fd.get('yearTo')) || Infinity,
@@ -568,6 +630,7 @@ function matchesFilters(l, filters) {
             // Layout match (if selected)
             if (layout && l.cylinderLayout !== layout && !String(l.cylinders).includes(layout)) return false;
         }
+        if (filters.a2Eligible === 'yes' && !l.a2Eligible) return false;
     }
 
     // Condition chips
@@ -606,6 +669,12 @@ function matchesFilters(l, filters) {
         // Listing must have ALL selected features
         const hasAll = filters.features.every(f => l.features.includes(f));
         if (!hasAll) return false;
+    }
+
+    // Exhaust sub-filters (only applied when SportExhaust is also selected)
+    if (filters.features && filters.features.includes('SportExhaust')) {
+        if (filters.exhaustBrand && l.exhaustBrand !== filters.exhaustBrand) return false;
+        if (filters.exhaustType && l.exhaustType !== filters.exhaustType) return false;
     }
 
     // Rental filter

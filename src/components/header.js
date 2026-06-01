@@ -35,6 +35,7 @@ export function initHeader() {
               <!-- Avtohiše — dealers map -->
               <a href="#/zemljevid" class="nav-pill ${hash.startsWith('#/zemljevid') ? 'active-pill' : ''}">
                 <i data-lucide="building-2"></i> ${t('header_dealers')}
+              </a>
             </nav>
 
             <div class="nav-actions">
@@ -57,6 +58,7 @@ export function initHeader() {
                     </a>
                     <div class="dropdown-divider"></div>
                     <button id="logoutBtn" class="dropdown-logout"><i data-lucide="log-out"></i> ${t('logout')}</button>
+                    <a href="http://localhost:3000/#/admin" target="_blank" rel="noopener noreferrer" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
                   </div>
                 </div>
               ` : `

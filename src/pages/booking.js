@@ -76,18 +76,12 @@ function isVulcanizer(biz) {
 }
 
 function getEffectiveSteps(biz) {
-    // Non-vulcanizers skip step 2 (booking type)
-    if (!isVulcanizer(biz)) {
-        return [1, 3, 4, 5, 6]; // logical steps, mapped to display 1–5
-    }
-    return [1, 2, 3, 4, 5, 6];
+    // Always skip step 2 (booking type) as requested since options are under services
+    return [1, 3, 4, 5, 6];
 }
 
 function getStepLabels() {
-    if (!isVulcanizer(state.business)) {
-        return ['Vozilo', 'Storitve', 'Izdelki', 'Termin', 'Potrditev'];
-    }
-    return ['Vozilo', 'Tip', 'Storitve', 'Izdelki', 'Termin', 'Potrditev'];
+    return ['Vozilo', 'Storitve', 'Izdelki', 'Termin', 'Potrditev'];
 }
 
 // Converts display step index (1-based) to logical step number
@@ -548,7 +542,7 @@ function buildStep4() {
                 <span class="product-tag">${p.tag}</span>
                 <div class="product-name">${p.name}</div>
                 <div class="product-brand">${p.brand}</div>
-                <div class="product-price">${p.price} € / ${p.unit}</div>
+                <div class="product-price">${p.price === 0 ? 'Po dogovoru' : `${p.price} € / ${p.unit}`}</div>
             </div>
             <div class="product-footer">
                 <div class="product-qty-row">
@@ -868,11 +862,7 @@ function buildStep6() {
                 </div>
             </div>
 
-            ${isVulcanizer(biz) ? `
-            <div class="confirm-section glass-card">
-                <div class="confirm-section-label">Tip rezervacije</div>
-                <div class="confirm-section-value">${bookingTypeLabel}</div>
-            </div>` : ''}
+
 
             <div class="confirm-section glass-card">
                 <div class="confirm-section-label">Storitve in cene</div>

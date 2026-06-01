@@ -555,6 +555,8 @@ export const sampleCars = [
         imgCount: 12,
         isNew: false,
         engineCc: 1254,
+        engineStroke: '4T',
+        engineType: 'Boxer',
         status: 'active'
     },
     {
@@ -588,6 +590,8 @@ export const sampleCars = [
         imgCount: 8,
         isNew: true,
         engineCc: 890,
+        engineStroke: '4T',
+        engineType: 'i3',
         status: 'active'
     },
     {
@@ -626,6 +630,8 @@ export const sampleCars = [
         isNew: false,
         isPremium: true,
         engineCc: 1254,
+        engineStroke: '4T',
+        engineType: 'Boxer',
         status: 'active'
     },
     {
@@ -664,6 +670,8 @@ export const sampleCars = [
         isNew: true,
         isPremium: false,
         engineCc: 649,
+        engineStroke: '4T',
+        engineType: 'i4',
         status: 'active'
     },
     {

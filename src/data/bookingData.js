@@ -92,6 +92,17 @@ export const serviceIcons = {
 export const mockProducts = [
     // Tyres (shown with tyre_change)
     {
+        id: 'prod-own-tyres',
+        serviceId: 'tyre_change',
+        name: 'Prinesem svoje gume',
+        brand: 'Lastne gume',
+        price: 0,
+        unit: 'guma',
+        defaultQty: 4,
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80',
+        tag: 'Montaža'
+    },
+    {
         id: 'prod-1',
         serviceId: 'tyre_change',
         name: 'Michelin Pilot Sport 5 — 205/55 R16',

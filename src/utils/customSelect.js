@@ -24,6 +24,14 @@ export function createCustomSelect(select) {
     select.classList.add('custom-select-hidden');
     select.style.display = 'none';
 
+    // Hide any hardcoded static sibling select-icon to prevent double chevron arrows
+    if (select.parentNode && typeof select.parentNode.querySelector === 'function') {
+        const staticChevron = select.parentNode.querySelector(':scope > .select-icon');
+        if (staticChevron) {
+            staticChevron.style.display = 'none';
+        }
+    }
+
     const container = document.createElement('div');
     container.className = 'custom-select-container';
 

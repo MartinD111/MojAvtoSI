@@ -1723,45 +1723,111 @@ body.dark-mode .hero-title {
 
 /* ... obstoječi stili ... */
 
-/* Stili za paginacijo */
+/* ── Unified Premium Glassmorphic Pagination ─────────────────────────────── */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 2rem;
+  gap: 0.65rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  width: fit-content;
+  margin-inline: auto;
 }
 
-.pagination button {
-  background-color: #fff;
-  border: 1px solid #e5e7eb;
-  color: #374151;
-  font-weight: 500;
+body.dark-mode .pagination {
+  background: rgba(15, 23, 42, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.pagination button,
+.page-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  color: #334155 !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
   cursor: pointer;
-  border-radius: 6px;
-  min-width: 40px;
-  height: 40px;
-  padding: 0.5rem;
-  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.pagination button:hover {
-  background-color: #f3f4f6;
-  border-color: #d1d5db;
+body.dark-mode .pagination button,
+body.dark-mode .page-btn {
+  background: rgba(30, 41, 59, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
 }
 
-.pagination button.active {
-  background-color: #f97316;
-  /* Uporabimo oranžno barvo za poudarek */
-  border-color: #f97316;
-  color: #fff;
-  font-weight: bold;
+.pagination button:hover,
+.page-btn:hover {
+  transform: translateY(-3px) scale(1.06);
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+  color: var(--color-primary-start, #2563eb) !important;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12) !important;
 }
 
-.pagination button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+body.dark-mode .pagination button:hover,
+body.dark-mode .page-btn:hover {
+  background: rgba(51, 65, 85, 0.75) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  color: #818cf8 !important;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25) !important;
+}
+
+.pagination button.active,
+.page-btn.active {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  border-color: transparent !important;
+  color: white !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.dark-mode .pagination button.active,
+body.dark-mode .page-btn.active {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+.pagination button:disabled,
+.page-btn:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.35 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.pagination .page-dots {
+  color: #64748b !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  padding: 0 0.4rem !important;
+  letter-spacing: 0.1em !important;
+}
+
+body.dark-mode .pagination .page-dots {
+  color: #94a3b8 !important;
 }
 
 /* ... obstoječi stili ... */
@@ -3246,6 +3312,37 @@ body.dark-mode .sponsored-specs span {
   color: #475569 !important;
 }
 
+/* Motorcycle Stroke & Type Pills */
+.stroke-pill {
+  background: rgba(14, 165, 233, 0.08) !important;
+  border-color: rgba(14, 165, 233, 0.25) !important;
+  color: #0284c7 !important;
+}
+.stroke-pill i {
+  color: #0284c7 !important;
+}
+
+body.dark-mode .stroke-pill {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  color: #38bdf8 !important;
+}
+
+.type-pill {
+  background: rgba(139, 92, 246, 0.08) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  color: #7c3aed !important;
+}
+.type-pill i {
+  color: #7c3aed !important;
+}
+
+body.dark-mode .type-pill {
+  background: rgba(167, 139, 250, 0.12) !important;
+  border-color: rgba(167, 139, 250, 0.4) !important;
+  color: #a78bfa !important;
+}
+
 /* Consumption Pills (Status) */
 .status-low {
   background: rgba(16, 185, 129, 0.1) !important;
@@ -4201,7 +4298,7 @@ body.dark-mode .view-toggle-btn:hover {
 .legend-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(8px);
   z-index: 3000;
   display: none;
@@ -4209,7 +4306,7 @@ body.dark-mode .view-toggle-btn:hover {
   justify-content: center;
   padding: 1.5rem;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.25s ease;
 }
 
 .legend-overlay.active {
@@ -4221,22 +4318,185 @@ body.dark-mode .view-toggle-btn:hover {
   background: white;
   width: 100%;
   max-width: 440px;
-  border-radius: 2rem;
+  border-radius: 1.5rem;
   padding: 1.75rem 2rem 2rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
   position: relative;
   animation: popupIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 body.dark-mode .legend-card {
   background: #1e293b;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .legend-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.legend-card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+body.dark-mode .legend-card-header h3 {
+  color: #f8fafc;
+}
+
+.legend-close-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.legend-close-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  transform: scale(1.05);
+}
+
+body.dark-mode .legend-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+body.dark-mode .legend-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.legend-section-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin: 1.5rem 0 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 0.35rem;
+}
+
+body.dark-mode .legend-section-title {
+  color: #94a3b8;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.legend-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.legend-pill-demo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  height: 24px;
+  padding: 0 0.65rem;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 50px;
+}
+
+.legend-pill-demo i, .legend-pill-demo svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.legend-row-desc {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+body.dark-mode .legend-row-desc {
+  color: #cbd5e1;
+}
+
+.power-unit-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  justify-content: flex-end;
+}
+
+body.dark-mode .power-unit-toggle {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.power-unit-btn, .displacement-unit-btn {
+  padding: 0.45rem 1.1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  background: transparent;
+  color: #64748b;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.power-unit-btn:hover, .displacement-unit-btn:hover {
+  border-color: var(--color-primary-start);
+  color: var(--color-primary-start);
+  background: rgba(37, 99, 235, 0.02);
+}
+
+.power-unit-btn.active, .displacement-unit-btn.active {
+  background: var(--color-primary-start);
+  border-color: var(--color-primary-start);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+body.dark-mode .power-unit-btn, body.dark-mode .displacement-unit-btn {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+}
+
+body.dark-mode .power-unit-btn:hover, body.dark-mode .displacement-unit-btn:hover {
+  border-color: var(--color-primary-start);
+  color: #fff;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* ── Shared Pagination ─────────────────────────────────────────────── */
@@ -4247,42 +4507,7 @@ body.dark-mode .legend-card {
   margin-bottom: 2rem;
 }
 
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.page-btn {
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: #475569;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.page-btn.active {
-  background: rgba(37, 99, 235, 0.08);
-  color: var(--color-primary-start);
-  font-weight: 800;
-}
-
-.page-btn-glass {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  color: #1e293b;
-}
+/* Legacy pagination classes removed, styling unified under main .pagination section */
 
 /* ── Footer Action Pills ────────────────────────────────────────────── */
 .footer-pill {
@@ -5779,7 +6004,197 @@ body.dark-mode .unit-btn.active {
   grid-template-columns: repeat(3, 1fr);
 }
 
+/* ── Engine type / cylinders field polish ──────────────────────────
+   Groups the cylinder count + layout selects onto a single inset
+   surface, turns the count into a compact accent badge, and lets the
+   configuration select breathe across the rest of the row. */
+.engine-cyl-field .cyl-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: fit-content;
+  padding: 0.4rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+body:not(.dark-mode) .engine-cyl-field .cyl-row {
+  background: rgba(0, 0, 0, 0.025);
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.engine-cyl-field .cyl-count {
+  flex: 0 0 auto;
+  width: 92px;
+}
+
+.engine-cyl-field .cyl-layout {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Compact, bold count pill */
+.engine-cyl-field .cyl-count .custom-select-trigger {
+  padding: 0 14px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.engine-cyl-field .cyl-count .select-icon {
+  right: 12px !important;
+}
+
+/* Placeholder state (no cylinder count chosen yet) reads quieter */
+.engine-cyl-field .cyl-count:not(:has(option:checked:not([value=""]))) .custom-select-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+/* Filled state: turn the count into an accent gradient badge */
+.engine-cyl-field .cyl-count:has(option:checked:not([value=""])) .custom-select-trigger {
+  background: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end)) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px -6px var(--color-primary-start);
+}
+
+.engine-cyl-field .cyl-count:has(option:checked:not([value=""])) .select-icon {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Configuration select: size to widest option, not full row width */
+.engine-cyl-field .cyl-layout {
+  flex: 0 0 auto;
+  width: max-content;
+}
+
+.engine-cyl-field .cyl-layout .custom-select-container {
+  width: max-content;
+}
+
+.engine-cyl-field .cyl-layout .custom-select-trigger {
+  width: max-content;
+  font-weight: 600;
+  padding: 0 40px 0 20px;
+}
+
+.engine-cyl-field .cyl-layout .custom-select-menu {
+  min-width: 100%;
+  width: max-content;
+}
+
+
+/* Center the cyl-row pill under its label */
+.engine-cyl-field {
+  text-align: center;
+}
+
+/* ── A2 izpit toggle – advanced search (inline cell) ───────────── */
+.adv-a2-cell .adv-a2-pill-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 2px;
+}
+
+/* ── A2 izpit toggle row – create listing ───────────────────────── */
+.cl-a2-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1.125rem;
+  margin: 0.5rem 0 1rem;
+  border-radius: 16px;
+  background: rgba(37, 99, 235, 0.05);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+}
+
+body.dark-mode .cl-a2-row {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.cl-a2-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
 /* Force all home page search form labels to be white in both light and dark modes */
 #homeSearchForm .form-group label {
   color: #ffffff !important;
+}
+
+/* ── Fix Faint Square Hover/Focus Outlines and Backgrounds around Pill Elements Globally ── */
+button,
+select,
+.custom-select-trigger,
+.view-toggle-btn,
+.pill-dropdown,
+.nav-pill,
+.tab-btn,
+.action-pill-btn,
+.pill-btn,
+.adv-chip,
+.quick-dim-pill,
+.dim-pill,
+.cost-panel__select {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+button:focus,
+button:focus-visible,
+select:focus,
+select:focus-visible,
+.custom-select-trigger:focus,
+.custom-select-trigger:focus-visible,
+.view-toggle-btn:focus,
+.view-toggle-btn:focus-visible,
+.pill-dropdown:focus,
+.pill-dropdown:focus-visible,
+.nav-pill:focus,
+.nav-pill:focus-visible,
+.tab-btn:focus,
+.tab-btn:focus-visible,
+.action-pill-btn:focus,
+.action-pill-btn:focus-visible,
+.pill-btn:focus,
+.pill-btn:focus-visible,
+.adv-chip:focus,
+.adv-chip:focus-visible,
+.cost-panel__select:focus,
+.cost-panel__select:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
+/* Ensure focus-visible rings are perfectly round to match pill shapes if rendered */
+button:focus-visible,
+.view-toggle-btn:focus-visible,
+.custom-select-trigger:focus-visible,
+.pill-dropdown:focus-visible,
+.nav-pill:focus-visible,
+.action-pill-btn:focus-visible,
+.pill-btn:focus-visible,
+.adv-chip:focus-visible {
+  border-radius: inherit !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Specific dark mode override for focus rings */
+body.dark-mode button:focus-visible,
+body.dark-mode .view-toggle-btn:focus-visible,
+body.dark-mode .custom-select-trigger:focus-visible,
+body.dark-mode .pill-dropdown:focus-visible,
+body.dark-mode .nav-pill:focus-visible,
+body.dark-mode .action-pill-btn:focus-visible,
+body.dark-mode .pill-btn:focus-visible,
+body.dark-mode .adv-chip:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15) !important;
 }

@@ -90,7 +90,6 @@
                         <option>Year: Newest</option>
                         <option>Mileage: Lowest</option>
                     </select>
-                    <i data-lucide="chevron-down" class="select-icon"></i>
                 </div>
                 <button class="legend-btn" id="legendBtn" title="Icon legend">
                     <i data-lucide="help-circle"></i>
@@ -201,9 +200,17 @@
         </div>
 
         <!-- Power unit toggle -->
-        <div class="power-unit-toggle">
+        <div class="power-unit-toggle" style="margin-top: 1.5rem; padding-top: 1rem; display: flex; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <span class="legend-toggle-label" style="font-size: 0.85rem; font-weight: 600; margin-right: auto; color: #cbd5e1;">Prikaz moči:</span>
             <button class="power-unit-btn active" data-unit="kw" id="puBtnKw">kW</button>
             <button class="power-unit-btn" data-unit="km" id="puBtnKm">KM</button>
+        </div>
+
+        <!-- Displacement unit toggle -->
+        <div class="displacement-unit-toggle" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem;">
+            <span class="legend-toggle-label" style="font-size: 0.85rem; font-weight: 600; margin-right: auto; color: #cbd5e1;">Prikaz prostornine:</span>
+            <button class="displacement-unit-btn active" data-unit="cc" id="duBtnCc">cc</button>
+            <button class="displacement-unit-btn" data-unit="l" id="duBtnL">L</button>
         </div>
     </div>
 </div>

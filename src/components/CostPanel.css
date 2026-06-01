@@ -57,17 +57,36 @@
 .cost-panel__chevron {
   display: inline-block;
   font-size: 18px;
-  transition: transform 0.3s ease;
+  transform: rotate(90deg);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cost-panel__chevron--up {
-  transform: rotate(90deg);
+  transform: rotate(270deg);
 }
 
 .cost-panel__expanded {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 1px solid transparent;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease,
+              margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              padding-top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s ease;
+}
+
+.cost-panel__expanded--open {
+  max-height: 1800px;
+  opacity: 1;
+  pointer-events: auto;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Sliders */
@@ -143,36 +162,41 @@
   color: #64748b;
 }
 
-/* Month buttons */
-.cost-panel__month-btns {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-}
-
-.cost-panel__month-btn {
-  padding: 8px 12px;
+/* Select dropdown styling */
+.cost-panel__select {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: #cbd5e1;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.cost-panel__month-btn:hover {
-  background: rgba(28, 175, 63, 0.1);
-  border-color: rgba(28, 175, 63, 0.3);
   color: #1caf3f;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231caf3f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+  padding-right: 28px;
 }
 
-.cost-panel__month-btn--active {
-  background: linear-gradient(135deg, #1caf3f, #15873b);
+.cost-panel__select:hover {
+  background-color: rgba(28, 175, 63, 0.1);
+  border-color: rgba(28, 175, 63, 0.3);
+}
+
+.cost-panel__select:focus {
   border-color: #1caf3f;
-  color: white;
-  box-shadow: 0 2px 8px rgba(28, 175, 63, 0.3);
+  box-shadow: 0 0 0 2px rgba(28, 175, 63, 0.15);
+}
+
+.cost-panel__select option {
+  background-color: #0f172a;
+  color: #f1f5f9;
 }
 
 /* Breakdown */
@@ -205,8 +229,7 @@
 
 .cost-panel__breakdown-row--total {
   background: rgba(28, 175, 63, 0.08);
-  margin: 0 -20px 0 -20px;
-  padding: 12px 20px;
+  padding: 12px 16px;
   border-radius: 8px;
   border-bottom: none;
   font-weight: 700;
@@ -307,7 +330,7 @@
     color: #e2e8f0;
   }
 
-  .cost-panel__month-btn {
+  .cost-panel__select {
     background: rgba(30, 41, 59, 0.8);
     border-color: rgba(100, 116, 139, 0.3);
   }
@@ -323,4 +346,338 @@
   .cost-panel__metrics {
     background: rgba(28, 175, 63, 0.08);
   }
+}
+
+/* Breakdown Header and Edit button */
+.cost-panel__breakdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+}
+
+.cost-panel__section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cost-panel__edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cost-panel__edit-btn:hover {
+  background: rgba(28, 175, 63, 0.1);
+  border-color: rgba(28, 175, 63, 0.3);
+  color: #1caf3f;
+  transform: translateY(-1px);
+}
+
+.cost-panel__edit-btn:active {
+  transform: scale(0.95);
+}
+
+.cost-panel__edit-icon {
+  font-size: 14px;
+  transition: transform 0.4s ease;
+  display: inline-block;
+}
+
+.cost-panel__edit-btn:hover .cost-panel__edit-icon {
+  transform: rotate(45deg);
+}
+
+/* Toggles Container */
+.cost-panel__toggles-container {
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cost-panel__toggles-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.cost-panel__toggles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .cost-panel__toggles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cost-panel__toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cost-panel__toggle-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+  transition: color 0.2s ease;
+}
+
+.cost-panel__toggle-label:hover .cost-panel__toggle-text {
+  color: #ffffff;
+}
+
+/* Toggle Switch (iOS style) */
+.cost-panel__toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.cost-panel__toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cost-panel__toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cost-panel__toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #94a3b8;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+}
+
+.cost-panel__toggle-switch input:checked + .cost-panel__toggle-slider {
+  background-color: rgba(28, 175, 63, 0.2);
+  border-color: rgba(28, 175, 63, 0.4);
+}
+
+.cost-panel__toggle-switch input:checked + .cost-panel__toggle-slider:before {
+  transform: translateX(18px);
+  background-color: #1caf3f;
+  box-shadow: 0 0 8px rgba(28, 175, 63, 0.5);
+}
+
+/* Excluded Row Styling */
+.cost-panel__breakdown-row--excluded {
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+.cost-panel__breakdown-row--excluded:hover {
+  opacity: 0.7;
+}
+
+.cost-panel__value-strike {
+  text-decoration: line-through;
+  color: #64748b;
+  margin-right: 8px;
+  font-size: 0.9em;
+}
+
+.cost-panel__value-zero {
+  font-weight: 700;
+  color: #64748b;
+}
+
+/* React CostPanel Modal Popup Styles */
+.cost-panel__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(2, 6, 23, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cost-panel__modal {
+  width: 100%;
+  max-width: 580px; /* Slightly larger */
+  background: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 24px !important;
+  padding: 32px !important; /* Premium spacious padding */
+  animation: scaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fullscreen on mobile */
+@media (max-width: 576px) {
+  .cost-panel__modal-overlay {
+    padding: 0;
+  }
+  
+  .cost-panel__modal {
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 24px !important;
+    justify-content: space-between;
+    animation: slideUpFullScreen 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes slideUpFullScreen {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cost-panel__modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.cost-panel__modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cost-panel__modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.cost-panel__modal-close:hover {
+  color: #ffffff;
+}
+
+.cost-panel__modal-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.cost-panel__modal-body {
+  margin-bottom: 24px;
+}
+
+.cost-panel__modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+}
+
+.cost-panel__modal-btn-confirm {
+  background: linear-gradient(135deg, #1caf3f, #15873b);
+  border: none;
+  border-radius: 9999px;
+  color: #ffffff;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(28, 175, 63, 0.3);
+  transition: all 0.2s ease;
+}
+
+.cost-panel__modal-btn-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(28, 175, 63, 0.4);
+}
+
+.cost-panel__modal-btn-confirm:active {
+  transform: translateY(1px);
 }

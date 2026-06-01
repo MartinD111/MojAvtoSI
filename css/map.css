@@ -883,6 +883,24 @@ body.dark-mode .map-filters-title {
     color: #f8fafc;
 }
 
+body.dark-mode .map-filters-toggle {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .map-filters-toggle i {
+    color: #94a3b8;
+}
+
+body.dark-mode .map-filters-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+body.dark-mode .map-filters-toggle:hover i {
+    color: #f8fafc;
+}
+
 body.dark-mode .type-pill {
     background: rgba(30, 41, 59, 0.8);
     border-color: rgba(255, 255, 255, 0.1);

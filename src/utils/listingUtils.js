@@ -1,4 +1,5 @@
 // Shared utilities for vehicle listing cards (US-localized)
+import { getCurrentLang } from '../core/i18n.js';
 
 // =====================================================================
 // US LOCALIZATION HELPERS
@@ -77,12 +78,20 @@ export const FUEL_MAP = {
     'lpg':               { code: 'LPG', cls: 'fuel-pill-LPG',icon: 'flame',    title: 'LPG' },
 };
 
-export function getFuelPill(fuelStr) {
-    const key = (fuelStr || '').toLowerCase().trim();
-    const f = FUEL_MAP[key];
-    if (!f) {
-        return `<div class="spec-pill"><i data-lucide="fuel"></i> ${fuelStr}</div>`;
+export function getFuelPill(car) {
+    if (!car) return '';
+    const fuelStr = typeof car === 'object' ? car.fuel : car;
+    if (!fuelStr) return '';
+
+    const key = fuelStr.toLowerCase().trim();
+    const isElectric = key === 'elektrika' || key === 'električno' || key === 'electric' || key === 'e';
+    
+    // Completely remove fuel type, unless it is an electric vehicle
+    if (!isElectric) {
+        return '';
     }
+
+    const f = FUEL_MAP[key] || { code: 'E', cls: 'fuel-pill-E', icon: 'zap', title: 'Electric' };
     return `<div class="spec-pill fuel-coded ${f.cls}" title="${f.title}">
         <i data-lucide="${f.icon}"></i>
         <strong>${f.code}</strong>
@@ -101,7 +110,7 @@ export function getPowerPill(powerKw) {
 export function getConsumptionPill(car) {
     const fuelKey = (car.fuel || '').toLowerCase().trim();
 
-    if (fuelKey === 'elektrika' || fuelKey === 'električno' || fuelKey === 'electric') {
+    if (fuelKey === 'elektrika' || fuelKey === 'električno' || fuelKey === 'electric' || fuelKey === 'e') {
         if (!car.electricRangeKm) return '';
         const rangeMi = kmToMiles(car.electricRangeKm);
         let statusCls = 'status-low';
@@ -135,8 +144,23 @@ export function getConsumptionPill(car) {
     </div>`;
 }
 
-export function getTransmissionPill(transStr) {
-    const t = (transStr || '').toLowerCase().trim();
+export function getTransmissionPill(car) {
+    if (!car) return '';
+    
+    const transStr = typeof car === 'object' ? car.transmission : car;
+    const fuelStr = typeof car === 'object' ? car.fuel : '';
+    
+    const fuelKey = (fuelStr || '').toLowerCase().trim();
+    const isElectric = fuelKey === 'elektrika' || fuelKey === 'električno' || fuelKey === 'electric' || fuelKey === 'e';
+
+    // If it's an electric vehicle, there should be no transmission pill at all (since they are all automatic)
+    if (isElectric) {
+        return '';
+    }
+
+    if (!transStr) return '';
+
+    const t = transStr.toLowerCase().trim();
     let code = 'A';
     let label = 'Automatic';
     let typeCls = 'type-auto';
@@ -152,10 +176,30 @@ export function getTransmissionPill(transStr) {
         typeCls = 'type-auto';
     }
 
-    return `<div class="spec-pill transmission-pill ${typeCls}" title="Transmission: ${label}">
+    let html = `<div class="spec-pill transmission-pill ${typeCls}" title="Transmission: ${label}">
         <i data-lucide="settings"></i>
         <strong>${code}</strong>
     </div>`;
+
+    // For motorcycles (pri motorjih), add stroke and engine type pills to the right of transmission
+    if (typeof car === 'object' && (car.category === 'moto' || car.category === 'motor')) {
+        if (car.engineStroke) {
+            html += `
+            <div class="spec-pill stroke-pill" title="Takt motorja: ${car.engineStroke}">
+                <i data-lucide="activity"></i>
+                <strong>${car.engineStroke}</strong>
+            </div>`;
+        }
+        if (car.engineType) {
+            html += `
+            <div class="spec-pill type-pill" title="Vrsta motorja: ${car.engineType}">
+                <i data-lucide="cpu"></i>
+                <strong>${car.engineType}</strong>
+            </div>`;
+        }
+    }
+
+    return html;
 }
 
 export function getYearPill(year) {
@@ -174,5 +218,36 @@ export function getKmPill(km) {
     return `<div class="spec-pill km-pill">
         <i data-lucide="gauge"></i>
         <span>${formatted}</span>
+    </div>`;
+}
+
+export function formatDisplacement(cc, unit, lang = 'sl') {
+    if (!cc || isNaN(cc)) return '';
+    
+    if (unit === 'l') {
+        const liters = cc / 1000;
+        // Round to 1 decimal place
+        const rounded = Number(liters.toFixed(1));
+        const formatted = lang === 'sl'
+            ? rounded.toLocaleString('sl-SI', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+            : rounded.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        return formatted + 'L';
+    } else {
+        // cc format
+        const formatted = lang === 'sl'
+            ? new Intl.NumberFormat('sl-SI').format(cc)
+            : new Intl.NumberFormat('en-US').format(cc);
+        return formatted + (lang === 'sl' ? ' cc' : ' cc'); // Slovenians usually write 'cc' or 'ccm' (let's use cc for standard)
+    }
+}
+
+export function getDisplacementPill(engineCc) {
+    if (!engineCc) return '';
+    const unit = localStorage.getItem('mojavto_displacement_unit') || 'cc';
+    const lang = getCurrentLang();
+    const formatted = formatDisplacement(engineCc, unit, lang);
+    return `<div class="spec-pill displacement-pill" data-cc="${engineCc}">
+        <i data-lucide="cog"></i>
+        <span class="displacement-val">${formatted}</span>
     </div>`;
 }

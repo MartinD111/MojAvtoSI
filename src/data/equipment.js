@@ -276,7 +276,7 @@ export const ATTRIBUTE_ICONS = {
     'variant': 'file-text',
     'year': 'calendar',
     'engine': 'cpu',
-    'cc': 'pipette',
+    'cc': 'cpu',
     'transmission': 'settings-2',
     'drive': 'navigation',
     'color': 'palette',
