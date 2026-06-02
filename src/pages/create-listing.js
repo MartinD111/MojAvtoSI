@@ -14,6 +14,7 @@ import { getCurrentUserDoc } from '../auth/auth.js';
 import { t, getCurrentLang } from '../core/i18n.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { getModelBodyType } from '../utils/bodyType.js';
+import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes, getPartTypeLabel } from '../data/partTypes.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -47,13 +48,19 @@ const formatNumberWithCommas = (n) => {
 };
 
 // ── Step definitions ──────────────────────────────────────────────────────────
+const isVehicleItem = s => (s.itemType || 'vehicle') === 'vehicle';
+const isPartItem = s => s.itemType === 'part';
+const isTireItem = s => s.itemType === 'tire';
+
 const STEPS = [
     { id: 'entry', title: null },       // 0: entry mode
-    { id: 'vin', title: null, condition: s => s.entryType === 'vin' },
+    { id: 'vin', title: null, condition: s => s.entryType === 'vin' && isVehicleItem(s) },
     { id: 'category', title: 'cl_step_category', number: true },
-    { id: 'basic', title: 'cl_step_basic', number: true },
-    { id: 'technical', title: 'cl_step_technical', number: true },
-    { id: 'equipment', title: 'cl_step_features', number: true },
+    { id: 'basic', title: 'cl_step_basic', number: true, condition: isVehicleItem },
+    { id: 'technical', title: 'cl_step_technical', number: true, condition: isVehicleItem },
+    { id: 'equipment', title: 'cl_step_features', number: true, condition: isVehicleItem },
+    { id: 'partDetails', title: 'cl_step_part_details', number: true, condition: isPartItem },
+    { id: 'tireDetails', title: 'cl_step_tire_details', number: true, condition: isTireItem },
     { id: 'media', title: 'cl_step_photos', number: true },
     { id: 'description', title: 'cl_step_description', number: true },
     { id: 'price', title: 'cl_step_price', number: true },
@@ -74,6 +81,15 @@ let state = {
     category: 'avto',
     subcategory: '',
     bodyType: '',
+    // Item kind: 'vehicle' (default) | 'part' | 'tire'
+    itemType: 'vehicle',
+    vehicleCategory: '',
+    // Parts
+    partGroup: '', partType: '', partTypeLabel: '', oemNumber: '', brand: '',
+    vehicleApplication: { make: '', model: '', yearFrom: '', yearTo: '' },
+    // Tires
+    tireSize: '', tireWidth: '', tireAspect: '', tireRim: '',
+    tireSeason: '', treadDepthMm: '', dotYear: '', tireCount: '',
     make: '', model: '', variant: '', year: '', mileageKm: '',
     color: '', colorType: 'solid', doorsCount: '', seatsCount: '',
     condition: 'Rabljeno', firstRegistration: '', previousOwnersCount: '',
@@ -304,6 +320,8 @@ function renderCurrentStep() {
         basic: renderBasicStep,
         technical: renderTechnicalStep,
         equipment: renderEquipmentStep,
+        partDetails: renderPartDetailsStep,
+        tireDetails: renderTireDetailsStep,
         media: renderMediaStep,
         description: renderDescriptionStep,
         price: renderPriceStep,
@@ -792,6 +810,13 @@ function renderCategoryStep() {
             card.classList.add('selected');
             state.category = card.dataset.cat;
             state.subcategory = '';
+            if (state.category === 'deli') {
+                // Parts/tires: default to part until the user picks; needs a vehicle family.
+                if (state.itemType !== 'part' && state.itemType !== 'tire') state.itemType = 'part';
+            } else {
+                state.itemType = 'vehicle';
+                state.vehicleCategory = '';
+            }
             renderSubcategories();
         });
     });
@@ -799,6 +824,14 @@ function renderCategoryStep() {
     document.getElementById('btnCatBack').addEventListener('click', goPrev);
     document.getElementById('btnCatNext').addEventListener('click', () => {
         if (!state.category) return alert(t('cl_select_category_alert'));
+        if (state.category === 'deli') {
+            if (state.itemType !== 'part' && state.itemType !== 'tire') {
+                return alert(t('cl_select_item_type_alert', 'Izberite ali objavljate del ali pnevmatiko.'));
+            }
+            if (!state.vehicleCategory) {
+                return alert(t('cl_select_vehicle_cat_alert', 'Izberite za katero vrsto vozila je del/pnevmatika.'));
+            }
+        }
         goNext();
     });
 }
@@ -806,6 +839,13 @@ function renderCategoryStep() {
 function renderSubcategories() {
     const row = document.getElementById('subRow');
     if (!row) return;
+
+    // Parts & tires: pick item type + which vehicle family it is for.
+    if (state.category === 'deli') {
+        renderDeliConfig(row);
+        return;
+    }
+
     const cat = CATEGORIES.find(c => c.id === state.category);
     if (!cat || cat.subs.length === 0) { row.innerHTML = ''; return; }
 
@@ -828,6 +868,293 @@ function renderSubcategories() {
                 state._bodyTypeManual = true;
             }
         });
+    });
+}
+
+// ── Deli / Gume config (inside the category step) ─────────────────────────────
+function renderDeliConfig(row) {
+    const itemPill = (type, icon, label) => `
+        <button class="cl-subcategory-pill ${state.itemType === type ? 'selected' : ''}" data-item="${type}">
+            <i data-lucide="${icon}" class="cl-sub-icon"></i> ${label}
+        </button>`;
+
+    const vehiclePill = (vc) => `
+        <button class="cl-subcategory-pill ${state.vehicleCategory === vc.value ? 'selected' : ''}" data-vehcat="${vc.value}">
+            <i data-lucide="${vc.icon}" class="cl-sub-icon"></i> ${vc.label}
+        </button>`;
+
+    row.innerHTML = `
+        <div style="width:100%;">
+            <label class="cl-label" style="margin-bottom:0.5rem;display:block;">${t('cl_what_are_you_listing', 'Kaj objavljate?')}</label>
+            <div class="cl-subcategory-row" id="deliItemRow" style="margin-bottom:1rem;">
+                ${itemPill('part', 'wrench', t('cl_sub_del', 'Del / oprema'))}
+                ${itemPill('tire', 'disc-3', t('cl_sub_guma', 'Pnevmatika'))}
+            </div>
+            <label class="cl-label" style="margin-bottom:0.5rem;display:block;">${t('gd_choose_vehicle_cat', 'Za katero vozilo?')}</label>
+            <div class="cl-subcategory-row" id="deliVehRow">
+                ${VEHICLE_CATEGORIES.map(vehiclePill).join('')}
+            </div>
+        </div>`;
+
+    if (window.lucide) window.lucide.createIcons({ scope: row });
+
+    row.querySelectorAll('#deliItemRow .cl-subcategory-pill').forEach(p => {
+        p.addEventListener('click', () => {
+            row.querySelectorAll('#deliItemRow .cl-subcategory-pill').forEach(pp => pp.classList.remove('selected'));
+            p.classList.add('selected');
+            state.itemType = p.dataset.item;
+            // Reset part-specific selections when switching kind
+            state.partGroup = ''; state.partType = ''; state.partTypeLabel = '';
+        });
+    });
+
+    row.querySelectorAll('#deliVehRow .cl-subcategory-pill').forEach(p => {
+        p.addEventListener('click', () => {
+            row.querySelectorAll('#deliVehRow .cl-subcategory-pill').forEach(pp => pp.classList.remove('selected'));
+            p.classList.add('selected');
+            state.vehicleCategory = p.dataset.vehcat;
+            // Part groups depend on vehicle family — reset on change
+            state.partGroup = ''; state.partType = ''; state.partTypeLabel = '';
+        });
+    });
+}
+
+// ── Step: Part details ────────────────────────────────────────────────────────
+function renderPartDetailsStep() {
+    const groups = getPartGroups(state.vehicleCategory);
+    const groupOpts = groups.map(g =>
+        `<option value="${g.value}" ${state.partGroup === g.value ? 'selected' : ''}>${g.label}</option>`).join('');
+
+    const typeOpts = (state.partGroup ? getPartTypes(state.vehicleCategory, state.partGroup) : [])
+        .map(tp => `<option value="${tp.value}" ${state.partType === tp.value ? 'selected' : ''}>${tp.label}</option>`).join('');
+
+    setHtml(`
+        <div class="cl-card">
+            <h2 class="cl-step-title">${t('cl_step_part_details', 'Podatki o delu')}</h2>
+            <p class="cl-step-sub">${t('cl_part_details_sub', 'Opišite del, ki ga prodajate.')}</p>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_part_group', 'Sklop')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fPartGroup">
+                        <option value="">${t('cl_sel_part_group', 'Izberite sklop')}</option>
+                        ${groupOpts}
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_part_type', 'Vrsta dela')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fPartType" ${state.partGroup ? '' : 'disabled'}>
+                        <option value="">${t('cl_sel_part_type', 'Najprej izberite sklop')}</option>
+                        ${typeOpts}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_condition', 'Stanje')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fPartCondition">
+                        <option value="Rabljeno" ${state.condition === 'Rabljeno' ? 'selected' : ''}>${t('gd_condition_used', 'Rabljeno')}</option>
+                        <option value="Novo" ${state.condition === 'Novo' ? 'selected' : ''}>${t('gd_condition_new', 'Novo')}</option>
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
+                    <input class="cl-input" id="fPartBrand" type="text" value="${escHtml(state.brand || '')}" placeholder="npr. Bosch, Sachs" />
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_oem_number', 'OEM / kataloška številka')}</label>
+                    <input class="cl-input" id="fOem" type="text" value="${escHtml(state.oemNumber || '')}" placeholder="npr. 1K0615301AA" />
+                </div>
+            </div>
+
+            <div class="cl-label" style="margin:1.25rem 0 0.5rem;border-top:1px solid rgba(0,0,0,0.08);padding-top:1rem;font-weight:700;">${t('gd_compatibility', 'Združljivost (neobvezno)')}</div>
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_label_make', 'Znamka vozila')}</label>
+                    <input class="cl-input" id="fAppMake" type="text" value="${escHtml(state.vehicleApplication?.make || '')}" placeholder="npr. Volkswagen" />
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_label_model', 'Model vozila')}</label>
+                    <input class="cl-input" id="fAppModel" type="text" value="${escHtml(state.vehicleApplication?.model || '')}" placeholder="npr. Golf" />
+                </div>
+            </div>
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_year_from', 'Letnik od')}</label>
+                    <input class="cl-input" id="fAppYearFrom" type="number" value="${escHtml(String(state.vehicleApplication?.yearFrom || ''))}" placeholder="npr. 2012" />
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_year_to', 'Letnik do')}</label>
+                    <input class="cl-input" id="fAppYearTo" type="number" value="${escHtml(String(state.vehicleApplication?.yearTo || ''))}" placeholder="npr. 2020" />
+                </div>
+            </div>
+
+            <div class="cl-nav">
+                <button class="cl-btn cl-btn--ghost" id="btnPartBack">${t('cl_back')}</button>
+                <button class="cl-btn cl-btn--primary" id="btnPartNext">${t('cl_continue')}</button>
+            </div>
+        </div>
+    `);
+
+    if (window.lucide) window.lucide.createIcons();
+
+    const groupSel = document.getElementById('fPartGroup');
+    const typeSel = document.getElementById('fPartType');
+    groupSel.addEventListener('change', () => {
+        state.partGroup = groupSel.value;
+        state.partType = '';
+        state.partTypeLabel = '';
+        const types = getPartTypes(state.vehicleCategory, state.partGroup);
+        typeSel.innerHTML = `<option value="">${t('cl_sel_part_type', 'Izberite vrsto')}</option>` +
+            types.map(tp => `<option value="${tp.value}">${tp.label}</option>`).join('');
+        typeSel.disabled = !state.partGroup;
+    });
+    typeSel.addEventListener('change', () => {
+        state.partType = typeSel.value;
+        state.partTypeLabel = getPartTypeLabel(state.vehicleCategory, state.partGroup, typeSel.value);
+    });
+
+    document.getElementById('btnPartBack').addEventListener('click', goPrev);
+    document.getElementById('btnPartNext').addEventListener('click', () => {
+        state.partGroup = groupSel.value;
+        state.partType = typeSel.value;
+        state.partTypeLabel = getPartTypeLabel(state.vehicleCategory, state.partGroup, typeSel.value);
+        state.condition = document.getElementById('fPartCondition').value;
+        state.brand = document.getElementById('fPartBrand').value.trim();
+        state.oemNumber = document.getElementById('fOem').value.trim();
+        state.vehicleApplication = {
+            make: document.getElementById('fAppMake').value.trim(),
+            model: document.getElementById('fAppModel').value.trim(),
+            yearFrom: document.getElementById('fAppYearFrom').value.trim(),
+            yearTo: document.getElementById('fAppYearTo').value.trim(),
+        };
+        if (!state.partGroup || !state.partType) {
+            return alert(t('cl_part_required_alert', 'Izberite sklop in vrsto dela.'));
+        }
+        goNext();
+    });
+}
+
+// ── Step: Tire details ────────────────────────────────────────────────────────
+function renderTireDetailsStep() {
+    const widths = []; for (let w = 125; w <= 355; w += 5) widths.push(w);
+    const aspects = [25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85];
+    const rims = []; for (let r = 10; r <= 24; r++) rims.push(r);
+    const opt = (v, sel) => `<option value="${v}" ${String(sel) === String(v) ? 'selected' : ''}>${v}</option>`;
+
+    const isUsed = state.condition !== 'Novo';
+
+    setHtml(`
+        <div class="cl-card">
+            <h2 class="cl-step-title">${t('cl_step_tire_details', 'Podatki o pnevmatiki')}</h2>
+            <p class="cl-step-sub">${t('cl_tire_details_sub', 'Vnesite dimenzijo in lastnosti pnevmatik.')}</p>
+
+            <label class="cl-label">${t('gd_tire_size', 'Dimenzija')} <span class="req">*</span></label>
+            <div class="cl-row" style="align-items:flex-end;">
+                <div class="cl-field">
+                    <label class="cl-label" style="font-size:0.78rem;opacity:0.7;">${t('gd_tire_width', 'Širina')}</label>
+                    <select class="cl-select" id="fTireWidth"><option value="">—</option>${widths.map(w => opt(w, state.tireWidth)).join('')}</select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label" style="font-size:0.78rem;opacity:0.7;">${t('gd_tire_aspect', 'Profil')}</label>
+                    <select class="cl-select" id="fTireAspect"><option value="">—</option>${aspects.map(a => opt(a, state.tireAspect)).join('')}</select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label" style="font-size:0.78rem;opacity:0.7;">${t('gd_tire_rim', 'Premer (R)')}</label>
+                    <select class="cl-select" id="fTireRim"><option value="">—</option>${rims.map(r => opt(r, state.tireRim)).join('')}</select>
+                </div>
+            </div>
+            <p class="cl-step-sub" id="tireSizePreview" style="margin-top:-0.5rem;font-weight:700;">${state.tireSize || ''}</p>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_season', 'Sezona')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fTireSeason">
+                        <option value="">${t('cl_sel_season', 'Izberite sezono')}</option>
+                        <option value="letne" ${state.tireSeason === 'letne' ? 'selected' : ''}>${t('gd_season_summer', 'Letne')}</option>
+                        <option value="zimske" ${state.tireSeason === 'zimske' ? 'selected' : ''}>${t('gd_season_winter', 'Zimske')}</option>
+                        <option value="celoletne" ${state.tireSeason === 'celoletne' ? 'selected' : ''}>${t('gd_season_allseason', 'Celoletne')}</option>
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_part_brand', 'Znamka')}</label>
+                    <input class="cl-input" id="fTireBrand" type="text" value="${escHtml(state.brand || '')}" placeholder="npr. Michelin" />
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_condition', 'Stanje')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fTireCondition">
+                        <option value="Rabljeno" ${state.condition === 'Rabljeno' ? 'selected' : ''}>${t('gd_condition_used', 'Rabljeno')}</option>
+                        <option value="Novo" ${state.condition === 'Novo' ? 'selected' : ''}>${t('gd_condition_new', 'Novo')}</option>
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_tire_count', 'Število kosov')}</label>
+                    <select class="cl-select" id="fTireCount">
+                        ${[1, 2, 4].map(n => `<option value="${n}" ${String(state.tireCount) === String(n) ? 'selected' : ''}>${n}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row" id="usedTireRow" style="${isUsed ? '' : 'display:none;'}">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_tread_depth', 'Globina profila (mm)')}</label>
+                    <input class="cl-input" id="fTread" type="number" step="0.1" value="${escHtml(String(state.treadDepthMm || ''))}" placeholder="npr. 6.5" />
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_dot_year', 'DOT leto')}</label>
+                    <input class="cl-input" id="fDot" type="text" value="${escHtml(state.dotYear || '')}" placeholder="npr. 2021" />
+                </div>
+            </div>
+
+            <div class="cl-nav">
+                <button class="cl-btn cl-btn--ghost" id="btnTireBack">${t('cl_back')}</button>
+                <button class="cl-btn cl-btn--primary" id="btnTireNext">${t('cl_continue')}</button>
+            </div>
+        </div>
+    `);
+
+    if (window.lucide) window.lucide.createIcons();
+
+    const wSel = document.getElementById('fTireWidth');
+    const aSel = document.getElementById('fTireAspect');
+    const rSel = document.getElementById('fTireRim');
+    const preview = document.getElementById('tireSizePreview');
+    const updateSize = () => {
+        if (wSel.value && aSel.value && rSel.value) {
+            state.tireSize = `${wSel.value}/${aSel.value} R${rSel.value}`;
+        } else {
+            state.tireSize = '';
+        }
+        preview.textContent = state.tireSize;
+    };
+    [wSel, aSel, rSel].forEach(s => s.addEventListener('change', updateSize));
+
+    document.getElementById('fTireCondition').addEventListener('change', (e) => {
+        document.getElementById('usedTireRow').style.display = e.target.value === 'Novo' ? 'none' : '';
+    });
+
+    document.getElementById('btnTireBack').addEventListener('click', goPrev);
+    document.getElementById('btnTireNext').addEventListener('click', () => {
+        updateSize();
+        state.tireWidth = wSel.value;
+        state.tireAspect = aSel.value;
+        state.tireRim = rSel.value;
+        state.tireSeason = document.getElementById('fTireSeason').value;
+        state.brand = document.getElementById('fTireBrand').value.trim();
+        state.condition = document.getElementById('fTireCondition').value;
+        state.tireCount = document.getElementById('fTireCount').value;
+        state.treadDepthMm = document.getElementById('fTread')?.value || '';
+        state.dotYear = document.getElementById('fDot')?.value || '';
+        if (!state.tireSize) return alert(t('cl_tire_size_alert', 'Izberite širino, profil in premer pnevmatike.'));
+        if (!state.tireSeason) return alert(t('cl_tire_season_alert', 'Izberite sezono pnevmatike.'));
+        goNext();
     });
 }
 
@@ -2076,31 +2403,53 @@ function renderReviewStep() {
                 ${t('cl_review_media_count', { ext: state._exteriorFiles.length, int: state._interiorFiles.length })}
             </p>
 
-            ${section(t('cl_section_category'), 'category', [
+            ${isVehicleItem(state) ? section(t('cl_section_category'), 'category', [
         [t('cl_section_category'), state.category],
         [t('cl_label_subcategory'), state.subcategory],
+    ]) : section(t('cl_section_category'), 'category', [
+        [t('cl_what_are_you_listing', 'Kaj objavljate?'), state.itemType === 'tire' ? t('cl_sub_guma', 'Pnevmatika') : t('cl_sub_del', 'Del / oprema')],
+        [t('gd_choose_vehicle_cat', 'Za katero vozilo?'), (VEHICLE_CATEGORIES.find(v => v.value === state.vehicleCategory) || {}).label],
     ])}
 
-            ${section(t('cl_section_basic'), 'basic', [
+            ${isVehicleItem(state) ? section(t('cl_section_basic'), 'basic', [
         [t('cl_label_make'), state.make],
         [t('cl_label_model'), state.model],
         [t('cl_label_year'), state.year],
         [t('cl_label_mileage_review'), state.mileageKm ? (getCurrentLang() === 'sl' ? fmt(state.mileageKm) + ' km' : fmt(Math.round(state.mileageKm * 0.621371)) + ' mi') : ''],
         [t('cl_label_condition'), state.condition],
         [t('cl_label_color'), state.color],
-    ])}
+    ]) : ''}
 
-            ${section(t('cl_section_technical'), 'technical', [
+            ${isVehicleItem(state) ? section(t('cl_section_technical'), 'technical', [
         [t('cl_label_fuel'), state.fuel],
         [t('cl_label_transmission'), state.transmission],
         [t('cl_label_power_review'), state.powerKw ? (getCurrentLang() === 'sl' ? state.powerKw + ' kW (' + Math.round(state.powerKw * 1.34102) + ' KM)' : Math.round(state.powerKw * 1.34102) + ' HP') : ''],
         [t('cl_label_displacement_review'), state.engineCc ? state.engineCc + ' cc' : ''],
-        [t('cl_label_cons_combined'), state.fuelL100kmCombined ? (getCurrentLang() === 'sl' ? state.fuelL100kmCombined + ' l/100km' : Math.round(235.215 / state.fuelL100kmCombined) + ' MPG') : ''],
-        [t('cl_label_cons_city'), state.fuelL100kmCity ? (getCurrentLang() === 'sl' ? state.fuelL100kmCity + ' l/100km' : Math.round(235.215 / state.fuelL100kmCity) + ' MPG') : ''],
-        [t('cl_label_cons_highway'), state.fuelL100kmHighway ? (getCurrentLang() === 'sl' ? state.fuelL100kmHighway + ' l/100km' : Math.round(235.215 / state.fuelL100kmHighway) + ' MPG') : ''],
+        [t('cl_label_cons_combined'), state.fuelL100kmCombined ? state.fuelL100kmCombined + ' L/100km' : ''],
+        [t('cl_label_cons_city'), state.fuelL100kmCity ? state.fuelL100kmCity + ' L/100km' : ''],
+        [t('cl_label_cons_highway'), state.fuelL100kmHighway ? state.fuelL100kmHighway + ' L/100km' : ''],
         [t('cl_label_range_review'), state.rangeKm ? (getCurrentLang() === 'sl' ? state.rangeKm + ' km' : Math.round(state.rangeKm * 0.621371) + ' mi') : ''],
         [t('cl_label_emissions'), state.emissionClass],
-    ])}
+    ]) : ''}
+
+            ${isPartItem(state) ? section(t('cl_step_part_details', 'Podatki o delu'), 'partDetails', [
+        [t('gd_part_group', 'Sklop'), (getPartGroups(state.vehicleCategory).find(g => g.value === state.partGroup) || {}).label],
+        [t('gd_part_type', 'Vrsta dela'), state.partTypeLabel || state.partType],
+        [t('cl_condition', 'Stanje'), state.condition],
+        [t('gd_part_brand', 'Znamka'), state.brand],
+        [t('gd_oem_number', 'OEM'), state.oemNumber],
+        [t('gd_compatibility', 'Združljivost'), [state.vehicleApplication?.make, state.vehicleApplication?.model].filter(Boolean).join(' ')],
+    ]) : ''}
+
+            ${isTireItem(state) ? section(t('cl_step_tire_details', 'Podatki o pnevmatiki'), 'tireDetails', [
+        [t('gd_tire_size', 'Dimenzija'), state.tireSize],
+        [t('gd_season', 'Sezona'), state.tireSeason],
+        [t('gd_part_brand', 'Znamka'), state.brand],
+        [t('cl_condition', 'Stanje'), state.condition],
+        [t('gd_tire_count', 'Število kosov'), state.tireCount],
+        [t('gd_tread_depth', 'Globina profila'), state.treadDepthMm ? state.treadDepthMm + ' mm' : ''],
+        [t('gd_dot_year', 'DOT'), state.dotYear],
+    ]) : ''}
 
             ${section(t('cl_section_price'), 'price', [
         [t('cl_section_price'), state.callForPrice ? t('cl_label_call_for_price') : (state.priceEur ? (getCurrentLang() === 'sl' ? fmt(state.priceEur) + ' €' : '$' + fmt(state.priceEur)) : '')],

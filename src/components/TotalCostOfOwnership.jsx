@@ -157,8 +157,8 @@ export default function TotalCostOfOwnership({
                     ) : (
                       <>
                         <DetailRow
-                          label="EPA Rating"
-                          value={`${item.components.mpg} MPG`}
+                          label="Consumption"
+                          value={`${(235.215 / item.components.mpg).toFixed(1)} L/100km`}
                         />
                         <DetailRow
                           label="Annual Usage"

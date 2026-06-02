@@ -50,9 +50,10 @@ export function formatHp(kw) {
 }
 
 export function formatMpg(l) {
-    const m = l100kmToMpg(l);
-    if (m === null) return '';
-    return m + ' MPG';
+    if (l === undefined || l === null) return '';
+    const v = parseFloat(l);
+    if (isNaN(v)) return '';
+    return v.toFixed(1) + ' L/100km';
 }
 
 export const FUEL_MAP = {
@@ -86,10 +87,7 @@ export function getFuelPill(car) {
     const key = fuelStr.toLowerCase().trim();
     const isElectric = key === 'elektrika' || key === 'električno' || key === 'electric' || key === 'e';
     
-    // Completely remove fuel type, unless it is an electric vehicle
-    if (!isElectric) {
-        return '';
-    }
+
 
     const f = FUEL_MAP[key] || { code: 'E', cls: 'fuel-pill-E', icon: 'zap', title: 'Electric' };
     return `<div class="spec-pill fuel-coded ${f.cls}" title="${f.title}">
@@ -124,23 +122,22 @@ export function getConsumptionPill(car) {
     }
 
     const cons = parseFloat(car.fuelL100kmCombined || car.fuelL100km);
-    if (!cons && !car.electricRangeKm) return '';
+    if (!cons) return '';
 
-    const mpg = l100kmToMpg(cons);
     let statusCls = 'status-medium';
-    if (mpg >= 47) statusCls = 'status-low';
-    else if (mpg < 34) statusCls = 'status-high';
+    if (cons <= 5.0) statusCls = 'status-low';
+    else if (cons >= 7.0) statusCls = 'status-high';
 
     if (car.electricRangeKm && cons) {
-        return `<div class="spec-pill consumption-pill ${statusCls}" title="MPG / EV Range">
+        return `<div class="spec-pill consumption-pill ${statusCls}" title="Consumption / EV Range">
             <i data-lucide="droplets"></i>
-            ${mpg} MPG · ${kmToMiles(car.electricRangeKm)} mi E
+            ${cons.toFixed(1)} L/100km · ${kmToMiles(car.electricRangeKm)} mi E
         </div>`;
     }
 
     return `<div class="spec-pill consumption-pill ${statusCls}" title="Fuel Economy">
         <i data-lucide="droplets"></i>
-        ${mpg} MPG
+        ${cons.toFixed(1)} L/100km
     </div>`;
 }
 

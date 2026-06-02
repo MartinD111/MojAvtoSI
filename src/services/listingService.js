@@ -30,8 +30,15 @@ export async function uploadImages(files, userId) {
 export async function createListing(draft, exteriorFiles, interiorFiles, user) {
     if (!user) throw new Error('Sign in is required to publish a listing.');
 
-    const missing = ['priceEur', 'make', 'model', 'fuel'].filter(k => !draft[k]);
-    if (missing.length) throw new Error(`Missing key technical fields: ${missing.join(', ')}.`);
+    const itemType = draft.itemType || 'vehicle';
+    // Validation depends on the kind of item being listed.
+    const requiredByType = {
+        vehicle: ['priceEur', 'make', 'model', 'fuel'],
+        part: ['priceEur', 'partType', 'vehicleCategory'],
+        tire: ['priceEur', 'tireSize', 'tireSeason', 'vehicleCategory'],
+    };
+    const missing = (requiredByType[itemType] || requiredByType.vehicle).filter(k => !draft[k]);
+    if (missing.length) throw new Error(`Missing key fields: ${missing.join(', ')}.`);
 
     const [exteriorUrls, interiorUrls] = await Promise.all([
         exteriorFiles.length > 0 ? uploadImages(exteriorFiles, user.uid) : Promise.resolve([]),
@@ -59,8 +66,38 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         vinDetails: draft.vinData ? { ...draft.vinData } : null,
         vinOverrides: draft.vinOverrides || {},
 
-        // Category
-        category: draft.category || 'avto',
+        // Item kind: 'vehicle' (default) | 'part' | 'tire'
+        itemType,
+        // For parts/tires this records which vehicle family they are for.
+        vehicleCategory: draft.vehicleCategory || (itemType === 'vehicle' ? (draft.category || 'avto') : ''),
+
+        // Parts (itemType === 'part')
+        partGroup: draft.partGroup || '',
+        partType: draft.partType || '',
+        oemNumber: draft.oemNumber || '',
+        brand: draft.brand || '',
+        vehicleApplication: draft.vehicleApplication
+            ? {
+                make: draft.vehicleApplication.make || '',
+                model: draft.vehicleApplication.model || '',
+                yearFrom: draft.vehicleApplication.yearFrom || null,
+                yearTo: draft.vehicleApplication.yearTo || null,
+            }
+            : null,
+
+        // Tires (itemType === 'tire')
+        tireSize: draft.tireSize || '',
+        tireWidth: Number(draft.tireWidth) || null,
+        tireAspect: Number(draft.tireAspect) || null,
+        tireRim: Number(draft.tireRim) || null,
+        tireSeason: draft.tireSeason || '',
+        treadDepthMm: draft.treadDepthMm ? Number(draft.treadDepthMm) : null,
+        dotYear: draft.dotYear || '',
+        tireCount: Number(draft.tireCount) || null,
+
+        // Category — for parts/tires we mirror the vehicle family so existing
+        // card renderers and category gates keep working.
+        category: itemType === 'vehicle' ? (draft.category || 'avto') : (draft.vehicleCategory || 'avto'),
         subcategory: draft.subcategory || '',
         // Vehicle body type (vrsta vozila) — canonical value; auto-filled from
         // taxonomy when available, else falls back to the manual subcategory pick.
@@ -151,7 +188,11 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         },
 
         // Legacy fields (backwards compatibility with existing listings)
-        title: `${draft.make || ''} ${draft.model || ''} ${draft.variant || ''}`.trim(),
+        title: itemType === 'tire'
+            ? `${draft.brand || ''} ${draft.tireSize || ''}`.trim() || 'Pnevmatike'
+            : itemType === 'part'
+                ? `${draft.brand || ''} ${draft.partTypeLabel || draft.partType || ''}`.trim() || 'Avtodel'
+                : `${draft.make || ''} ${draft.model || ''} ${draft.variant || ''}`.trim(),
         price: Number(draft.priceEur) || 0,
         mileage: Number(draft.mileageKm) || 0,
         power: Number(draft.powerKw) || 0,

@@ -603,6 +603,104 @@ export async function getSearchAnalytics(limitN = 20) {
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
+// ── Webscraping: approved sources ─────────────────────────────────────────────
+// The allowlist of shop domains the platform has permission to scrape. Only
+// `approved: true` sources are ever scraped by the (future) backend crawler.
+
+function canonicalDomain(input) {
+    let s = String(input || '').trim().toLowerCase();
+    s = s.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    s = s.split('/')[0].split('?')[0].split('#')[0];
+    return s;
+}
+
+export async function getScrapingSources() {
+    const snap = await getDocs(collection(db, 'scrapingSources'));
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return docs.sort((a, b) => (a.domain || '').localeCompare(b.domain || ''));
+}
+
+export async function createScrapingSource(data) {
+    const docRef = await addDoc(collection(db, 'scrapingSources'), {
+        domain: canonicalDomain(data.domain),
+        name: (data.name || '').trim(),
+        baseUrl: (data.baseUrl || '').trim(),
+        category: data.category || 'oboje',        // 'deli' | 'gume' | 'oboje'
+        approved: !!data.approved,
+        permissionNote: (data.permissionNote || '').trim(),
+        robotsAllowed: data.robotsAllowed !== false,
+        status: data.status || 'active',           // 'active' | 'paused'
+        lastScrapedAt: null,
+        lastScrapeStatus: null,
+        createdAt: serverTimestamp(),
+    });
+    return docRef.id;
+}
+
+export async function updateScrapingSource(id, data) {
+    const updates = { ...data, updatedAt: serverTimestamp() };
+    if (data.domain) updates.domain = canonicalDomain(data.domain);
+    await updateDoc(doc(db, 'scrapingSources', id), updates);
+}
+
+export async function deleteScrapingSource(id) {
+    await deleteDoc(doc(db, 'scrapingSources', id));
+}
+
+export async function getApprovedScrapingDomains() {
+    const q = query(collection(db, 'scrapingSources'), where('approved', '==', true));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => d.data().domain).filter(Boolean);
+}
+
+// ── Price-comparison catalog (partsCatalog) ───────────────────────────────────
+// Manual ingestion path until the webscraping backend exists. Each product holds
+// a denormalized `offers[]` array; lowestPrice/offerCount are precomputed here.
+
+function computeOfferStats(offers = []) {
+    const prices = offers.map(o => Number(o.price)).filter(n => !isNaN(n));
+    return {
+        lowestPrice: prices.length ? Math.min(...prices) : null,
+        offerCount: offers.length,
+    };
+}
+
+export async function getCatalogProductsAdmin() {
+    const snap = await getDocs(collection(db, 'partsCatalog'));
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return docs.sort((a, b) => (b.updatedAt?.toMillis?.() || 0) - (a.updatedAt?.toMillis?.() || 0));
+}
+
+export async function createCatalogProduct(data) {
+    const offers = Array.isArray(data.offers) ? data.offers : [];
+    const stats = computeOfferStats(offers);
+    const docRef = await addDoc(collection(db, 'partsCatalog'), {
+        itemType: data.itemType || 'part',
+        vehicleCategory: data.vehicleCategory || 'avto',
+        title: (data.title || '').trim(),
+        brand: (data.brand || '').trim(),
+        imageUrl: data.imageUrl || '',
+        attributes: data.attributes || {},
+        offers,
+        ...stats,
+        status: data.status || 'active',
+        ingestSource: 'manual',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+    });
+    return docRef.id;
+}
+
+export async function updateCatalogProduct(id, data) {
+    const updates = { ...data, updatedAt: serverTimestamp() };
+    if (Array.isArray(data.offers)) Object.assign(updates, computeOfferStats(data.offers));
+    await updateDoc(doc(db, 'partsCatalog', id), updates);
+}
+
+export async function deleteCatalogProduct(id) {
+    await deleteDoc(doc(db, 'partsCatalog', id));
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function slugify(str) {

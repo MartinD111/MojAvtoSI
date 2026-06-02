@@ -11,6 +11,8 @@ const routes = {
     '/oglasi': { view: 'oglasi', protected: false },
     '/iskanje': { view: 'advanced-search', protected: false },
     '/oglas': { view: 'listing', protected: false },
+    '/gume-in-deli': { view: 'gume-in-deli', protected: false },
+    '/katalog': { view: 'catalog-product', protected: false },
     '/prijava': { view: 'login', protected: false },
     '/registracija': { view: 'register', protected: false },
     '/dashboard': { view: 'dashboard', protected: true },

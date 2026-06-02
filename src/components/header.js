@@ -18,23 +18,38 @@ export function initHeader() {
             <a href="#/" class="logo-text">MojAvto<span class="logo-accent">.si</span></a>
 
             <nav id="navLinks" class="desktop-links">
-              <!-- Listing categories — each opens the advanced search filtered to that category -->
-              <a href="${buildSearchUrl('avto')}" class="nav-pill ${isSearch && hash.includes('cat=avto') ? 'active-pill' : ''}">
-                <i data-lucide="${cats.avto.icon}"></i> ${t(cats.avto.label)}
-              </a>
-              <a href="${buildSearchUrl('moto')}" class="nav-pill ${isSearch && hash.includes('cat=moto') ? 'active-pill' : ''}">
-                <i data-lucide="${cats.moto.icon}"></i> ${t(cats.moto.label)}
-              </a>
-              <a href="${buildSearchUrl('gospodarska')}" class="nav-pill ${isSearch && hash.includes('cat=gospodarska') ? 'active-pill' : ''}">
-                <i data-lucide="${cats.gospodarska.icon}"></i> ${t(cats.gospodarska.label)}
-              </a>
-              <a href="${buildSearchUrl('prosti-cas')}" class="nav-pill ${isSearch && hash.includes('cat=prosti-cas') ? 'active-pill' : ''}">
-                <i data-lucide="${cats.prosti_cas.icon}"></i> ${t(cats.prosti_cas.label)}
-              </a>
+              <!-- Oglasi — hover dropdown holding the 4 vehicle categories -->
+              <div class="mega-menu-wrapper" id="oglasiMenuWrapper">
+                <button type="button" class="nav-pill mega-trigger ${isSearch ? 'active-pill' : ''}" id="oglasiTrigger" aria-haspopup="true" aria-expanded="false">
+                  <i data-lucide="newspaper"></i> ${t('header_listings', 'Oglasi')}
+                  <i data-lucide="chevron-down" class="mega-caret"></i>
+                </button>
+                <div class="mega-menu" id="oglasiMega" role="menu">
+                  <div class="mega-vertical-list">
+                    <a href="${buildSearchUrl('avto')}" class="mega-vertical-item ${isSearch && hash.includes('cat=avto') ? 'active' : ''}" role="menuitem">
+                      <i data-lucide="${cats.avto.icon}"></i> ${t(cats.avto.label)}
+                    </a>
+                    <a href="${buildSearchUrl('moto')}" class="mega-vertical-item ${isSearch && hash.includes('cat=moto') ? 'active' : ''}" role="menuitem">
+                      <i data-lucide="${cats.moto.icon}"></i> ${t(cats.moto.label)}
+                    </a>
+                    <a href="${buildSearchUrl('gospodarska')}" class="mega-vertical-item ${isSearch && hash.includes('cat=gospodarska') ? 'active' : ''}" role="menuitem">
+                      <i data-lucide="${cats.gospodarska.icon}"></i> ${t(cats.gospodarska.label)}
+                    </a>
+                    <a href="${buildSearchUrl('prosti-cas')}" class="mega-vertical-item ${isSearch && hash.includes('cat=prosti-cas') ? 'active' : ''}" role="menuitem">
+                      <i data-lucide="${cats.prosti_cas.icon}"></i> ${t(cats.prosti_cas.label)}
+                    </a>
+                  </div>
+                </div>
+              </div>
 
               <!-- Avtohiše — dealers map -->
               <a href="#/zemljevid" class="nav-pill ${hash.startsWith('#/zemljevid') ? 'active-pill' : ''}">
                 <i data-lucide="building-2"></i> ${t('header_dealers')}
+              </a>
+
+              <!-- Gume in deli — parts & tires search -->
+              <a href="#/gume-in-deli" class="nav-pill ${hash.startsWith('#/gume-in-deli') ? 'active-pill' : ''}">
+                <i data-lucide="disc-3"></i> ${t('header_tires_parts', 'Gume in deli')}
               </a>
             </nav>
 
@@ -116,6 +131,75 @@ export function initHeader() {
           burgerBtn.setAttribute('aria-expanded', 'false');
           burgerBtn.innerHTML = '<i data-lucide="menu"></i>';
           if (window.lucide) window.lucide.createIcons();
+        }
+      });
+    }
+
+    // ── Oglasi mega menu (hover on desktop, tap on mobile) ──
+    const oglasiWrapper = document.getElementById('oglasiMenuWrapper');
+    const oglasiTrigger = document.getElementById('oglasiTrigger');
+    const oglasiMega = document.getElementById('oglasiMega');
+    if (oglasiWrapper && oglasiTrigger && oglasiMega) {
+      const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
+      let leaveTimeout = null;
+
+      oglasiWrapper.addEventListener('mouseenter', () => {
+        if (!isMobile()) {
+          if (leaveTimeout) clearTimeout(leaveTimeout);
+          oglasiMega.classList.add('open');
+          oglasiTrigger.setAttribute('aria-expanded', 'true');
+        }
+      });
+      oglasiWrapper.addEventListener('mouseleave', () => {
+        if (!isMobile()) {
+          leaveTimeout = setTimeout(() => {
+            oglasiMega.classList.remove('open');
+            oglasiTrigger.setAttribute('aria-expanded', 'false');
+          }, 300);
+        }
+      });
+
+      oglasiWrapper.addEventListener('focusin', () => {
+        if (!isMobile()) {
+          if (leaveTimeout) clearTimeout(leaveTimeout);
+          oglasiMega.classList.add('open');
+          oglasiTrigger.setAttribute('aria-expanded', 'true');
+        }
+      });
+      oglasiWrapper.addEventListener('focusout', () => {
+        if (!isMobile()) {
+          leaveTimeout = setTimeout(() => {
+            oglasiMega.classList.remove('open');
+            oglasiTrigger.setAttribute('aria-expanded', 'false');
+          }, 300);
+        }
+      });
+
+      // Tap (mobile) / keyboard toggle
+      oglasiTrigger.addEventListener('click', (e) => {
+        if (!isMobile()) {
+          // On desktop, clicking "Oglasi" takes us to advanced search for avtomobili
+          window.location.hash = buildSearchUrl('avto');
+        } else {
+          e.preventDefault();
+          e.stopPropagation();
+          const open = oglasiMega.classList.toggle('open');
+          oglasiTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+      });
+
+      // Close the mega when a category is chosen
+      oglasiMega.addEventListener('click', () => {
+        if (leaveTimeout) clearTimeout(leaveTimeout);
+        oglasiMega.classList.remove('open');
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!oglasiWrapper.contains(e.target)) {
+          if (leaveTimeout) clearTimeout(leaveTimeout);
+          oglasiMega.classList.remove('open');
+          oglasiTrigger.setAttribute('aria-expanded', 'false');
         }
       });
     }

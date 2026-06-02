@@ -139,6 +139,20 @@ service cloud.firestore {
       allow update: if isSignedIn() && resource.data.vulcanizerId == uid();
     }
 
+    // ── Parts & tires price-comparison catalog ────────────────────────────────
+    // Public read; editors/admins write manually. The future webscraping backend
+    // writes via the Admin SDK (service account), which bypasses these rules.
+    match /partsCatalog/{productId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    // ── Webscraping approved sources (allowlist) ──────────────────────────────
+    // Admin-only. The backend crawler only scrapes domains where approved == true.
+    match /scrapingSources/{sourceId} {
+      allow read, write: if isAdmin();
+    }
+
     // ── Deny everything else ──────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;

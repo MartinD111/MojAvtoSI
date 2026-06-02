@@ -584,6 +584,10 @@ function bindSearchLogic(catContext) {
 // filter here will automatically only show matching vehicles.
 // ═══════════════════════════════════════════════════════════════════════════════
 function matchesFilters(l, filters) {
+    // Parts & tires are listed separately under "Gume in deli" — never show them
+    // in the regular vehicle search.
+    if (l.itemType && l.itemType !== 'vehicle') return false;
+
     // Category-level filtering
     if (filters.activeTab) {
         // Map tab to listing category if the listing has a category field

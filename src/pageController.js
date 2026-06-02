@@ -10,6 +10,8 @@ const pageModules = {
     oglasi: () => import('./pages/oglasi.js').then(m => m.initOglasiPage()),
     'advanced-search': () => import('./pages/advanced-search.js').then(m => m.initAdvancedSearchPage()),
     listing: () => import('./pages/listing.js').then(m => m.initListingPage()),
+    'gume-in-deli': () => import('./pages/gume-in-deli.js').then(m => m.initGumeInDeliPage()),
+    'catalog-product': () => import('./pages/catalog-product.js').then(m => m.initCatalogProductPage()),
     'create-listing': () => import('./pages/create-listing.js').then(m => m.initCreateListingPage()),
     dashboard: () => import('./pages/dashboard.js').then(m => m.initDashboardPage()),
     profile: () => import('./pages/profile.js').then(m => m.initProfilePage()),

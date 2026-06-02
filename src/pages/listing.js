@@ -321,7 +321,7 @@ function renderListing(l) {
                     ${renderSpecsHtml(l)}
 
                     <!-- Seller note (private sellers) -->
-                    ${(!l.sellerType || l.sellerType === 'private') && l.sellerNote ? `
+                    ${l.sellerNote ? `
                     <section class="lp-section">
                         <div class="lp-seller-note-block">
                             <i data-lucide="message-circle"></i>
@@ -397,7 +397,7 @@ function renderListing(l) {
                 price: Number(cpPrice),
                 powerKw: Number(cpKw),
                 fuelType: l.fuel || '',
-                mpg: l.fuelConsumption || null,
+                mpg: l.fuelL100km ? (235.215 / l.fuelL100km) : null,
                 kWhPer100km: l.electricConsumption || null,
                 isNew: l.isNew !== false,
                 make: l.make || '',
@@ -871,9 +871,9 @@ function renderSellerCardHtml(l) {
             </div>`;
     }
 
-    // Private seller note
+    // Seller note
     let noteHtml = '';
-    if (!isBusiness && l.sellerNote) {
+    if (l.sellerNote) {
         noteHtml = `
             <div class="lp-seller-note">
                 <i data-lucide="message-circle"></i>

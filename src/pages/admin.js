@@ -13,6 +13,8 @@ import {
     getSiteSettings, updateSiteSettings,
     getSeoPages, upsertSeoPage,
     getTopBrands, getListingsByDay, getAuditLogs, addAuditLog,
+    getScrapingSources, createScrapingSource, updateScrapingSource, deleteScrapingSource,
+    getCatalogProductsAdmin, createCatalogProduct, updateCatalogProduct, deleteCatalogProduct,
 } from '../services/adminService.js';
 
 // ── Global admin state ────────────────────────────────────────────────────────
@@ -70,6 +72,8 @@ const NAV_ICONS = {
     audit:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
     settings:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
     vozila:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+    webscraping:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+    catalog:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7"/><path d="m2 7 2.5-4h15L22 7"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="7" x2="21" y2="7"/></svg>`,
 };
 
 function renderShell() {
@@ -103,6 +107,10 @@ function renderShell() {
           <div class="adm-nav-group-label">Katalog</div>
           ${navItem('taxonomy',     'taxonomy',  'Taksonomija vozil')}
           ${navItem('vozila-uvoz',  'vozila',    'Vnos vozil (Excel)')}
+
+          <div class="adm-nav-group-label">Cenik (Gume in deli)</div>
+          ${navItem('webscraping',  'webscraping', 'Webscraping')}
+          ${navItem('catalog',      'catalog',     'Katalog izdelkov')}
 
           <div class="adm-nav-group-label">Sistem</div>
           ${navItem('analytics',    'analytics', 'Analitika')}
@@ -181,6 +189,8 @@ const sections = {
     users:        renderUsers,
     taxonomy:     renderTaxonomy,
     'vozila-uvoz': renderVozilaUvoz,
+    webscraping:  renderWebscraping,
+    catalog:      renderCatalog,
     featured:     renderFeatured,
     reports:      renderReports,
     analytics:    renderAnalytics,
@@ -2239,6 +2249,281 @@ async function renderSettings() {
     } catch (e) {
         document.getElementById('settings-form-wrap').innerHTML = errBox(e);
     }
+}
+
+// ── WEBSCRAPING: approved sources ─────────────────────────────────────────────
+function scrapingCatLabel(cat) {
+    return { deli: 'Deli', gume: 'Gume', oboje: 'Deli in gume' }[cat] || cat || '—';
+}
+
+async function renderWebscraping() {
+    const c = document.getElementById('adm-content');
+    c.innerHTML = `
+      <div class="adm-card">
+        <div class="adm-card-header">
+          <h3>Webscraping — odobreni viri</h3>
+          <button class="adm-btn adm-btn-primary" id="ws-add">+ Dodaj vir</button>
+        </div>
+        <p style="padding:0 1.5rem 1rem;color:#6b7280;font-size:.85rem;">
+          Seznam domen, za katere imate <strong>pisno dovoljenje</strong> za zajem cen. Samo viri označeni z
+          <em>Odobreno = DA</em> bodo zajeti, ko bo postavljen webscraping backend (gl. <code>docs/WEBSCRAPING_HANDOFF.md</code>).
+        </p>
+        <div class="adm-table-wrap" id="ws-table-wrap"><div class="adm-loading"><div class="adm-spinner"></div></div></div>
+      </div>`;
+    document.getElementById('ws-add').addEventListener('click', () => openScrapingSourceModal(null));
+    loadScrapingSourcesTable();
+}
+
+async function loadScrapingSourcesTable() {
+    const wrap = document.getElementById('ws-table-wrap');
+    if (!wrap) return;
+    try {
+        const sources = await getScrapingSources();
+        if (!sources.length) {
+            wrap.innerHTML = `<div style="padding:2.5rem;text-align:center;color:#9ca3af;">Ni dodanih virov. Kliknite "+ Dodaj vir".</div>`;
+            return;
+        }
+        wrap.innerHTML = `<table class="adm-table">
+          <thead><tr><th>Domena</th><th>Naziv</th><th>Kategorija</th><th>Odobreno</th><th>Status</th><th>Zadnji zajem</th><th>Akcije</th></tr></thead>
+          <tbody>
+            ${sources.map(s => `<tr>
+              <td><strong>${escHtml(s.domain || '')}</strong></td>
+              <td style="font-size:.85rem">${escHtml(s.name || '—')}</td>
+              <td>${scrapingCatLabel(s.category)}</td>
+              <td>${s.approved ? '<span class="adm-badge adm-badge-green">DA</span>' : '<span class="adm-badge adm-badge-gray">NE</span>'}</td>
+              <td>${s.status === 'paused' ? '<span class="adm-badge adm-badge-gray">Pavza</span>' : '<span class="adm-badge adm-badge-blue">Aktiven</span>'}</td>
+              <td style="font-size:.8rem">${s.lastScrapedAt ? fmtDate(s.lastScrapedAt) : '—'}</td>
+              <td style="white-space:nowrap">
+                <button class="adm-btn adm-btn-xs" data-edit="${s.id}">Uredi</button>
+                <button class="adm-btn adm-btn-xs ${s.approved ? '' : 'adm-btn-green'}" data-toggle="${s.id}">${s.approved ? 'Prekliči' : 'Odobri'}</button>
+                <button class="adm-btn adm-btn-xs adm-btn-red" data-del="${s.id}">Izbriši</button>
+              </td>
+            </tr>`).join('')}
+          </tbody></table>`;
+
+        wrap.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () =>
+            openScrapingSourceModal(sources.find(x => x.id === b.dataset.edit))));
+
+        wrap.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', async () => {
+            const s = sources.find(x => x.id === b.dataset.toggle);
+            try {
+                await updateScrapingSource(s.id, { approved: !s.approved });
+                await addAuditLog(_adminUser.uid, _adminUser.displayName, 'SCRAPING_SOURCE_APPROVE', s.domain, { approved: !s.approved });
+                showToast('Posodobljeno.', 'success');
+                loadScrapingSourcesTable();
+            } catch (err) { showToast('Napaka: ' + err.message, 'error'); }
+        }));
+
+        wrap.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
+            const s = sources.find(x => x.id === b.dataset.del);
+            if (!confirm(`Izbrišem vir "${s.domain}"?`)) return;
+            try {
+                await deleteScrapingSource(s.id);
+                await addAuditLog(_adminUser.uid, _adminUser.displayName, 'SCRAPING_SOURCE_DELETE', s.domain);
+                showToast('Izbrisano.', 'success');
+                loadScrapingSourcesTable();
+            } catch (err) { showToast('Napaka: ' + err.message, 'error'); }
+        }));
+    } catch (e) {
+        wrap.innerHTML = errBox(e);
+    }
+}
+
+function openScrapingSourceModal(src) {
+    openModal(src ? 'Uredi vir' : 'Dodaj vir', `
+      <div class="adm-form-row"><label>Domena *</label>
+        <input id="ws-domain" class="adm-input" value="${escHtml(src?.domain || '')}" placeholder="npr. rezervni-deli.si"></div>
+      <div class="adm-form-row"><label>Naziv trgovine</label>
+        <input id="ws-name" class="adm-input" value="${escHtml(src?.name || '')}" placeholder="npr. Rezervni Deli d.o.o."></div>
+      <div class="adm-form-row"><label>Osnovni URL</label>
+        <input id="ws-url" class="adm-input" value="${escHtml(src?.baseUrl || '')}" placeholder="https://www.rezervni-deli.si"></div>
+      <div class="adm-form-row"><label>Kategorija</label>
+        <select id="ws-cat" class="adm-select">
+          <option value="oboje" ${src?.category === 'oboje' ? 'selected' : ''}>Deli in gume</option>
+          <option value="deli"  ${src?.category === 'deli' ? 'selected' : ''}>Deli</option>
+          <option value="gume"  ${src?.category === 'gume' ? 'selected' : ''}>Gume</option>
+        </select></div>
+      <div class="adm-form-row"><label>Opomba o dovoljenju</label>
+        <textarea id="ws-note" class="adm-input" rows="2" placeholder="npr. pisno dovoljenje 2026-05">${escHtml(src?.permissionNote || '')}</textarea></div>
+      <div class="adm-form-row adm-form-row--check"><label>Odobreno za zajem</label>
+        <input type="checkbox" id="ws-approved" ${src?.approved ? 'checked' : ''}></div>
+      <div class="adm-form-row adm-form-row--check"><label>Na pavzi</label>
+        <input type="checkbox" id="ws-paused" ${src?.status === 'paused' ? 'checked' : ''}></div>
+    `, async (el) => {
+        const domain = document.getElementById('ws-domain').value.trim();
+        if (!domain) { showToast('Domena je obvezna.', 'error'); return; }
+        const data = {
+            domain,
+            name: document.getElementById('ws-name').value,
+            baseUrl: document.getElementById('ws-url').value,
+            category: document.getElementById('ws-cat').value,
+            permissionNote: document.getElementById('ws-note').value,
+            approved: document.getElementById('ws-approved').checked,
+            status: document.getElementById('ws-paused').checked ? 'paused' : 'active',
+        };
+        try {
+            if (src) {
+                await updateScrapingSource(src.id, data);
+                await addAuditLog(_adminUser.uid, _adminUser.displayName, 'SCRAPING_SOURCE_UPDATE', domain, data);
+            } else {
+                await createScrapingSource(data);
+                await addAuditLog(_adminUser.uid, _adminUser.displayName, 'SCRAPING_SOURCE_CREATE', domain, data);
+            }
+            showToast(src ? 'Vir posodobljen.' : 'Vir dodan.', 'success');
+            el.remove();
+            loadScrapingSourcesTable();
+        } catch (err) { showToast('Napaka: ' + err.message, 'error'); }
+    });
+}
+
+// ── CATALOG: price-comparison products (manual ingestion) ─────────────────────
+function parseOffersText(text) {
+    return String(text || '').split('\n').map(line => {
+        const parts = line.split('|').map(p => p.trim());
+        if (parts.length < 3 || !parts[0]) return null;
+        const [shop, domain, price, url] = parts;
+        return { shop, domain, price: Number(String(price).replace(/[^0-9.]/g, '')) || 0, url: url || '', inStock: true };
+    }).filter(Boolean);
+}
+function offersToText(offers = []) {
+    return offers.map(o => `${o.shop || ''} | ${o.domain || ''} | ${o.price ?? ''} | ${o.url || ''}`).join('\n');
+}
+
+async function renderCatalog() {
+    const c = document.getElementById('adm-content');
+    c.innerHTML = `
+      <div class="adm-card">
+        <div class="adm-card-header">
+          <h3>Katalog izdelkov (cenik)</h3>
+          <button class="adm-btn adm-btn-primary" id="cat-add">+ Dodaj izdelek</button>
+        </div>
+        <p style="padding:0 1.5rem 1rem;color:#6b7280;font-size:.85rem;">
+          Ročni vnos izdelkov in ponudb trgovin za primerjavo cen ("od X€"). Do vzpostavitve webscraping backenda
+          se na strani <em>Gume in deli</em> prikazujejo mock + ročno vneseni izdelki.
+        </p>
+        <div class="adm-table-wrap" id="cat-table-wrap"><div class="adm-loading"><div class="adm-spinner"></div></div></div>
+      </div>`;
+    document.getElementById('cat-add').addEventListener('click', () => openCatalogModal(null));
+    loadCatalogTable();
+}
+
+async function loadCatalogTable() {
+    const wrap = document.getElementById('cat-table-wrap');
+    if (!wrap) return;
+    try {
+        const products = await getCatalogProductsAdmin();
+        if (!products.length) {
+            wrap.innerHTML = `<div style="padding:2.5rem;text-align:center;color:#9ca3af;">Ni ročno vnesenih izdelkov. (Na strani Gume in deli so vseeno vidni mock izdelki.)</div>`;
+            return;
+        }
+        wrap.innerHTML = `<table class="adm-table">
+          <thead><tr><th>Naziv</th><th>Tip</th><th>Vozilo</th><th>Najnižja cena</th><th>Ponudbe</th><th>Status</th><th>Akcije</th></tr></thead>
+          <tbody>
+            ${products.map(p => `<tr>
+              <td><strong>${escHtml(p.title || '')}</strong><br><small style="color:#6b7280">${escHtml(p.brand || '')}</small></td>
+              <td>${p.itemType === 'tire' ? 'Guma' : 'Del'}</td>
+              <td style="font-size:.8rem">${escHtml(p.vehicleCategory || '')}</td>
+              <td>${p.lowestPrice != null ? fmtPrice(p.lowestPrice) : '—'}</td>
+              <td>${p.offerCount ?? (p.offers || []).length}</td>
+              <td>${p.status === 'hidden' ? '<span class="adm-badge adm-badge-gray">Skrit</span>' : '<span class="adm-badge adm-badge-green">Aktiven</span>'}</td>
+              <td style="white-space:nowrap">
+                <button class="adm-btn adm-btn-xs" data-edit="${p.id}">Uredi</button>
+                <button class="adm-btn adm-btn-xs adm-btn-red" data-del="${p.id}">Izbriši</button>
+              </td>
+            </tr>`).join('')}
+          </tbody></table>`;
+
+        wrap.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () =>
+            openCatalogModal(products.find(x => x.id === b.dataset.edit))));
+        wrap.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
+            const p = products.find(x => x.id === b.dataset.del);
+            if (!confirm(`Izbrišem izdelek "${p.title}"?`)) return;
+            try {
+                await deleteCatalogProduct(p.id);
+                await addAuditLog(_adminUser.uid, _adminUser.displayName, 'CATALOG_DELETE', p.title);
+                showToast('Izbrisano.', 'success');
+                loadCatalogTable();
+            } catch (err) { showToast('Napaka: ' + err.message, 'error'); }
+        }));
+    } catch (e) {
+        wrap.innerHTML = errBox(e);
+    }
+}
+
+function openCatalogModal(prod) {
+    const a = prod?.attributes || {};
+    openModal(prod ? 'Uredi izdelek' : 'Dodaj izdelek', `
+      <div class="adm-form-row"><label>Naziv *</label>
+        <input id="cat-title" class="adm-input" value="${escHtml(prod?.title || '')}" placeholder="npr. Michelin Primacy 4 205/55 R16"></div>
+      <div class="adm-form-row"><label>Znamka</label>
+        <input id="cat-brand" class="adm-input" value="${escHtml(prod?.brand || '')}" placeholder="npr. Michelin"></div>
+      <div class="adm-form-row"><label>Tip</label>
+        <select id="cat-type" class="adm-select">
+          <option value="part" ${prod?.itemType === 'part' ? 'selected' : ''}>Del</option>
+          <option value="tire" ${prod?.itemType === 'tire' ? 'selected' : ''}>Guma</option>
+        </select></div>
+      <div class="adm-form-row"><label>Vozilo</label>
+        <select id="cat-vehcat" class="adm-select">
+          <option value="avto"        ${prod?.vehicleCategory === 'avto' ? 'selected' : ''}>Avtomobili</option>
+          <option value="moto"        ${prod?.vehicleCategory === 'moto' ? 'selected' : ''}>Motorna kolesa</option>
+          <option value="gospodarska" ${prod?.vehicleCategory === 'gospodarska' ? 'selected' : ''}>Gospodarska</option>
+          <option value="prosti-cas"  ${prod?.vehicleCategory === 'prosti-cas' ? 'selected' : ''}>Prosti čas</option>
+        </select></div>
+      <div class="adm-form-row"><label>Slika (URL)</label>
+        <input id="cat-img" class="adm-input" value="${escHtml(prod?.imageUrl || '')}" placeholder="https://…"></div>
+
+      <div class="adm-form-row"><label>Atributi gume: dimenzija</label>
+        <input id="cat-size" class="adm-input" value="${escHtml(a.size || '')}" placeholder="205/55 R16"></div>
+      <div class="adm-form-row"><label>Atributi gume: sezona</label>
+        <select id="cat-season" class="adm-select">
+          <option value="">—</option>
+          <option value="letne"     ${a.season === 'letne' ? 'selected' : ''}>Letne</option>
+          <option value="zimske"    ${a.season === 'zimske' ? 'selected' : ''}>Zimske</option>
+          <option value="celoletne" ${a.season === 'celoletne' ? 'selected' : ''}>Celoletne</option>
+        </select></div>
+      <div class="adm-form-row"><label>Atributi dela: sklop / vrsta / OEM</label>
+        <input id="cat-pgroup" class="adm-input" style="margin-bottom:.4rem" value="${escHtml(a.partGroup || '')}" placeholder="sklop (npr. zavore)">
+        <input id="cat-ptype"  class="adm-input" style="margin-bottom:.4rem" value="${escHtml(a.partType || '')}" placeholder="vrsta (npr. ploscice)">
+        <input id="cat-oem"    class="adm-input" value="${escHtml(a.oemNumber || '')}" placeholder="OEM številka"></div>
+
+      <div class="adm-form-row"><label>Ponudbe trgovin (1 vrstica = Naziv | domena | cena | url)</label>
+        <textarea id="cat-offers" class="adm-input" rows="5" placeholder="Pnevmatike24 | pnevmatike24.si | 89 | https://...">${escHtml(offersToText(prod?.offers))}</textarea></div>
+      <div class="adm-form-row adm-form-row--check"><label>Skrij izdelek</label>
+        <input type="checkbox" id="cat-hidden" ${prod?.status === 'hidden' ? 'checked' : ''}></div>
+    `, async (el) => {
+        const title = document.getElementById('cat-title').value.trim();
+        if (!title) { showToast('Naziv je obvezen.', 'error'); return; }
+        const itemType = document.getElementById('cat-type').value;
+        const attributes = itemType === 'tire'
+            ? { size: document.getElementById('cat-size').value.trim(), season: document.getElementById('cat-season').value }
+            : {
+                partGroup: document.getElementById('cat-pgroup').value.trim(),
+                partType: document.getElementById('cat-ptype').value.trim(),
+                oemNumber: document.getElementById('cat-oem').value.trim(),
+            };
+        const data = {
+            title,
+            brand: document.getElementById('cat-brand').value.trim(),
+            itemType,
+            vehicleCategory: document.getElementById('cat-vehcat').value,
+            imageUrl: document.getElementById('cat-img').value.trim(),
+            attributes,
+            offers: parseOffersText(document.getElementById('cat-offers').value),
+            status: document.getElementById('cat-hidden').checked ? 'hidden' : 'active',
+        };
+        try {
+            if (prod) {
+                await updateCatalogProduct(prod.id, data);
+                await addAuditLog(_adminUser.uid, _adminUser.displayName, 'CATALOG_UPDATE', title, { offers: data.offers.length });
+            } else {
+                await createCatalogProduct(data);
+                await addAuditLog(_adminUser.uid, _adminUser.displayName, 'CATALOG_CREATE', title, { offers: data.offers.length });
+            }
+            showToast(prod ? 'Izdelek posodobljen.' : 'Izdelek dodan.', 'success');
+            el.remove();
+            loadCatalogTable();
+        } catch (err) { showToast('Napaka: ' + err.message, 'error'); }
+    });
 }
 
 // ══════════════════════════════════════════════════════════════════════════════

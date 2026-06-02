@@ -306,7 +306,6 @@ function renderCarCard(car) {
                     ${getYearPill(car.year)}
                     ${getKmPill(car.mileage)}
                     ${getPowerPill(car.powerKw)}
-                    ${getDisplacementPill(car.engineCc)}
                 </div>
 
                 <div class="listing-card-actions">
@@ -325,6 +324,7 @@ function renderCarCard(car) {
             <div class="listing-card-specs">
                 <div class="spec-row secondary">
                     <div class="spec-group-left">
+                        ${getDisplacementPill(car.engineCc)}
                         ${getFuelPill(car)}
                         ${getTransmissionPill(car)}
                         ${getConsumptionPill(car)}
@@ -391,7 +391,7 @@ window.showContactPopup = function (carId) {
                     </div>
                 </div>` : ''}
 
-                ${car.sellerType !== 'dealer' && car.sellerNote ? `
+                ${car.sellerNote ? `
                 <div class="contact-popup-footer-row">
                     <i data-lucide="info" class="footer-row-icon"></i>
                     <div>
@@ -759,7 +759,8 @@ async function initSidebarFiltering() {
     // 1. Fetch all listings
     try {
         const userListings = await getListings();
-        _allActiveListings = [...sampleCars, ...userListings];
+        // Exclude parts & tires — those live under "Gume in deli", not the vehicle feed.
+        _allActiveListings = [...sampleCars, ...userListings].filter(l => !l.itemType || l.itemType === 'vehicle');
     } catch (e) {
         console.error("Failed to load user listings, using sampleCars only:", e);
         _allActiveListings = sampleCars;
