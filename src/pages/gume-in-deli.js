@@ -10,6 +10,8 @@ import { t } from '../core/i18n.js';
 import { getListings } from '../services/listingService.js';
 import { getCatalogProducts, getLowestPrice } from '../services/catalogService.js';
 import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes } from '../data/partTypes.js';
+import { initCustomSelects } from '../utils/customSelect.js';
+import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 
 // ── Module state ──────────────────────────────────────────────────────────────
 let state = {
@@ -31,6 +33,7 @@ export async function initGumeInDeliPage() {
     state = { itemType: 'tire', vehicleCategory: 'avto', source: 'all', filters: {} };
 
     renderShell(root);
+    initCustomSelects();
     bindChrome();
 
     // Load tire brand list (best-effort)
@@ -60,32 +63,32 @@ async function loadData() {
     }
 }
 
+
+
 // ── Shell ─────────────────────────────────────────────────────────────────────
 function renderShell(root) {
     const itemBtn = (type, icon, label) => `
         <button type="button" class="gd-itemtype-btn ${state.itemType === type ? 'active' : ''}" data-item="${type}">
-            <i data-lucide="${icon}"></i> ${label}
+            <i data-lucide="${icon}"></i> <span>${label}</span>
         </button>`;
 
     const vehCard = (vc) => `
-        <button type="button" class="gd-vehcat-card ${state.vehicleCategory === vc.value ? 'active' : ''}" data-vehcat="${vc.value}">
+        <button type="button" class="tab-btn ${state.vehicleCategory === vc.value ? 'active' : ''}" data-vehcat="${vc.value}" title="${vc.label}">
             <i data-lucide="${vc.icon}"></i>
             <span>${vc.label}</span>
         </button>`;
 
     root.innerHTML = `
-        <div class="gd-hero glass-card">
-            <h1 class="gd-title">${t('gd_title', 'Gume in deli')}</h1>
-            <p class="gd-subtitle">${t('gd_subtitle', 'Iskanje rabljenih in novih delov ter pnevmatik')}</p>
+        <div class="gd-hero-container">
+
+            <div class="glass-card rounded-pill tabs-glass" id="gdVehCat" style="width:fit-content; margin-inline:auto; margin-bottom:1.5rem;">
+                ${VEHICLE_CATEGORIES.map(vehCard).join('')}
+            </div>
 
             <div class="gd-itemtype-toggle" id="gdItemType">
                 ${itemBtn('tire', 'disc-3', t('gd_item_tires', 'Gume'))}
                 ${itemBtn('part', 'wrench', t('gd_item_parts', 'Deli'))}
-            </div>
-
-            <div class="gd-vehcat-label">${t('gd_choose_vehicle_cat', 'Za katero vozilo?')}</div>
-            <div class="gd-vehcat-grid" id="gdVehCat">
-                ${VEHICLE_CATEGORIES.map(vehCard).join('')}
+                ${state.vehicleCategory === 'moto' ? itemBtn('oprema', 'shield', t('cl_step_features', 'Oprema')) : ''}
             </div>
         </div>
 
@@ -111,7 +114,6 @@ function renderShell(root) {
             </main>
         </div>
     `;
-
     if (window.lucide) window.lucide.createIcons();
 }
 
@@ -120,22 +122,40 @@ function bindChrome() {
     document.getElementById('gdItemType')?.addEventListener('click', (e) => {
         const btn = e.target.closest('.gd-itemtype-btn');
         if (!btn) return;
-        state.itemType = btn.dataset.item;
-        state.filters = {};
+        const type = btn.dataset.item;
+        
+        if (type === 'oprema') {
+             state.itemType = 'part';
+             state.filters = { partGroup: 'oprema_voznika' };
+        } else {
+             state.itemType = type;
+             state.filters = {};
+        }
+
         document.querySelectorAll('#gdItemType .gd-itemtype-btn').forEach(b => b.classList.toggle('active', b === btn));
         renderFilters();
         applyAndRender();
     });
 
-    // Vehicle category cards
+    // Vehicle category tabs
     document.getElementById('gdVehCat')?.addEventListener('click', (e) => {
-        const card = e.target.closest('.gd-vehcat-card');
+        const card = e.target.closest('.tab-btn');
         if (!card) return;
         state.vehicleCategory = card.dataset.vehcat;
+        
+        // Reset item type to tire on vehicle change if on oprema
+        if (state.itemType === 'part' && state.filters.partGroup === 'oprema_voznika' && state.vehicleCategory !== 'moto') {
+            state.itemType = 'tire';
+        }
+        
         // Part group/type are vehicle-specific — reset them
-        delete state.filters.partGroup;
-        delete state.filters.partType;
-        document.querySelectorAll('#gdVehCat .gd-vehcat-card').forEach(c => c.classList.toggle('active', c === card));
+        state.filters = {};
+        
+        // Re-render shell to show/hide Moto Oprema button
+        const root = document.getElementById('gd-root');
+        renderShell(root);
+        bindChrome();
+        
         renderFilters();
         applyAndRender();
     });
@@ -162,6 +182,8 @@ function renderFilters() {
     if (!box) return;
     box.innerHTML = state.itemType === 'tire' ? tireFiltersHtml() : partFiltersHtml();
     if (window.lucide) window.lucide.createIcons({ scope: box });
+    initCustomSelects();
+    box.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
     bindFilters();
 }
 
@@ -181,9 +203,9 @@ function tireFiltersHtml() {
         <div class="gd-filter-group">
             <label class="gd-flabel">${t('gd_tire_size', 'Dimenzija')}</label>
             <div class="gd-dim-row">
-                <select class="glass-select" id="fW"><option value="">${t('gd_tire_width', 'Širina')}</option>${widths.map(w => opt(w, f.width)).join('')}</select>
-                <select class="glass-select" id="fA"><option value="">${t('gd_tire_aspect', 'Profil')}</option>${aspects.map(a => opt(a, f.aspect)).join('')}</select>
-                <select class="glass-select" id="fR"><option value="">R</option>${rims.map(r => opt(r, f.rim)).join('')}</select>
+                <select class="glass-select" id="fW" data-no-search="true"><option value="">${t('gd_tire_width', 'Širina')}</option>${widths.map(w => opt(w, f.width)).join('')}</select>
+                <select class="glass-select" id="fA" data-no-search="true"><option value="">${t('gd_tire_aspect', 'Profil')}</option>${aspects.map(a => opt(a, f.aspect)).join('')}</select>
+                <select class="glass-select" id="fR" data-no-search="true"><option value="">R</option>${rims.map(r => opt(r, f.rim)).join('')}</select>
             </div>
         </div>
 
@@ -263,8 +285,8 @@ function priceRangeHtml(f) {
         <div class="gd-filter-group">
             <label class="gd-flabel">${t('gd_price', 'Cena (€)')}</label>
             <div class="gd-dim-row">
-                <input type="number" class="pill-input" id="fPriceFrom" value="${escAttr(f.priceFrom || '')}" placeholder="${t('gd_from', 'od')}" />
-                <input type="number" class="pill-input" id="fPriceTo" value="${escAttr(f.priceTo || '')}" placeholder="${t('gd_to', 'do')}" />
+                <input type="text" class="pill-input js-format-number" id="fPriceFrom" value="${escAttr(f.priceFrom || '')}" placeholder="${t('gd_from', 'od')}" />
+                <input type="text" class="pill-input js-format-number" id="fPriceTo" value="${escAttr(f.priceTo || '')}" placeholder="${t('gd_to', 'do')}" />
             </div>
         </div>`;
 }
@@ -339,8 +361,8 @@ function matchesPeer(l) {
     if ((l.vehicleCategory || l.category) !== state.vehicleCategory) return false;
 
     const price = num(l.priceEur ?? l.price);
-    if (f.priceFrom && price != null && price < num(f.priceFrom)) return false;
-    if (f.priceTo && price != null && price > num(f.priceTo)) return false;
+    if (f.priceFrom && price != null && price < parseFormattedNumber(f.priceFrom)) return false;
+    if (f.priceTo && price != null && price > parseFormattedNumber(f.priceTo)) return false;
 
     if (f.conditions && f.conditions.length && !f.conditions.includes(l.condition)) return false;
 
@@ -366,8 +388,8 @@ function matchesCatalog(p) {
 
     const a = p.attributes || {};
     const price = getLowestPrice(p);
-    if (f.priceFrom && price != null && price < num(f.priceFrom)) return false;
-    if (f.priceTo && price != null && price > num(f.priceTo)) return false;
+    if (f.priceFrom && price != null && price < parseFormattedNumber(f.priceFrom)) return false;
+    if (f.priceTo && price != null && price > parseFormattedNumber(f.priceTo)) return false;
 
     if (state.itemType === 'tire') {
         if (f.width && String(a.width) !== String(f.width)) return false;

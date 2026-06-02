@@ -336,6 +336,13 @@ function setupFilters() {
     // Reset
     document.getElementById('resetFiltersBtn')?.addEventListener('click', resetFilters);
 
+    // Search
+    document.getElementById('searchFiltersBtn')?.addEventListener('click', () => {
+        applyFilters();
+        document.getElementById('mapFilters')?.classList.add('collapsed');
+        closeMobileDrawer();
+    });
+
     // Collapse toggle
     document.getElementById('mapFiltersToggle')?.addEventListener('click', function () {
         const el = document.getElementById('mapFilters');

@@ -223,6 +223,16 @@
     #vehicleCards:empty {
         margin-bottom: 0 !important;
     }
+
+    .adv-chip.adv-chip-sm {
+        border-radius: 9999px !important;
+    }
+
+    #exhaust-brand-sub .custom-select-container {
+        width: fit-content !important;
+        min-width: 180px !important;
+        display: inline-block !important;
+    }
 </style>
 
 <div class="search-container" style="max-width:1060px; margin:3rem auto; padding:0 1rem;">
@@ -861,12 +871,7 @@
                             <label class="adv-chip" style="display:inline-flex;">
                                 <input type="checkbox" name="features" value="SportExhaust" id="sport-exhaust-check"> Športni izpuh
                             </label>
-                            <div id="exhaust-brand-sub" style="display:none; margin-top:0.5rem; padding-left:1.5rem; border-left:2px solid rgba(0,0,0,0.05);">
-                                <div class="adv-chip-group" style="gap:0.4rem; margin-bottom:0.5rem;">
-                                    <label class="adv-chip"><input type="radio" name="exhaustType" value="" checked> Vse vrste</label>
-                                    <label class="adv-chip"><input type="radio" name="exhaustType" value="slip-on"> Slip-on</label>
-                                    <label class="adv-chip"><input type="radio" name="exhaustType" value="full-system"> Full System</label>
-                                </div>
+                            <div id="exhaust-brand-sub" style="display:none; margin-top:0.5rem;">
                                 <select name="exhaustBrand" id="exhaust-brand-select" class="glass-select" style="width:auto !important; max-width:fit-content; display:inline-block;" data-no-search="true">
                                     <option value="">Vse znamke izpuhov</option>
                                 </select>
@@ -874,7 +879,7 @@
                         </div>
 
                         <!-- 6-axis IMU with Info logic -->
-                        <div class="adv-toggle-row" style="width:100%; margin-top:0.5rem;">
+                        <div class="adv-toggle-row" style="width:fit-content; border-radius:9999px; gap:1.5rem; margin-top:0.5rem;">
                             <div class="adv-toggle-label">
                                 <i data-lucide="zap"></i>
                                 <span>6-osni IMU</span>
@@ -891,13 +896,13 @@
 
                         <div class="adv-chip-group"
                             style="padding-left:1.5rem; border-left:2px solid rgba(0,0,0,0.05); margin-top:0.5rem;">
-                            <label class="adv-chip"><input type="checkbox" name="features" value="TractionControl"
+                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="TractionControl"
                                     class="imu-sub"> Nadzor zdrsa</label>
-                            <label class="adv-chip"><input type="checkbox" name="features" value="AntiWheelie"
+                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="AntiWheelie"
                                     class="imu-sub"> Anti-Wheelie</label>
-                            <label class="adv-chip"><input type="checkbox" name="features" value="CorneringABS"
+                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="CorneringABS"
                                     class="imu-sub"> Cornering ABS</label>
-                            <label class="adv-chip"><input type="checkbox" name="features" value="LinkedBraking"
+                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="LinkedBraking"
                                     class="imu-sub"> Povezano zaviranje</label>
                         </div>
                     </div>

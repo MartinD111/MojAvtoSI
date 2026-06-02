@@ -243,13 +243,17 @@ function bindSearchLogic(catContext) {
         btn.addEventListener('click', () => {
             tabBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            allBodyTypeCards.forEach(c => c.classList.remove('active'));
-            bodyTypeHidden.value = '';
+            
+            // Clear current makes & models selection
+            vehicles = [];
+            
             activeTab = btn.dataset.tab;
             showGridForTab(activeTab);
             toggleVehicleSpecificFields(activeTab);
             fetchBrandData(activeTab);
-            updateLiveCount();
+            
+            // Reset the search form to default
+            searchForm.reset();
         });
     });
 
@@ -351,6 +355,17 @@ function bindSearchLogic(catContext) {
         }
         // Auto-select the body-type card from the taxonomy (cars only)
         autoSelectBodyType(mk, md);
+    });
+    
+    variantSelect.addEventListener("change", () => {
+        const make = makeSelect.value;
+        const model = modelSelect.value;
+        const variant = variantSelect.value;
+        if (make && model && variant) {
+            if (addVehicleBtn) {
+                addVehicleBtn.click();
+            }
+        }
     });
 
     // ── Auto-select the matching VRSTA VOZILA card when a known model is chosen ──
@@ -548,14 +563,15 @@ function bindSearchLogic(catContext) {
 
     searchForm.addEventListener("submit", e => {
         e.preventDefault();
-        // Preserve category context in URL when navigating to results
+        // Set category to current active tab
         const params = new URLSearchParams();
-        if (catContext.cat) params.set('cat', catContext.cat);
-        if (catContext.sub) params.set('sub', catContext.sub);
-        if (catContext.searchType) params.set('searchType', catContext.searchType);
-        if (catContext.vtype) params.set('vtype', catContext.vtype);
-        if (catContext.najem) params.set('najem', catContext.najem);
-        params.set('tab', activeTab);
+        params.set('cat', activeTab);
+        if (activeTab === catContext.cat) {
+            if (catContext.sub) params.set('sub', catContext.sub);
+            if (catContext.searchType) params.set('searchType', catContext.searchType);
+            if (catContext.vtype) params.set('vtype', catContext.vtype);
+            if (catContext.najem) params.set('najem', catContext.najem);
+        }
 
         if (vehicles.length > 0) {
             params.set('vehicles', JSON.stringify(vehicles));
@@ -571,6 +587,38 @@ function bindSearchLogic(catContext) {
         // Collect selected body types
         const selectedBT = bodyTypeHidden.value;
         if (selectedBT) params.set('bodyTypes', selectedBT);
+
+        const fd = new FormData(searchForm);
+
+        // Price From/To
+        const priceFrom = parseFormattedNumber(fd.get('priceFrom'));
+        const priceTo = parseFormattedNumber(fd.get('priceTo'));
+        if (priceFrom) params.set('priceFrom', priceFrom);
+        if (priceTo) params.set('priceTo', priceTo);
+
+        // Year From/To
+        const yearFrom = fd.get('yearFrom');
+        const yearTo = fd.get('yearTo');
+        if (yearFrom) params.set('yearFrom', yearFrom);
+        if (yearTo) params.set('yearTo', yearTo);
+
+        // Mileage From/To
+        const mileageFrom = parseFormattedNumber(fd.get('mileageFrom'));
+        const mileageTo = parseFormattedNumber(fd.get('mileageTo'));
+        if (mileageFrom) params.set('mileageFrom', mileageFrom);
+        if (mileageTo) params.set('mileageTo', mileageTo);
+
+        // Fuel
+        const fuels = fd.getAll('fuel').filter(Boolean);
+        if (fuels.length > 0) {
+            params.set('fuel', fuels.join(','));
+        }
+
+        // Transmission
+        const transmission = fd.get('transmission');
+        if (transmission) {
+            params.set('transmission', transmission);
+        }
 
         const paramStr = params.toString();
         window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
@@ -590,9 +638,9 @@ function matchesFilters(l, filters) {
 
     // Category-level filtering
     if (filters.activeTab) {
-        // Map tab to listing category if the listing has a category field
-        // This allows filtering by main category once listings carry that metadata
-        if (l.category && l.category !== filters.activeTab) return false;
+        const carCat = (l.category === 'motor' || l.category === 'moto') ? 'moto' : l.category;
+        const filterCat = (filters.activeTab === 'motor' || filters.activeTab === 'moto') ? 'moto' : filters.activeTab;
+        if (carCat && carCat !== filterCat) return false;
     }
 
     // Vehicle multi-match (OR between entries)

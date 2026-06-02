@@ -44,7 +44,7 @@ function clearDraft() {
 // Formatter functions removed in favor of import from inputFormatters.js
 const formatNumberWithCommas = (n) => {
     if (n === null || n === undefined || n === '') return '';
-    return new Intl.NumberFormat('en-US').format(parseInt(n.toString().replace(/\D/g, ''), 10) || 0);
+    return new Intl.NumberFormat('sl-SI').format(parseInt(n.toString().replace(/\D/g, ''), 10) || 0);
 };
 
 // ── Step definitions ──────────────────────────────────────────────────────────

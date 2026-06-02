@@ -33,6 +33,17 @@
                     </select>
                 </div>
 
+                <!-- Različica -->
+                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Različica</label>
+                    <select id="sidebarVariant" name="variant" class="glass-select" disabled>
+                        <option value="">Vse različice</option>
+                    </select>
+                </div>
+
+                <!-- Dodana vozila (Multi-search chips) -->
+                <div id="sidebarVehicleCards" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.25rem;"></div>
+
                 <!-- Letnik od / do -->
                 <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                     <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Letnik</label>
@@ -49,7 +60,7 @@
                 <!-- Cena do -->
                 <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                     <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Cena do (€)</label>
-                    <input type="number" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20000" class="pill-input" style="width:100%; box-sizing:border-box;">
+                    <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20.000 €" class="pill-input js-format-number" style="width:100%; box-sizing:border-box;" inputmode="numeric">
                 </div>
 
                 <!-- Gorivo -->
@@ -193,7 +204,7 @@
                 <span class="legend-pill-demo"
                     style="background:rgba(241,245,249,0.5);border-color:#e2e8f0;color:#475569;">
                     <i data-lucide="layers" style="width:13px;height:13px;"></i>
-                    M/A
+                    R/A
                 </span>
                 <span class="legend-row-desc">Transmission (Manual / Automatic)</span>
             </div>

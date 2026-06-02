@@ -163,7 +163,7 @@ export function getTransmissionPill(car) {
     let typeCls = 'type-auto';
 
     if (t.includes('roč') || t.includes('manual')) {
-        code = 'M';
+        code = 'R';
         label = 'Manual';
         typeCls = 'type-manual';
     }

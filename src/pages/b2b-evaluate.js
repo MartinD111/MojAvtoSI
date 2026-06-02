@@ -292,5 +292,5 @@ function escHtml(str) {
 
 function formatNumberWithCommas(n) {
     if (!n) return "";
-    return new Intl.NumberFormat('en-US').format(n);
+    return new Intl.NumberFormat('sl-SI').format(n);
 }

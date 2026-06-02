@@ -24,6 +24,8 @@ import {
 } from '../utils/listingUtils.js';
 
 import { getVehicleRating } from '../utils/valuationScore.js';
+import { getModelVariants } from '../utils/bodyType.js';
+import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 
 // ── Render star SVG (sm size, inline) ────────────────────────
 function renderStarBadge(stars) {
@@ -641,7 +643,9 @@ function applyUrlFilters(params) {
     const mileageTo = parseInt(params.get('mileageTo'), 10) || Infinity;
 
     const filtered = sampleCars.filter(car => {
-        if (cat && car.category !== cat) return false;
+        const carCat = (car.category === 'motor' || car.category === 'moto') ? 'moto' : car.category;
+        const filterCat = (cat === 'motor' || cat === 'moto') ? 'moto' : cat;
+        if (filterCat && carCat !== filterCat) return false;
         if (make && car.make !== make) return false;
         if (model && car.model !== model) return false;
         
@@ -698,6 +702,10 @@ export function initOglasiPage() {
 
     // Initialize dynamic sidebar filters (handles loading user listings, population, prefill & events)
     initSidebarFiltering();
+
+    // Setup numeric formatters
+    document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
+
 
     if (window.updateHeaderCompare) window.updateHeaderCompare();
 
@@ -803,6 +811,7 @@ async function initSidebarFiltering() {
 
     // 3. Bind events
     const modelSelect = document.getElementById("sidebarModel");
+    const variantSelect = document.getElementById("sidebarVariant");
     const form = document.getElementById("sidebarFiltersForm");
     const resetBtn = document.getElementById("sidebarResetBtn");
 
@@ -811,6 +820,11 @@ async function initSidebarFiltering() {
         const brand = makeSelect.value;
         modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
         modelSelect.disabled = true;
+        
+        if (variantSelect) {
+            variantSelect.innerHTML = '<option value="">Vse različice</option>';
+            variantSelect.disabled = true;
+        }
 
         if (brand && data && data[brand]) {
             const models = data[brand];
@@ -826,12 +840,83 @@ async function initSidebarFiltering() {
 
         // Notify custom select to update
         modelSelect.dispatchEvent(new Event('change'));
+        if (variantSelect) variantSelect.dispatchEvent(new Event('change'));
         applySidebarFilters();
     });
 
+    if (modelSelect) {
+        modelSelect.addEventListener("change", () => {
+            const data = window._sidebarBrandModelData;
+            const brand = makeSelect.value;
+            const model = modelSelect.value;
+            
+            if (variantSelect) {
+                variantSelect.innerHTML = '<option value="">Vse različice</option>';
+                variantSelect.disabled = true;
+                
+                if (brand && model && data && data[brand]) {
+                    const variants = getModelVariants(data[brand][model]);
+                    variants.forEach(v => {
+                        const trim = typeof v === 'string' ? v : (v && v.trim) ? v.trim : '';
+                        if (!trim) return;
+                        const o = document.createElement("option");
+                        o.value = trim;
+                        o.textContent = trim;
+                        variantSelect.appendChild(o);
+                    });
+                    if (variants.length) variantSelect.disabled = false;
+                }
+                
+                variantSelect.dispatchEvent(new Event('change'));
+            }
+            applySidebarFilters();
+        });
+    }
+
+    if (variantSelect) {
+        variantSelect.addEventListener("change", () => {
+            if (window._isPrefilling) {
+                applySidebarFilters();
+                return;
+            }
+            
+            const make = makeSelect.value;
+            const model = modelSelect.value;
+            const variant = variantSelect.value;
+            
+            if (make && model && variant) {
+                const params = parseHashParams();
+                let vehicles = [];
+                try {
+                    const vRaw = params.get('vehicles');
+                    if (vRaw) {
+                        vehicles = JSON.parse(vRaw);
+                        if (!Array.isArray(vehicles)) vehicles = [];
+                    }
+                } catch(e) {}
+                
+                vehicles.push({ make, model, variant });
+                
+                // Clear selection dropdowns
+                makeSelect.value = '';
+                makeSelect.dispatchEvent(new Event('change'));
+                
+                params.set('vehicles', JSON.stringify(vehicles));
+                params.delete('make');
+                params.delete('model');
+                params.delete('variant');
+                
+                const paramStr = params.toString();
+                window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+            } else {
+                applySidebarFilters();
+            }
+        });
+    }
+
     if (form) {
         form.querySelectorAll("input, select").forEach(el => {
-            if (el !== makeSelect) {
+            if (el !== makeSelect && el !== modelSelect && el !== variantSelect) {
                 el.addEventListener("change", applySidebarFilters);
                 el.addEventListener("input", applySidebarFilters);
             }
@@ -846,8 +931,17 @@ async function initSidebarFiltering() {
                 modelSelect.disabled = true;
                 modelSelect.dispatchEvent(new Event('change'));
             }
+            if (variantSelect) {
+                variantSelect.innerHTML = '<option value="">Vse različice</option>';
+                variantSelect.disabled = true;
+                variantSelect.dispatchEvent(new Event('change'));
+            }
             if (makeSelect) makeSelect.dispatchEvent(new Event('change'));
-            applySidebarFilters();
+            
+            // Clear URL search params as well, except category context
+            const params = parseHashParams();
+            const cat = params.get('cat');
+            window.location.hash = `/oglasi${cat ? '?cat=' + cat : ''}`;
         });
     }
 }
@@ -855,6 +949,7 @@ async function initSidebarFiltering() {
 function applySidebarFilters() {
     const make = document.getElementById("sidebarMake")?.value || '';
     const model = document.getElementById("sidebarModel")?.value || '';
+    const variant = document.getElementById("sidebarVariant")?.value || '';
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
     const priceTo = parseInt(document.getElementById("sidebarPriceTo")?.value, 10) || Infinity;
@@ -873,13 +968,79 @@ function applySidebarFilters() {
     const params = parseHashParams();
     const cat = params.get('cat');
     const najem = params.get('najem');
+    const variantParam = params.get('variant');
+    const mileageToParam = parseInt(params.get('mileageTo'), 10) || Infinity;
+
+    // Parse multi-vehicle search array
+    let vehiclesParam = [];
+    try {
+        const vRaw = params.get('vehicles');
+        if (vRaw) {
+            vehiclesParam = JSON.parse(vRaw);
+            if (!Array.isArray(vehiclesParam)) vehiclesParam = [];
+        }
+    } catch(e) {
+        console.warn("Failed to parse vehicles query parameter:", e);
+    }
 
     const filtered = _allActiveListings.filter(car => {
-        if (cat && car.category !== cat) return false;
+        const carCat = (car.category === 'motor' || car.category === 'moto') ? 'moto' : car.category;
+        const filterCat = (cat === 'motor' || cat === 'moto') ? 'moto' : cat;
+        if (filterCat && carCat !== filterCat) return false;
         if (najem === '1' && !car.isRental) return false;
 
-        if (make && car.make !== make) return false;
-        if (model && car.model !== model) return false;
+        // Vehicle (Make / Model / Variant) filtering:
+        // Rule: If sidebar selection for make is not empty, use sidebar selections.
+        // Otherwise, if the URL contains 'vehicles' array, match against any of them.
+        // Otherwise, if URL contains 'make' or 'model', match against those (and optionally 'variant' from URL).
+        if (make) {
+            if (car.make !== make) return false;
+            if (model && car.model !== model) return false;
+            
+            // If the user selected a variant in the sidebar, filter by it.
+            // Otherwise, filter by variantParam from the URL if it matches.
+            if (variant) {
+                const titleStr = (car.title || '').toLowerCase();
+                const subtitleStr = (car.subtitle || '').toLowerCase();
+                const variantLower = variant.toLowerCase();
+                if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
+            } else {
+                const urlMake = params.get('make');
+                const urlModel = params.get('model');
+                if (make === urlMake && (!urlModel || model === urlModel) && variantParam) {
+                    const titleStr = (car.title || '').toLowerCase();
+                    const subtitleStr = (car.subtitle || '').toLowerCase();
+                    const variantLower = variantParam.toLowerCase();
+                    if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
+                }
+            }
+        } else {
+            if (vehiclesParam.length > 0) {
+                const match = vehiclesParam.some(v => {
+                    if (v.make && car.make !== v.make) return false;
+                    if (v.model && car.model !== v.model) return false;
+                    if (v.variant) {
+                        const titleStr = (car.title || '').toLowerCase();
+                        const subtitleStr = (car.subtitle || '').toLowerCase();
+                        const vLower = v.variant.toLowerCase();
+                        if (!titleStr.includes(vLower) && !subtitleStr.includes(vLower)) return false;
+                    }
+                    return true;
+                });
+                if (!match) return false;
+            } else {
+                const urlMake = params.get('make');
+                const urlModel = params.get('model');
+                if (urlMake && car.make !== urlMake) return false;
+                if (urlModel && car.model !== urlModel) return false;
+                if (variantParam) {
+                    const titleStr = (car.title || '').toLowerCase();
+                    const subtitleStr = (car.subtitle || '').toLowerCase();
+                    const variantLower = variantParam.toLowerCase();
+                    if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
+                }
+            }
+        }
 
         const carYear = parseInt(car.year, 10) || 0;
         if (carYear < yearFrom || (yearTo !== Infinity && carYear > yearTo)) return false;
@@ -887,7 +1048,14 @@ function applySidebarFilters() {
         const carPrice = car.priceRaw || car.priceEur || 0;
         if (carPrice > priceTo) return false;
 
-        if (fuels.length > 0 && !fuels.includes(car.fuel)) return false;
+        const carMileage = car.mileageKm || (parseInt(car.mileage?.replace(/[^0-9]/g, ''), 10) || 0);
+        if (carMileage > mileageToParam) return false;
+
+        if (fuels.length > 0) {
+            let normalizedCarFuel = car.fuel;
+            if (car.fuel === 'Petrol') normalizedCarFuel = 'Bencin';
+            if (!fuels.includes(normalizedCarFuel)) return false;
+        }
         if (transmissions.length > 0 && !transmissions.includes(car.transmission)) return false;
 
         return true;
@@ -902,16 +1070,78 @@ function applySidebarFilters() {
     }
 }
 
+function renderSidebarVehicleCards(vehicles) {
+    const container = document.getElementById("sidebarVehicleCards");
+    if (!container) return;
+    
+    if (!vehicles || vehicles.length === 0) {
+        container.innerHTML = "";
+        return;
+    }
+    
+    container.innerHTML = vehicles.map((v, i) => {
+        const parts = [v.make];
+        if (v.model) parts.push(v.model);
+        if (v.variant) parts.push(v.variant);
+        return `
+            <div class="vehicle-entry-card" style="margin-bottom:0.25rem;">
+                <div class="vec-info">
+                    ${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}
+                </div>
+                <button type="button" class="vec-remove" data-idx="${i}">&times;</button>
+            </div>
+        `;
+    }).join('');
+
+    container.querySelectorAll('.vec-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const idx = parseInt(btn.getAttribute('data-idx'), 10);
+            vehicles.splice(idx, 1);
+            
+            // Update URL hash with updated vehicles
+            const params = parseHashParams();
+            if (vehicles.length > 0) {
+                params.set('vehicles', JSON.stringify(vehicles));
+            } else {
+                params.delete('vehicles');
+            }
+            const paramStr = params.toString();
+            window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+        });
+    });
+}
+
 function prefillSidebarFromUrl() {
+    window._isPrefilling = true;
     const params = parseHashParams();
     const make = params.get("make");
     const model = params.get("model");
+    const variant = params.get("variant");
     const yearFrom = params.get("yearFrom");
+    const yearTo = params.get("yearTo");
     const priceTo = params.get("priceTo");
+    const fuel = params.get("fuel");
+    const transmission = params.get("transmission");
+
+    // Parse and render multi-vehicle search array
+    let vehicles = [];
+    try {
+        const vRaw = params.get('vehicles');
+        if (vRaw) {
+            vehicles = JSON.parse(vRaw);
+            if (!Array.isArray(vehicles)) vehicles = [];
+        }
+    } catch(e) {
+        console.warn("Failed to parse vehicles query parameter:", e);
+    }
+    renderSidebarVehicleCards(vehicles);
 
     const makeSelect = document.getElementById("sidebarMake");
     const modelSelect = document.getElementById("sidebarModel");
+    const variantSelect = document.getElementById("sidebarVariant");
     const yearFromSelect = document.getElementById("sidebarYearFrom");
+    const yearToSelect = document.getElementById("sidebarYearTo");
     const priceToInput = document.getElementById("sidebarPriceTo");
 
     if (make && makeSelect) {
@@ -922,7 +1152,14 @@ function prefillSidebarFromUrl() {
             if (model && modelSelect) {
                 modelSelect.value = model;
                 modelSelect.dispatchEvent(new Event('change'));
-                applySidebarFilters();
+                
+                setTimeout(() => {
+                    if (variant && variantSelect) {
+                        variantSelect.value = variant;
+                        variantSelect.dispatchEvent(new Event('change'));
+                    }
+                    applySidebarFilters();
+                }, 50);
             }
         }, 50);
     }
@@ -930,11 +1167,41 @@ function prefillSidebarFromUrl() {
         yearFromSelect.value = yearFrom;
         yearFromSelect.dispatchEvent(new Event('change'));
     }
+    if (yearTo && yearToSelect) {
+        yearToSelect.value = yearTo;
+        yearToSelect.dispatchEvent(new Event('change'));
+    }
     if (priceTo && priceToInput) {
         priceToInput.value = priceTo;
     }
 
-    applySidebarFilters();
+    if (fuel) {
+        const fuels = fuel.split(',').map(f => {
+            if (f === 'Petrol') return 'Bencin';
+            return f;
+        });
+        const fuelCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="fuel"]');
+        fuelCheckboxes.forEach(cb => {
+            cb.checked = fuels.includes(cb.value);
+        });
+    }
+
+    if (transmission) {
+        const transList = transmission.split(',');
+        const transCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="transmission"]');
+        transCheckboxes.forEach(cb => {
+            cb.checked = transList.includes(cb.value);
+        });
+    }
+
+    // Only apply immediately if make is not present (as make sets off a async populate chain)
+    if (!make) {
+        applySidebarFilters();
+    }
+
+    setTimeout(() => {
+        window._isPrefilling = false;
+    }, 200);
 }
 
 export function destroyOglasiPage() {
