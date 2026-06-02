@@ -365,6 +365,7 @@
   "dashboard_cancel_booking_confirm": "Ali ste prepričani, da želite preklicati to rezervacijo?",
   "dashboard_service_book_empty": "Servisna knjižica je prazna — vsak opravljen servis bo shranjen tukaj.",
   "cl_draft_found": "Najden je nedokončan oglas. Želite nadaljevati?",
+  "cl_select": "Izberite",
   "cl_step_korak": "Korak",
   "cl_step_entry_title": "Objava vozila",
   "cl_step_entry_sub": "Izberite tip prodajalca in način vnosa podatkov.",

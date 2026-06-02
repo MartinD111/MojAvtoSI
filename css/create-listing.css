@@ -592,7 +592,9 @@ body.dark-mode .cl-subcategory-pill {
 }
 
 .cl-subcategory-pill:hover,
-.cl-subcategory-pill.selected {
+.cl-subcategory-pill.selected,
+body.dark-mode .cl-subcategory-pill:hover,
+body.dark-mode .cl-subcategory-pill.selected {
     background: var(--color-primary-start);
     border-color: var(--color-primary-start);
     color: #fff;
@@ -650,12 +652,14 @@ body.dark-mode .cl-chip {
     color: #94a3b8;
 }
 
-.cl-chip:hover {
+.cl-chip:hover,
+body.dark-mode .cl-chip:hover {
     border-color: var(--color-primary-start);
     color: var(--color-primary-start);
 }
 
-.cl-chip.active {
+.cl-chip.active,
+body.dark-mode .cl-chip.active {
     background: var(--color-primary-start);
     border-color: transparent;
     color: #fff;
@@ -1325,4 +1329,24 @@ body.dark-mode .cl-unit-btn.active {
 .cl-autofilled {
     border-color: #2563eb !important;
     background: rgba(37, 99, 235, 0.05) !important;
+}
+
+.cl-autofill-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #2563eb;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    pointer-events: auto;
+    z-index: 10;
 }

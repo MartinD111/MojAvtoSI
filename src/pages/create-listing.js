@@ -188,6 +188,15 @@ function applyTrimAutoFill(selectedTrim, make, model) {
         if (el) {
             el.value = value;
             el.classList.add('cl-autofilled');
+            const wrap = el.closest('.cl-field');
+            if (wrap && !wrap.querySelector('.cl-autofill-icon')) {
+                wrap.style.position = 'relative';
+                const icon = document.createElement('div');
+                icon.className = 'cl-autofill-icon';
+                icon.innerHTML = '?';
+                icon.title = t('cl_autofill_tooltip', 'Sistem je samodejno izpolnil ta podatek glede na izbran model. Če se podatek razlikuje, ga lahko spremenite.');
+                wrap.appendChild(icon);
+            }
         }
     };
 
@@ -1681,6 +1690,9 @@ function renderTechnicalStep() {
             if (!state._manualFields) state._manualFields = new Set();
             state._manualFields.add(stateKey);
             el.classList.remove('cl-autofilled');
+            const wrap = el.closest('.cl-field');
+            const icon = wrap ? wrap.querySelector('.cl-autofill-icon') : null;
+            if (icon) icon.remove();
         });
     });
 

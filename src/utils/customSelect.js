@@ -1,5 +1,57 @@
 import { t } from '../core/i18n.js';
 
+function getColorDotHtml(colorName) {
+    if (!colorName) return '';
+    const map = {
+        'Bela': '#ffffff',
+        'Črna': '#000000',
+        'Siva': '#808080',
+        'Srebrna': '#c0c0c0',
+        'Modra': '#1e40af',
+        'Rdeča': '#dc2626',
+        'Zelena': '#16a34a',
+        'Rumena': '#facc15',
+        'Rjava': '#78350f',
+        'Oranžna': '#ea580c',
+        'Vijolična': '#7c3aed',
+        'Zlata': '#fbbf24',
+        'Bronasta': '#cd7f32',
+    };
+    
+    const normalized = colorName.trim();
+    let bg = map[normalized];
+    if (!bg) {
+        const enMap = {
+            'white': '#ffffff',
+            'black': '#000000',
+            'grey': '#808080',
+            'silver': '#c0c0c0',
+            'blue': '#1e40af',
+            'red': '#dc2626',
+            'green': '#16a34a',
+            'yellow': '#facc15',
+            'brown': '#78350f',
+            'orange': '#ea580c',
+            'purple': '#7c3aed',
+            'gold': '#fbbf24',
+            'bronze': '#cd7f32',
+        };
+        bg = enMap[normalized.toLowerCase()];
+    }
+
+    if (normalized === 'Druga' || normalized.toLowerCase() === 'druga' || normalized.toLowerCase() === 'other' || !bg) {
+        bg = 'linear-gradient(45deg, #ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6)';
+    }
+
+    const borderStyle = (normalized === 'Bela' || normalized.toLowerCase() === 'white')
+        ? 'border: 1px solid rgba(0,0,0,0.25);'
+        : (normalized === 'Črna' || normalized.toLowerCase() === 'black')
+            ? 'border: 1px solid rgba(255,255,255,0.4);'
+            : 'border: 1px solid rgba(0,0,0,0.15);';
+
+    return `<span class="custom-select-color-dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${bg};${borderStyle}margin-right:8px;vertical-align:middle;flex-shrink:0;"></span>`;
+}
+
 /**
  * CustomSelect - Transforms standard HTML selects into searchable, pill-shaped dropdowns.
  */
@@ -35,10 +87,16 @@ export function createCustomSelect(select) {
     const container = document.createElement('div');
     container.className = 'custom-select-container';
 
+    const isColorSelect = select.id === 'fColor';
+    const initialOpt = select.options[select.selectedIndex];
+    const initialValHtml = (isColorSelect && initialOpt && initialOpt.value)
+        ? `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(initialOpt.value)}<span>${initialOpt.text}</span></div>`
+        : initialOpt?.text || '';
+
     const trigger = document.createElement('div');
     trigger.className = 'custom-select-trigger';
     trigger.innerHTML = `
-        <span class="custom-select-value">${select.options[select.selectedIndex]?.text || ''}</span>
+        <span class="custom-select-value">${initialValHtml}</span>
         <i data-lucide="chevron-down" class="select-icon"></i>
     `;
 
@@ -75,21 +133,35 @@ export function createCustomSelect(select) {
             const optionElem = document.createElement('div');
             optionElem.className = 'custom-select-option';
             if (index === select.selectedIndex) optionElem.classList.add('selected');
-            optionElem.textContent = opt.text;
+            
+            if (isColorSelect && opt.value) {
+                optionElem.innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(opt.value)}<span>${opt.text}</span></div>`;
+            } else {
+                optionElem.textContent = opt.text;
+            }
             optionElem.dataset.value = opt.value;
 
             optionElem.addEventListener('click', () => {
                 if (select.disabled) return;
                 select.selectedIndex = index;
                 select.dispatchEvent(new Event('change'));
-                trigger.querySelector('.custom-select-value').textContent = opt.text;
+                if (isColorSelect && opt.value) {
+                    trigger.querySelector('.custom-select-value').innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(opt.value)}<span>${opt.text}</span></div>`;
+                } else {
+                    trigger.querySelector('.custom-select-value').textContent = opt.text;
+                }
                 closeMenu();
             });
             optionsContainer.appendChild(optionElem);
         });
         // Sync trigger text with currently selected option
         if (trigger.querySelector('.custom-select-value')) {
-            trigger.querySelector('.custom-select-value').textContent = select.options[select.selectedIndex]?.text || '';
+            const selectedOpt = select.options[select.selectedIndex];
+            if (isColorSelect && selectedOpt && selectedOpt.value) {
+                trigger.querySelector('.custom-select-value').innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(selectedOpt.value)}<span>${selectedOpt.text}</span></div>`;
+            } else {
+                trigger.querySelector('.custom-select-value').textContent = selectedOpt?.text || '';
+            }
         }
         syncDisabledState();
     }
@@ -267,9 +339,14 @@ export function createCustomSelect(select) {
 
     // Sync trigger text when original select changes via JS
     select.addEventListener('change', () => {
-        const selectedText = select.options[select.selectedIndex]?.text || '';
+        const selectedOpt = select.options[select.selectedIndex];
+        const selectedText = selectedOpt?.text || '';
         if (trigger.querySelector('.custom-select-value')) {
-            trigger.querySelector('.custom-select-value').textContent = selectedText;
+            if (isColorSelect && selectedOpt && selectedOpt.value) {
+                trigger.querySelector('.custom-select-value').innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(selectedOpt.value)}<span>${selectedOpt.text}</span></div>`;
+            } else {
+                trigger.querySelector('.custom-select-value').textContent = selectedText;
+            }
         }
         // Highlight correct option
         optionsContainer.querySelectorAll('.custom-select-option').forEach((opt, idx) => {

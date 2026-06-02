@@ -302,6 +302,7 @@
   "dashboard_cancel_booking_confirm": "Are you sure you want to cancel this booking?",
   "dashboard_service_book_empty": "Service book is empty — every completed service will be saved here.",
   "cl_draft_found": "Unfinished listing found. Do you want to continue?",
+  "cl_select": "Select",
   "cl_step_korak": "Step",
   "cl_step_entry_title": "Publish Vehicle",
   "cl_step_entry_sub": "Select seller type and data entry method.",

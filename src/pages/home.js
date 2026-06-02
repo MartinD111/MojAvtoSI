@@ -10,6 +10,7 @@ import {
     getDisplacementPill
 } from '../utils/listingUtils.js';
 import { t } from '../core/i18n.js';
+import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 
 let allListings = [];
 
@@ -287,10 +288,10 @@ function setupSearchForm() {
         
         const mileageSelect = document.getElementById("home-mileage-to");
         if (mileageSelect) m.createCustomSelect(mileageSelect);
-
-        const priceSelect = document.getElementById("home-price-to");
-        if (priceSelect) m.createCustomSelect(priceSelect);
     });
+
+    const priceInput = document.getElementById("home-price-to");
+    if (priceInput) setupNumericFormatter(priceInput);
 
     // Simple search redirect
     const form = document.getElementById('homeSearchForm');
@@ -305,7 +306,8 @@ function setupSearchForm() {
             const model = document.getElementById('home-model')?.value || '';
             const year = document.getElementById('home-reg-from')?.value || '';
             const mileage = document.getElementById('home-mileage-to')?.value || '';
-            const price = document.getElementById('home-price-to')?.value || '';
+            const priceVal = document.getElementById('home-price-to')?.value || '';
+            const price = parseFormattedNumber(priceVal) || '';
             const location = document.getElementById('home-location')?.value || '';
 
             let query = `?cat=${catSlug}`;

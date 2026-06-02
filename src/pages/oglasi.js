@@ -952,7 +952,7 @@ function applySidebarFilters() {
     const variant = document.getElementById("sidebarVariant")?.value || '';
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
-    const priceTo = parseInt(document.getElementById("sidebarPriceTo")?.value, 10) || Infinity;
+    const priceTo = parseFormattedNumber(document.getElementById("sidebarPriceTo")?.value) || Infinity;
 
     // Parse multi-select checkboxes for fuel and transmission
     const form = document.getElementById("sidebarFiltersForm");
