@@ -142,6 +142,40 @@ body.dark-mode .lp-price {
     font-weight: 500;
 }
 
+/* ── Sale / discount price ──────────────────────────────────────────────────*/
+.lp-sale-price {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #16a34a;
+    letter-spacing: -0.03em;
+}
+
+body.dark-mode .lp-sale-price {
+    color: #22c55e;
+}
+
+.lp-original-price {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-decoration: line-through;
+    margin-top: 0.15rem;
+}
+
+.lp-discount-pct {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 999px;
+    padding: 0.18rem 0.55rem;
+    margin-top: 0.3rem;
+}
+
 /* ── Two-column layout ──────────────────────────────────────────────────────*/
 .lp-layout {
     display: grid;

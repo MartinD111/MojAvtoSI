@@ -107,7 +107,7 @@ let state = {
     _interiorUrls: [],
     coverIndex: 0,
     description: '',
-    priceEur: '', priceNegotiable: false, priceInclVat: false, leaseAvailable: false, callForPrice: false, priceIsFinal: false,
+    priceEur: '', salePriceEur: null, priceNegotiable: false, priceInclVat: false, leaseAvailable: false, callForPrice: false, priceIsFinal: false,
     sellerType: 'private',
     sellerNote: '',
     businessHours: {},
@@ -2123,6 +2123,20 @@ function renderPriceStep() {
                 </div>
             </div>
 
+            <div class="cl-field" id="salePriceWrap" style="${callForPrice ? 'display:none;' : ''}">
+                <label class="cl-checkbox-label" style="margin-bottom:0.5rem;">
+                    <input type="checkbox" id="fHasSalePrice" ${state.salePriceEur ? 'checked' : ''} />
+                    Dodaj znižano ceno (popust)
+                </label>
+                <div id="salePriceInputWrap" style="display:${state.salePriceEur ? 'flex' : 'none'}; flex-direction:column; gap:0.35rem;">
+                    <div class="cl-price-wrap">
+                        <input class="cl-input" id="fSalePrice" type="text"
+                            value="${formatNumberWithCommas(state.salePriceEur || '')}" placeholder="0" autocomplete="off" />
+                        <span class="cl-price-currency">€</span>
+                    </div>
+                    <span style="font-size:0.75rem;color:#94a3b8;">Znižana cena je prikazana na oglasu. Originalna cena je vidna samo pri podrobnem ogledu.</span>
+                </div>
+            </div>
 
             <div class="cl-checkboxes">
                 <label class="cl-checkbox-label">
@@ -2173,6 +2187,12 @@ function renderPriceStep() {
 
     document.getElementById('fCallForPrice').addEventListener('change', e => {
         document.getElementById('priceFieldWrap').style.display = e.target.checked ? 'none' : '';
+        document.getElementById('salePriceWrap').style.display = e.target.checked ? 'none' : '';
+    });
+
+    document.getElementById('fHasSalePrice').addEventListener('change', e => {
+        document.getElementById('salePriceInputWrap').style.display = e.target.checked ? 'flex' : 'none';
+        if (!e.target.checked) state.salePriceEur = null;
     });
 
     const priceInput = document.getElementById('fPrice');
@@ -2180,6 +2200,11 @@ function renderPriceStep() {
 
     if (priceInput) {
         setupNumericFormatter(priceInput);
+    }
+
+    const salePriceInput = document.getElementById('fSalePrice');
+    if (salePriceInput) {
+        setupNumericFormatter(salePriceInput);
     }
 
     // Toggle leasing conditions textarea visibility for business sellers
@@ -2210,6 +2235,21 @@ function renderPriceStep() {
         }
 
         state.callForPrice = isCallForPrice;
+
+        const hasSalePrice = document.getElementById('fHasSalePrice').checked;
+        if (hasSalePrice && !isCallForPrice) {
+            const saleRaw = document.getElementById('fSalePrice').value;
+            const salePrice = parseFormattedNumber(saleRaw);
+            if (salePrice > 0 && salePrice < state.priceEur) {
+                state.salePriceEur = salePrice;
+            } else {
+                state.salePriceEur = null;
+                if (salePrice >= state.priceEur) alert('Znižana cena mora biti nižja od originalne cene.');
+            }
+        } else {
+            state.salePriceEur = null;
+        }
+
         state.priceNegotiable = document.getElementById('fNeg').checked;
         state.priceIsFinal = document.getElementById('fFinalPrice').checked;
         state.priceInclVat = document.getElementById('fVat').checked;

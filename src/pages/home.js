@@ -32,6 +32,7 @@ export async function initHomePage() {
 
     setupSearchForm();
     setupCarousels();
+    initWordSlider();
 
     if (window.lucide) {
         window.lucide.createIcons();
@@ -178,7 +179,10 @@ function renderListingsSection(containerId, sectionId, listings, hideIfEmpty = f
                                 ${getConsumptionPill(listing)}
                             </div>
                         </div>
-                        <div class="listing-card-price">${price}</div>
+                        <div class="listing-card-price" style="display:flex;align-items:center;gap:0.4rem;">
+                            ${price}
+                            ${listing.salePriceEur ? `<span class="discount-tag-icon" title="Znižana cena"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>` : ''}
+                        </div>
                     </div>
                 </a>
             </div>
@@ -375,4 +379,41 @@ function setupSearchForm() {
             }
         });
     });
+}
+
+function initWordSlider() {
+    const items = document.querySelector('.hero-word-items');
+    if (!items) return;
+
+    const WORD_COUNT = 10; // real words (index 0–9); index 10 = car_loop clone
+    const HOLD = 2000;     // ms each word is visible
+    const SLIDE = 350;     // ms for the slide transition
+    let current = 0;
+
+    items.style.transform = 'translateY(0)';
+
+    function slideToNext() {
+        const isLast = current === WORD_COUNT - 1;
+        const targetIndex = isLast ? WORD_COUNT : current + 1;
+
+        items.style.transition = `transform ${SLIDE}ms ease-in-out`;
+        items.style.transform = `translateY(${-targetIndex * 1.4}em)`;
+
+        setTimeout(() => {
+            if (isLast) {
+                // Arrived at car_loop (avto) — snap silently back to position 0
+                items.style.transition = 'none';
+                items.style.transform = 'translateY(0)';
+                current = 0;
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    setTimeout(slideToNext, HOLD);
+                }));
+            } else {
+                current++;
+                setTimeout(slideToNext, HOLD);
+            }
+        }, SLIDE);
+    }
+
+    setTimeout(slideToNext, HOLD);
 }

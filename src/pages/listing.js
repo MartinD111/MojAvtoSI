@@ -352,7 +352,16 @@ function renderListing(l) {
                     <!-- Price Card (Pilled and Centered) -->
                     <div class="lp-sidebar-card lp-price-card centered">
                         <div class="lp-price-pill-container">
-                            <div class="lp-price">${formatPrice(l.priceRaw || l.priceEur || l.price || 0, l.callForPrice)}</div>
+                            ${l.salePriceEur ? `
+                            <div>
+                                <div class="lp-sale-price">${formatPrice(l.salePriceEur, false)}</div>
+                                <div class="lp-original-price">${formatPrice(l.priceEur || l.priceRaw || l.price || 0, false)}</div>
+                                <div class="lp-discount-pct">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                    -${Math.round((1 - l.salePriceEur / (l.priceEur || l.priceRaw || l.price)) * 100)}%
+                                </div>
+                            </div>` : `
+                            <div class="lp-price">${formatPrice(l.priceRaw || l.priceEur || l.price || 0, l.callForPrice)}</div>`}
                         </div>
                         <div id="lpRatingBlock"></div>
                         <div id="lpServiceBadge"></div>
@@ -967,6 +976,8 @@ async function loadSimilar(current) {
     }
 }
 
+const DISCOUNT_TAG_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`;
+
 function renderSimilarCard(l) {
     const img = l.images?.exterior?.[0] || `https://placehold.co/300x200?text=${encodeURIComponent(t('no_photos'))}`;
     const price = formatPrice(l.priceEur || l.price || 0, l.callForPrice);
@@ -979,6 +990,7 @@ function renderSimilarCard(l) {
                 <img src="${escHtml(img)}" alt="${escHtml(l.make || '')} ${escHtml(l.model || '')}" loading="lazy" />
                 ${isSponsored ? `<span class="listing-sponsored-badge">${t('sponsored_listing')}</span>` : ''}
                 ${l.vinVerified ? `<span class="listing-vin-badge">🛡 ${t('vin_verified')}</span>` : ''}
+                ${l.salePriceEur ? `<span class="discount-tag-icon" title="Znižana cena" style="position:absolute;top:8px;left:8px;">${DISCOUNT_TAG_SVG}</span>` : ''}
             </div>
             <div class="lp-similar-body">
                 <div class="lp-similar-title">${escHtml(buildTitle(l))}</div>

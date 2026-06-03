@@ -1480,7 +1480,7 @@ main {
   height: 1.4em;
   overflow: hidden;
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   min-width: 180px;
 }
@@ -1690,6 +1690,33 @@ body.dark-mode .hero-title {
   color: var(--color-primary-start);
   text-align: center;
   width: 100%;
+}
+
+/* ── Discount / sale tag icon on listing cards ──────────────────────────── */
+.discount-tag-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.22);
+  border-radius: 50%;
+  color: #dc2626;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.discount-tag-icon svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.legend-pill-demo.discount-tag-legend {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.22);
+  color: #dc2626;
 }
 
 /* Sporočilo, če ni oglasov */

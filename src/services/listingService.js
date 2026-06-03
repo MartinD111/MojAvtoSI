@@ -154,6 +154,7 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
 
         // Price
         priceEur: Number(draft.priceEur) || 0,
+        salePriceEur: draft.salePriceEur ? Number(draft.salePriceEur) : null,
         callForPrice: draft.callForPrice || false,
         priceNegotiable: draft.priceNegotiable || false,
         priceInclVat: draft.priceInclVat || false,

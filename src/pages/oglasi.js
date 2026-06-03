@@ -296,7 +296,16 @@ function renderCarCard(car) {
                 </div>
                 
                 <div class="car-price-box">
-                    <span class="price-value">${car.price}</span>
+                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                        <span class="price-value">${car.price}</span>
+                        ${car.salePriceEur ? `
+                        <span class="discount-tag-icon" title="Znižana cena">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                                <line x1="7" y1="7" x2="7.01" y2="7"/>
+                            </svg>
+                        </span>` : ''}
+                    </div>
                     ${showStars
                         ? `<span class="price-rating" title="${vRating.label} · ${vRating.priceSignal}">${renderStarBadge(vRating.stars)}</span>`
                         : `<span class="price-rating rating-${rating.color}">${rating.label}</span>`
