@@ -173,7 +173,10 @@ function bindSearchLogic(catContext) {
     const modelSelect = document.getElementById("model");
     const variantSelect = document.getElementById("variant");
     const addVehicleBtn = document.getElementById("addVehicleBtn");
+    const excludeVehicleBtn = document.getElementById("excludeVehicleBtn");
     const vehicleCardsEl = document.getElementById("vehicleCards");
+    const excludedVehicleCardsEl = document.getElementById("excludedVehicleCards");
+    const excludedVehiclesSection = document.getElementById("excludedVehiclesSection");
     const brandLimitNote = document.getElementById("brandLimitNote");
     const tabBtns = document.querySelectorAll('.tabs-glass .tab-btn');
     const bodyTypeHidden = document.getElementById('bodyTypeHidden');
@@ -185,6 +188,7 @@ function bindSearchLogic(catContext) {
 
     let activeTab = catContext.cat || 'avto';
     let vehicles = [];
+    let excludedVehicles = [];
     const MAX_VEHICLES = 3;
 
     // ── Dynamic Field Visibility ──
@@ -382,6 +386,15 @@ function bindSearchLogic(catContext) {
         updateLiveCount();
     }
 
+    function resetSelectors() {
+        makeSelect.value = '';
+        modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
+        variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
+        makeSelect.dispatchEvent(new Event('change'));
+        modelSelect.dispatchEvent(new Event('change'));
+        variantSelect.dispatchEvent(new Event('change'));
+    }
+
     if (addVehicleBtn) {
         addVehicleBtn.addEventListener('click', () => {
             const make = makeSelect.value;
@@ -390,36 +403,102 @@ function bindSearchLogic(catContext) {
             const model = modelSelect.value || '';
             const variant = variantSelect.value || '';
             vehicles.push({ make, model, variant });
-            makeSelect.value = '';
-            modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-            variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
-            
-            // Dispatch dynamic change event for custom select triggers so they reset visually!
-            makeSelect.dispatchEvent(new Event('change'));
-            modelSelect.dispatchEvent(new Event('change'));
-            variantSelect.dispatchEvent(new Event('change'));
-
+            resetSelectors();
             renderVehicleCards();
             updateLiveCount();
         });
     }
 
+    if (excludeVehicleBtn) {
+        excludeVehicleBtn.addEventListener('click', () => {
+            const make = makeSelect.value;
+            if (!make) return;
+            if (excludedVehicles.length >= MAX_VEHICLES) return;
+            const model = modelSelect.value || '';
+            const variant = variantSelect.value || '';
+            excludedVehicles.push({ make, model, variant });
+            resetSelectors();
+            renderExcludedCards();
+            updateLiveCount();
+        });
+    }
+
+    function makeCardHTML(v, i, zone) {
+        const parts = [v.make]; if (v.model) parts.push(v.model); if (v.variant) parts.push(v.variant);
+        const cls = zone === 'exclude' ? 'vehicle-entry-card vec-excluded' : 'vehicle-entry-card';
+        return `<div class="${cls}" draggable="true" data-idx="${i}" data-zone="${zone}">
+            <div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div>
+            <button type="button" class="vec-remove" data-idx="${i}" data-zone="${zone}">&times;</button>
+        </div>`;
+    }
+
+    function bindCardDrag(el) {
+        el.querySelectorAll('[draggable]').forEach(card => {
+            card.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({ idx: +card.dataset.idx, zone: card.dataset.zone }));
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => card.classList.add('vec-dragging'), 0);
+            });
+            card.addEventListener('dragend', () => card.classList.remove('vec-dragging'));
+        });
+    }
+
+    function setupDropZone(el, zone) {
+        el.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; el.classList.add('vec-drag-over'); });
+        el.addEventListener('dragleave', e => { if (!el.contains(e.relatedTarget)) el.classList.remove('vec-drag-over'); });
+        el.addEventListener('drop', e => {
+            e.preventDefault();
+            el.classList.remove('vec-drag-over');
+            let data;
+            try { data = JSON.parse(e.dataTransfer.getData('text/plain')); } catch { return; }
+            const { idx, zone: fromZone } = data;
+            if (fromZone === zone) return;
+            const srcArr = fromZone === 'include' ? vehicles : excludedVehicles;
+            const dstArr = zone === 'include' ? vehicles : excludedVehicles;
+            if (dstArr.length >= MAX_VEHICLES) return;
+            const [item] = srcArr.splice(idx, 1);
+            dstArr.push(item);
+            renderVehicleCards();
+            renderExcludedCards();
+            updateLiveCount();
+        });
+    }
+
+    if (vehicleCardsEl) setupDropZone(vehicleCardsEl, 'include');
+    if (excludedVehicleCardsEl) setupDropZone(excludedVehicleCardsEl, 'exclude');
+
     function renderVehicleCards() {
         if (!vehicleCardsEl) return;
-        vehicleCardsEl.innerHTML = vehicles.map((v, i) => {
-            const parts = [v.make]; if (v.model) parts.push(v.model); if (v.variant) parts.push(v.variant);
-            return `<div class="vehicle-entry-card"><div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div><button type="button" class="vec-remove" data-idx="${i}">&times;</button></div>`;
-        }).join('');
-        
-        vehicleCardsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => { 
-            vehicles.splice(+btn.dataset.idx, 1); 
-            renderVehicleCards(); 
-            updateLiveCount(); 
+        vehicleCardsEl.innerHTML = vehicles.map((v, i) => makeCardHTML(v, i, 'include')).join('');
+        vehicleCardsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => {
+            vehicles.splice(+btn.dataset.idx, 1);
+            renderVehicleCards();
+            updateLiveCount();
         }));
-        
+        bindCardDrag(vehicleCardsEl);
         const atLimit = vehicles.length >= MAX_VEHICLES;
         if (addVehicleBtn) addVehicleBtn.style.display = atLimit ? 'none' : 'flex';
         if (brandLimitNote) brandLimitNote.textContent = atLimit ? 'Omejitev dosežena (3).' : vehicles.length > 0 ? `Dodano: ${vehicles.length}/${MAX_VEHICLES}` : '';
+        updateExcludedSectionVisibility();
+    }
+
+    function updateExcludedSectionVisibility() {
+        if (excludedVehiclesSection) {
+            excludedVehiclesSection.style.display = (vehicles.length > 0 || excludedVehicles.length > 0) ? 'block' : 'none';
+        }
+    }
+
+    function renderExcludedCards() {
+        if (!excludedVehicleCardsEl) return;
+        excludedVehicleCardsEl.innerHTML = excludedVehicles.map((v, i) => makeCardHTML(v, i, 'exclude')).join('');
+        excludedVehicleCardsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => {
+            excludedVehicles.splice(+btn.dataset.idx, 1);
+            renderExcludedCards();
+            updateLiveCount();
+        }));
+        bindCardDrag(excludedVehicleCardsEl);
+        updateExcludedSectionVisibility();
+        if (window.lucide) window.lucide.createIcons();
     }
 
     allBodyTypeCards.forEach(card => card.addEventListener('click', () => {
@@ -513,6 +592,7 @@ function bindSearchLogic(catContext) {
 
             const filters = {
                 vehicles,
+                excludedVehicles,
                 make: fd.get('make') || '',
                 model: fd.get('model') || '',
                 variant: fd.get('variant') || '',
@@ -547,15 +627,17 @@ function bindSearchLogic(catContext) {
     searchForm.addEventListener('reset', () => {
         setTimeout(() => {
             vehicles = [];
+            excludedVehicles = [];
             renderVehicleCards();
+            renderExcludedCards();
             makeSelect.value = '';
             modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
             variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
-            
+
             makeSelect.dispatchEvent(new Event('change'));
             modelSelect.dispatchEvent(new Event('change'));
             variantSelect.dispatchEvent(new Event('change'));
-            
+
             allBodyTypeCards.forEach(c => c.classList.remove('active'));
             bodyTypeHidden.value = '';
             updateLiveCount();
@@ -583,6 +665,9 @@ function bindSearchLogic(catContext) {
             if (make) params.set('make', make);
             if (model) params.set('model', model);
             if (variant) params.set('variant', variant);
+        }
+        if (excludedVehicles.length > 0) {
+            params.set('excludedVehicles', JSON.stringify(excludedVehicles));
         }
 
         // Collect selected body types
@@ -642,6 +727,17 @@ function matchesFilters(l, filters) {
         const carCat = (l.category === 'motor' || l.category === 'moto') ? 'moto' : l.category;
         const filterCat = (filters.activeTab === 'motor' || filters.activeTab === 'moto') ? 'moto' : filters.activeTab;
         if (carCat && carCat !== filterCat) return false;
+    }
+
+    // Excluded vehicles (AND: listing must not match any excluded entry)
+    if (filters.excludedVehicles && filters.excludedVehicles.length > 0) {
+        const isExcluded = filters.excludedVehicles.some(v => {
+            if (v.make && l.make !== v.make) return false;
+            if (v.model && l.model !== v.model) return false;
+            if (v.variant && l.title && !l.title.includes(v.variant)) return false;
+            return true;
+        });
+        if (isExcluded) return false;
     }
 
     // Vehicle multi-match (OR between entries)

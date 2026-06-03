@@ -858,9 +858,8 @@ body.dark-mode .compare-badge {
   padding: 0.75rem;
   z-index: 3000;
   /* very high to clear all map overlays */
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(32px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 1.5rem;
   box-shadow: 0 25px 60px -12px rgba(15, 23, 42, 0.15);
   animation: megaIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1074,7 +1073,7 @@ body.dark-mode .mega-vertical-item:hover {
 
 /* Dark mode mega menu enhancements */
 body.dark-mode .mega-menu {
-  background: rgba(15, 23, 42, 0.85);
+  background: #0f172a;
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.5);
 }
@@ -1510,8 +1509,7 @@ main {
 
 @keyframes hero-word-rotate {
 
-  0%,
-  7.5% {
+  0% {
     transform: translateY(0);
   }
 
@@ -4435,6 +4433,30 @@ body.dark-mode .seller-note-card {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.vehicle-entry-card.vec-excluded {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.vehicle-entry-card[draggable="true"] {
+  cursor: grab;
+}
+
+.vehicle-entry-card.vec-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+.vehicle-drop-zone.vec-drag-over {
+  outline: 2px dashed var(--color-primary-start);
+  outline-offset: 4px;
+  border-radius: 0.75rem;
+}
+
+#excludedVehicleCards.vec-drag-over {
+  outline-color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
 }
 
 
@@ -7569,9 +7591,29 @@ body.dark-mode .catalog-offers-title {
   }
 }
 
+/* ── Home search form desktop layout ── */
+#homeSearchForm .search-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+#homeSearchForm .form-group {
+  align-items: center;
+  text-align: center;
+}
+
+#homeSearchForm .form-group label {
+  text-align: center;
+  width: 100%;
+}
+
+#homeSearchForm .pill-select-wrapper,
+#homeSearchForm .pill-input-wrapper {
+  width: 100%;
+}
+
 /* ── Home search form mobile layout ── */
 @media (max-width: 768px) {
-  /* 2-column grid: Znamka+Model / Različica+Letnik / Prevoženi km+Cena / Location(full) */
+  /* 2-column grid: Znamka+Model / Različica / Prevoženi km+Cena / Letnik / Location(full) */
   #homeSearchForm .search-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;

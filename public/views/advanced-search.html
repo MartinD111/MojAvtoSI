@@ -425,9 +425,21 @@
                             style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px;">
                             <i data-lucide="plus" style="width:14px;height:14px;"></i> Dodaj
                         </button>
+                        <button type="button" id="excludeVehicleBtn" class="pill-btn"
+                            style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px; background:rgba(239,68,68,0.12); color:#ef4444; border:1px solid rgba(239,68,68,0.3);">
+                            <i data-lucide="minus-circle" style="width:14px;height:14px;"></i> Izloči
+                        </button>
                         <p class="brand-limit-note" id="brandLimitNote" style="margin:0; text-align:left;"></p>
                     </div>
-                    <div id="vehicleCards" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.5rem;">
+                    <div id="vehicleCards" class="vehicle-drop-zone" data-zone="include" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                    </div>
+                    <div id="excludedVehiclesSection" style="display:none; margin-top:1.25rem; margin-bottom:0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                            <i data-lucide="ban" style="width:13px;height:13px;color:#ef4444;"></i>
+                            <span style="font-size:0.75rem; font-weight:700; color:#ef4444; text-transform:uppercase; letter-spacing:0.05em;">Izločena vozila</span>
+                        </div>
+                        <div id="excludedVehicleCards" class="vehicle-drop-zone" data-zone="exclude" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem; padding:0.25rem 0; align-items:center;">
+                        </div>
                     </div>
                 </div>
 

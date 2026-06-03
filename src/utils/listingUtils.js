@@ -110,14 +110,14 @@ export function getConsumptionPill(car) {
 
     if (fuelKey === 'elektrika' || fuelKey === 'električno' || fuelKey === 'electric' || fuelKey === 'e') {
         if (!car.electricRangeKm) return '';
-        const rangeMi = kmToMiles(car.electricRangeKm);
+        const rangeKm = car.electricRangeKm;
         let statusCls = 'status-low';
-        if (rangeMi <= 155) statusCls = 'status-high';
-        else if (rangeMi <= 250) statusCls = 'status-medium';
+        if (rangeKm <= 250) statusCls = 'status-high';
+        else if (rangeKm <= 400) statusCls = 'status-medium';
 
-        return `<div class="spec-pill consumption-pill ${statusCls}" title="EPA Range">
+        return `<div class="spec-pill consumption-pill ${statusCls}" title="Doseg">
             <i data-lucide="battery-charging"></i>
-            ${rangeMi} mi
+            ${rangeKm} km
         </div>`;
     }
 
@@ -129,9 +129,9 @@ export function getConsumptionPill(car) {
     else if (cons >= 7.0) statusCls = 'status-high';
 
     if (car.electricRangeKm && cons) {
-        return `<div class="spec-pill consumption-pill ${statusCls}" title="Consumption / EV Range">
+        return `<div class="spec-pill consumption-pill ${statusCls}" title="Poraba / doseg EV">
             <i data-lucide="droplets"></i>
-            ${cons.toFixed(1)} L/100km · ${kmToMiles(car.electricRangeKm)} mi E
+            ${cons.toFixed(1)} L/100km · ${car.electricRangeKm} km E
         </div>`;
     }
 

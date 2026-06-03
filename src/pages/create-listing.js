@@ -53,7 +53,8 @@ const isPartItem = s => s.itemType === 'part';
 const isTireItem = s => s.itemType === 'tire';
 
 const STEPS = [
-    { id: 'entry', title: null },       // 0: entry mode
+    { id: 'typeSelect', title: null },  // 0: vehicle vs parts/tires
+    { id: 'entry', title: null, condition: isVehicleItem },  // 1: entry mode (vehicles only)
     { id: 'vin', title: null, condition: s => s.entryType === 'vin' && isVehicleItem(s) },
     { id: 'category', title: 'cl_step_category', number: true },
     { id: 'basic', title: 'cl_step_basic', number: true, condition: isVehicleItem },
@@ -238,6 +239,8 @@ function applyBodyTypeAutoFill(make, model) {
     state.bodyType = canonical;
     state.subcategory = canonical;
     state._autoFillFields?.add?.('bodyType');
+    const el = document.getElementById('fBodyType');
+    if (el) el.value = canonical;
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -323,6 +326,7 @@ function renderCurrentStep() {
     updateProgress();
 
     const renderers = {
+        typeSelect: renderTypeSelectStep,
         entry: renderEntryStep,
         vin: renderVinStep,
         category: renderCategoryStep,
@@ -373,7 +377,41 @@ function jumpToStep(id) {
     }
 }
 
-// ── Step 0: Entry mode ────────────────────────────────────────────────────────
+// ── Step 0: Type selection (vehicle vs parts/tires) ───────────────────────────
+function renderTypeSelectStep() {
+    setHtml(`
+        <div class="cl-card">
+            <h1 class="cl-step-title">${t('cl_type_select_title', 'Kaj želite objaviti?')}</h1>
+            <p class="cl-step-sub">${t('cl_type_select_sub', 'Izberite vrsto oglasa.')}</p>
+            <div class="cl-entry-cards">
+                <div class="cl-entry-card" id="typeVehicle">
+                    <span class="cl-entry-card-icon">🚗</span>
+                    <p class="cl-entry-card-title">${t('cl_type_vehicle', 'Vozilo')}</p>
+                    <p class="cl-entry-card-desc">${t('cl_type_vehicle_desc', 'Avto, motor, kombi, prikolica, ipd.')}</p>
+                </div>
+                <div class="cl-entry-card" id="typeParts">
+                    <span class="cl-entry-card-icon">🔧</span>
+                    <p class="cl-entry-card-title">${t('cl_type_parts', 'Deli in gume')}</p>
+                    <p class="cl-entry-card-desc">${t('cl_type_parts_desc', 'Nadomestni deli, pnevmatike, oprema.')}</p>
+                </div>
+            </div>
+        </div>
+    `);
+
+    document.getElementById('typeVehicle').addEventListener('click', () => {
+        state.itemType = 'vehicle';
+        state.category = 'avto';
+        goNext();
+    });
+
+    document.getElementById('typeParts').addEventListener('click', () => {
+        state.itemType = 'part';
+        state.category = 'deli';
+        goNext();
+    });
+}
+
+// ── Step 1: Entry mode (vehicles only) ────────────────────────────────────────
 function renderEntryStep() {
     setHtml(`
         <div class="cl-card">
@@ -788,7 +826,33 @@ const CATEGORIES = [
 ];
 
 function renderCategoryStep() {
-    const catCards = CATEGORIES.map(c => `
+    // Parts/tires path: skip the vehicle category grid, show only Del/Pnevmatika + vehicle family pickers
+    if (state.itemType === 'part' || state.itemType === 'tire') {
+        setHtml(`
+            <div class="cl-card">
+                <h2 class="cl-step-title">${t('cl_parts_category_title', 'Vrsta dela ali pnevmatike')}</h2>
+                <p class="cl-step-sub">${t('cl_parts_category_sub', 'Izberite tip in za katero vozilo je namenjeno.')}</p>
+                <div id="subRow" class="cl-subcategory-row" style="margin-bottom:1.25rem;"></div>
+                <div class="cl-nav">
+                    <button class="cl-btn cl-btn--ghost" id="btnCatBack">${t('cl_back')}</button>
+                    <button class="cl-btn cl-btn--primary" id="btnCatNext">${t('cl_continue')}</button>
+                </div>
+            </div>
+        `);
+        if (window.lucide) window.lucide.createIcons();
+        renderDeliConfig(document.getElementById('subRow'));
+        document.getElementById('btnCatBack').addEventListener('click', goPrev);
+        document.getElementById('btnCatNext').addEventListener('click', () => {
+            if (!state.vehicleCategory) {
+                return alert(t('cl_select_vehicle_cat_alert', 'Izberite za katero vrsto vozila je del/pnevmatika.'));
+            }
+            goNext();
+        });
+        return;
+    }
+
+    // Vehicle path: show category grid WITHOUT "deli"
+    const catCards = CATEGORIES.filter(c => c.id !== 'deli').map(c => `
         <div class="cl-category-card ${state.category === c.id ? 'selected' : ''}" data-cat="${c.id}">
             <i data-lucide="${c.icon}"></i>
             <span>${t(c.label)}</span>
@@ -819,13 +883,8 @@ function renderCategoryStep() {
             card.classList.add('selected');
             state.category = card.dataset.cat;
             state.subcategory = '';
-            if (state.category === 'deli') {
-                // Parts/tires: default to part until the user picks; needs a vehicle family.
-                if (state.itemType !== 'part' && state.itemType !== 'tire') state.itemType = 'part';
-            } else {
-                state.itemType = 'vehicle';
-                state.vehicleCategory = '';
-            }
+            state.itemType = 'vehicle';
+            state.vehicleCategory = '';
             renderSubcategories();
         });
     });
@@ -833,14 +892,6 @@ function renderCategoryStep() {
     document.getElementById('btnCatBack').addEventListener('click', goPrev);
     document.getElementById('btnCatNext').addEventListener('click', () => {
         if (!state.category) return alert(t('cl_select_category_alert'));
-        if (state.category === 'deli') {
-            if (state.itemType !== 'part' && state.itemType !== 'tire') {
-                return alert(t('cl_select_item_type_alert', 'Izberite ali objavljate del ali pnevmatiko.'));
-            }
-            if (!state.vehicleCategory) {
-                return alert(t('cl_select_vehicle_cat_alert', 'Izberite za katero vrsto vozila je del/pnevmatika.'));
-            }
-        }
         goNext();
     });
 }
@@ -855,29 +906,8 @@ function renderSubcategories() {
         return;
     }
 
-    const cat = CATEGORIES.find(c => c.id === state.category);
-    if (!cat || cat.subs.length === 0) { row.innerHTML = ''; return; }
-
-    row.innerHTML = cat.subs.map(s => `
-        <button class="cl-subcategory-pill ${state.subcategory === (s.value || s.name) ? 'selected' : ''}" data-sub="${s.value || s.name}">
-            <i data-lucide="${s.icon}" class="cl-sub-icon"></i>
-            ${t(s.name)}
-        </button>`).join('');
-
-    if (window.lucide) window.lucide.createIcons({ scope: row });
-
-    row.querySelectorAll('.cl-subcategory-pill').forEach(p => {
-        p.addEventListener('click', () => {
-            row.querySelectorAll('.cl-subcategory-pill').forEach(pp => pp.classList.remove('selected'));
-            p.classList.add('selected');
-            state.subcategory = p.dataset.sub;
-            // For cars, the subcategory IS the body type — manual pick wins over taxonomy auto-fill
-            if (state.category === 'avto') {
-                state.bodyType = p.dataset.sub;
-                state._bodyTypeManual = true;
-            }
-        });
-    });
+    // Body type is now selected in the basic step dropdown — hide pills here for vehicle path.
+    row.innerHTML = '';
 }
 
 // ── Deli / Gume config (inside the category step) ─────────────────────────────
@@ -1194,6 +1224,12 @@ function renderBasicStep() {
 
     const yearOpts = years.map(y => `<option value="${y}" ${Number(state.year) === y ? 'selected' : ''}>${y}</option>`).join('');
 
+    const categorySubs = CATEGORIES.find(c => c.id === state.category)?.subs || [];
+    const bodyTypeOpts = categorySubs.map(s => {
+        const val = s.value || s.name;
+        return `<option value="${val}" ${state.bodyType === val ? 'selected' : ''}>${t(s.name)}</option>`;
+    }).join('');
+
     setHtml(`
         <div class="cl-card">
             <h2 class="cl-step-title">${t('cl_basic_title')}</h2>
@@ -1231,6 +1267,17 @@ function renderBasicStep() {
                     </select>
                 </div>
             </div>
+
+            ${categorySubs.length > 0 ? `
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_label_body_type', 'Karoserija')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fBodyType">
+                        <option value="">${t('cl_sel_body_type', 'Izberite karoserijo')}</option>
+                        ${bodyTypeOpts}
+                    </select>
+                </div>
+            </div>` : ''}
 
             <div class="cl-row">
                 <div class="cl-field">
@@ -1455,6 +1502,12 @@ function renderBasicStep() {
         }, true);
     });
 
+    document.getElementById('fBodyType')?.addEventListener('change', (e) => {
+        state.bodyType = e.target.value;
+        state.subcategory = e.target.value;
+        state._bodyTypeManual = true;
+    });
+
     // Custom select initialization
     initCustomSelects();
 
@@ -1476,10 +1529,13 @@ function renderBasicStep() {
         const firstRegMonth = document.getElementById('fFirstRegMonth').value;
         const firstRegYear = document.getElementById('fFirstRegYear').value;
 
+        const bodyType = document.getElementById('fBodyType')?.value || '';
+
         if (!make) return alert(t('cl_err_make'));
         if (mileageRaw === '') return alert(t('cl_err_mileage'));
         if (!year) return alert(t('cl_err_year'));
         if (!firstRegMonth || !firstRegYear) return alert(t('cl_err_first_reg'));
+        if (categorySubs.length > 0 && !bodyType) return alert(t('cl_err_body_type', 'Izberite karoserijo vozila.'));
 
         state.make = make;
         state.model = modelSel.value;
@@ -1493,6 +1549,7 @@ function renderBasicStep() {
         state.seatsCount = document.getElementById('fSeats').value;
         state.firstRegistration = `${firstRegYear}-${firstRegMonth}`;
         state.previousOwnersCount = document.getElementById('fPrevOwners').value;
+        if (bodyType) { state.bodyType = bodyType; state.subcategory = bodyType; }
         goNext();
     });
 }
