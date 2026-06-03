@@ -189,6 +189,12 @@ async function initFavBtn(l) {
 
     btn.addEventListener('click', async () => {
         let currentUser = auth.currentUser;
+
+        // Optimistic UI update — give immediate visual feedback
+        const wasActive = btn.classList.contains('active');
+        if (wasActive) btn.classList.remove('active'); else btn.classList.add('active');
+        popBtn(btn);
+
         if (!currentUser) {
             try {
                 currentUser = await showAuthGate({
@@ -196,18 +202,24 @@ async function initFavBtn(l) {
                     title: t('save_to_favorites_title'),
                     message: t('save_to_favorites_msg'),
                 });
-            } catch { return; }
+            } catch {
+                // Revert optimistic update on cancel
+                if (wasActive) btn.classList.add('active'); else btn.classList.remove('active');
+                return;
+            }
         }
+
         btn.disabled = true;
         try {
-            if (btn.classList.contains('active')) {
+            if (wasActive) {
                 await removeFromFavourites(currentUser.uid, l.id);
-                btn.classList.remove('active');
             } else {
                 await addToFavourites(currentUser.uid, { id: l.id, title: l.make + ' ' + l.model, price: l.priceEur || l.price, images: l.images });
-                btn.classList.add('active');
             }
-            popBtn(btn);
+        } catch (err) {
+            // Revert on Firebase error
+            if (wasActive) btn.classList.add('active'); else btn.classList.remove('active');
+            console.error('[lpFavBtn] error:', err);
         } finally {
             btn.disabled = false;
         }
