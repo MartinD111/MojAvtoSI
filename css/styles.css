@@ -1,3 +1,16 @@
+/* ── Global mobile overflow & scrollbar ── */
+html {
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox — hides vertical scrollbar */
+}
+html::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/iOS — hides vertical scrollbar */
+}
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 /* Reset in osnovne nastavitve */
 :root {
   --color-primary-start: #2563eb;
@@ -697,6 +710,39 @@ body.dark-mode .compare-badge {
   }
 }
 
+.nav-avatar-mobile {
+  display: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.25);
+  color: #6b7280;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-avatar-mobile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.nav-avatar-mobile i {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 767px) {
+  .nav-avatar-mobile {
+    display: flex;
+  }
+}
+
 .avatar {
   width: 28px;
   height: 28px;
@@ -1155,9 +1201,8 @@ body.dark-mode .glass-dropdown a:hover {
     right: 8px;
     transform: none;
     /* cancel .desktop-links translateX(-50%) so the panel isn't pulled off-screen */
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     flex-direction: column;
     align-items: stretch;
     padding: 12px;
@@ -1167,7 +1212,7 @@ body.dark-mode .glass-dropdown a:hover {
   }
 
   body.dark-mode nav#navLinks {
-    background: rgba(15, 23, 42, 0.95);
+    background: #0f172a;
     border-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
   }
@@ -1179,6 +1224,45 @@ body.dark-mode .glass-dropdown a:hover {
   nav#navLinks a,
   nav#navLinks button.nav-pill {
     padding: 14px 16px;
+    justify-content: flex-start;
+  }
+
+  /* ── Mobile navbar: center logo, show only burger ── */
+  .nav-inner {
+    position: relative;
+    justify-content: flex-end;
+  }
+
+  .logo-text {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.25rem;
+    /* Prevent overlap with burger */
+    max-width: calc(100% - 100px);
+    text-align: center;
+  }
+
+  /* Hide everything in nav-actions except the burger button and mobile avatar */
+  .nav-actions > *:not(.burger-btn):not(.nav-avatar-mobile) {
+    display: none !important;
+  }
+
+  /* ── Mobile nav extras (shown inside burger panel) ── */
+  .mobile-nav-extras {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+    padding-top: 8px;
+    margin-top: 4px;
+  }
+
+  body.dark-mode .mobile-nav-extras {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-nav-extras .nav-pill {
     justify-content: flex-start;
   }
 }
@@ -2868,6 +2952,57 @@ body.dark-mode #rot-next-btn {
   .adv-grid-3 {
     grid-template-columns: 1fr;
   }
+
+  /* ── Advanced Search mobile improvements ── */
+  .search-container {
+    margin-top: 1.25rem !important;
+    padding: 0 0.625rem !important;
+  }
+
+  .body-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+    justify-content: stretch;
+  }
+
+  .body-type-card {
+    padding: 0.875rem 0.375rem;
+    border-radius: 14px;
+  }
+
+  .body-type-card i {
+    font-size: 22px;
+  }
+
+  .body-type-card span {
+    font-size: 0.78rem;
+  }
+
+  .adv-acc-body {
+    padding: 1rem 1rem 1.25rem;
+  }
+
+  .adv-acc-trigger {
+    padding: 1rem 1.25rem;
+  }
+
+
+  /* Search actions: stack and full-width on mobile */
+  .search-actions {
+    flex-direction: column;
+    padding-top: 0.25rem !important;
+  }
+
+  .search-actions .pill-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1rem !important;
+  }
+
+  /* Hide "Remember" text label, keep toggle */
+  .toggle-label {
+    display: none;
+  }
 }
 
 .adv-input {
@@ -3860,6 +3995,11 @@ body.dark-mode .spec-pill:hover {
   z-index: 10;
 }
 
+/* Condition badge on image — desktop hidden, mobile-only via media query */
+.condition-overlay-badge {
+  display: none;
+}
+
 .condition-pill {
   background: rgba(37, 99, 235, 0.08) !important;
   color: var(--color-primary-start) !important;
@@ -4290,9 +4430,7 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
     padding: 0.9rem 1.25rem;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.8);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    background: #ffffff;
     color: #1e293b;
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
@@ -4316,7 +4454,7 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
   }
 
   body.dark-mode .mobile-filter-toggle {
-    background: rgba(30, 41, 59, 0.7);
+    background: #1e293b;
     border-color: rgba(255, 255, 255, 0.12);
     color: #e2e8f0;
   }
@@ -4484,15 +4622,6 @@ body.dark-mode .view-toggle-btn:hover {
     grid-template-columns: unset;
   }
 
-  #carListingsContainer.grid-layout .listing-card {
-    flex-direction: row !important;
-  }
-
-  #carListingsContainer.grid-layout .listing-card-img {
-    width: 140px !important;
-    height: 110px !important;
-    border-radius: 0.75rem 0 0 0.75rem;
-  }
 }
 
 .legend-overlay {
@@ -6152,7 +6281,7 @@ body.dark-mode .lang-dropdown-item.active {
 /* Power Unit Toggle styles */
 .power-unit-toggle-wrapper {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
@@ -6207,7 +6336,19 @@ body.dark-mode .unit-btn.active {
 
 /* Keep labels left-aligned for multi-select chip groups */
 #advancedSearchForm .adv-field-group:has(.adv-chip-group) .adv-label {
+  text-align: center;
+}
+
+#advancedSearchForm .adv-field-group:has(.adv-chip-group) .adv-chip-group {
+  justify-content: center;
+}
+
+#advancedSearchForm .adv-field-group.adv-left-align .adv-label {
   text-align: left;
+}
+
+#advancedSearchForm .adv-field-group.adv-left-align .adv-chip-group {
+  justify-content: flex-start;
 }
 
 /* Center text inside all inputs, dropdowns, and custom select pills globally */
@@ -6226,6 +6367,12 @@ body.dark-mode .unit-btn.active {
 .custom-select-trigger .select-icon {
   position: absolute !important;
   right: 20px !important;
+}
+
+@media (max-width: 768px) {
+  .custom-select-trigger .select-icon {
+    display: none !important;
+  }
 }
 
 /* Make vehicle selector row perfectly span 3 columns */
@@ -6986,6 +7133,13 @@ body.dark-mode .gd-source-btn.active {
   color: #fff;
 }
 
+body.dark-mode .gd-flabel,
+body.dark-mode .gd-filter-header h3,
+body.dark-mode .gd-filter-header {
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 body.dark-mode .gd-vehcat-card {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
@@ -7130,86 +7284,206 @@ body.dark-mode .catalog-offers-title {
 }
 
 @media (max-width: 768px) {
+  /* ── Card layout: image on top, centered info below ── */
   .listing-card {
-    flex-direction: row !important;
+    flex-direction: column !important;
+    height: auto !important;
   }
 
   .listing-card-img {
-    width: 130px !important;
-    height: 110px !important;
-    margin: 0.75rem !important;
-    border-radius: 1rem !important;
+    width: 100% !important;
+    height: 200px !important;
+    margin: 0 !important;
+    border-radius: 1.25rem 1.25rem 0 0 !important;
+    flex-shrink: 0;
   }
 
   .listing-card-content {
-    min-height: 110px !important;
-    padding: 0.75rem 0.75rem 0.75rem 0.25rem !important;
-    gap: 0.3rem !important;
+    padding: 0.875rem 1rem 1rem !important;
+    gap: 0.4rem !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  /* Header stacks vertically, centered */
+  .listing-card-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+  }
+
+  .car-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .car-price-box {
+    align-items: center !important;
   }
 
   .listing-card-title {
-    font-size: 0.95rem !important;
+    font-size: 1rem !important;
+    line-height: 1.3 !important;
+    text-align: center !important;
   }
 
   .price-value {
-    font-size: 1.1rem !important;
+    font-size: 1.2rem !important;
   }
 
   .price-rating {
-    padding: 0.2rem 0.45rem !important;
-    font-size: 0.6rem !important;
+    padding: 0.2rem 0.5rem !important;
+    font-size: 0.65rem !important;
   }
 
   .spec-pill {
-    padding: 0.2rem 0.4rem !important;
-    font-size: 0.62rem !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.72rem !important;
   }
 
   .spec-pill i {
-    width: 11px !important;
-    height: 11px !important;
-    margin-right: 2px !important;
+    width: 12px !important;
+    height: 12px !important;
+    margin-right: 3px !important;
+  }
+
+  /* Primary specs centered */
+  .primary-specs {
+    justify-content: center !important;
+    width: 100% !important;
   }
 
   .spec-row {
     min-height: auto !important;
-    gap: 0.25rem !important;
+    gap: 0.3rem !important;
+    justify-content: center !important;
   }
 
   .spec-group-left {
-    gap: 0.25rem !important;
+    gap: 0.3rem !important;
+    justify-content: center !important;
   }
 
+  /* ── Flatten action-bar so actions can be ordered below specs ── */
   .listing-card-action-bar {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.35rem !important;
+    display: contents !important;
   }
 
+  /* ── Actions row: after secondary specs, circular buttons ── */
   .listing-card-actions {
+    order: 10 !important;
     width: 100% !important;
-    justify-content: flex-start !important;
-    gap: 0.5rem !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 1.25rem !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    padding-top: 0.75rem !important;
+    margin-top: 0.25rem !important;
   }
 
+  body.dark-mode .listing-card-actions {
+    border-top-color: rgba(255, 255, 255, 0.07) !important;
+  }
+
+  /* Circular buttons */
   .action-pill-btn {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    max-width: 32px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    border-radius: 50% !important;
+    flex: none !important;
   }
 
   .action-pill-btn i {
-    width: 14px !important;
-    height: 14px !important;
+    width: 18px !important;
+    height: 18px !important;
   }
 
+  /* Contact button: no glow, same baseline as siblings */
+  .action-pill-btn.accent {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* Condition badge: hidden on mobile in content, shown on image */
+  .condition-pill {
+    display: none !important;
+  }
+
+  .condition-overlay-badge {
+    display: inline-flex !important;
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    background: rgba(30, 30, 40, 0.72) !important;
+    color: #fff !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    letter-spacing: 0.02em !important;
+    z-index: 3 !important;
+  }
+
+  /* Hide the note+phone row */
   .note-contact-row {
     display: none !important;
   }
 
+  /* Always show phone in the actions row */
   .grid-contact-btn {
     display: flex !important;
+  }
+}
+
+/* ── Home search form mobile layout ── */
+@media (max-width: 768px) {
+  /* 2-column grid: Znamka+Model / Različica+Letnik / Prevoženi km+Cena / Location(full) */
+  #homeSearchForm .search-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* Center every form-group label + input */
+  #homeSearchForm .form-group {
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  #homeSearchForm .form-group label {
+    text-align: center !important;
+    width: 100% !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* Location + buttons: full width, stack vertically, centered */
+  #homeSearchForm .search-grid > .form-group:last-child {
+    grid-column: span 2 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Location label+input takes full width */
+  #homeSearchForm .search-grid > .form-group:last-child > div:first-child {
+    width: 100% !important;
+    flex: unset !important;
+    align-items: center !important;
+  }
+
+  /* Buttons row: full width, centered */
+  #homeSearchForm .search-grid > .form-group:last-child > div:last-child {
+    width: 100% !important;
+    flex: unset !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
   }
 }
 

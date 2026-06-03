@@ -272,7 +272,8 @@ function renderCarCard(car) {
             </div>
             
             ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
-            
+            ${car.condition ? `<span class="condition-overlay-badge">${car.condition}</span>` : ''}
+
             ${images.length > 1 ? `
                 <div class="listing-carousel-dots">
                     ${images.map((_, i) => `<span class="mini-dot ${i === 0 ? 'active' : ''}"></span>`).join('')}

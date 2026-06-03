@@ -453,6 +453,14 @@ function renderListing(l) {
     });
 
     // Init icons
+    // Mobile layout: move price card right after gallery so order is
+    // gallery → price → specs/description/seller-note → TCO → seller card
+    if (window.innerWidth <= 900) {
+        const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
+        const priceCard = page.querySelector('.lp-price-card');
+        if (gallery && priceCard) gallery.insertAdjacentElement('afterend', priceCard);
+    }
+
     if (window.lucide) window.lucide.createIcons();
 
     // Load similar
@@ -553,6 +561,19 @@ function initGallery(exteriorImages, interiorImages) {
     document.querySelectorAll('.lp-thumb').forEach(thumb => {
         thumb.addEventListener('click', () => setImg(Number(thumb.dataset.idx)));
     });
+
+    // Touch swipe support for mobile
+    const galleryMain = document.querySelector('.lp-gallery-main');
+    if (galleryMain) {
+        let touchStartX = 0;
+        galleryMain.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].clientX;
+        }, { passive: true });
+        galleryMain.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) > 40) setImg(dx < 0 ? current + 1 : current - 1);
+        }, { passive: true });
+    }
 
     document.querySelectorAll('.lp-view-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -710,11 +731,8 @@ function renderSpecsHtml(l) {
                 <div class="lp-key-specs-box">
                     <div class="lp-key-specs-grid">
                         ${keySpecs.map(s => `
-                            <div class="lp-key-spec-item">
-                                <span class="lp-key-spec-label">
-                                    <i data-lucide="${s.icon}"></i>
-                                    ${escHtml(s.label)}
-                                </span>
+                            <div class="lp-key-spec-item" title="${escHtml(s.label)}">
+                                <i data-lucide="${s.icon}" class="lp-key-spec-icon"></i>
                                 <span class="lp-key-spec-value">${escHtml(String(s.value))}</span>
                             </div>
                         `).join('')}

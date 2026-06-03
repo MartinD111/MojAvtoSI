@@ -75,7 +75,7 @@ function renderShell(root) {
     const vehCard = (vc) => `
         <button type="button" class="tab-btn ${state.vehicleCategory === vc.value ? 'active' : ''}" data-vehcat="${vc.value}" title="${vc.label}">
             <i data-lucide="${vc.icon}"></i>
-            <span>${vc.label}</span>
+            <span class="hidden-md">${vc.label}</span>
         </button>`;
 
     root.innerHTML = `

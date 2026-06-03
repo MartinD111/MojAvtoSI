@@ -240,15 +240,25 @@
     <div id="searchTypePills" class="search-type-pills" style="display:none;"></div>
 
     <!-- Vehicle Type Tabs (Cars/Motorcycles/Commercial/Leisure) — shown for generic search or cars -->
-    <div id="vehicleTypeTabs" class="glass-card rounded-pill tabs-glass" style="width:fit-content; margin-inline:auto; margin-bottom:2rem;">
-        <button type="button" class="tab-btn active" data-tab="avto" title="Avtomobili"><i data-lucide="car"></i>
-            Avtomobili</button>
-        <button type="button" class="tab-btn" data-tab="moto" title="Motorji"><i data-lucide="bike"></i>
-            Motorji</button>
-        <button type="button" class="tab-btn" data-tab="gospodarska" title="Gospodarska vozila"><i
-                data-lucide="truck"></i> Gospodarska</button>
-        <button type="button" class="tab-btn" data-tab="prosti-cas" title="Prosti čas"><i data-lucide="palmtree"></i>
-            Prosti čas</button>
+    <div class="home-tabs-container" style="margin-bottom:2rem;">
+        <div id="vehicleTypeTabs" class="glass-card rounded-pill tabs-glass">
+            <button type="button" class="tab-btn active" data-tab="avto" title="Avtomobili">
+                <i data-lucide="car"></i>
+                <span class="hidden-md">Avtomobili</span>
+            </button>
+            <button type="button" class="tab-btn" data-tab="moto" title="Motorji">
+                <i data-lucide="bike"></i>
+                <span class="hidden-md">Motorji</span>
+            </button>
+            <button type="button" class="tab-btn" data-tab="gospodarska" title="Gospodarska vozila">
+                <i data-lucide="truck"></i>
+                <span class="hidden-md">Gospodarska</span>
+            </button>
+            <button type="button" class="tab-btn" data-tab="prosti-cas" title="Prosti čas">
+                <i data-lucide="palmtree"></i>
+                <span class="hidden-md">Prosti čas</span>
+            </button>
+        </div>
     </div>
 
 
@@ -402,10 +412,10 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="variant" class="adv-label" data-i18n-key="cl_trim_variant">Oblika / različica</label>
+                            <label for="variant" class="adv-label" data-i18n-key="cl_trim_variant">Različica</label>
                             <div class="pill-select-wrapper">
                                 <select id="variant" name="variant" disabled class="pill-input">
-                                    <option value="" data-i18n-key="cl_trim_variant">Oblika / različica</option>
+                                    <option value="" data-i18n-key="cl_trim_variant">Različica</option>
                                 </select>
                             </div>
                         </div>
@@ -422,7 +432,7 @@
                 </div>
 
                 <!-- Condition checkboxes -->
-                <div class="adv-field-group" style="margin-bottom: 1.5rem;">
+                <div class="adv-field-group adv-left-align" style="margin-bottom: 1.5rem;">
                     <label class="adv-label">Stanje vozila</label>
                     <div class="adv-chip-group">
                         <label class="adv-chip"><input type="checkbox" name="condition" value="Novo"> Novo</label>
@@ -437,7 +447,7 @@
                 </div>
 
                 <!-- Damaged vehicle toggle -->
-                <div class="adv-field-group" style="margin-bottom: 2rem;">
+                <div class="adv-field-group adv-left-align" style="margin-bottom: 2rem;">
                     <label class="adv-label">Poškodovana vozila</label>
                     <div class="adv-chip-group">
                         <label class="adv-chip"><input type="radio" name="damaged" value=""> Vsa</label>

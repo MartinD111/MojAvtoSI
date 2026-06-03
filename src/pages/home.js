@@ -242,11 +242,20 @@ function reloadBrands(category) {
                 m.createCustomSelect(modelSelect);
             });
 
-            // Model change listener
+            const variantSelect = document.getElementById("home-variant");
+            const resetVariants = () => {
+                if (!variantSelect) return;
+                variantSelect.innerHTML = `<option value="">${t('cl_trim_variant', 'Različica')}</option>`;
+                variantSelect.disabled = true;
+                import('../utils/customSelect.js').then(m => m.createCustomSelect(variantSelect));
+            };
+
+            // Brand change: reset model + variant
             brandSelect.addEventListener("change", function () {
                 const selectedMake = brandSelect.value;
                 modelSelect.innerHTML = `<option value="">${t('all_models', 'All models')}</option>`;
                 modelSelect.disabled = true;
+                resetVariants();
 
                 if (selectedMake && brandModelData[selectedMake]) {
                     const models = brandModelData[selectedMake];
@@ -259,9 +268,31 @@ function reloadBrands(category) {
                     });
                     modelSelect.disabled = false;
                 }
-                
-                import('../utils/customSelect.js').then(m => {
-                    m.createCustomSelect(modelSelect);
+
+                import('../utils/customSelect.js').then(m => m.createCustomSelect(modelSelect));
+            });
+
+            // Model change: populate variants
+            modelSelect.addEventListener("change", function () {
+                resetVariants();
+                const mk = brandSelect.value;
+                const md = modelSelect.value;
+                if (!mk || !md || !brandModelData[mk]) return;
+                const entry = brandModelData[mk][md];
+                if (!entry) return;
+                import('../utils/bodyType.js').then(({ getModelVariants }) => {
+                    const variants = getModelVariants(entry);
+                    if (!variants || !variants.length || !variantSelect) return;
+                    variants.forEach(v => {
+                        const name = typeof v === 'string' ? v : (v.trim || v.name || '');
+                        if (!name) return;
+                        const opt = document.createElement("option");
+                        opt.value = name;
+                        opt.textContent = name;
+                        variantSelect.appendChild(opt);
+                    });
+                    variantSelect.disabled = false;
+                    import('../utils/customSelect.js').then(m => m.createCustomSelect(variantSelect));
                 });
             });
         });
@@ -304,6 +335,7 @@ function setupSearchForm() {
             
             const make = document.getElementById('home-make')?.value || '';
             const model = document.getElementById('home-model')?.value || '';
+            const variant = document.getElementById('home-variant')?.value || '';
             const year = document.getElementById('home-reg-from')?.value || '';
             const mileage = document.getElementById('home-mileage-to')?.value || '';
             const priceVal = document.getElementById('home-price-to')?.value || '';
@@ -313,6 +345,7 @@ function setupSearchForm() {
             let query = `?cat=${catSlug}`;
             if (make) query += `&make=${encodeURIComponent(make)}`;
             if (model) query += `&model=${encodeURIComponent(model)}`;
+            if (variant) query += `&variant=${encodeURIComponent(variant)}`;
             if (year) query += `&yearFrom=${year}`;
             if (mileage) query += `&mileageTo=${mileage}`;
             if (price) query += `&priceTo=${price}`;

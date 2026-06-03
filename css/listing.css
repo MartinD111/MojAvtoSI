@@ -152,8 +152,19 @@ body.dark-mode .lp-price {
 }
 
 @media (max-width: 900px) {
-    .lp-layout { grid-template-columns: 1fr; }
-    .lp-sidebar { order: -1; }
+    /* JS moves .lp-price-card right after gallery; CSS just stacks everything */
+    .lp-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .lp-main,
+    .lp-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 }
 
 /* ── Gallery ────────────────────────────────────────────────────────────────*/
@@ -520,45 +531,32 @@ body.dark-mode .lp-description { color: #cbd5e1; }
 .lp-key-specs-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem 1rem;
+    gap: 1rem;
 }
 
 @media (max-width: 768px) {
-    .lp-key-specs-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 480px) {
-    .lp-key-specs-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .lp-key-specs-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
 }
 
 .lp-key-spec-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    text-align: center;
-    gap: 0.35rem;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 0.75rem;
 }
 
-.lp-key-spec-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #94a3b8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-}
-
-.lp-key-spec-label svg {
-    width: 13px;
-    height: 13px;
+.lp-key-spec-icon {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0;
     color: var(--color-primary-start);
 }
 
 .lp-key-spec-value {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: #1e293b;
 }

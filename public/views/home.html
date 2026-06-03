@@ -70,6 +70,14 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-group" id="group-home-variant">
+                    <label for="home-variant" data-i18n-key="cl_trim_variant">Različica</label>
+                    <div class="pill-select-wrapper">
+                        <select id="home-variant" name="variant" disabled class="pill-input">
+                            <option value="" data-i18n-key="cl_trim_variant">Različica</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="home-reg-from" data-i18n-key="form_year_from">Year (from)</label>
                     <div class="pill-select-wrapper">
@@ -97,7 +105,7 @@
                 <div class="form-group" style="grid-column: span 3; flex-direction: row; align-items: flex-end; gap: 0.75rem;">
                     <!-- Location Pill and its centered Label -->
                     <div style="flex: 3.5; display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                        <label for="home-location" style="display: block; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0;" data-i18n-key="form_city_zip">City or ZIP code</label>
+                        <label for="home-location" style="display: block; font-size: 0.8125rem; font-weight: 400; text-transform: none; letter-spacing: 0; margin-bottom: 0;" data-i18n-key="form_city_zip">Kraj ali poštna številka</label>
                         <div class="pill-input-wrapper" style="width: 100%;">
                             <input type="text" id="home-location" name="location" class="pill-input"
                                 placeholder="Enter city or ZIP code" data-i18n-key="placeholder_city_zip" data-i18n-target="placeholder">

@@ -232,7 +232,7 @@ function bindSearchLogic(catContext) {
                 });
                 if (!data[prevMake]) {
                     modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-                    variantSelect.innerHTML = '<option value="">Oblika / različica</option>'; variantSelect.disabled = true;
+                    variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
                 }
                 return data;
             });
@@ -328,7 +328,7 @@ function bindSearchLogic(catContext) {
         const data = window._brandModelData;
         const val = makeSelect.value;
         modelSelect.innerHTML = '<option value="">Model</option>';
-        variantSelect.innerHTML = '<option value="">Oblika / različica</option>';
+        variantSelect.innerHTML = '<option value="">Različica</option>';
         modelSelect.disabled = true; variantSelect.disabled = true;
         if (val && data && data[val]) {
             const models = data[val];
@@ -341,7 +341,7 @@ function bindSearchLogic(catContext) {
     modelSelect.addEventListener("change", () => {
         const data = window._brandModelData;
         const mk = makeSelect.value, md = modelSelect.value;
-        variantSelect.innerHTML = '<option value="">Oblika / različica</option>';
+        variantSelect.innerHTML = '<option value="">Različica</option>';
         variantSelect.disabled = true;
         if (mk && md && data && data[mk]) {
             const variants = getModelVariants(data[mk][md]);
@@ -391,7 +391,7 @@ function bindSearchLogic(catContext) {
             vehicles.push({ make, model, variant });
             makeSelect.value = '';
             modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-            variantSelect.innerHTML = '<option value="">Oblika / različica</option>'; variantSelect.disabled = true;
+            variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
             
             // Dispatch dynamic change event for custom select triggers so they reset visually!
             makeSelect.dispatchEvent(new Event('change'));
@@ -549,7 +549,7 @@ function bindSearchLogic(catContext) {
             renderVehicleCards();
             makeSelect.value = '';
             modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-            variantSelect.innerHTML = '<option value="">Oblika / različica</option>'; variantSelect.disabled = true;
+            variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
             
             makeSelect.dispatchEvent(new Event('change'));
             modelSelect.dispatchEvent(new Event('change'));

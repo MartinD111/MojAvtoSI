@@ -51,6 +51,23 @@ export function initHeader() {
               <a href="#/gume-in-deli" class="nav-pill ${hash.startsWith('#/gume-in-deli') ? 'active-pill' : ''}">
                 <i data-lucide="disc-3"></i> ${t('header_tires_parts', 'Gume in deli')}
               </a>
+
+              <!-- Mobile-only extras (hidden on desktop via CSS) -->
+              <div class="mobile-nav-extras">
+                <a href="#/novi-oglas" class="nav-pill"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
+                ${user ? `
+                  <a href="#/dashboard" class="nav-pill"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
+                  <a href="#/profil" class="nav-pill"><i data-lucide="user"></i> ${t('my_profile')}</a>
+                  <a href="#/garaža" class="nav-pill"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
+                  <button type="button" class="nav-pill dropdown-logout" id="mobileLogoutBtn"><i data-lucide="log-out"></i> ${t('logout')}</button>
+                ` : `
+                  <a href="#/prijava" class="nav-pill" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;"><i data-lucide="user"></i> ${t('login')}</a>
+                `}
+                <button type="button" class="nav-pill" id="themeToggleMobileBtn" aria-label="Preklopi temo">
+                  <i data-lucide="${document.body.classList.contains('dark-mode') ? 'sun' : 'moon'}"></i>
+                  ${document.body.classList.contains('dark-mode') ? 'Svetla tema' : 'Temna tema'}
+                </button>
+              </div>
             </nav>
 
             <div class="nav-actions">
@@ -88,6 +105,14 @@ export function initHeader() {
               <button class="pill-btn secondary btn-icon" id="themeToggleBtn" aria-label="Preklopi temo">
                 <i data-lucide="${document.body.classList.contains('dark-mode') ? 'sun' : 'moon'}"></i>
               </button>
+
+              ${user ? `
+                <a href="#/profil" class="nav-avatar-mobile" title="${user.displayName || t('my_profile')}">
+                  ${user.photoURL
+                    ? `<img src="${user.photoURL}" alt="Profil" />`
+                    : `<i data-lucide="user"></i>`}
+                </a>
+              ` : ''}
 
               <button class="burger-btn" id="burgerBtn" aria-label="Meni" aria-expanded="false" aria-controls="navLinks">
                 <i data-lucide="menu"></i>
@@ -219,6 +244,19 @@ export function initHeader() {
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
       await logout();
       window.location.hash = '/';
+    });
+
+    // ── Mobile extras: logout + theme toggle ──
+    document.getElementById('mobileLogoutBtn')?.addEventListener('click', async () => {
+      await logout();
+      window.location.hash = '/';
+    });
+
+    document.getElementById('themeToggleMobileBtn')?.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      render(user);
     });
 
     // Store user for hashchange re-renders
