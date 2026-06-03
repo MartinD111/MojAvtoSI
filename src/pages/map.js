@@ -424,42 +424,14 @@ window._openBizProfile = function (id) {
 
 // ── Mobile filter drawer ──────────────────────────────────────
 function setupMobileDrawer() {
-    const mapPage = document.querySelector('.map-page');
-    const leftPanel = document.querySelector('.map-left-panel');
-    if (!mapPage || !leftPanel) return;
-
-    // Overlay
-    const overlay = document.createElement('div');
-    overlay.id = 'mapMobileOverlay';
-    overlay.className = 'map-mobile-overlay';
-    overlay.addEventListener('click', closeMobileDrawer);
-    mapPage.appendChild(overlay);
-
-    // FAB button (inside the map right panel so it's above the map)
-    const mapRight = document.querySelector('.map-right-panel');
-    if (mapRight) {
-        const fab = document.createElement('button');
-        fab.className = 'map-mobile-fab';
-        fab.id = 'mapMobileFab';
-        fab.setAttribute('aria-label', 'Odpri filtre');
-        fab.innerHTML = '<i data-lucide="sliders-horizontal"></i><span>Filtri</span>';
-        fab.addEventListener('click', () => {
-            leftPanel.classList.contains('mobile-open') ? closeMobileDrawer() : openMobileDrawer();
-        });
-        mapRight.appendChild(fab);
-    }
+    if (window.innerWidth > 768) return;
+    // On mobile: filter is always in the page flow, start collapsed
+    document.getElementById('mapFilters')?.classList.add('collapsed');
 }
 
-function openMobileDrawer() {
-    document.querySelector('.map-left-panel')?.classList.add('mobile-open');
-    document.getElementById('mapMobileOverlay')?.classList.add('visible');
-    document.getElementById('mapMobileFab')?.classList.add('active');
-}
-
+function openMobileDrawer() { /* no-op on mobile — filter is always visible */ }
 function closeMobileDrawer() {
-    document.querySelector('.map-left-panel')?.classList.remove('mobile-open');
-    document.getElementById('mapMobileOverlay')?.classList.remove('visible');
-    document.getElementById('mapMobileFab')?.classList.remove('active');
+    document.getElementById('mapFilters')?.classList.add('collapsed');
 }
 
 // ── Map Page Init ─────────────────────────────────────────────

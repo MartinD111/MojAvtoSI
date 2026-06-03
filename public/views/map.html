@@ -11,7 +11,7 @@
             <div class="map-filters-header" id="mapFiltersToggle">
                 <div class="map-filters-title">
                     <i data-lucide="sliders-horizontal"></i>
-                    Filters
+                    Filtri
                     <span id="activeFiltersCount" style="display:none; background:var(--color-primary-start); color:white; border-radius:9999px; padding:1px 7px; font-size:0.65rem;">0</span>
                 </div>
                 <div class="map-filters-toggle">
@@ -21,37 +21,37 @@
 
             <!-- Type Filter -->
             <div class="filter-section">
-                <div class="filter-section-label">Business Type</div>
+                <div class="filter-section-label">Vrsta podjetja</div>
                 <div class="type-filter-pills">
                     <button class="type-pill dealer" data-type="dealer" id="typeDealer">
                         <span class="type-pill-dot" style="background:#2563eb;"></span>
-                        Dealership
+                        Avtohiša
                     </button>
                     <button class="type-pill service" data-type="service" id="typeService">
                         <span class="type-pill-dot" style="background:#16a34a;"></span>
-                        Service
+                        Servis
                     </button>
                     <button class="type-pill vulcanizer" data-type="vulcanizer" id="typeVulcanizer">
                         <span class="type-pill-dot" style="background:#ea580c;"></span>
-                        Tire Shop
+                        Vulkanizerstvo
                     </button>
                 </div>
             </div>
 
             <!-- Brand Filter -->
             <div class="filter-section">
-                <div class="filter-section-label">Brands</div>
-                <select id="brandSelect"><option value="">Select a brand...</option></select>
+                <div class="filter-section-label">Znamke</div>
+                <select id="brandSelect"><option value="">Izberite znamko...</option></select>
                 <div id="brandSelectedPills" class="brand-selected-pills"></div>
             </div>
 
             <!-- Toggles -->
             <div class="filter-section">
-                <div class="filter-section-label">Special Features</div>
+                <div class="filter-section-label">Posebnosti</div>
                 <div class="toggle-filters">
                     <div class="toggle-row">
                         <label class="toggle-row-label" for="filterAuthorized">
-                            <i data-lucide="badge-check"></i> Authorized Service
+                            <i data-lucide="badge-check"></i> Pooblaščeni servis
                         </label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="filterAuthorized" />
@@ -60,7 +60,7 @@
                     </div>
                     <div class="toggle-row">
                         <label class="toggle-row-label" for="filterLeasing">
-                            <i data-lucide="landmark"></i> Leasing Available
+                            <i data-lucide="landmark"></i> Leasing
                         </label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="filterLeasing" />
@@ -69,7 +69,7 @@
                     </div>
                     <div class="toggle-row">
                         <label class="toggle-row-label" for="filterTyre">
-                            <i data-lucide="circle"></i> Tire Storage
+                            <i data-lucide="circle"></i> Hramba pnevmatik
                         </label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="filterTyre" />

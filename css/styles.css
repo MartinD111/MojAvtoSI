@@ -666,15 +666,16 @@ body.dark-mode .compare-badge {
 .glass-dropdown {
   display: none;
   position: absolute;
-  right: 0;
+  right: 50%;
+  transform: translateX(50%);
   top: calc(100% + 8px);
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 8px;
   min-width: 200px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  z-index: 100;
 }
 
 .glass-dropdown.open {
@@ -1143,7 +1144,7 @@ body.dark-mode .mega-rental-toggle .toggle-slider-sm {
 }
 
 body.dark-mode .glass-dropdown {
-  background: rgba(30, 41, 59, 0.95);
+  background: #1e293b;
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -1164,6 +1165,131 @@ body.dark-mode .glass-dropdown a:hover {
   cursor: pointer;
   color: #374151;
   padding: 6px;
+}
+
+/* Mobile-only extras — always hidden until inside the open burger panel */
+.mobile-nav-extras {
+  display: none;
+}
+
+/* Dark mode carousel buttons */
+body.dark-mode .carousel-btn {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .carousel-btn:hover {
+  background: #334155;
+}
+
+/* Dark mode news card text */
+body.dark-mode .news-card-content h3 {
+  color: #f1f5f9;
+}
+
+body.dark-mode .news-card-content p {
+  color: #94a3b8;
+}
+
+/* Bottom actions row: hidden by default, shown only on 13-inch */
+.listing-card-bottom-actions {
+  display: none;
+}
+
+.listing-card-bottom-actions .action-pill-btn {
+  transform: none !important;
+  align-self: center !important;
+  vertical-align: middle !important;
+}
+
+.listing-card-bottom-actions .action-pill-btn.accent {
+  box-shadow: none !important;
+  transform: none !important;
+  align-self: center !important;
+  margin-top: -3px !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* ── 13-inch laptop: compact list-layout cards ───────────────── */
+@media (min-width: 769px) and (max-width: 1380px) {
+  /* Hide seller note and note-contact-row */
+  .seller-note-card,
+  .note-contact-row {
+    display: none !important;
+  }
+
+  /* Hide inline action buttons from the action-bar */
+  .listing-card-actions {
+    display: none !important;
+  }
+
+  /* Show bottom actions row below secondary specs */
+  .listing-card-bottom-actions {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Price: prevent clipping */
+  .car-price-box {
+    flex-shrink: 0 !important;
+    min-width: fit-content !important;
+  }
+
+  .price-value {
+    font-size: 1rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Tighten spec pills */
+  .spec-pill {
+    font-size: 0.7rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+
+  /* Tighten title */
+  .listing-card-title {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* ── Carousel buttons fully on-screen (tablet + mobile) ─────── */
+@media (max-width: 1100px) {
+  .carousel-section {
+    padding: 0 36px;
+  }
+}
+
+/* Dark mode: section headings and empty-state text */
+body.dark-mode .carousel-section h2,
+body.dark-mode .page-container h2 {
+  color: #f1f5f9;
+}
+
+body.dark-mode .page-container p[style*="color: #6b7280"],
+body.dark-mode .page-container p {
+  color: #94a3b8;
+}
+
+/* Publish listing in dropdown: hidden on desktop, shown on tablet */
+.dropdown-publish-listing {
+  display: none;
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  /* Show "Objavi oglas" inside dropdown */
+  .dropdown-publish-listing {
+    display: flex !important;
+  }
+
+  /* Hide it from nav-actions */
+  .nav-actions > a.pill-btn.primary {
+    display: none !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1363,7 +1489,7 @@ main {
 .hero-word-items {
   display: flex;
   flex-direction: column;
-  animation: hero-word-rotate 22s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  animation: hero-word-rotate 22s linear infinite;
 }
 
 .hero-word-items span {
@@ -3377,7 +3503,7 @@ body.dark-mode .sponsored-specs span {
 .car-price-box {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 0.25rem;
   flex-shrink: 0;
   justify-content: flex-start;
@@ -3391,15 +3517,17 @@ body.dark-mode .sponsored-specs span {
 }
 
 .price-rating {
-  padding: 0.35rem 1rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 99px;
-  font-size: 0.7rem;
+  font-size: 0.58rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   background: #fff3e0;
   color: #e67e22;
   box-shadow: 0 2px 8px rgba(230, 126, 34, 0.1);
+  align-self: stretch;
+  text-align: center;
 }
 
 .price-rating.rating-green {
@@ -3426,6 +3554,7 @@ body.dark-mode .sponsored-specs span {
   color: #0f172a;
   letter-spacing: -0.015em;
   line-height: 1;
+  text-align: right;
 }
 
 .listing-card-specs {
@@ -6334,20 +6463,12 @@ body.dark-mode .unit-btn.active {
   text-align: center;
 }
 
-/* Keep labels left-aligned for multi-select chip groups */
+/* All chip groups in advanced search: left-aligned */
 #advancedSearchForm .adv-field-group:has(.adv-chip-group) .adv-label {
-  text-align: center;
-}
-
-#advancedSearchForm .adv-field-group:has(.adv-chip-group) .adv-chip-group {
-  justify-content: center;
-}
-
-#advancedSearchForm .adv-field-group.adv-left-align .adv-label {
   text-align: left;
 }
 
-#advancedSearchForm .adv-field-group.adv-left-align .adv-chip-group {
+#advancedSearchForm .adv-field-group:has(.adv-chip-group) .adv-chip-group {
   justify-content: flex-start;
 }
 
@@ -7244,6 +7365,9 @@ body.dark-mode .catalog-offers-title {
   .price-rating {
     padding: 0.25rem 0.6rem !important;
     font-size: 0.65rem !important;
+    align-self: center !important;
+    text-align: center !important;
+    width: auto !important;
   }
 
   .spec-pill {
@@ -7378,6 +7502,7 @@ body.dark-mode .catalog-offers-title {
     order: 10 !important;
     width: 100% !important;
     display: flex !important;
+    align-items: center !important;
     justify-content: center !important;
     gap: 1.25rem !important;
     border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
@@ -7405,7 +7530,8 @@ body.dark-mode .catalog-offers-title {
   }
 
   /* Contact button: no glow, same baseline as siblings */
-  .action-pill-btn.accent {
+  .action-pill-btn.accent,
+  #carListingsContainer .grid-contact-btn {
     box-shadow: none !important;
     transform: none !important;
   }
@@ -7449,6 +7575,21 @@ body.dark-mode .catalog-offers-title {
   #homeSearchForm .search-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
+  }
+
+  /* Uniform pill size across all home search inputs */
+  #homeSearchForm .pill-select-wrapper,
+  #homeSearchForm .pill-input-wrapper {
+    width: 100% !important;
+  }
+
+  #homeSearchForm .pill-input,
+  #homeSearchForm .custom-select-trigger {
+    width: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    box-sizing: border-box !important;
   }
 
   /* Center every form-group label + input */

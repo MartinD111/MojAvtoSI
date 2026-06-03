@@ -335,6 +335,19 @@ function renderCarCard(car) {
                 </div>
             </div>
 
+            <!-- Compact action row shown on 13-inch screens (below secondary specs) -->
+            <div class="listing-card-bottom-actions">
+                <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="Save to favorites">
+                    <i data-lucide="heart"></i>
+                </button>
+                <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
+                    <i data-lucide="scale"></i>
+                </button>
+                <button class="action-pill-btn contact-btn accent" data-car-id="${car.id}" title="Contact">
+                    <i data-lucide="phone"></i>
+                </button>
+            </div>
+
             <div class="note-contact-row">
                 ${note ? `
                 <div class="seller-note-card">

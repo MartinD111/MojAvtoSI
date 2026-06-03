@@ -24,6 +24,7 @@ export function initAdvancedSearchPage() {
     applyCategoryContext(catContext);
     bindAccordions();
     bindSearchLogic(catContext);
+    bindHybridSubOptions();
 
     // Setup numeric formatters
     document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
@@ -733,6 +734,32 @@ function matchesFilters(l, filters) {
     if (filters.najem === '1' && !l.isRental) return false;
 
     return true;
+}
+
+// ── Hybrid sub-option cascades ────────────────────────────────────────────────
+function bindHybridSubOptions() {
+    const hibridCheck = document.getElementById('fuelHibridCheck');
+    const typeGroup   = document.getElementById('hybridTypeGroup');
+    const engineGroup = document.getElementById('hybridEngineGroup');
+    if (!hibridCheck || !typeGroup || !engineGroup) return;
+
+    function updateEngineGroup() {
+        const anyTypeChecked = [...typeGroup.querySelectorAll('.hybrid-type-check')].some(c => c.checked);
+        engineGroup.style.display = anyTypeChecked ? 'block' : 'none';
+        if (!anyTypeChecked) engineGroup.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+    }
+
+    hibridCheck.addEventListener('change', () => {
+        const show = hibridCheck.checked;
+        typeGroup.style.display = show ? 'block' : 'none';
+        if (!show) {
+            typeGroup.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+            engineGroup.style.display = 'none';
+            engineGroup.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+        }
+    });
+
+    typeGroup.querySelectorAll('.hybrid-type-check').forEach(c => c.addEventListener('change', updateEngineGroup));
 }
 
 // Export for use by oglasi.js if needed

@@ -11,7 +11,7 @@
                     <span data-i18n-key="hero_word_truck">truck</span>
                     <span data-i18n-key="hero_word_forklift">forklift</span>
                     <span data-i18n-key="hero_word_jetski">jetski</span>
-                    <span data-i18n-key="hero_word_snowmobile">snowmobile</span>
+                    <span data-i18n-key="hero_word_snowmobile">bager</span>
                     <span data-i18n-key="hero_word_tractor">tractor</span>
                     <span data-i18n-key="hero_word_bus">bus</span>
                     <span data-i18n-key="hero_word_van">van</span>
@@ -156,7 +156,7 @@
       gap: 0;
       margin: 0;
       padding: 0;
-      animation: hero-word-rotate 22s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+      animation: hero-word-rotate 22s steps(11, end) infinite;
     }
 
     .hero-word-items span {
@@ -176,18 +176,8 @@
     }
 
     @keyframes hero-word-rotate {
-      0%, 7.5% { transform: translateY(0); }
-      9%, 16.5% { transform: translateY(-1.4em); }
-      18%, 25.5% { transform: translateY(-2.8em); }
-      27%, 34.5% { transform: translateY(-4.2em); }
-      36%, 43.5% { transform: translateY(-5.6em); }
-      45%, 52.5% { transform: translateY(-7.0em); }
-      54%, 61.5% { transform: translateY(-8.4em); }
-      63%, 70.5% { transform: translateY(-9.8em); }
-      72%, 79.5% { transform: translateY(-11.2em); }
-      81%, 88.5% { transform: translateY(-12.6em); }
-      90%, 97.5% { transform: translateY(-14.0em); }
-      100% { transform: translateY(-14.0em); }
+      from { transform: translateY(0); }
+      to   { transform: translateY(-15.4em); }
     }
 
 </style>

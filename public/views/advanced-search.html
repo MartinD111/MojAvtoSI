@@ -523,17 +523,36 @@
                 </button>
             </div>
             <div class="adv-acc-body" style="display:none;">
-                <div class="adv-field-group car-only-field" style="margin-bottom: 1.5rem;">
+                <div class="adv-field-group car-only-field" style="margin-bottom: 0.75rem;">
                     <label class="adv-label">Vrsta goriva</label>
                     <div class="adv-chip-group">
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="Petrol"> Bencin</label>
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
-                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Hibrid"> Hibrid</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Hibrid" id="fuelHibridCheck"> Hibrid</label>
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="Elektrika"> Elektrika</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="EREV"> EREV</label>
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="LPG"> LPG / Plin</label>
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="CNG"> CNG</label>
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="Vodik"> Vodik</label>
                         <label class="adv-chip"><input type="checkbox" name="fuel" value="Etanol"> Etanol</label>
+                    </div>
+                </div>
+
+                <!-- Hybrid type sub-options (shown when Hibrid is checked) -->
+                <div class="adv-field-group car-only-field" id="hybridTypeGroup" style="display:none; margin-bottom: 0.75rem; padding-left: 1rem; border-left: 2px solid var(--color-primary-start);">
+                    <label class="adv-label" style="font-size:0.72rem;">Vrsta hibrida</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="hybridType" value="Blagi hibrid" class="hybrid-type-check"> Blagi hibrid</label>
+                        <label class="adv-chip"><input type="checkbox" name="hybridType" value="Plug-in hibrid" class="hybrid-type-check"> Plug-in hibrid</label>
+                    </div>
+                </div>
+
+                <!-- Hybrid engine sub-options (shown when a hybrid type is checked) -->
+                <div class="adv-field-group car-only-field" id="hybridEngineGroup" style="display:none; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 2px solid var(--color-primary-start);">
+                    <label class="adv-label" style="font-size:0.72rem;">Motor hibrida</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="hybridEngine" value="Bencin hibrid"> Bencin hibrid</label>
+                        <label class="adv-chip"><input type="checkbox" name="hybridEngine" value="Dizel hibrid"> Dizel hibrid</label>
                     </div>
                 </div>
 

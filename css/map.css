@@ -1021,113 +1021,54 @@ body.dark-mode .map-overlay-loc {
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
 
-    /* Map takes full viewport height */
+    /* Map page stacks vertically: filter bar on top, map below */
     .map-page {
-        flex-direction: row;
+        flex-direction: column;
         height: calc(100vh - 70px);
-        position: relative;
         overflow: hidden;
     }
 
-    /* Map fills the full right panel */
-    .map-right-panel {
-        flex: 1;
-        height: 100%;
-    }
-
-    /* Left panel becomes a pill card dropdown below the nav bar */
+    /* Left panel: always in flow, above the map */
     .map-left-panel {
-        position: fixed;
-        top: 88px;
-        left: 12px;
-        right: 12px;
-        width: auto;
-        max-width: 100%;
-        max-height: 70vh;
-        z-index: 1500;
-        transform: translateY(-130%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow-y: auto;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+        position: static;
+        width: calc(100% - 24px);
+        max-width: none;
+        margin: 8px auto 0;
+        flex-shrink: 0;
+        transform: none;
+        z-index: auto;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
         border-radius: 1.5rem;
-        margin: 0;
-        flex-direction: column;
+        overflow: visible;
     }
 
-    .map-left-panel.mobile-open {
-        transform: translateY(0);
-    }
-
-    /* Filters fully pill-shaped inside dropdown */
+    /* Filters pill-shaped, collapse handles show/hide of content */
     .map-filters {
-        max-height: none;
+        max-height: 85vh;
         border-radius: 1.5rem;
         margin-bottom: 0;
+        overflow-y: auto;
     }
 
-    /* Overlay behind the dropdown */
-    .map-mobile-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        top: 80px;
-        background: rgba(0, 0, 0, 0.35);
-        z-index: 1499;
-        animation: overlayFadeIn 0.2s ease;
+    /* Map fills all remaining vertical space */
+    .map-right-panel {
+        flex: 1;
+        min-height: 0;
     }
 
-    .map-mobile-overlay.visible {
-        display: block;
-    }
+    /* Hide FAB and overlay — no longer needed */
+    .map-mobile-fab { display: none !important; }
+    .map-mobile-overlay { display: none !important; }
 
-    @keyframes overlayFadeIn {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-    }
-
-    /* FAB button repositioned to top-left of the map */
-    .map-mobile-fab {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        position: absolute;
-        top: 0.75rem;
-        left: 1rem;
-        z-index: 500;
-        padding: 0.55rem 1rem;
-        border-radius: 9999px;
-        border: none;
-        background: white;
-        color: #1e293b;
-        font-size: 0.82rem;
-        font-weight: 700;
-        font-family: 'Inter', sans-serif;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .map-mobile-fab i {
-        width: 15px;
-        height: 15px;
-        flex-shrink: 0;
-    }
-
-    .map-mobile-fab.active {
-        background: var(--color-primary-start);
-        color: white;
-    }
-
-    /* Hide business list — dropdown shows filters only on mobile */
+    /* Hide business list on mobile */
     .map-list {
         display: none;
     }
 
-    /* Overlay bar: shift right to avoid the Filtri FAB on the left */
+    /* Overlay bar: restore default centering */
     .map-overlay-bar {
-        left: 120px;
-        right: 1rem;
-        transform: none;
-        max-width: calc(100% - 130px);
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: calc(100% - 2rem);
     }
 }

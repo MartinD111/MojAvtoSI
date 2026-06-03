@@ -81,6 +81,8 @@ export function initHeader() {
                     <span>${user.displayName?.split(' ')[0] || t('my_account')}</span>
                   </button>
                   <div id="userDropdown" class="glass-dropdown">
+                    <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
+                    <div class="dropdown-divider dropdown-publish-listing"></div>
                     <a href="#/dashboard"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
                     <a href="#/profil"><i data-lucide="user"></i> ${t('my_profile')}</a>
                     <a href="#/garaža"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>

@@ -206,23 +206,19 @@ body.dark-mode .lp-price {
     left: 1rem;
     z-index: 10;
     padding: 0.4rem 1.1rem;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
+    background: #ffffff;
     color: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: none;
     border-radius: 999px;
     font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 700;
     box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     pointer-events: none;
 }
 
 body.dark-mode .lp-condition-badge {
-    background: rgba(15, 23, 42, 0.8);
+    background: #1e293b;
     color: #f8fafc;
-    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .lp-view-btn:not(.active):not(:disabled):hover {
