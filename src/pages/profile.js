@@ -23,7 +23,6 @@ export async function initProfilePage() {
           <h1 style="margin:0;font-size:1.5rem;font-weight:700;">${user.displayName || t('profile_user_fallback')}</h1>
           <p style="margin:0;color:#6b7280;font-size:0.9rem;">${user.email}</p>
         </div>
-        <a href="#/dashboard" class="profile-back-link" style="margin-left:auto;font-size:0.85rem;font-weight:600;color:#2563eb;text-decoration:none;">${t('profile_back_to_dashboard')}</a>
       </div>
 
       <!-- Moja garaža -->
@@ -179,8 +178,8 @@ export async function initProfilePage() {
       </div>
 
       <!-- Back link -->
-      <div style="text-align:center;margin-top:1.5rem;">
-        <a href="#/dashboard" class="profile-back-link" style="font-size:0.9rem;color:#6b7280;text-decoration:none;">${t('profile_back_to_dashboard_link')}</a>
+      <div style="text-align:center;margin-top:2rem;margin-bottom:1rem;">
+        <a href="#/dashboard" class="profile-back-link" style="display:inline-block;font-size:0.9rem;font-weight:700;color:#fff;text-decoration:none;padding:11px 32px;background:#2563eb;border-radius:9999px;transition:background 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">${t('profile_back_to_dashboard_link')}</a>
       </div>
     </div>
     `;

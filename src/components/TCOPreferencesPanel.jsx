@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getTCOPreferences, saveTCOPreferences } from '../services/tcoPreferencesService.js';
 import './TCOPreferencesPanel.css';
 
@@ -7,6 +7,44 @@ const SI_REGIONS = [
     'Obalno-kraška', 'Jugovzhodna Slovenija', 'Pomurska', 'Posavska',
     'Primorsko-notranjska', 'Koroška', 'Zasavska',
 ];
+
+function RegionSelect({ value, onChange }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    return (
+        <div ref={ref} className={`custom-select-container${open ? ' open' : ''}`} style={{width:'100%'}}>
+            <div
+                className={`custom-select-trigger${open ? ' open' : ''}`}
+                onClick={() => setOpen(o => !o)}
+                style={{justifyContent:'center', gap:'8px'}}
+            >
+                <span>{value}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{transition:'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink:0}}><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div className={`custom-select-menu${open ? ' open' : ''}`}>
+                <div className="custom-select-options">
+                    {SI_REGIONS.map(r => (
+                        <div
+                            key={r}
+                            className={`custom-select-option${r === value ? ' selected' : ''}`}
+                            style={{justifyContent:'center'}}
+                            onClick={() => { onChange(r); setOpen(false); }}
+                        >
+                            {r}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function TCOPreferencesPanel({ onSave }) {
     const [age, setAge] = useState(35);
@@ -120,15 +158,7 @@ export default function TCOPreferencesPanel({ onSave }) {
                         <span className="tco-prefs-icon">📍</span>
                         Regija
                     </label>
-                    <select
-                        value={region}
-                        onChange={(e) => setRegion(e.target.value)}
-                        className="tco-prefs-select"
-                    >
-                        {SI_REGIONS.map(r => (
-                            <option key={r} value={r}>{r}</option>
-                        ))}
-                    </select>
+                    <RegionSelect value={region} onChange={setRegion} />
                     <div className="tco-prefs-hint">Vpliva na zavarovalne premije in stroške registracije</div>
                 </div>
             </div>

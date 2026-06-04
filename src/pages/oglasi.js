@@ -539,6 +539,21 @@ function renderListings(cars) {
             currentIdx = (currentIdx + 1) % imagesCount;
             updateCarousel();
         });
+
+        // Touch swipe support
+        let touchStartX = 0;
+        imageWrapper.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+        imageWrapper.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) < 30) return;
+            e.stopPropagation();
+            currentIdx = dx < 0
+                ? (currentIdx + 1) % imagesCount
+                : (currentIdx - 1 + imagesCount) % imagesCount;
+            updateCarousel();
+        });
     });
 
     // Async: mark already-favourited cars
@@ -786,6 +801,23 @@ export function initOglasiPage() {
 // ── Sidebar dynamic filtering implementation ──────────────────────────────────
 let _allActiveListings = [];
 
+function updateSidebarHybridGroup() {
+    const hibridCheck = document.getElementById("sidebarFuelHibrid");
+    const group = document.getElementById("sidebarHybridTypeGroup");
+    if (hibridCheck && group) {
+        const isChecked = hibridCheck.checked;
+        group.style.display = isChecked ? 'flex' : 'none';
+        if (!isChecked) {
+            group.querySelectorAll("input[type=checkbox]").forEach(cb => {
+                if (cb.checked) {
+                    cb.checked = false;
+                    cb.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+    }
+}
+
 async function initSidebarFiltering() {
     // 1. Fetch all listings
     try {
@@ -937,6 +969,30 @@ async function initSidebarFiltering() {
         });
     }
 
+    // Toggle fields visibility based on category
+    const params = parseHashParams();
+    const cat = params.get('cat');
+    const carFields = document.getElementById("carSpecificFields");
+    const motoFields = document.getElementById("motoSpecificFields");
+    if (carFields && motoFields) {
+        if (cat === 'moto' || cat === 'motor') {
+            carFields.style.display = 'none';
+            carFields.querySelectorAll("input, select").forEach(el => el.disabled = true);
+            motoFields.style.display = 'flex';
+            motoFields.querySelectorAll("input, select").forEach(el => el.disabled = false);
+        } else {
+            carFields.style.display = 'flex';
+            carFields.querySelectorAll("input, select").forEach(el => el.disabled = false);
+            motoFields.style.display = 'none';
+            motoFields.querySelectorAll("input, select").forEach(el => el.disabled = true);
+        }
+    }
+
+    const hibridCheck = document.getElementById("sidebarFuelHibrid");
+    if (hibridCheck) {
+        hibridCheck.addEventListener("change", updateSidebarHybridGroup);
+    }
+
     if (form) {
         form.querySelectorAll("input, select").forEach(el => {
             if (el !== makeSelect && el !== modelSelect && el !== variantSelect) {
@@ -948,7 +1004,13 @@ async function initSidebarFiltering() {
 
     if (resetBtn) {
         resetBtn.addEventListener("click", () => {
-            if (form) form.reset();
+            if (form) {
+                form.reset();
+                form.querySelectorAll("select").forEach(sel => {
+                    sel.dispatchEvent(new Event('change'));
+                });
+                updateSidebarHybridGroup();
+            }
             if (modelSelect) {
                 modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
                 modelSelect.disabled = true;
@@ -976,6 +1038,24 @@ function applySidebarFilters() {
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
     const priceTo = parseFormattedNumber(document.getElementById("sidebarPriceTo")?.value) || Infinity;
+
+    // New car filters
+    const bodyType = document.getElementById("sidebarBodyType")?.value || '';
+    const powerFrom = parseInt(document.getElementById("sidebarPowerFrom")?.value, 10) || 0;
+    const powerTo = parseInt(document.getElementById("sidebarPowerTo")?.value, 10) || Infinity;
+    const driveType = document.getElementById("sidebarDriveType")?.value || '';
+
+    // New moto filters
+    const engineType = document.getElementById("sidebarEngineType")?.value || '';
+    const engineStroke = document.getElementById("sidebarEngineStroke")?.value || '';
+
+    // New common filters
+    const color = document.getElementById("sidebarColor")?.value || '';
+    const sellerType = document.getElementById("sidebarSellerType")?.value || '';
+    const region = document.getElementById("sidebarRegion")?.value || '';
+
+    const onlySale = document.getElementById("sidebarOnlySale")?.checked || false;
+    const showNoPrice = document.getElementById("sidebarShowNoPrice")?.checked ?? true;
 
     // Parse multi-select checkboxes for fuel and transmission
     const form = document.getElementById("sidebarFiltersForm");
@@ -1013,15 +1093,10 @@ function applySidebarFilters() {
         if (najem === '1' && !car.isRental) return false;
 
         // Vehicle (Make / Model / Variant) filtering:
-        // Rule: If sidebar selection for make is not empty, use sidebar selections.
-        // Otherwise, if the URL contains 'vehicles' array, match against any of them.
-        // Otherwise, if URL contains 'make' or 'model', match against those (and optionally 'variant' from URL).
         if (make) {
             if (car.make !== make) return false;
             if (model && car.model !== model) return false;
             
-            // If the user selected a variant in the sidebar, filter by it.
-            // Otherwise, filter by variantParam from the URL if it matches.
             if (variant) {
                 const titleStr = (car.title || '').toLowerCase();
                 const subtitleStr = (car.subtitle || '').toLowerCase();
@@ -1077,9 +1152,131 @@ function applySidebarFilters() {
         if (fuels.length > 0) {
             let normalizedCarFuel = car.fuel;
             if (car.fuel === 'Petrol') normalizedCarFuel = 'Bencin';
-            if (!fuels.includes(normalizedCarFuel)) return false;
+            if (car.fuel === 'Diesel') normalizedCarFuel = 'Dizel';
+            if (car.fuel === 'Hybrid') normalizedCarFuel = 'Hibrid';
+            if (car.fuel === 'Electric') normalizedCarFuel = 'Elektrika';
+            if (car.fuel === 'Priključni hibrid') normalizedCarFuel = 'Plug-in hibrid';
+
+            const isMatch = fuels.some(f => {
+                if (f === normalizedCarFuel) return true;
+                
+                // Match hybrid subtypes
+                if (normalizedCarFuel === 'Hibrid' || normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid') {
+                    if (f === 'Hibrid') return true;
+                    
+                    const titleText = ((car.title || '') + ' ' + (car.subtitle || '')).toLowerCase();
+                    if (f === 'Plug-in hibrid') {
+                        return normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid' || titleText.includes('plug') || titleText.includes('phev');
+                    }
+                    if (f === 'Blagi hibrid') {
+                        const isPlugin = normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid' || titleText.includes('plug') || titleText.includes('phev');
+                        return !isPlugin;
+                    }
+                    if (f === 'Bencin hibrid') {
+                        return titleText.includes('tsi') || titleText.includes('tfsi') || titleText.includes('bencin') || titleText.includes('petrol') || titleText.includes('i-mmd') || (!titleText.includes('tdi') && !titleText.includes('dci') && !titleText.includes('cdi') && !titleText.includes(' 2.0 d') && !titleText.includes('dizel'));
+                    }
+                    if (f === 'Dizel hibrid') {
+                        return titleText.includes('tdi') || titleText.includes('dci') || titleText.includes('cdi') || titleText.includes('dizel') || titleText.includes('diesel') || titleText.includes(' 2.0 d');
+                    }
+                }
+                return false;
+            });
+            if (!isMatch) return false;
         }
         if (transmissions.length > 0 && !transmissions.includes(car.transmission)) return false;
+
+        // 🚗 Car Specific Filters
+        if (cat !== 'moto' && cat !== 'motor') {
+            // Body Type
+            if (bodyType) {
+                const seg = (car.segment || '').toLowerCase();
+                const title = (car.title || '').toLowerCase();
+                const bodyLower = bodyType.toLowerCase();
+                if (bodyLower === 'limuzina') {
+                    if (!seg.includes('sedan') && !seg.includes('limuzina')) return false;
+                } else if (bodyLower === 'karavan') {
+                    if (!seg.includes('wagon') && !seg.includes('karavan') && !title.includes('avant') && !title.includes('touring') && !title.includes('karavan')) return false;
+                } else if (bodyLower === 'enoprostorec') {
+                    if (!seg.includes('minivan') && !seg.includes('enoprostorec') && !seg.includes('mpv')) return false;
+                } else if (bodyLower === 'suv') {
+                    if (!seg.includes('suv') && !seg.includes('terensko') && !seg.includes('crossover')) return false;
+                } else if (bodyLower === 'coupe') {
+                    if (!seg.includes('coupe') && !title.includes('coupe')) return false;
+                } else if (bodyLower === 'kabriolet') {
+                    if (!seg.includes('convertible') && !seg.includes('cabriolet') && !seg.includes('kabriolet') && !title.includes('cabrio') && !title.includes('kabriolet')) return false;
+                } else if (bodyLower === 'kombi' || bodyLower === 'dostavnik') {
+                    if (!seg.includes('kombi') && !seg.includes('dostav') && !seg.includes('van')) return false;
+                } else if (bodyLower === 'drugo') {
+                    const commonSegs = ['sedan', 'limuzina', 'wagon', 'karavan', 'minivan', 'enoprostorec', 'mpv', 'suv', 'terensko', 'crossover', 'coupe', 'convertible', 'cabriolet', 'kabriolet', 'kombi', 'dostav', 'van'];
+                    if (commonSegs.some(s => seg.includes(s))) return false;
+                }
+            }
+
+            // Engine Power (kW)
+            const carPower = car.powerKw || 0;
+            if (carPower < powerFrom || (powerTo !== Infinity && carPower > powerTo)) return false;
+
+            // Drive Type
+            if (driveType) {
+                const carDrive = (car.driveType || '').toLowerCase();
+                if (driveType === 'FWD') {
+                    if (!carDrive.includes('spredaj') && !carDrive.includes('fwd')) return false;
+                } else if (driveType === 'RWD') {
+                    if (!carDrive.includes('zadaj') && !carDrive.includes('rwd')) return false;
+                } else if (driveType === 'AWD') {
+                    if (!carDrive.includes('4x4') && !carDrive.includes('4matic') && !carDrive.includes('awd') && !carDrive.includes('xdrive') && !carDrive.includes('quattro')) return false;
+                }
+            }
+        }
+
+        // 🏍️ Motorcycle Specific Filters
+        if (cat === 'moto' || cat === 'motor') {
+            // Engine Type
+            if (engineType) {
+                const carEng = (car.engineType || '').toLowerCase();
+                const filterEng = engineType.toLowerCase();
+                if (filterEng === 'vrstni') {
+                    if (!carEng.includes('vrstni') && !carEng.startsWith('i') && !carEng.startsWith('inline')) return false;
+                } else if (filterEng === 'v-motor') {
+                    if (!carEng.includes('v-') && !carEng.includes('v2') && !carEng.includes('v4')) return false;
+                } else if (carEng !== filterEng && !carEng.includes(filterEng)) {
+                    return false;
+                }
+            }
+
+            // Engine Stroke
+            if (engineStroke && car.engineStroke !== engineStroke) return false;
+        }
+
+        // Color
+        if (color) {
+            const carColor = (car.color || '').toLowerCase();
+            const filterColor = color.toLowerCase();
+            if (filterColor === 'drugo') {
+                const commonColors = ['bela', 'črna', 'siva', 'srebrna', 'modra', 'rdeča', 'zelena', 'rumena', 'rjava', 'zlata', 'oranžna'];
+                if (commonColors.includes(carColor)) return false;
+            } else {
+                if (carColor !== filterColor && !carColor.includes(filterColor)) return false;
+            }
+        }
+
+        // Seller Type
+        if (sellerType && car.sellerType !== sellerType) return false;
+
+        // Region
+        if (region) {
+            const carRegion = car.location?.region || '';
+            if (carRegion !== region) return false;
+        }
+
+        // Only Sale
+        if (onlySale && !car.salePriceEur) return false;
+
+        // Show/Hide no price
+        if (!showNoPrice) {
+            const hasPrice = (car.priceRaw && car.priceRaw > 0) || (car.priceEur && car.priceEur > 0) || (car.price && car.price.toLowerCase() !== 'po dogovoru' && !car.callForPrice);
+            if (!hasPrice) return false;
+        }
 
         return true;
     });
@@ -1147,6 +1344,19 @@ function prefillSidebarFromUrl() {
     const fuel = params.get("fuel");
     const transmission = params.get("transmission");
 
+    // New url params
+    const bodyType = params.get("bodyType");
+    const powerFrom = params.get("powerFrom");
+    const powerTo = params.get("powerTo");
+    const driveType = params.get("driveType");
+    const engineType = params.get("engineType");
+    const engineStroke = params.get("engineStroke");
+    const color = params.get("color");
+    const sellerType = params.get("sellerType");
+    const region = params.get("region");
+    const onlySale = params.get("onlySale");
+    const showNoPrice = params.get("showNoPrice");
+
     // Parse and render multi-vehicle search array
     let vehicles = [];
     try {
@@ -1198,9 +1408,41 @@ function prefillSidebarFromUrl() {
         priceToInput.value = priceTo;
     }
 
+    const prefillSelect = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val) {
+            el.value = val;
+            el.dispatchEvent(new Event('change'));
+        }
+    };
+    prefillSelect("sidebarBodyType", bodyType);
+    prefillSelect("sidebarDriveType", driveType);
+    prefillSelect("sidebarEngineType", engineType);
+    prefillSelect("sidebarEngineStroke", engineStroke);
+    prefillSelect("sidebarColor", color);
+    prefillSelect("sidebarSellerType", sellerType);
+    prefillSelect("sidebarRegion", region);
+
+    if (powerFrom && document.getElementById("sidebarPowerFrom")) {
+        document.getElementById("sidebarPowerFrom").value = powerFrom;
+    }
+    if (powerTo && document.getElementById("sidebarPowerTo")) {
+        document.getElementById("sidebarPowerTo").value = powerTo;
+    }
+
+    if (onlySale && document.getElementById("sidebarOnlySale")) {
+        document.getElementById("sidebarOnlySale").checked = onlySale === 'true';
+    }
+    if (showNoPrice && document.getElementById("sidebarShowNoPrice")) {
+        document.getElementById("sidebarShowNoPrice").checked = showNoPrice === 'true';
+    }
+
     if (fuel) {
         const fuels = fuel.split(',').map(f => {
             if (f === 'Petrol') return 'Bencin';
+            if (f === 'Diesel') return 'Dizel';
+            if (f === 'Hybrid') return 'Hibrid';
+            if (f === 'Electric') return 'Elektrika';
             return f;
         });
         const fuelCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="fuel"]');
@@ -1216,6 +1458,9 @@ function prefillSidebarFromUrl() {
             cb.checked = transList.includes(cb.value);
         });
     }
+
+    // Expand hybrid types if prefilled
+    updateSidebarHybridGroup();
 
     // Only apply immediately if make is not present (as make sets off a async populate chain)
     if (!make) {

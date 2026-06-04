@@ -102,7 +102,41 @@ function setupRotatingAds() {
         `;
     }
 
-    // Render twice for loop
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+        // Hide nav buttons directly in case CSS specificity doesn't win
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+
+        // Render doubled items for seamless loop
+        track.innerHTML = [...sponsored, ...sponsored].map(car => renderAdCard(car)).join('');
+        if (window.lucide) window.lucide.createIcons();
+
+        // Auto-scroll via scrollLeft on the container so touch drag coexists
+        const container = track.parentElement;
+        let isPaused = false;
+
+        function mobileAutoScroll() {
+            if (!isPaused) {
+                container.scrollLeft += 0.8;
+                if (container.scrollLeft >= track.scrollWidth / 2) {
+                    container.scrollLeft = 0;
+                }
+            }
+            requestAnimationFrame(mobileAutoScroll);
+        }
+
+        container.addEventListener('touchstart', () => { isPaused = true; }, { passive: true });
+        container.addEventListener('touchend', () => {
+            setTimeout(() => { isPaused = false; }, 1200);
+        }, { passive: true });
+
+        mobileAutoScroll();
+        return;
+    }
+
+    // Desktop: render twice for seamless loop
     track.innerHTML = [...sponsored, ...sponsored].map(car => renderAdCard(car)).join('');
     if (window.lucide) window.lucide.createIcons();
 

@@ -209,10 +209,18 @@ export function createCustomSelect(select) {
 
             if (searchInput) {
                 searchInput.value = '';
-                searchInput.focus();
-                // Trigger input event to show all options if there was a previous search
+                searchInput.focus({ preventScroll: true });
                 searchInput.dispatchEvent(new Event('input'));
             }
+
+            // Scroll so the label is visible above the pill on mobile
+            const fieldGroup = container.closest('.form-group, .field-group');
+            const scrollTarget = fieldGroup || container;
+            const stickyNav = document.querySelector('.sticky-nav');
+            const navHeight = stickyNav ? stickyNav.getBoundingClientRect().height : 0;
+            const rect = scrollTarget.getBoundingClientRect();
+            const absoluteTop = rect.top + window.scrollY - navHeight - 8;
+            window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
         }
     });
 

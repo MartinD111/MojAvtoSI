@@ -3271,6 +3271,7 @@ body.dark-mode #rot-next-btn {
 
 .rotating-ads-track {
   display: flex;
+  align-items: stretch;
   width: max-content;
   padding: 1.5rem 0;
 }
@@ -3333,7 +3334,7 @@ body.dark-mode .sponsored-mini-card:hover {
   height: 120px;
   object-fit: cover;
   border-radius: 1.75rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
 }
 
 .sponsored-title {
@@ -3351,6 +3352,7 @@ body.dark-mode .sponsored-mini-card:hover {
 .sponsored-specs {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 0.65rem;
   align-items: center;
   justify-content: center;
@@ -3378,7 +3380,8 @@ body.dark-mode .sponsored-mini-card:hover {
   font-size: 1.3rem;
   font-weight: 900;
   color: var(--color-primary-start);
-  margin-top: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
   text-align: center;
   width: 100%;
 }
@@ -3427,6 +3430,24 @@ body.dark-mode .sponsored-specs span {
 }
 
 @media (max-width: 768px) {
+  #rot-prev-btn,
+  #rot-next-btn {
+    display: none !important;
+  }
+
+  .rotating-ads-track-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    scrollbar-width: none;
+  }
+
+  .rotating-ads-track-container::-webkit-scrollbar {
+    display: none;
+  }
+
   .sponsored-mini-card {
     flex-direction: column;
     align-items: center;
@@ -4587,34 +4608,49 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
     gap: 1rem;
   }
 
+  /* ── Sidebar: unified pill → squircle container ── */
   .oglasi-sidebar {
     width: 100%;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .oglasi-sidebar-card {
-    position: static;
-    top: auto;
-    padding: 1.25rem;
-    max-height: none;
-    overflow-y: visible;
+  body.dark-mode .oglasi-sidebar {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
-  /* Collapse the filter panel behind a toggle so results show first */
+  .oglasi-sidebar.filters-open {
+    border-radius: 1.25rem;
+  }
+
+  /* Toggle button: flush inside the container, no own border/bg */
   .mobile-filter-toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     padding: 0.9rem 1.25rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 1rem;
-    background: #ffffff;
+    border: none;
+    border-radius: 0;
+    background: transparent;
     color: #1e293b;
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: none;
+    box-sizing: border-box;
+  }
+
+  body.dark-mode .mobile-filter-toggle {
+    color: #e2e8f0;
+    background: transparent;
+    border-color: transparent;
   }
 
   .mobile-filter-toggle span {
@@ -4624,27 +4660,58 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
   }
 
   .mobile-filter-toggle .mft-chevron {
-    transition: transform 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .mobile-filter-toggle.open .mft-chevron {
     transform: rotate(180deg);
   }
 
-  body.dark-mode .mobile-filter-toggle {
-    background: #1e293b;
-    border-color: rgba(255, 255, 255, 0.12);
-    color: #e2e8f0;
+  /* Filter card: slide in below the toggle */
+  .oglasi-sidebar-card {
+    position: static;
+    top: auto;
+    padding: 0 1.25rem;
+    max-height: none;
+    overflow-y: visible;
+    border-top: 1px solid rgba(0, 0, 0, 0.07) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  /* Hide the filter card until the toggle is opened */
+  body.dark-mode .oglasi-sidebar-card {
+    border-top-color: rgba(255, 255, 255, 0.07) !important;
+  }
+
+  /* Hide the filter card content until open — animate with grid-template-rows */
   .oglasi-sidebar #filtersCard {
-    display: none;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition:
+      grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s ease,
+      padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .oglasi-sidebar.filters-open #filtersCard {
-    display: block;
-    margin-top: 0.75rem;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    margin-top: 0;
+  }
+
+  .sidebar-filters-header {
+    display: none !important;
   }
 
   /* Results header stacks; sort row goes full width */
@@ -7571,16 +7638,28 @@ body.dark-mode .catalog-offers-title {
     max-width: 44px !important;
     border-radius: 50% !important;
     flex: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    align-self: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+    top: auto !important;
   }
 
-  .action-pill-btn i {
+  .action-pill-btn i,
+  .action-pill-btn svg {
     width: 18px !important;
     height: 18px !important;
+    display: block !important;
   }
 
-  /* Contact button: no glow, same baseline as siblings */
+  /* All action buttons: no lift, same baseline */
+  .action-pill-btn,
   .action-pill-btn.accent,
-  #carListingsContainer .grid-contact-btn {
+  #carListingsContainer .grid-contact-btn,
+  #carListingsContainer.grid-layout .grid-contact-btn {
     box-shadow: none !important;
     transform: none !important;
   }
@@ -7593,8 +7672,8 @@ body.dark-mode .catalog-offers-title {
   .condition-overlay-badge {
     display: inline-flex !important;
     position: absolute !important;
-    top: 10px !important;
-    left: 10px !important;
+    top: 1.25rem !important;
+    left: 1.25rem !important;
     background: rgba(30, 30, 40, 0.72) !important;
     color: #fff !important;
     font-size: 0.7rem !important;
@@ -7615,6 +7694,29 @@ body.dark-mode .catalog-offers-title {
   /* Always show phone in the actions row */
   .grid-contact-btn {
     display: flex !important;
+  }
+
+  /* ── Pagination: single line on mobile ── */
+  .pagination {
+    flex-wrap: nowrap !important;
+    gap: 0.35rem !important;
+    padding: 0.35rem 0.6rem !important;
+    width: calc(100% - 2rem) !important;
+    max-width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .pagination button,
+  .page-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .pagination .page-dots {
+    min-width: 24px !important;
+    font-size: 0.82rem !important;
   }
 }
 

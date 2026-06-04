@@ -37,6 +37,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;
+    text-align: center;
 }
 
 .tco-prefs-label {
@@ -45,7 +47,9 @@
     color: #1e293b;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    width: 100%;
 }
 
 .tco-prefs-icon {
@@ -56,7 +60,9 @@
 .tco-prefs-input-group {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
+    width: 100%;
 }
 
 /* Range input */
@@ -116,19 +122,20 @@
 .tco-prefs-number-input {
     flex: 1;
     padding: 10px 12px;
-    border: 1px solid rgba(28, 175, 63, 0.2);
+    border: 1.5px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     color: #1e293b;
-    background: rgba(255, 255, 255, 0.5);
+    background: #ffffff;
+    text-align: center;
     transition: all 0.2s ease;
 }
 
 .tco-prefs-number-input:focus {
     outline: none;
     border-color: #1caf3f;
-    background: rgba(255, 255, 255, 0.8);
+    background: #ffffff;
     box-shadow: 0 0 0 3px rgba(28, 175, 63, 0.1);
 }
 
@@ -142,20 +149,21 @@
 /* Select */
 .tco-prefs-select {
     padding: 10px 12px;
-    border: 1px solid rgba(28, 175, 63, 0.2);
+    border: 1.5px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     color: #1e293b;
-    background: rgba(255, 255, 255, 0.5);
+    background: #ffffff;
     cursor: pointer;
+    text-align: center;
     transition: all 0.2s ease;
 }
 
 .tco-prefs-select:focus {
     outline: none;
     border-color: #1caf3f;
-    background: rgba(255, 255, 255, 0.8);
+    background: #ffffff;
     box-shadow: 0 0 0 3px rgba(28, 175, 63, 0.1);
 }
 
@@ -256,29 +264,3 @@
     }
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-    .tco-prefs-panel {
-        background: rgba(28, 175, 63, 0.05);
-    }
-
-    .tco-prefs-header h2 {
-        color: #e2e8f0;
-    }
-
-    .tco-prefs-label {
-        color: #e2e8f0;
-    }
-
-    .tco-prefs-number-input,
-    .tco-prefs-select {
-        background: rgba(30, 41, 59, 0.8);
-        color: #e2e8f0;
-        border-color: rgba(28, 175, 63, 0.3);
-    }
-
-    .tco-prefs-hint {
-        background: rgba(100, 116, 139, 0.1);
-        color: #cbd5e1;
-    }
-}

@@ -432,6 +432,156 @@ function bindSearchLogic(catContext) {
         </div>`;
     }
 
+    // Touch-dragging variables
+    let touchDragging = false;
+    let touchStartTimeout = null;
+    let touchDraggingCard = null;
+    let touchStartData = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchClone = null;
+    let touchOffsetX = 0;
+    let touchOffsetY = 0;
+
+    function handleTouchStart(e, card) {
+        if (e.target.closest('.vec-remove')) return;
+
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchDraggingCard = card;
+        touchDragging = false;
+
+        const cardRect = card.getBoundingClientRect();
+        touchOffsetX = touch.clientX - cardRect.left;
+        touchOffsetY = touch.clientY - cardRect.top;
+
+        touchStartTimeout = setTimeout(() => {
+            touchDragging = true;
+            if (navigator.vibrate) navigator.vibrate(20);
+
+            touchStartData = {
+                idx: +card.dataset.idx,
+                zone: card.dataset.zone
+            };
+
+            touchClone = card.cloneNode(true);
+            touchClone.classList.add('vec-dragging-clone');
+            Object.assign(touchClone.style, {
+                position: 'fixed',
+                left: `${cardRect.left}px`,
+                top: `${cardRect.top}px`,
+                width: `${cardRect.width}px`,
+                height: `${cardRect.height}px`,
+                opacity: '0.9',
+                pointerEvents: 'none',
+                zIndex: '9999',
+                margin: '0',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                transform: 'scale(1.05)',
+                transition: 'transform 0.1s ease',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.15)'
+            });
+            document.body.appendChild(touchClone);
+            card.classList.add('vec-dragging');
+        }, 250);
+    }
+
+    function handleTouchMove(e) {
+        if (!touchDraggingCard) return;
+        const touch = e.touches[0];
+
+        if (!touchDragging) {
+            const dx = touch.clientX - touchStartX;
+            const dy = touch.clientY - touchStartY;
+            if (Math.sqrt(dx * dx + dy * dy) > 10) {
+                clearTimeout(touchStartTimeout);
+                touchDraggingCard = null;
+            }
+            return;
+        }
+
+        e.preventDefault();
+
+        const x = touch.clientX - touchOffsetX;
+        const y = touch.clientY - touchOffsetY;
+        if (touchClone) {
+            touchClone.style.left = `${x}px`;
+            touchClone.style.top = `${y}px`;
+        }
+
+        const rectInclude = vehicleCardsEl ? vehicleCardsEl.getBoundingClientRect() : null;
+        const rectExclude = excludedVehicleCardsEl ? excludedVehicleCardsEl.getBoundingClientRect() : null;
+        const cx = touch.clientX;
+        const cy = touch.clientY;
+
+        if (rectInclude && cx >= rectInclude.left && cx <= rectInclude.right && cy >= rectInclude.top && cy <= rectInclude.bottom) {
+            vehicleCardsEl.classList.add('vec-drag-over');
+            if (excludedVehicleCardsEl) excludedVehicleCardsEl.classList.remove('vec-drag-over');
+        } else if (rectExclude && cx >= rectExclude.left && cx <= rectExclude.right && cy >= rectExclude.top && cy <= rectExclude.bottom) {
+            excludedVehicleCardsEl.classList.add('vec-drag-over');
+            if (vehicleCardsEl) vehicleCardsEl.classList.remove('vec-drag-over');
+        } else {
+            if (vehicleCardsEl) vehicleCardsEl.classList.remove('vec-drag-over');
+            if (excludedVehicleCardsEl) excludedVehicleCardsEl.classList.remove('vec-drag-over');
+        }
+    }
+
+    function handleTouchEnd(e) {
+        clearTimeout(touchStartTimeout);
+
+        if (!touchDraggingCard) return;
+
+        if (touchDragging) {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const cx = touch.clientX;
+            const cy = touch.clientY;
+
+            const rectInclude = vehicleCardsEl ? vehicleCardsEl.getBoundingClientRect() : null;
+            const rectExclude = excludedVehicleCardsEl ? excludedVehicleCardsEl.getBoundingClientRect() : null;
+
+            let targetZone = null;
+            if (rectInclude && cx >= rectInclude.left && cx <= rectInclude.right && cy >= rectInclude.top && cy <= rectInclude.bottom) {
+                targetZone = 'include';
+            } else if (rectExclude && cx >= rectExclude.left && cx <= rectExclude.right && cy >= rectExclude.top && cy <= rectExclude.bottom) {
+                targetZone = 'exclude';
+            }
+
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+            touchDraggingCard.classList.remove('vec-dragging');
+
+            if (vehicleCardsEl) vehicleCardsEl.classList.remove('vec-drag-over');
+            if (excludedVehicleCardsEl) excludedVehicleCardsEl.classList.remove('vec-drag-over');
+
+            if (targetZone && targetZone !== touchStartData.zone) {
+                const { idx, zone: fromZone } = touchStartData;
+                const srcArr = fromZone === 'include' ? vehicles : excludedVehicles;
+                const dstArr = targetZone === 'include' ? vehicles : excludedVehicles;
+                if (dstArr.length < MAX_VEHICLES) {
+                    const [item] = srcArr.splice(idx, 1);
+                    dstArr.push(item);
+                    renderVehicleCards();
+                    renderExcludedCards();
+                    updateLiveCount();
+                }
+            }
+        }
+
+        touchDraggingCard = null;
+        touchDragging = false;
+        touchStartData = null;
+    }
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
     function bindCardDrag(el) {
         el.querySelectorAll('[draggable]').forEach(card => {
             card.addEventListener('dragstart', e => {
@@ -440,6 +590,8 @@ function bindSearchLogic(catContext) {
                 setTimeout(() => card.classList.add('vec-dragging'), 0);
             });
             card.addEventListener('dragend', () => card.classList.remove('vec-dragging'));
+
+            card.addEventListener('touchstart', (e) => handleTouchStart(e, card), { passive: false });
         });
     }
 
