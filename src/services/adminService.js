@@ -267,9 +267,12 @@ export async function deleteModel(id) {
 
 // ── Excel/Bulk import ─────────────────────────────────────────────────────────
 
-const ALLOWED_FUEL_TYPES    = ['Petrol','Diesel','Electric','Hybrid','Plug-in Hybrid','LPG','CNG','Hydrogen'];
+const ALLOWED_FUEL_TYPES    = ['Petrol','Diesel','Electric','Hybrid','Plug-in Hybrid','LPG','CNG','Hydrogen','Steam'];
 const ALLOWED_ENGINE_TYPES  = ['4-stroke','2-stroke','Electric','Rotary'];
 const ALLOWED_ENGINE_CONFIGS = ['Single','Parallel Twin','V-Twin','Triple','Inline-4','Boxer','V4'];
+// Moto (v2) allowed values — Slovenian, produced by the moto template/parser
+const ALLOWED_MOTO_STROKE     = ['2T','4T','Električni','Wankel'];
+const ALLOWED_MOTO_DRIVETRAIN = ['veriga','zobati jermen','jekleni jermen','kardan'];
 
 /**
  * Validates tech spec fields from an import row per D-10.
@@ -279,6 +282,30 @@ const ALLOWED_ENGINE_CONFIGS = ['Single','Parallel Twin','V-Twin','Triple','Inli
 function validateTrimSpecs(row, rowLabel) {
     const errs = [];
     const specs = {};
+
+    // ── Moto (v2) branch: SL fields produced by the moto template/parser ──────
+    if ((row.category || '').toLowerCase() === 'moto') {
+        if (row.displacement_cc !== '' && row.displacement_cc != null) {
+            const cc = parseInt(row.displacement_cc, 10);
+            if (isNaN(cc) || cc < 50 || cc > 3000) {
+                errs.push(`${rowLabel}: prostornina "${row.displacement_cc}" mora biti celo število 50–3000 (ali prazno za električne)`);
+            } else { specs.displacement_cc = cc; }
+        }
+        if (row.stroke) {
+            if (!ALLOWED_MOTO_STROKE.includes(row.stroke)) errs.push(`${rowLabel}: takt "${row.stroke}" ni veljaven (${ALLOWED_MOTO_STROKE.join(', ')})`);
+            else specs.stroke = row.stroke;
+        }
+        if (row.drivetrain) {
+            if (!ALLOWED_MOTO_DRIVETRAIN.includes(row.drivetrain)) errs.push(`${rowLabel}: prenos moči "${row.drivetrain}" ni veljaven (${ALLOWED_MOTO_DRIVETRAIN.join(', ')})`);
+            else specs.drivetrain = row.drivetrain;
+        }
+        if (row.engine_type)     specs.engine_type     = String(row.engine_type);        // friendly group
+        if (row.engine_code)     specs.engine_code     = String(row.engine_code);        // raw code
+        if (row.cylinders)       specs.cylinders       = String(row.cylinders);
+        if (row.cylinder_layout) specs.cylinder_layout = String(row.cylinder_layout);
+        if (row.sub_type)        specs.sub_type        = String(row.sub_type);
+        return { valid: errs.length === 0, specs, errors: errs };
+    }
 
     // engine_capacity_cc: integer 50–10000 or empty
     if (row.engine_capacity_cc !== '' && row.engine_capacity_cc != null) {

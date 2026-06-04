@@ -293,102 +293,81 @@
 
                     <!-- Avto body types -->
                     <div class="body-type-grid" id="grid-cars">
-                        <button type="button" class="body-type-card" data-value="Limuzina"><i
-                                data-lucide="car-front"></i><span>Limuzina</span></button>
-                        <button type="button" class="body-type-card" data-value="Kombilimuzina"><i
-                                data-lucide="car"></i><span>Kombilimuzina</span></button>
-                        <button type="button" class="body-type-card" data-value="Karavan"><i
-                                class="fas fa-truck-pickup"></i><span>Karavan</span></button>
-                        <button type="button" class="body-type-card" data-value="Terensko"><i
-                                class="fas fa-car-side"></i><span>Terensko vozilo</span></button>
-                        <button type="button" class="body-type-card" data-value="Enoprostorec"><i
-                                class="fas fa-shuttle-van"></i><span>Enoprostorec</span></button>
-                        <button type="button" class="body-type-card" data-value="Kabriolet"><i
-                                data-lucide="wind"></i><span>Kabriolet</span></button>
-                        <button type="button" class="body-type-card" data-value="Coupe"><i
-                                class="fas fa-car"></i><span>Coupe</span></button>
-                        <button type="button" class="body-type-card" data-value="Sportni"><i
-                                data-lucide="zap"></i><span>Športni avto</span></button>
-                        <button type="button" class="body-type-card" data-value="Pick-up"><i
-                                class="fas fa-truck-pickup"></i><span>Pick-up</span></button>
-                        <button type="button" class="body-type-card" data-value="Damaged"><i
-                                data-lucide="alert-triangle"></i><span>Poškodovano / Zalito</span></button>
+                        <button type="button" class="body-type-card" data-value="Limuzina"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-sedan"></use></svg><span>Limuzina</span></button>
+                        <button type="button" class="body-type-card" data-value="Kombilimuzina"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-hatchback"></use></svg><span>Kombilimuzina</span></button>
+                        <button type="button" class="body-type-card" data-value="Karavan"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-estate"></use></svg><span>Karavan</span></button>
+                        <button type="button" class="body-type-card" data-value="Terensko"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-suv"></use></svg><span>Terensko vozilo</span></button>
+                        <button type="button" class="body-type-card" data-value="Enoprostorec"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-van"></use></svg><span>Enoprostorec</span></button>
+                        <button type="button" class="body-type-card" data-value="Kabriolet"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-cabrio"></use></svg><span>Kabriolet</span></button>
+                        <button type="button" class="body-type-card" data-value="Coupe"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-coupe"></use></svg><span>Coupe</span></button>
+                        <button type="button" class="body-type-card" data-value="Sportni"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-sports"></use></svg><span>Športni avto</span></button>
+                        <button type="button" class="body-type-card" data-value="Pick-up"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-pickup"></use></svg><span>Pick-up</span></button>
+                        <button type="button" class="body-type-card" data-value="Damaged"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-damaged"></use></svg><span>Poškodovano / Zalito</span></button>
                     </div>
 
-                    <!-- Moto vehicle types (populated dynamically from categories.js) -->
-                    <div class="body-type-grid" id="grid-motorbikes" style="display:none;">
-                        <button type="button" class="body-type-card" data-value="SportniMotor"><i
-                                class="fas fa-motorcycle"></i><span>Športni motor</span></button>
-                        <button type="button" class="body-type-card" data-value="SportniTourer"><i
-                                class="fas fa-motorcycle"></i><span>Športni potovalni</span></button>
-                        <button type="button" class="body-type-card" data-value="Adventure"><i
-                                class="fas fa-motorcycle"></i><span>Adventure</span></button>
-                        <button type="button" class="body-type-card" data-value="NakedBike"><i
-                                class="fas fa-motorcycle"></i><span>Naked Bike</span></button>
-                        <button type="button" class="body-type-card" data-value="Enduro"><i
-                                class="fas fa-motorcycle"></i><span>Enduro</span></button>
-                        <button type="button" class="body-type-card" data-value="Chopper"><i
-                                class="fas fa-motorcycle"></i><span>Chopper</span></button>
-                        <button type="button" class="body-type-card" data-value="Tourer"><i
-                                class="fas fa-motorcycle"></i><span>Potovalni</span></button>
-                        <button type="button" class="body-type-card" data-value="Supermoto"><i
-                                class="fas fa-motorcycle"></i><span>Supermoto</span></button>
-                        <button type="button" class="body-type-card" data-value="Trial"><i
-                                class="fas fa-motorcycle"></i><span>Trial</span></button>
-                        <button type="button" class="body-type-card" data-value="Cross"><i
-                                class="fas fa-motorcycle"></i><span>Kros</span></button>
-                        <button type="button" class="body-type-card" data-value="Skuter"><i
-                                class="fas fa-motorcycle"></i><span>Skuter</span></button>
-                        <button type="button" class="body-type-card" data-value="Minimoto"><i
-                                class="fas fa-motorcycle"></i><span>Minimoto</span></button>
-                        <button type="button" class="body-type-card" data-value="Gocart"><i
-                                class="fas fa-flag-checkered"></i><span>Gokart</span></button>
-                        <button type="button" class="body-type-card" data-value="MotorneSani"><i
-                                data-lucide="snowflake"></i><span>Motorne sani</span></button>
-                        <button type="button" class="body-type-card" data-value="EVozila">
-                            <div style="display:flex; gap:0.2rem; align-items:center; justify-content:center;">
-                                <i data-lucide="bike" style="width:16px;height:16px;"></i>
-                                <i data-lucide="zap"
-                                    style="width:12px;height:12px; color:var(--color-primary-start);"></i>
-                            </div>
-                            <span>E-Vozila</span>
-                        </button>
+                    <!-- Moto vehicle types — two-level drill-down for 4/3-wheel group -->
+                    <div id="grid-motorbikes" class="commercial-selector" style="display:none;">
+                        <div class="commercial-drill-header" id="motoDrillHeader" style="display:none;">
+                            <button type="button" class="commercial-back-btn" id="motoBackBtn">
+                                <i data-lucide="arrow-left"></i>
+                                <span>Nazaj</span>
+                            </button>
+                            <span class="commercial-drill-title" id="motoDrillTitle"></span>
+                        </div>
+                        <div class="body-type-grid" id="motoMainGrid">
+                            <button type="button" class="body-type-card" data-value="SportniMotor"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Športni motor</span></button>
+                            <button type="button" class="body-type-card" data-value="SportniTourer"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Športni potovalni</span></button>
+                            <button type="button" class="body-type-card" data-value="Adventure"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Adventure</span></button>
+                            <button type="button" class="body-type-card" data-value="NakedBike"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Naked Bike</span></button>
+                            <button type="button" class="body-type-card" data-value="Enduro"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Enduro</span></button>
+                            <button type="button" class="body-type-card" data-value="Chopper"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Chopper</span></button>
+                            <button type="button" class="body-type-card" data-value="Tourer"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Potovalni</span></button>
+                            <button type="button" class="body-type-card" data-value="Supermoto"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Supermoto</span></button>
+                            <button type="button" class="body-type-card" data-value="Trial"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Trial</span></button>
+                            <button type="button" class="body-type-card" data-value="Cross"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Kros</span></button>
+                            <button type="button" class="body-type-card" data-value="Skuter"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-scooter"></use></svg><span>Skuter</span></button>
+                            <button type="button" class="body-type-card" data-value="Minimoto"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Minimoto</span></button>
+                            <button type="button" class="body-type-card" data-value="Classic"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Classic</span></button>
+                            <button type="button" class="body-type-card" data-value="Cruiser"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Cruiser</span></button>
+                            <button type="button" class="body-type-card" data-value="Moped"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Moped</span></button>
+                            <button type="button" class="body-type-card" data-value="MotorneSani"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg><span>Motorne sani</span></button>
+                            <button type="button" class="body-type-card" data-value="EVozila">
+                                <svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-moto-generic"></use></svg>
+                                <span>E-Vozila</span>
+                            </button>
+                            <button type="button" class="body-type-card moto-group-card" data-group="4in3kolesa">
+                                <svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-atv"></use></svg>
+                                <span>4 in 3 Kolesna<br>motorna vozila</span>
+                            </button>
+                        </div>
+                        <div class="body-type-grid" id="motoSubGrid" style="display:none;">
+                            <button type="button" class="body-type-card" data-value="ATV"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-atv"></use></svg><span>ATV / Štirikolesnik</span></button>
+                            <button type="button" class="body-type-card" data-value="UTV"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-atv"></use></svg><span>UTV / Side-by-Side</span></button>
+                            <button type="button" class="body-type-card" data-value="Trikolesnik"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-atv"></use></svg><span>Trikolesnik</span></button>
+                            <button type="button" class="body-type-card" data-value="Gocart"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-atv"></use></svg><span>Gokart</span></button>
+                        </div>
                     </div>
 
-                    <!-- Gospodarska body types -->
-                    <div class="body-type-grid" id="grid-commercial" style="display:none;">
-                        <button type="button" class="body-type-card" data-value="Dostavna"><i
-                                class="fas fa-shuttle-van"></i><span>Dostavno vozilo</span></button>
-                        <button type="button" class="body-type-card" data-value="Tovorna"><i
-                                class="fas fa-truck"></i><span>Tovornjak</span></button>
-                        <button type="button" class="body-type-card" data-value="Avtobus"><i
-                                class="fas fa-bus"></i><span>Avtobus</span></button>
-                        <button type="button" class="body-type-card" data-value="TovornePrikolice"><i
-                                class="fas fa-trailer"></i><span>Tovorna prikolica</span></button>
-                        <button type="button" class="body-type-card" data-value="Gradbena"><i
-                                class="fas fa-hard-hat"></i><span>Gradbena meh.</span></button>
-                        <button type="button" class="body-type-card" data-value="Kmetijska"><i
-                                class="fas fa-tractor"></i><span>Kmetijska meh.</span></button>
-                        <button type="button" class="body-type-card" data-value="Komunalna"><i
-                                class="fas fa-recycle"></i><span>Komunalna meh.</span></button>
-                        <button type="button" class="body-type-card" data-value="Gozdarska"><i
-                                class="fas fa-tree"></i><span>Gozdarska meh.</span></button>
-                        <button type="button" class="body-type-card" data-value="Vilicarji"><i
-                                class="fas fa-warehouse"></i><span>Viličarji</span></button>
+                    <!-- Gospodarska — two-level drill-down (Vrsta → Kategorije).
+                         Rendered dynamically from src/data/commercialTaxonomy.js -->
+                    <div id="grid-commercial" class="commercial-selector" style="display:none;">
+                        <div class="commercial-drill-header" id="commercialDrillHeader" style="display:none;">
+                            <button type="button" class="commercial-back-btn" id="commercialBackBtn">
+                                <i data-lucide="arrow-left"></i>
+                                <span>Nazaj na vrste</span>
+                            </button>
+                            <span class="commercial-drill-title" id="commercialDrillTitle"></span>
+                        </div>
+                        <div class="body-type-grid" id="commercialGrid"></div>
                     </div>
 
                     <!-- Prosti čas body types -->
                     <div class="body-type-grid" id="grid-leisure" style="display:none;">
-                        <button type="button" class="body-type-card" data-value="Avtodom"><i
-                                class="fas fa-caravan"></i><span>Avtodom</span></button>
-                        <button type="button" class="body-type-card" data-value="PocitniiskaPrikolica"><i
-                                class="fas fa-campground"></i><span>Počitniška prikolica</span></button>
-                        <button type="button" class="body-type-card" data-value="MobilnaHisica"><i
-                                class="fas fa-home"></i><span>Mobilna hišica</span></button>
-                        <button type="button" class="body-type-card" data-value="SnemljivBivalnik"><i
-                                class="fas fa-box"></i><span>Bivalnik</span></button>
-                        <button type="button" class="body-type-card" data-value="SotorskaPrikolica"><i
-                                class="fas fa-campground"></i><span>Šotorska prikolica</span></button>
+                        <button type="button" class="body-type-card" data-value="Avtodom"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-camper"></use></svg><span>Avtodom</span></button>
+                        <button type="button" class="body-type-card" data-value="PocitniiskaPrikolica"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-caravan"></use></svg><span>Počitniška prikolica</span></button>
+                        <button type="button" class="body-type-card" data-value="MobilnaHisica"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-mobilehome"></use></svg><span>Mobilna hišica</span></button>
+                        <button type="button" class="body-type-card" data-value="SnemljivBivalnik"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-camper"></use></svg><span>Bivalnik</span></button>
+                        <button type="button" class="body-type-card" data-value="SotorskaPrikolica"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-tent-trailer"></use></svg><span>Šotorska prikolica</span></button>
                     </div>
                 </div>
 
@@ -658,6 +637,7 @@
                                         <option value="3">3</option>
                                         <option value="4">4</option>
                                         <option value="6">6</option>
+                                        <option value="Wankel">Wankel</option>
                                     </select>
                                 </div>
                                 <!-- Layout appears to the RIGHT when shown -->
@@ -667,6 +647,22 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="cyl-btn-row" style="display:flex;gap:.5rem;justify-content:center;margin-top:.6rem;">
+                                <button type="button" id="cylAddBtn" class="adv-btn-pill adv-btn-pill-add">+ Dodaj</button>
+                                <button type="button" id="cylRemoveBtn" class="adv-btn-pill adv-btn-pill-remove">× Odstrani</button>
+                            </div>
+                            <div id="cylFilterChips" style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-top:.5rem;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Prenos moči (drivetrain) -->
+                    <div class="adv-field-group" style="margin-top:1.5rem;">
+                        <label class="adv-label">Prenos moči</label>
+                        <div class="adv-chip-group">
+                            <label class="adv-chip"><input type="checkbox" name="motoDrivetrain" value="veriga"> Veriga</label>
+                            <label class="adv-chip"><input type="checkbox" name="motoDrivetrain" value="zobati jermen"> Zobati jermen</label>
+                            <label class="adv-chip"><input type="checkbox" name="motoDrivetrain" value="jekleni jermen"> Jekleni jermen</label>
+                            <label class="adv-chip"><input type="checkbox" name="motoDrivetrain" value="kardan"> Kardan</label>
                         </div>
                     </div>
                 </div>
@@ -897,6 +893,7 @@
 
                 <!-- Motorcycle Specific Equipment -->
                 <div class="moto-only-field" style="display:none;" id="moto-equipment">
+                    <!-- Row 1: regular feature chips -->
                     <div class="adv-chip-group">
                         <label class="adv-chip"><input type="checkbox" name="features" value="MotoABS"> ABS</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="MotoCruise"> Tempomat</label>
@@ -906,46 +903,45 @@
                         <label class="adv-chip"><input type="checkbox" name="features" value="TPMS"> Nadzor tlaka (TPMS)</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="Quickshifter"> Quickshifter</label>
                         <label class="adv-chip"><input type="checkbox" name="features" value="HeatedGrips"> Ogrevane ročke</label>
-
-                        <!-- Športni izpuh — at end with brand sub-dropdown -->
-                        <div class="exhaust-chip-wrap" style="width:100%; margin-top:0.25rem;">
-                            <label class="adv-chip" style="display:inline-flex;">
-                                <input type="checkbox" name="features" value="SportExhaust" id="sport-exhaust-check"> Športni izpuh
-                            </label>
-                            <div id="exhaust-brand-sub" style="display:none; margin-top:0.5rem;">
-                                <select name="exhaustBrand" id="exhaust-brand-select" class="glass-select" style="width:auto !important; max-width:fit-content; display:inline-block;" data-no-search="true">
-                                    <option value="">Vse znamke izpuhov</option>
-                                </select>
-                            </div>
+                        <label class="adv-chip" id="sport-exhaust-label">
+                            <input type="checkbox" name="features" value="SportExhaust" id="sport-exhaust-check"> Športni izpuh
+                        </label>
+                        <div id="exhaust-tags-row" style="display:none; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                            <div id="exhaust-tags-list" style="display:contents;"></div>
+                            <select id="exhaust-brand-select" class="glass-select custom-select-hidden">
+                                <option value="">Znamka izpuha</option>
+                            </select>
+                            <label class="adv-chip"><input type="checkbox" name="exhaustType" value="SlipOn"> Slip-on</label>
+                            <label class="adv-chip"><input type="checkbox" name="exhaustType" value="FullSystem"> Celotni sistem</label>
                         </div>
+                    </div>
 
-                        <!-- 6-axis IMU with Info logic -->
-                        <div class="adv-toggle-row" style="width:fit-content; border-radius:9999px; gap:1.5rem; margin-top:0.5rem;">
-                            <div class="adv-toggle-label">
-                                <i data-lucide="zap"></i>
-                                <span>6-osni IMU</span>
-                                <i data-lucide="help-circle" style="width:14px;height:14px; cursor:help; opacity:0.6;"
-                                    onclick="event.preventDefault(); window.showIMUTip && window.showIMUTip()"></i>
-                            </div>
-                            <label class="remember-toggle" style="padding:0;">
-                                <input type="checkbox" name="features" value="IMU" class="remember-check"
-                                    id="imu-trigger-checkbox">
-                                <span class="toggle-slider"></span>
-                            </label>
+                    <!-- Row 2: 6-osni IMU toggle (below regular chips, not inside chip-group) -->
+                    <div class="adv-toggle-row" style="width:fit-content; border-radius:9999px; gap:1.5rem; margin-top:0.5rem;">
+                        <div class="adv-toggle-label">
+                            <i data-lucide="zap"></i>
+                            <span>6-osni IMU</span>
+                            <i data-lucide="help-circle" style="width:14px;height:14px; cursor:help; opacity:0.6;"
+                                onclick="event.preventDefault(); window.showIMUTip && window.showIMUTip()"></i>
                         </div>
+                        <label class="remember-toggle" style="padding:0;">
+                            <input type="checkbox" name="features" value="IMU" class="remember-check"
+                                id="imu-trigger-checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-
-                        <div class="adv-chip-group"
-                            style="padding-left:1.5rem; border-left:2px solid rgba(0,0,0,0.05); margin-top:0.5rem;">
-                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="TractionControl"
-                                    class="imu-sub"> Nadzor zdrsa</label>
-                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="AntiWheelie"
-                                    class="imu-sub"> Anti-Wheelie</label>
-                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="CorneringABS"
-                                    class="imu-sub"> Cornering ABS</label>
-                            <label class="adv-chip adv-chip-sm"><input type="checkbox" name="features" value="LinkedBraking"
-                                    class="imu-sub"> Povezano zaviranje</label>
-                        </div>
+                    <!-- Row 3: IMU sub-chips -->
+                    <div class="adv-chip-group"
+                        style="padding-left:1.5rem; border-left:2px solid rgba(0,0,0,0.05); margin-top:0.5rem;">
+                        <label class="adv-chip"><input type="checkbox" name="features" value="TractionControl"
+                                class="imu-sub"> Nadzor zdrsa</label>
+                        <label class="adv-chip"><input type="checkbox" name="features" value="AntiWheelie"
+                                class="imu-sub"> Anti-Wheelie</label>
+                        <label class="adv-chip"><input type="checkbox" name="features" value="CorneringABS"
+                                class="imu-sub"> Cornering ABS</label>
+                        <label class="adv-chip"><input type="checkbox" name="features" value="LinkedBraking"
+                                class="imu-sub"> Povezano zaviranje</label>
                     </div>
                 </div>
             </div>

@@ -616,6 +616,7 @@ async function renderTaxonomy() {
                 <button class="adm-tab${k === 'avto' ? ' active' : ''}" data-tax-cat="${k}">${v.label}</button>
               `).join('')}
               <button class="adm-tab" data-tax-cat="izpuhi">🏍 Izpuhi</button>
+              <button class="adm-tab" data-tax-cat="oprema">🛡 Moto oprema</button>
             </div>
             <select id="tax-type-filter" class="adm-select adm-input-sm" style="width:140px;display:none">
               <option value="">Vse vrste</option>
@@ -645,6 +646,12 @@ async function renderTaxonomy() {
             document.getElementById('tax-export-btn').style.display = 'none';
             document.getElementById('tax-add-brand-btn').style.display = 'none';
             renderExhaustTab();
+        } else if (activeCat === 'oprema') {
+            document.getElementById('tax-search').style.display = 'none';
+            document.getElementById('tax-type-filter').style.display = 'none';
+            document.getElementById('tax-export-btn').style.display = 'none';
+            document.getElementById('tax-add-brand-btn').style.display = 'none';
+            renderEquipmentBrandsTab();
         } else {
             document.getElementById('tax-search').style.display = '';
             document.getElementById('tax-export-btn').style.display = '';
@@ -735,6 +742,146 @@ async function renderExhaustTab() {
                 _taxUnsaved = true;
                 updateUnsavedBadge();
                 renderExhaustTab();
+                showToast(`"${name}" izbrisano.`, 'success');
+            });
+        });
+    } catch (e) { wrap.innerHTML = errBox(e); }
+}
+
+// ── Moto equipment brands management (JSON + Excel) ───────────────────────────
+let _equipmentCache = null;
+
+async function loadEquipmentBrands() {
+    if (_equipmentCache) return _equipmentCache;
+    const res = await fetch('json/equipment_brands.json');
+    if (!res.ok) throw new Error('Napaka pri nalaganju equipment_brands.json');
+    _equipmentCache = await res.json();
+    return _equipmentCache;
+}
+
+async function renderEquipmentBrandsTab() {
+    const wrap = document.getElementById('tax-tree');
+    const stats = document.getElementById('tax-stats');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam…</div>';
+    try {
+        const brands = await loadEquipmentBrands();
+        if (stats) stats.textContent = `${brands.length} znamk motoristične opreme`;
+
+        wrap.innerHTML = `
+          <div style="padding:1rem">
+            <div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap;">
+              <input id="equip-new-input" class="adm-input adm-input-sm" style="width:220px" placeholder="Nova znamka opreme…">
+              <button class="adm-btn adm-btn-sm adm-btn-primary" id="equip-add-btn">+ Dodaj</button>
+              <button class="adm-btn adm-btn-sm adm-btn-green" id="equip-download-btn">⬇ Shrani JSON</button>
+              <button class="adm-btn adm-btn-sm adm-btn-green" id="equip-export-btn">⬇ Izvozi Excel</button>
+              <button class="adm-btn adm-btn-sm" id="equip-import-btn">⬆ Uvozi Excel</button>
+              <input type="file" id="equip-import-file" accept=".xlsx,.xls,.csv" style="display:none">
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.5rem" id="equip-chips">
+              ${brands.map((b, i) => `
+                <span class="adm-badge adm-badge-gray" style="font-size:.82rem;padding:.35rem .75rem;display:inline-flex;align-items:center;gap:.4rem">
+                  ${escHtml(b)}
+                  <button class="equip-del-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;line-height:1;padding:0 0 0 .25rem" title="Izbriši">×</button>
+                </span>`).join('')}
+            </div>
+          </div>`;
+
+        const addBrand = (name) => {
+            name = (name || '').trim();
+            if (!name) { showToast('Vnesite ime znamke.', 'error'); return false; }
+            if (_equipmentCache.some(b => b.toLowerCase() === name.toLowerCase())) { showToast('Znamka že obstaja.', 'warn'); return false; }
+            _equipmentCache.push(name);
+            _equipmentCache.sort((a, b) => a.localeCompare(b, 'sl'));
+            _taxUnsaved = true;
+            updateUnsavedBadge();
+            return true;
+        };
+
+        document.getElementById('equip-add-btn').addEventListener('click', () => {
+            const input = document.getElementById('equip-new-input');
+            if (addBrand(input.value)) {
+                input.value = '';
+                renderEquipmentBrandsTab();
+                showToast('Znamka dodana.', 'success');
+            }
+        });
+
+        document.getElementById('equip-new-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('equip-add-btn').click();
+        });
+
+        document.getElementById('equip-download-btn').addEventListener('click', () => {
+            const json = JSON.stringify(_equipmentCache, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'equipment_brands.json';
+            a.click();
+            _taxUnsaved = false;
+            updateUnsavedBadge();
+            showToast('equipment_brands.json prenesen. Kopirajte v public/json/.', 'success');
+        });
+
+        document.getElementById('equip-export-btn').addEventListener('click', () => {
+            if (typeof XLSX === 'undefined') { showToast('XLSX knjižnica ni naložena.', 'error'); return; }
+            const rows = [['Znamka'], ..._equipmentCache.map(b => [b])];
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Moto oprema');
+            XLSX.writeFile(wb, `znamke_opreme_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        });
+
+        document.getElementById('equip-import-btn').addEventListener('click', () => {
+            document.getElementById('equip-import-file').click();
+        });
+
+        document.getElementById('equip-import-file').addEventListener('change', (ev) => {
+            const file = ev.target.files?.[0];
+            if (!file) return;
+            if (typeof XLSX === 'undefined') { showToast('SheetJS ni naložen.', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const wb = XLSX.read(e.target.result, { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+                    // First column = brand name; skip a header row named "znamka"
+                    let added = 0;
+                    rows.forEach((r, idx) => {
+                        const name = String(r[0] ?? '').trim();
+                        if (!name) return;
+                        if (idx === 0 && /znamka|brand/i.test(name)) return;
+                        if (_equipmentCache.some(b => b.toLowerCase() === name.toLowerCase())) return;
+                        _equipmentCache.push(name);
+                        added++;
+                    });
+                    if (added > 0) {
+                        _equipmentCache.sort((a, b) => a.localeCompare(b, 'sl'));
+                        _taxUnsaved = true;
+                        updateUnsavedBadge();
+                        renderEquipmentBrandsTab();
+                        showToast(`Uvoženih ${added} novih znamk. Ne pozabite "Shrani JSON".`, 'success');
+                    } else {
+                        showToast('Ni novih znamk za uvoz.', 'warn');
+                    }
+                } catch (err) {
+                    showToast('Napaka pri branju datoteke.', 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            ev.target.value = '';
+        });
+
+        wrap.querySelectorAll('.equip-del-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.dataset.idx, 10);
+                const name = _equipmentCache[idx];
+                if (!confirm(`Izbrisati "${name}"?`)) return;
+                _equipmentCache.splice(idx, 1);
+                _taxUnsaved = true;
+                updateUnsavedBadge();
+                renderEquipmentBrandsTab();
                 showToast(`"${name}" izbrisano.`, 'success');
             });
         });
@@ -1585,8 +1732,10 @@ async function renderVozilaUvoz() {
     });
 
     function detectMotoFormat(row) {
-        // moto template uses Slovenian column headers: Znamka, Model, Različica, Kategorija, Takt, Konfiguracija
-        return 'znamka' in row || 'kategorija' in row || 'takt' in row || 'konfiguracija' in row;
+        // moto template (v2) SL headers: Znamka, Model, Vrsta, Različica, Prostornina, Takt, Tip motorja, Prenos moči
+        // (legacy v1 headers Kategorija/Konfiguracija still accepted for back-compat)
+        return 'tip motorja' in row || 'prenos moči' in row || 'prenos moci' in row ||
+               'vrsta' in row || 'kategorija' in row || 'takt' in row || 'konfiguracija' in row;
     }
 
     function handleVozFile(file) {
@@ -1609,33 +1758,43 @@ async function renderVozilaUvoz() {
 
                 parsedRows = normalised.map(row => {
                     if (isMoto) {
-                        // moto format: Kategorija may contain "/" to denote multiple types, stored as array
-                        const katRaw = row['kategorija'] || '';
-                        const categories = katRaw.split('/').map(s => s.trim()).filter(Boolean);
+                        // v2 moto: Znamka·Model·Vrsta·Različica·Prostornina·Takt·Tip motorja·Prenos moči
+                        const codeRaw   = row['tip motorja'] || row['konfiguracija'] || '';
+                        const eng       = motoEngineFromCode(codeRaw);
+                        const prenosRaw = row['prenos moči'] || row['prenos moci'] || row['prenos'] || '';
+                        let   electric  = eng.electric;
+                        let   drivetrain = motoDrivetrain(prenosRaw);
+                        if (prenosRaw.toLowerCase().startsWith('elektrom')) { electric = true; drivetrain = ''; } // column-leak fix
+                        const stroke    = motoStroke(row['takt'] || '', electric);
+                        const { canon, sub } = motoVrsta(row['vrsta'] || row['kategorija'] || '');
+                        const ccNum     = parseInt(row['prostornina'] || row['engine capacity (cc)'] || '', 10);
                         return {
-                            category:             'moto',
-                            brand:                row['znamka']        || row['brand']          || '',
-                            model:                row['model']                                   || '',
-                            variant:              row['različica']     || row['razlicica']      || row['variant'] || row['trim'] || 'Base',
-                            motoType:             categories,          // array, editable manually later
-                            takt:                 row['takt']          || '',
-                            konfiguracija:        row['konfiguracija'] || '',
-                            engine_type:          row['engine type']   || row['engine_type']    || '',
-                            engine_configuration: row['engine configuration'] || row['engine_configuration'] || '',
-                            engine_capacity_cc:   row['engine capacity (cc)'] || row['engine_capacity_cc'] || '',
+                            category:        'moto',
+                            brand:           row['znamka']    || row['brand'] || '',
+                            model:           row['model']                     || '',
+                            variant:         row['različica'] || row['razlicica'] || row['variant'] || row['trim'] || 'Base',
+                            vrsta:           canon,
+                            sub_type:        (canon === 'EVozila' && sub) ? sub : '',
+                            displacement_cc: (ccNum > 0) ? ccNum : '',
+                            stroke:          stroke,
+                            engine_code:     eng.group ? codeRaw.trim() : '',
+                            engine_type:     eng.group,            // friendly group for display/filter
+                            cylinders:       eng.cyl,
+                            cylinder_layout: eng.layout,
+                            drivetrain:      drivetrain,
                         };
                     }
                     return {
                         category:                   row['category']                  || row['kategorija']           || 'avto',
-                        brand:                      row['brand']                     || row['znamka']               || '',
+                        brand:                      row['make']                      || row['brand']                || row['znamka'] || '',
                         model:                      row['model']                                                     || '',
                         variant:                    row['variant']                   || row['različica']             || row['razlicica'] || row['trim'] || '',
-                        fuel_type:                  row['fuel type']                 || row['fuel_type']             || '',
+                        fuel_type:                  normalizeFuelType(row['fuel type'] || row['fuel_type']           || ''),
                         engine_capacity_cc:         row['engine capacity (cc)']      || row['engine_capacity_cc']   || '',
-                        fuel_consumption_city:      row['consumption city']          || row['fuel_consumption_city']|| '',
-                        fuel_consumption_highway:   row['consumption highway']       || row['fuel_consumption_highway'] || '',
-                        fuel_consumption_combined:  row['consumption combined']      || row['fuel_consumption_combined'] || '',
-                        electric_range_km:          row['electric range (km)']       || row['electric_range_km']    || '',
+                        fuel_consumption_city:      row['consumption city (opcijsko)']     || row['consumption city']      || row['fuel_consumption_city']     || '',
+                        fuel_consumption_highway:   row['consumption highway (opcijsko)']  || row['consumption highway']   || row['fuel_consumption_highway']  || '',
+                        fuel_consumption_combined:  row['consumption combined (opcijsko)'] || row['consumption combined'] || row['fuel_consumption_combined'] || '',
+                        electric_range_km:          row['electric range (km) (opcijsko)']  || row['electric range (km)']  || row['electric_range_km']         || '',
                         fuel_consumption:           row['fuel consumption (l/100km) (opcijsko)'] || row['fuel_consumption'] || '',
                         capacity:                   row['capacity (opcijsko)']       || row['capacity']              || '',
                     };
@@ -1675,9 +1834,9 @@ async function renderVozilaUvoz() {
 
         const show = rows.slice(0, 20);
         const headers = isMoto
-            ? `<tr><th>Znamka</th><th>Model</th><th>Različica</th><th>Kategorija</th><th>Takt</th><th>Konfiguracija</th><th>Status</th></tr>`
+            ? `<tr><th>Znamka</th><th>Model</th><th>Vrsta</th><th>Različica</th><th>Prostornina</th><th>Takt</th><th>Tip motorja</th><th>Prenos moči</th><th>Status</th></tr>`
             : `<tr><th>Kat.</th><th>Znamka</th><th>Model</th><th>Različica</th><th>Status</th></tr>`;
-        const colSpan = isMoto ? 7 : 5;
+        const colSpan = isMoto ? 9 : 5;
 
         document.getElementById('voz-preview-table').innerHTML = `
           <table class="adm-table">
@@ -1690,14 +1849,18 @@ async function renderVozilaUvoz() {
                       ? '<span class="adm-badge adm-badge-gray">Obstoječ</span>'
                       : '<span class="adm-badge adm-badge-green">Nov</span>';
                   if (isMoto) {
-                      const katLabel = Array.isArray(r.motoType) ? r.motoType.join(' / ') : '';
+                      const vrstaLabel = r.vrsta === 'EVozila' && r.sub_type ? `${r.vrsta} (${r.sub_type})` : (r.vrsta || '');
+                      const tipLabel = r.engine_code && r.engine_code !== r.engine_type
+                          ? `${r.engine_type} · ${r.engine_code}` : (r.engine_type || '');
                       return `<tr class="${isDup ? 'voz-row-dup' : 'voz-row-new'}">
                         <td><strong>${escHtml(r.brand)}</strong></td>
                         <td>${escHtml(r.model)}</td>
+                        <td class="adm-sub">${escHtml(vrstaLabel)}</td>
                         <td class="adm-sub">${escHtml(r.variant)}</td>
-                        <td class="adm-sub">${escHtml(katLabel)}</td>
-                        <td class="adm-sub">${escHtml(r.takt)}</td>
-                        <td class="adm-sub">${escHtml(r.konfiguracija)}</td>
+                        <td class="adm-sub">${r.displacement_cc ? escHtml(String(r.displacement_cc)) + ' ccm' : '—'}</td>
+                        <td class="adm-sub">${escHtml(r.stroke || '—')}</td>
+                        <td class="adm-sub">${escHtml(tipLabel || '—')}</td>
+                        <td class="adm-sub">${escHtml(r.drivetrain || '—')}</td>
                         <td>${statusBadge}</td>
                       </tr>`;
                   }
@@ -1718,6 +1881,74 @@ async function renderVozilaUvoz() {
     }
 }
 
+// ── Moto normalization helpers (mirror of scripts/build_moto_taxonomy.py) ─────
+// Engine code (I1, V2 90°, B2, Elektromotor…) → friendly group + cylinders + layout
+function motoEngineFromCode(code) {
+    const c = (code || '').trim();
+    const cl = c.toLowerCase();
+    if (['elektromotor', 'elektrom', 'električni', 'electric'].includes(cl)) return { group: 'Električni', cyl: '', layout: '', electric: true };
+    if (cl.includes('hibrid')) return { group: 'Hibridni', cyl: '', layout: '', electric: false };
+    if (cl.includes('rotor') || cl === 'wankel') return { group: 'Wankel', cyl: '', layout: '', electric: false };
+    if (c === '' || c === '/' || cl === 'veriga') return { group: '', cyl: '', layout: '', electric: false };
+    if (cl.includes('kvadratni')) return { group: 'Štirivaljnik (kvadratni)', cyl: '4', layout: '', electric: false };
+    const L = c[0].toUpperCase();
+    let d = '';
+    for (const ch of c) { if (ch >= '0' && ch <= '9') { d = ch; break; } }
+    const G = {
+        I1: ['Enovaljnik', 'Single'], I2: ['Dvovaljnik (vrstni)', 'Parallel-twin'],
+        I3: ['Trivaljnik', 'Inline-three'], I4: ['Štirivaljnik', 'Inline-four'], I6: ['Šestvaljnik', 'Inline-six'],
+        V2: ['Dvovaljnik (V)', 'V-twin'], V3: ['Trivaljnik (V)', ''], V4: ['Štirivaljnik (V)', 'V4'], V8: ['Osemvaljnik (V)', ''],
+        B2: ['Bokser', 'Boxer'], B4: ['Bokser', 'Boxer-four'], B6: ['Bokser', 'Boxer-six'],
+    };
+    const hit = G[L + d];
+    if (hit) return { group: hit[0], cyl: ['1', '2', '3', '4', '6'].includes(d) ? d : '', layout: hit[1], electric: false };
+    return { group: '', cyl: '', layout: '', electric: false };
+}
+function motoStroke(takt, electric) {
+    const t = (takt || '').toLowerCase();
+    if (electric) return 'Električni';
+    if (t.startsWith('4')) return '4T';
+    if (t.startsWith('2')) return '2T';
+    if (t.includes('elek')) return 'Električni';
+    if (t.includes('wankel')) return 'Wankel';
+    return '';
+}
+function motoDrivetrain(p) {
+    p = (p || '').trim().toLowerCase();
+    if (p.includes('kardan')) return 'kardan';
+    if (p.includes('zobati')) return 'zobati jermen';
+    if (p.includes('jekleni')) return 'jekleni jermen';
+    if (p.includes('verig')) return 'veriga';
+    return '';
+}
+const MOTO_ELECTRIC_VRSTA = new Set(['e-bike', 'električni skiro', 'elektricni skiro', 'električno kolo', 'elektricno kolo', 'električni motocikel', 'elektricni motocikel', 'e-skuter', 'električni moped', 'elektricni moped']);
+const MOTO_VRSTA_MAP = {
+    sportnimotor: 'SportniMotor', sportnitourer: 'SportniTourer', adventure: 'Adventure', nakedbike: 'NakedBike',
+    enduro: 'Enduro', chopper: 'Chopper', tourer: 'Tourer', supermoto: 'Supermoto', trial: 'Trial', cross: 'Cross',
+    skuter: 'Skuter', minimoto: 'Minimoto', gokart: 'Gocart', 'motorne sani': 'MotorneSani', classic: 'Classic',
+    cruiser: 'Cruiser', moped: 'Moped', utv: 'UTV', atv: 'ATV', 'side-by-side': 'UTV', trikolesnik: 'Trikolesnik', scrambler: 'NakedBike',
+};
+function motoVrsta(vrsta) {
+    const v = (vrsta || '').trim();
+    const vl = v.toLowerCase();
+    if (MOTO_ELECTRIC_VRSTA.has(vl)) return { canon: 'EVozila', sub: v };
+    return { canon: MOTO_VRSTA_MAP[vl] || v, sub: v };
+}
+
+// Normalise car fuel-type labels to the allowed set (PHEV → Plug-in Hybrid, etc.)
+function normalizeFuelType(fuel) {
+    const f = (fuel || '').trim();
+    const map = {
+        'phev': 'Plug-in Hybrid', 'plug-in hybrid': 'Plug-in Hybrid', 'plugin hybrid': 'Plug-in Hybrid',
+        'petrol/oil': 'Petrol', 'petrol': 'Petrol', 'bencin': 'Petrol', 'gasoline': 'Petrol',
+        'diesel': 'Diesel', 'dizel': 'Diesel',
+        'electric': 'Electric', 'električni': 'Electric', 'ev': 'Electric',
+        'hybrid': 'Hybrid', 'hibrid': 'Hybrid',
+        'lpg': 'LPG', 'cng': 'CNG', 'hydrogen': 'Hydrogen', 'vodik': 'Hydrogen', 'steam': 'Steam',
+    };
+    return map[f.toLowerCase()] || f;
+}
+
 function downloadVozilaTemplate(cat) {
     if (typeof XLSX === 'undefined') { showToast('XLSX knjižnica ni naložena.', 'error'); return; }
 
@@ -1725,17 +1956,17 @@ function downloadVozilaTemplate(cat) {
         avto: {
             sheetName: 'Avtomobili',
             fileName: 'predloga_avto.xlsx',
-            notes: 'OPOMBA: Za Electric vozila izpustite stolpce porabe in izpolnite Electric Range. Stolpci z (opcijsko) niso obvezni.',
+            notes: 'OPOMBA: Obvezni stolpci so Make, Model, Trim, Fuel Type, Engine Capacity (cc). Fuel Type: Petrol|Diesel|Electric|Hybrid|Plug-in Hybrid (PHEV)|LPG|CNG|Hydrogen|Steam. Za Electric vozila pustite Engine Capacity prazno. Stolpci porabe in Electric Range so opcijski.',
             headers: [
-                'Brand',
+                'Make',
                 'Model',
                 'Trim',
                 'Fuel Type',
                 'Engine Capacity (cc)',
-                'Consumption City',
-                'Consumption Highway',
-                'Consumption Combined',
-                'Electric Range (km)',
+                'Consumption City (opcijsko)',
+                'Consumption Highway (opcijsko)',
+                'Consumption Combined (opcijsko)',
+                'Electric Range (km) (opcijsko)',
             ],
             examples: [
                 ['BMW', '3 Series', '320d', 'Diesel', 1995, 6.8, 4.8, 5.6, ''],
@@ -1746,19 +1977,22 @@ function downloadVozilaTemplate(cat) {
         moto: {
             sheetName: 'Motorji',
             fileName: 'predloga_motorji.xlsx',
-            notes: 'OPOMBA: Type mora biti veljavna Slovenian kategorija (npr. SportniMotor, Adventure). Engine Type: 4-stroke|2-stroke|Electric|Rotary. Engine Configuration: Single|Parallel Twin|V-Twin|Triple|Inline-4|Boxer|V4.',
+            notes: 'OPOMBA: Vrsta = kategorija vozila (SportniMotor, Adventure, NakedBike, Classic, Cruiser, Moped, Skuter, ATV, UTV, Trikolesnik, E-Bike, Električni skiro …). Takt: 4-taktni|2-taktni|Električni|Wankel. Tip motorja = koda (I1=enovaljnik, I2=vrstni 2, I4=vrstni 4, V2=V-dvovaljnik, V4, B2=bokser, Elektromotor). Prenos moči: veriga|zobati jermen|jekleni jermen|kardan. Prostornina v ccm (pri električnih pustite prazno).',
             headers: [
-                'Brand',
+                'Znamka',
                 'Model',
-                'Type',
-                'Trim',
-                'Engine Type',
-                'Engine Configuration',
-                'Engine Capacity (cc)',
+                'Vrsta',
+                'Različica',
+                'Prostornina',
+                'Takt',
+                'Tip motorja',
+                'Prenos moči',
             ],
             examples: [
-                ['BMW Motorrad', 'S 1000 RR', 'SportniMotor', 'S 1000 RR M', '4-stroke', 'Inline-4', 999],
-                ['Ducati', 'Panigale V4', 'SportniMotor', 'Panigale V4S', '4-stroke', 'V4', 1103],
+                ['BMW Motorrad', 'S 1000 RR', 'SportniMotor', 'S 1000 RR M', 999, '4-taktni', 'I4', 'veriga'],
+                ['Ducati', 'Panigale V4', 'SportniMotor', 'Panigale V4S', 1103, '4-taktni', 'V4 90°', 'veriga'],
+                ['BMW Motorrad', 'R 1250 GS', 'Adventure', 'R 1250 GS Adventure', 1254, '4-taktni', 'B2', 'kardan'],
+                ['Amper', 'E-Bike', 'Električni skiro', 'Amper S45', '', 'Električni', 'Elektromotor', 'zobati jermen'],
             ],
         },
         gospodarska: {

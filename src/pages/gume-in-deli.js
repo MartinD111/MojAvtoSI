@@ -10,6 +10,7 @@ import { t } from '../core/i18n.js';
 import { getListings } from '../services/listingService.js';
 import { getCatalogProducts, getLowestPrice } from '../services/catalogService.js';
 import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes } from '../data/partTypes.js';
+import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, EQUIPMENT_SIZES } from '../data/equipmentTypes.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 
@@ -23,6 +24,7 @@ let state = {
 let peerListings = [];
 let catalogProducts = [];
 let tireBrands = [];
+let equipmentBrands = [];
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 export async function initGumeInDeliPage() {
@@ -38,6 +40,8 @@ export async function initGumeInDeliPage() {
 
     // Load tire brand list (best-effort)
     fetch('json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; renderFilters(); }).catch(() => { });
+    // Load moto equipment brand list (best-effort)
+    fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => { });
 
     await loadData();
     renderFilters();
@@ -54,7 +58,7 @@ async function loadData() {
             getListings(),
             getCatalogProducts(),
         ]);
-        peerListings = (listings || []).filter(l => l.itemType === 'part' || l.itemType === 'tire');
+        peerListings = (listings || []).filter(l => l.itemType === 'part' || l.itemType === 'tire' || l.itemType === 'oprema');
         catalogProducts = catalog || [];
     } catch (e) {
         console.error('[GumeInDeli] data load failed', e);
@@ -88,7 +92,7 @@ function renderShell(root) {
             <div class="gd-itemtype-toggle" id="gdItemType">
                 ${itemBtn('tire', 'disc-3', t('gd_item_tires', 'Gume'))}
                 ${itemBtn('part', 'wrench', t('gd_item_parts', 'Deli'))}
-                ${state.vehicleCategory === 'moto' ? itemBtn('oprema', 'shield', t('cl_step_features', 'Oprema')) : ''}
+                ${state.vehicleCategory === 'moto' ? itemBtn('oprema', 'shield', t('cl_sub_oprema', 'Moto oprema')) : ''}
             </div>
         </div>
 
@@ -123,14 +127,8 @@ function bindChrome() {
         const btn = e.target.closest('.gd-itemtype-btn');
         if (!btn) return;
         const type = btn.dataset.item;
-        
-        if (type === 'oprema') {
-             state.itemType = 'part';
-             state.filters = { partGroup: 'oprema_voznika' };
-        } else {
-             state.itemType = type;
-             state.filters = {};
-        }
+        state.itemType = type;
+        state.filters = {};
 
         document.querySelectorAll('#gdItemType .gd-itemtype-btn').forEach(b => b.classList.toggle('active', b === btn));
         renderFilters();
@@ -143,8 +141,8 @@ function bindChrome() {
         if (!card) return;
         state.vehicleCategory = card.dataset.vehcat;
         
-        // Reset item type to tire on vehicle change if on oprema
-        if (state.itemType === 'part' && state.filters.partGroup === 'oprema_voznika' && state.vehicleCategory !== 'moto') {
+        // Oprema is moto-only — drop back to tire when leaving the moto category
+        if (state.itemType === 'oprema' && state.vehicleCategory !== 'moto') {
             state.itemType = 'tire';
         }
         
@@ -180,7 +178,9 @@ function bindChrome() {
 function renderFilters() {
     const box = document.getElementById('gdFilters');
     if (!box) return;
-    box.innerHTML = state.itemType === 'tire' ? tireFiltersHtml() : partFiltersHtml();
+    box.innerHTML = state.itemType === 'tire' ? tireFiltersHtml()
+        : state.itemType === 'oprema' ? equipmentFiltersHtml()
+        : partFiltersHtml();
     if (window.lucide) window.lucide.createIcons({ scope: box });
     initCustomSelects();
     box.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
@@ -275,6 +275,57 @@ function partFiltersHtml() {
     `;
 }
 
+function equipmentFiltersHtml() {
+    const f = state.filters;
+    const groups = getEquipmentGroups();
+    const groupOpts = groups.map(g => `<option value="${g.value}" ${f.eqGroup === g.value ? 'selected' : ''}>${g.label}</option>`).join('');
+    const types = f.eqGroup ? getEquipmentTypes(f.eqGroup) : [];
+    const typeOpts = types.map(tp => `<option value="${tp.value}" ${f.eqType === tp.value ? 'selected' : ''}>${tp.label}</option>`).join('');
+    const sizeOpts = EQUIPMENT_SIZES.map(s => `<option value="${s}" ${f.eqSize === s ? 'selected' : ''}>${s}</option>`).join('');
+
+    return `
+        <div class="gd-filter-header">
+            <h3>${t('sidebar_filters_title', 'Filtri')}</h3>
+            <button type="button" id="gdReset" class="gd-reset">${t('sidebar_reset', 'Počisti vse')}</button>
+        </div>
+
+        <div class="gd-filter-group">
+            <label class="gd-flabel">${t('gd_eq_group', 'Sklop opreme')}</label>
+            <select class="glass-select" id="fEqGroup">
+                <option value="">${t('gd_eq_all_groups', 'Vsi sklopi')}</option>
+                ${groupOpts}
+            </select>
+        </div>
+
+        <div class="gd-filter-group">
+            <label class="gd-flabel">${t('gd_eq_type', 'Vrsta')}</label>
+            <select class="glass-select" id="fEqType" ${f.eqGroup ? '' : 'disabled'}>
+                <option value="">${t('gd_eq_all_types', 'Vse vrste')}</option>
+                ${typeOpts}
+            </select>
+        </div>
+
+        <div class="gd-filter-group">
+            <label class="gd-flabel">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
+            <select class="glass-select" id="fEqBrand">
+                <option value="">${t('all_brands', 'Vse znamke')}</option>
+                ${equipmentBrands.map(b => `<option value="${escAttr(b)}" ${f.brand === b ? 'selected' : ''}>${escHtml(b)}</option>`).join('')}
+            </select>
+        </div>
+
+        <div class="gd-filter-group">
+            <label class="gd-flabel">${t('gd_eq_size', 'Velikost')}</label>
+            <select class="glass-select" id="fEqSize" data-no-search="true">
+                <option value="">${t('gd_eq_all_sizes', 'Vse velikosti')}</option>
+                ${sizeOpts}
+            </select>
+        </div>
+
+        ${priceRangeHtml(f)}
+        ${conditionChipsHtml(f)}
+    `;
+}
+
 function seasonChip(value, label) {
     const on = (state.filters.seasons || []).includes(value);
     return `<label class="adv-chip ${on ? 'checked' : ''}"><input type="checkbox" name="season" value="${value}" ${on ? 'checked' : ''}> ${label}</label>`;
@@ -328,6 +379,17 @@ function bindFilters() {
     box.querySelector('#fBrandText')?.addEventListener('input', e => { f.brand = e.target.value; onChange(); });
     box.querySelector('#fOemText')?.addEventListener('input', e => { f.oem = e.target.value; onChange(); });
 
+    // Equipment (oprema) group/type/brand/size
+    box.querySelector('#fEqGroup')?.addEventListener('change', e => {
+        f.eqGroup = e.target.value;
+        f.eqType = '';
+        renderFilters();
+        applyAndRender();
+    });
+    box.querySelector('#fEqType')?.addEventListener('change', e => { f.eqType = e.target.value; onChange(); });
+    box.querySelector('#fEqBrand')?.addEventListener('change', e => { f.brand = e.target.value; onChange(); });
+    box.querySelector('#fEqSize')?.addEventListener('change', e => { f.eqSize = e.target.value; onChange(); });
+
     // Price
     box.querySelector('#fPriceFrom')?.addEventListener('input', e => { f.priceFrom = e.target.value; onChange(); });
     box.querySelector('#fPriceTo')?.addEventListener('input', e => { f.priceTo = e.target.value; onChange(); });
@@ -372,6 +434,11 @@ function matchesPeer(l) {
         if (f.rim && String(l.tireRim) !== String(f.rim)) return false;
         if (f.seasons && f.seasons.length && !f.seasons.includes(l.tireSeason)) return false;
         if (f.brand && !(l.brand || '').toLowerCase().includes(String(f.brand).toLowerCase())) return false;
+    } else if (state.itemType === 'oprema') {
+        if (f.eqGroup && l.equipmentGroup !== f.eqGroup) return false;
+        if (f.eqType && l.equipmentType !== f.eqType) return false;
+        if (f.eqSize && String(l.equipmentSize) !== String(f.eqSize)) return false;
+        if (f.brand && !(l.brand || '').toLowerCase().includes(String(f.brand).toLowerCase())) return false;
     } else {
         if (f.partGroup && l.partGroup !== f.partGroup) return false;
         if (f.partType && l.partType !== f.partType) return false;
@@ -396,6 +463,11 @@ function matchesCatalog(p) {
         if (f.aspect && String(a.aspect) !== String(f.aspect)) return false;
         if (f.rim && String(a.rim) !== String(f.rim)) return false;
         if (f.seasons && f.seasons.length && !f.seasons.includes(a.season)) return false;
+        if (f.brand && !(p.brand || '').toLowerCase().includes(String(f.brand).toLowerCase())) return false;
+    } else if (state.itemType === 'oprema') {
+        if (f.eqGroup && a.equipmentGroup !== f.eqGroup) return false;
+        if (f.eqType && a.equipmentType !== f.eqType) return false;
+        if (f.eqSize && String(a.equipmentSize) !== String(f.eqSize)) return false;
         if (f.brand && !(p.brand || '').toLowerCase().includes(String(f.brand).toLowerCase())) return false;
     } else {
         if (f.partGroup && a.partGroup !== f.partGroup) return false;
@@ -434,12 +506,14 @@ function peerCard(l) {
     const price = num(l.priceEur ?? l.price);
     const subtitle = l.itemType === 'tire'
         ? [l.tireSize, seasonLabel(l.tireSeason)].filter(Boolean).join(' · ')
-        : [l.brand, l.oemNumber].filter(Boolean).join(' · ');
+        : l.itemType === 'oprema'
+            ? [l.brand, getEquipmentTypeLabel(l.equipmentGroup, l.equipmentType), l.equipmentSize].filter(Boolean).join(' · ')
+            : [l.brand, l.oemNumber].filter(Boolean).join(' · ');
     return `
         <a href="#/oglas?id=${encodeURIComponent(l.id)}" class="gd-card gd-card--peer">
             <div class="gd-card-img">
                 ${img ? `<img src="${escAttr(img)}" alt="${escAttr(l.title || '')}" loading="lazy" />`
-            : `<i data-lucide="${l.itemType === 'tire' ? 'disc-3' : 'wrench'}"></i>`}
+            : `<i data-lucide="${l.itemType === 'tire' ? 'disc-3' : l.itemType === 'oprema' ? 'shield' : 'wrench'}"></i>`}
                 <span class="gd-badge gd-badge--peer">${l.condition || t('gd_source_peer', 'Oglas')}</span>
             </div>
             <div class="gd-card-body">
@@ -458,12 +532,14 @@ function catalogCard(p) {
     const a = p.attributes || {};
     const subtitle = p.itemType === 'tire'
         ? [a.size, seasonLabel(a.season)].filter(Boolean).join(' · ')
-        : [p.brand, a.oemNumber].filter(Boolean).join(' · ');
+        : p.itemType === 'oprema'
+            ? [p.brand, getEquipmentTypeLabel(a.equipmentGroup, a.equipmentType), a.equipmentSize].filter(Boolean).join(' · ')
+            : [p.brand, a.oemNumber].filter(Boolean).join(' · ');
     return `
         <a href="#/katalog?id=${encodeURIComponent(p.id)}" class="gd-card gd-card--catalog">
             <div class="gd-card-img">
                 ${p.imageUrl ? `<img src="${escAttr(p.imageUrl)}" alt="${escAttr(p.title || '')}" loading="lazy" />`
-            : `<i data-lucide="${p.itemType === 'tire' ? 'disc-3' : 'wrench'}"></i>`}
+            : `<i data-lucide="${p.itemType === 'tire' ? 'disc-3' : p.itemType === 'oprema' ? 'shield' : 'wrench'}"></i>`}
                 <span class="gd-badge gd-badge--catalog"><i data-lucide="store"></i> ${t('gd_source_catalog', 'Trgovine')}</span>
             </div>
             <div class="gd-card-body">

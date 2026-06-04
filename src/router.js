@@ -24,6 +24,8 @@ const routes = {
     '/o-nas': { view: 'about', protected: false },
     '/kontakt': { view: 'contact', protected: false },
     '/faq': { view: 'faq', protected: false },
+    '/pravno-obvestilo': { view: 'pravno-obvestilo', protected: false },
+    '/zasebnost': { view: 'zasebnost', protected: false },
     '/admin': { view: 'admin', protected: true },
     '/zemljevid': { view: 'map', protected: false },
     '/poslovni-profil': { view: 'business-profile', protected: false },

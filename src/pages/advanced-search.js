@@ -3,8 +3,18 @@
 import { getListings } from '../services/listingService.js';
 import { resolveCategory, SEARCH_TYPE_OPTIONS } from '../data/categories.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
-import { initCustomSelects } from '../utils/customSelect.js';
+import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
 import { getModelBodyType, getModelVariants } from '../utils/bodyType.js';
+import { COMMERCIAL_TAXONOMY, COMMERCIAL_BY_KEY } from '../data/commercialTaxonomy.js';
+import {
+    MOTO_STROKE_OPTIONS,
+    MOTO_CYLINDER_OPTIONS,
+    MOTO_LAYOUTS,
+    COMMERCIAL_FUEL_MAP,
+    getMotoVariants,
+    computeMotoFacets,
+    codeMatchesLayout,
+} from '../data/searchRelevance.js';
 
 export function initAdvancedSearchPage() {
     console.log('[AdvancedSearchPage] init');
@@ -117,19 +127,19 @@ function applyCategoryContext(ctx) {
 // ═══════════════════════════════════════════════════════════════════════════════
 function showGridForTab(tabKey) {
     const gridMap = {
-        'avto': 'grid-cars',
-        'moto': 'grid-motorbikes',
-        'gospodarska': 'grid-commercial',
-        'prosti-cas': 'grid-leisure',
+        'avto': { id: 'grid-cars', display: 'flex' },
+        'moto': { id: 'grid-motorbikes', display: 'block' },
+        'gospodarska': { id: 'grid-commercial', display: 'block' },
+        'prosti-cas': { id: 'grid-leisure', display: 'flex' },
     };
-    Object.values(gridMap).forEach(id => {
+    Object.values(gridMap).forEach(({ id }) => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
-    const targetId = gridMap[tabKey];
-    if (targetId) {
-        const el = document.getElementById(targetId);
-        if (el) el.style.display = 'grid';
+    const target = gridMap[tabKey];
+    if (target) {
+        const el = document.getElementById(target.id);
+        if (el) el.style.display = target.display;
     }
 }
 
@@ -217,6 +227,130 @@ function bindSearchLogic(catContext) {
     }
     toggleVehicleSpecificFields(activeTab);
 
+    // ── Cascading relevance ───────────────────────────────────────────────────
+    // Narrows downstream filter options to what the upstream selection supports:
+    //   • moto: brand/model → Takt, Valji, layout, Prenos moči (from JSON data)
+    //   • gospodarska: vrsta → Vrsta goriva (from curated COMMERCIAL_FUEL_MAP)
+    // Called on every selection change that can affect the available options.
+
+    // Rebuild a <select>'s options to the allowed subset, preserving the current
+    // value when it is still valid. The customSelect MutationObserver re-syncs the
+    // visible dropdown automatically. Returns true if the selected value changed.
+    function rebuildSelectOptions(selectEl, placeholder, optionDefs, allowedSet) {
+        if (!selectEl) return false;
+        const prev = selectEl.value;
+        const shown = optionDefs.filter(o => !allowedSet || allowedSet.has(o.v));
+        selectEl.innerHTML = `<option value="">${placeholder}</option>` +
+            shown.map(o => `<option value="${o.v}">${o.l}</option>`).join('');
+        const stillValid = prev && shown.some(o => o.v === prev);
+        selectEl.value = stillValid ? prev : '';
+        return prev !== selectEl.value;
+    }
+
+    // Show/hide the .adv-chip labels of a checkbox group based on allowed values.
+    // Unchecks any chip that becomes hidden. allowedSet null = show all.
+    function applyChipGroup(name, allowedSet) {
+        let visibleCount = 0;
+        document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+            const label = inp.closest('.adv-chip');
+            if (!label) return;
+            const ok = !allowedSet || allowedSet.has(inp.value);
+            label.style.display = ok ? '' : 'none';
+            if (ok) visibleCount++;
+            else if (inp.checked) inp.checked = false;
+        });
+        return visibleCount;
+    }
+
+    // Rebuild the cylinder-layout <select> for the chosen cylinder count, narrowed
+    // to the engine codes still possible given the other engine choices.
+    function rebuildLayoutOptions(facets) {
+        const cylSel = document.getElementById('moto-cylinders');
+        const layoutSel = document.getElementById('moto-cylinder-layout');
+        const layoutGroup = document.getElementById('cylinder-layout-group');
+        if (!cylSel || !layoutSel || !layoutGroup) return;
+
+        const base = MOTO_LAYOUTS[cylSel.value];
+        if (!base) {
+            layoutGroup.style.display = 'none';
+            layoutSel.innerHTML = '';
+            return;
+        }
+        const codes = facets && facets.engineCodes;
+        let shown = (codes && codes.size)
+            ? base.filter(o => [...codes].some(c => codeMatchesLayout(c, o.v)))
+            : base;
+        if (shown.length === 0) shown = base; // never strand the user with nothing
+
+        const prev = layoutSel.value;
+        layoutGroup.style.display = 'block';
+        layoutSel.innerHTML = '<option value="">Vse konfiguracije</option>' +
+            shown.map(o => `<option value="${o.v}">${o.l}</option>`).join('');
+        layoutSel.value = (prev && shown.some(o => o.v === prev)) ? prev : '';
+    }
+
+    function applyRelevance() {
+        // ── Moto engine cascade (faceted, data-driven) ──
+        if (activeTab === 'moto') {
+            const sels = [];
+            if (makeSelect.value) sels.push({ make: makeSelect.value, model: modelSelect.value || '' });
+            vehicles.forEach(v => sels.push({ make: v.make, model: v.model || '' }));
+            const variants = getMotoVariants(window._brandModelData, sels);
+
+            const strokeSel = document.querySelector('select[name="stroke"]');
+            const cylSel = document.getElementById('moto-cylinders');
+            const layoutSel = document.getElementById('moto-cylinder-layout');
+
+            if (variants.length === 0) {
+                // No brand/model picked → no constraint, show every option.
+                rebuildSelectOptions(strokeSel, 'Vsi takti', MOTO_STROKE_OPTIONS, null);
+                rebuildSelectOptions(cylSel, 'Valji', MOTO_CYLINDER_OPTIONS, null);
+                rebuildLayoutOptions(null);
+                applyChipGroup('motoDrivetrain', null);
+            } else {
+                // Current engine selections constrain each other (faceted).
+                const cylVal = cylSel ? cylSel.value : '';
+                // Only honour the layout if it belongs to the chosen cylinder count,
+                // otherwise a stale value (e.g. V4 left over after switching to 2
+                // cylinders) would wipe out every facet.
+                const layoutVal = (layoutSel && cylVal && MOTO_LAYOUTS[cylVal]
+                    && MOTO_LAYOUTS[cylVal].some(o => o.v === layoutSel.value))
+                    ? layoutSel.value : '';
+                const constraints = {
+                    stroke: strokeSel ? strokeSel.value : '',
+                    cylinders: cylVal,
+                    layout: layoutVal,
+                    drivetrains: Array.from(
+                        document.querySelectorAll('input[name="motoDrivetrain"]:checked')
+                    ).map(i => i.value),
+                };
+                const facets = computeMotoFacets(variants, constraints);
+                rebuildSelectOptions(strokeSel, 'Vsi takti', MOTO_STROKE_OPTIONS, facets.strokes);
+                rebuildSelectOptions(cylSel, 'Valji', MOTO_CYLINDER_OPTIONS, facets.cylinders);
+                rebuildLayoutOptions(facets);
+                applyChipGroup('motoDrivetrain', facets.drivetrains);
+            }
+        }
+
+        // ── Commercial fuel cascade (curated) ──
+        if (activeTab === 'gospodarska') {
+            const hv = document.getElementById('hiddenVType');
+            const vrsta = hv ? hv.value : '';
+            const allowed = vrsta && COMMERCIAL_FUEL_MAP[vrsta]
+                ? new Set(COMMERCIAL_FUEL_MAP[vrsta])
+                : null;
+            const visible = applyChipGroup('fuel', allowed);
+            // Hide the whole "Vrsta goriva" group when the vrsta has no engine
+            const fuelGroup = document.querySelector('input[name="fuel"]')?.closest('.adv-field-group');
+            if (fuelGroup) fuelGroup.style.display = (allowed && visible === 0) ? 'none' : '';
+        } else {
+            // Any non-commercial tab: restore the full fuel list
+            applyChipGroup('fuel', null);
+            const fuelGroup = document.querySelector('input[name="fuel"]')?.closest('.adv-field-group');
+            if (fuelGroup && activeTab !== 'moto') fuelGroup.style.display = '';
+        }
+    }
+
     // ── Dynamic Brand Data Loading ──
     function fetchBrandData(category) {
         let jsonFile = "json/brands_models_global.json";
@@ -255,63 +389,146 @@ function bindSearchLogic(catContext) {
             activeTab = btn.dataset.tab;
             showGridForTab(activeTab);
             toggleVehicleSpecificFields(activeTab);
-            fetchBrandData(activeTab);
-            
+            fetchBrandData(activeTab).then(applyRelevance);
+
             // Reset the search form to default
             searchForm.reset();
         });
     });
 
-    // ── Exhaust Brand Sub-dropdown ──
-    const exhaustCheck = document.getElementById('sport-exhaust-check');
-    const exhaustSub   = document.getElementById('exhaust-brand-sub');
-    const exhaustSelect = document.getElementById('exhaust-brand-select');
-    if (exhaustCheck && exhaustSub && exhaustSelect) {
+    // ── Exhaust Brand Tag Input ──
+    const exhaustCheck      = document.getElementById('sport-exhaust-check');
+    const exhaustTagsRow    = document.getElementById('exhaust-tags-row');
+    const exhaustTagsList   = document.getElementById('exhaust-tags-list');
+    const exhaustBrandSelect = document.getElementById('exhaust-brand-select');
+
+    if (exhaustCheck && exhaustTagsRow && exhaustBrandSelect) {
+        function addExhaustTag(brand) {
+            if (!brand) return;
+            if ([...exhaustTagsList.querySelectorAll('.exhaust-tag')].some(t => t.dataset.value === brand)) return;
+            const tag = document.createElement('span');
+            tag.className = 'adv-chip exhaust-tag';
+            tag.dataset.value = brand;
+            tag.style.cssText = 'display:inline-flex;align-items:center;gap:0.25rem;';
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden'; hidden.name = 'exhaustBrand'; hidden.value = brand;
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button'; removeBtn.className = 'exhaust-tag-remove'; removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', () => { tag.remove(); updateLiveCount(); });
+            tag.append(document.createTextNode(brand), removeBtn, hidden);
+            exhaustTagsList.appendChild(tag);
+            updateLiveCount();
+        }
+
         fetch('json/exhaust_brands.json')
             .then(r => r.json())
             .then(brands => {
                 brands.forEach(b => {
                     const o = document.createElement('option');
                     o.value = b; o.textContent = b;
-                    exhaustSelect.appendChild(o);
+                    exhaustBrandSelect.appendChild(o);
+                });
+                createCustomSelect(exhaustBrandSelect);
+                // Size the container to fit-content instead of full-width
+                const csc = exhaustBrandSelect.previousElementSibling;
+                if (csc && csc.classList.contains('custom-select-container')) {
+                    csc.style.cssText = 'width:auto; min-width:160px; position:relative;';
+                }
+                exhaustBrandSelect.addEventListener('change', () => {
+                    const val = exhaustBrandSelect.value;
+                    if (!val) return;
+                    addExhaustTag(val);
+                    // Reset select back to placeholder
+                    exhaustBrandSelect.selectedIndex = 0;
+                    const valueSpan = csc?.querySelector('.custom-select-value');
+                    if (valueSpan) valueSpan.textContent = 'Znamka izpuha';
                 });
             })
             .catch(() => {});
+
         exhaustCheck.addEventListener('change', () => {
-            exhaustSub.style.display = exhaustCheck.checked ? 'block' : 'none';
-            if (!exhaustCheck.checked) exhaustSelect.value = '';
+            exhaustTagsRow.style.display = exhaustCheck.checked ? 'inline-flex' : 'none';
+            if (!exhaustCheck.checked) exhaustTagsList.innerHTML = '';
             updateLiveCount();
         });
-        exhaustSelect.addEventListener('change', updateLiveCount);
     }
 
     const cylindersSelect = document.getElementById('moto-cylinders');
     const layoutGroup = document.getElementById('cylinder-layout-group');
     const layoutSelect = document.getElementById('moto-cylinder-layout');
     if (cylindersSelect) {
-        cylindersSelect.addEventListener('change', () => {
-            const val = cylindersSelect.value;
-            if (val === '1') {
-                layoutGroup.style.display = 'block';
-                layoutSelect.innerHTML = '<option value="">All configurations</option><option value="Single">Single Cylinder</option>';
-            } else if (val === '2') {
-                layoutGroup.style.display = 'block';
-                layoutSelect.innerHTML = '<option value="">All configurations</option><option value="Parallel-twin">Parallel-twin (Inline)</option><option value="V-twin">V-twin</option><option value="Boxer">Flat-twin (Boxer)</option><option value="L-twin">L-twin</option>';
-            } else if (val === '3') {
-                layoutGroup.style.display = 'block';
-                layoutSelect.innerHTML = '<option value="">All configurations</option><option value="Inline-three">Inline-three</option>';
-            } else if (val === '4') {
-                layoutGroup.style.display = 'block';
-                layoutSelect.innerHTML = '<option value="">All configurations</option><option value="Inline-four">Inline-four</option><option value="V4">V4</option><option value="Boxer-four">Flat-four (Boxer)</option>';
-            } else if (val === '6') {
-                layoutGroup.style.display = 'block';
-                layoutSelect.innerHTML = '<option value="">All configurations</option><option value="Inline-six">Inline-six</option><option value="Boxer-six">Flat-six (Boxer)</option>';
-            } else {
-                layoutGroup.style.display = 'none';
-                layoutSelect.innerHTML = '';
-            }
-            updateLiveCount();
-        });
+        // Cylinders / layout / drivetrain all cross-filter each other, so re-run the
+        // faceted relevance pass on any engine change (it rebuilds the layout list).
+        cylindersSelect.addEventListener('change', () => { applyRelevance(); updateLiveCount(); });
+        if (layoutSelect) layoutSelect.addEventListener('change', () => { applyRelevance(); updateLiveCount(); });
+        const strokeSelect = document.querySelector('select[name="stroke"]');
+        if (strokeSelect) strokeSelect.addEventListener('change', () => { applyRelevance(); updateLiveCount(); });
+        document.querySelectorAll('input[name="motoDrivetrain"]').forEach(chk =>
+            chk.addEventListener('change', () => { applyRelevance(); updateLiveCount(); }));
+
+        // ── Dodaj / Odstrani buttons for cylinder filters ──
+        // cylFilters: [{ cylinders, layout, label, key, exclude: bool }]
+        let cylFilters = [];
+        const cylChipsEl   = document.getElementById('cylFilterChips');
+        const cylAddBtn    = document.getElementById('cylAddBtn');
+        const cylRemoveBtn = document.getElementById('cylRemoveBtn');
+
+        function buildCylEntry(exclude) {
+            const cyl = cylindersSelect.value;
+            if (!cyl) return null;
+            const layout = layoutSelect ? layoutSelect.value : '';
+            const cylLabel = cylindersSelect.options[cylindersSelect.selectedIndex]?.text || cyl;
+            const layoutLabel = layout ? (layoutSelect.options[layoutSelect.selectedIndex]?.text || layout) : '';
+            const label = layoutLabel ? `${cylLabel} · ${layoutLabel}` : cylLabel;
+            const key = (exclude ? 'x|' : 'i|') + cyl + '|' + layout;
+            if (cylFilters.some(f => f.key === key)) return null;
+            return { cylinders: cyl, layout, label, key, exclude };
+        }
+
+        function resetCylDropdowns() {
+            cylindersSelect.value = '';
+            if (layoutGroup) layoutGroup.style.display = 'none';
+            if (layoutSelect) layoutSelect.innerHTML = '';
+        }
+
+        function renderCylChips() {
+            if (!cylChipsEl) return;
+            cylChipsEl.innerHTML = '';
+            cylFilters.forEach((f, i) => {
+                const chip = document.createElement('span');
+                chip.className = f.exclude ? 'cyl-filter-chip cyl-filter-chip-exclude' : 'cyl-filter-chip';
+                const btn = document.createElement('button');
+                btn.type = 'button'; btn.textContent = '×';
+                btn.addEventListener('click', () => { cylFilters.splice(i, 1); renderCylChips(); updateLiveCount(); });
+                chip.append(document.createTextNode(f.exclude ? '≠ ' + f.label : f.label), btn);
+                cylChipsEl.appendChild(chip);
+            });
+        }
+
+        if (cylAddBtn) {
+            cylAddBtn.addEventListener('click', () => {
+                const entry = buildCylEntry(false);
+                if (!entry) return;
+                cylFilters.push(entry);
+                resetCylDropdowns();
+                renderCylChips();
+                updateLiveCount();
+            });
+        }
+
+        if (cylRemoveBtn) {
+            cylRemoveBtn.addEventListener('click', () => {
+                const entry = buildCylEntry(true);
+                if (!entry) return;
+                cylFilters.push(entry);
+                resetCylDropdowns();
+                renderCylChips();
+                updateLiveCount();
+            });
+        }
+
+        // Expose cylFilters so matchesFilters can read them
+        window._cylFilters = cylFilters;
     }
 
     // ── 6-axis IMU Logic ──
@@ -327,7 +544,7 @@ function bindSearchLogic(catContext) {
         });
     }
 
-    fetchBrandData(activeTab);
+    fetchBrandData(activeTab).then(applyRelevance);
 
     makeSelect.addEventListener("change", () => {
         const data = window._brandModelData;
@@ -341,6 +558,7 @@ function bindSearchLogic(catContext) {
             keys.forEach(m => { const o = document.createElement("option"); o.value = m; o.textContent = m; modelSelect.appendChild(o); });
             if (keys.length) modelSelect.disabled = false;
         }
+        applyRelevance();
     });
 
     modelSelect.addEventListener("change", () => {
@@ -360,6 +578,8 @@ function bindSearchLogic(catContext) {
         }
         // Auto-select the body-type card from the taxonomy (cars only)
         autoSelectBodyType(mk, md);
+        // Model picked → narrow engine options to that model (moto)
+        applyRelevance();
     });
     
     variantSelect.addEventListener("change", () => {
@@ -405,6 +625,7 @@ function bindSearchLogic(catContext) {
             vehicles.push({ make, model, variant });
             resetSelectors();
             renderVehicleCards();
+            applyRelevance();
             updateLiveCount();
         });
     }
@@ -654,11 +875,27 @@ function bindSearchLogic(catContext) {
     }
 
     allBodyTypeCards.forEach(card => card.addEventListener('click', () => {
+        if (card.dataset.group) return; // group cards are handled by their own selector
         card.classList.toggle('active');
         const activeValues = Array.from(allBodyTypeCards).filter(btn => btn.classList.contains('active')).map(btn => btn.getAttribute('data-value'));
         if (bodyTypeHidden) bodyTypeHidden.value = activeValues.join(',');
         updateLiveCount();
     }));
+
+    // ── Moto 4/3-wheel group drill-down ──
+    const motoGroupSelector = setupMotoGroupSelector({ bodyTypeHidden, onChange: () => updateLiveCount() });
+
+    // ── Commercial (Gospodarska) two-level drill-down: Vrsta → Kategorije ──
+    const hiddenVType = document.getElementById('hiddenVType');
+    const commercialSelector = setupCommercialSelector({
+        bodyTypeHidden,
+        hiddenVType,
+        onChange: () => { applyRelevance(); updateLiveCount(); },
+    });
+    // Pre-select a vrsta if the URL carried one (e.g. ?vtype=Kmetijska)
+    if (activeTab === 'gospodarska' && catContext.vtype && COMMERCIAL_BY_KEY[catContext.vtype]) {
+        commercialSelector.drillInto(catContext.vtype);
+    }
 
     // ── Power Unit Toggle Logic ──
     let activePowerUnit = 'kw';
@@ -752,10 +989,12 @@ function bindSearchLogic(catContext) {
                 conditions: fd.getAll('condition'), damaged: fd.get('damaged'),
                 fuels: fd.getAll('fuel').filter(Boolean), gears: fd.getAll('transmission').filter(Boolean), drivetrain: fd.getAll('drivetrain'),
                 stroke: fd.get('stroke'), cylinders: fd.get('cylinders'), cylinderLayout: fd.get('cylinderLayout'),
+                cylFilters: window._cylFilters || [],
+                motoDrivetrain: fd.getAll('motoDrivetrain'),
                 a2Eligible: fd.get('a2Eligible') || '',
                 features: fd.getAll('features'),
-                exhaustBrand: fd.get('exhaustBrand') || '',
-                exhaustType: fd.get('exhaustType') || '',
+                exhaustBrands: fd.getAll('exhaustBrand'),
+                exhaustTypes: fd.getAll('exhaustType'),
                 priceFrom: parseFormattedNumber(fd.get('priceFrom')), priceTo: parseFormattedNumber(fd.get('priceTo')) || Infinity,
                 includeCallForPrice: fd.get('includeCallForPrice') === '1',
                 yearFrom: Number(fd.get('yearFrom')) || 0, yearTo: Number(fd.get('yearTo')) || Infinity,
@@ -790,8 +1029,14 @@ function bindSearchLogic(catContext) {
             modelSelect.dispatchEvent(new Event('change'));
             variantSelect.dispatchEvent(new Event('change'));
 
+            if (exhaustTagsList) exhaustTagsList.innerHTML = '';
+            if (exhaustTagsRow) exhaustTagsRow.style.display = 'none';
+
             allBodyTypeCards.forEach(c => c.classList.remove('active'));
             bodyTypeHidden.value = '';
+            if (motoGroupSelector) motoGroupSelector.reset();
+            if (commercialSelector) commercialSelector.reset();
+            applyRelevance();
             updateLiveCount();
         }, 0);
     });
@@ -857,6 +1102,10 @@ function bindSearchLogic(catContext) {
         if (transmission) {
             params.set('transmission', transmission);
         }
+
+        // Moto: Prenos moči
+        const motoDrivetrains = fd.getAll('motoDrivetrain').filter(Boolean);
+        if (motoDrivetrains.length > 0) params.set('motoDrivetrain', motoDrivetrains.join(','));
 
         const paramStr = params.toString();
         window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
@@ -925,11 +1174,36 @@ function matchesFilters(l, filters) {
         const cylinders = filters.cylinders;
         const layout = filters.cylinderLayout;
         if (stroke && l.stroke !== stroke) return false;
-        if (cylinders) {
-            // Count match
-            if (l.cylinders !== cylinders && String(l.cylinders) !== cylinders && !String(l.cylinders).startsWith(cylinders)) return false;
-            // Layout match (if selected)
-            if (layout && l.cylinderLayout !== layout && !String(l.cylinders).includes(layout)) return false;
+        // Cylinder filter — cylFilters (multi, OR) takes priority over single dropdowns
+        const cf = filters.cylFilters && filters.cylFilters.length > 0 ? filters.cylFilters : [];
+        const includeFilters = cf.filter(f => !f.exclude);
+        const excludeFilters = cf.filter(f => f.exclude);
+
+        function cylMatch(f, l) {
+            const cyl = f.cylinders; const lay = f.layout || '';
+            if (cyl === 'Wankel') return (l.engine_type || l.engineType || l.stroke || '') === 'Wankel';
+            if (l.cylinders !== cyl && String(l.cylinders) !== cyl) return false;
+            if (lay) {
+                const ec = l.engine_code || '';
+                if (lay.endsWith('(vsi)')) {
+                    const prefix = lay.replace(' (vsi)', '');
+                    return ec === prefix || ec.startsWith(prefix + ' ');
+                }
+                return ec === lay;
+            }
+            return true;
+        }
+
+        // If no chip filters, fall back to single dropdown values
+        if (includeFilters.length === 0 && cf.length === 0 && cylinders) {
+            includeFilters.push({ cylinders, layout: layout || '' });
+        }
+        if (includeFilters.length > 0 && !includeFilters.some(f => cylMatch(f, l))) return false;
+        if (excludeFilters.some(f => cylMatch(f, l))) return false;
+        // Prenos moči (drivetrain) — OR between checked chips
+        if (filters.motoDrivetrain && filters.motoDrivetrain.length > 0) {
+            const dt = l.drivetrain || '';
+            if (!filters.motoDrivetrain.includes(dt)) return false;
         }
         if (filters.a2Eligible === 'yes' && !l.a2Eligible) return false;
     }
@@ -974,14 +1248,163 @@ function matchesFilters(l, filters) {
 
     // Exhaust sub-filters (only applied when SportExhaust is also selected)
     if (filters.features && filters.features.includes('SportExhaust')) {
-        if (filters.exhaustBrand && l.exhaustBrand !== filters.exhaustBrand) return false;
-        if (filters.exhaustType && l.exhaustType !== filters.exhaustType) return false;
+        if (filters.exhaustBrands && filters.exhaustBrands.length > 0 && !filters.exhaustBrands.includes(l.exhaustBrand)) return false;
+        if (filters.exhaustTypes && filters.exhaustTypes.length > 0 && !filters.exhaustTypes.includes(l.exhaustType)) return false;
     }
 
     // Rental filter
     if (filters.najem === '1' && !l.isRental) return false;
 
     return true;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Moto 4/3-wheel group selector — drill-down from group card into sub-types
+// ═══════════════════════════════════════════════════════════════════════════════
+function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
+    const mainGrid = document.getElementById('motoMainGrid');
+    const subGrid = document.getElementById('motoSubGrid');
+    const header = document.getElementById('motoDrillHeader');
+    const title = document.getElementById('motoDrillTitle');
+    const backBtn = document.getElementById('motoBackBtn');
+    const groupCard = document.querySelector('.moto-group-card[data-group="4in3kolesa"]');
+    if (!mainGrid || !subGrid || !groupCard) return;
+
+    const selected = new Set();
+
+    function writeFilter() {
+        if (!bodyTypeHidden) return;
+        const existing = bodyTypeHidden.value
+            ? bodyTypeHidden.value.split(',').filter(v => !['ATV','UTV','Trikolesnik','Gocart'].includes(v))
+            : [];
+        const combined = [...existing, ...selected];
+        bodyTypeHidden.value = combined.join(',');
+    }
+
+    function showSub() {
+        mainGrid.style.display = 'none';
+        subGrid.style.display = 'grid';
+        if (header) header.style.display = 'flex';
+        if (title) title.textContent = '4 in 3 Kolesna motorna vozila';
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    function showMain() {
+        subGrid.style.display = 'none';
+        mainGrid.style.display = 'grid';
+        if (header) header.style.display = 'none';
+        selected.clear();
+        writeFilter();
+        if (onChange) onChange();
+    }
+
+    groupCard.addEventListener('click', showSub);
+
+    subGrid.querySelectorAll('.body-type-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const val = card.dataset.value;
+            if (selected.has(val)) { selected.delete(val); card.classList.remove('active'); }
+            else { selected.add(val); card.classList.add('active'); }
+            writeFilter();
+            if (onChange) onChange();
+        });
+    });
+
+    if (backBtn) backBtn.addEventListener('click', showMain);
+
+    return { reset: showMain };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Commercial vehicle selector — two-level drill-down (Vrsta → Kategorije)
+// Level 1 shows the vrsta cards. Clicking one drills down in place to that
+// vrsta's kategorije, with a back button. Selecting kategorije toggles them as
+// active filters; with none selected the vrsta itself is used as the filter.
+// ═══════════════════════════════════════════════════════════════════════════════
+function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
+    const grid = document.getElementById('commercialGrid');
+    const header = document.getElementById('commercialDrillHeader');
+    const title = document.getElementById('commercialDrillTitle');
+    const backBtn = document.getElementById('commercialBackBtn');
+    if (!grid) return { renderVrste() {}, drillInto() {}, reset() {} };
+
+    let currentVrsta = null;
+    const selected = new Set();
+
+    function refreshIcons() {
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    function writeFilter() {
+        if (!bodyTypeHidden) return;
+        if (selected.size > 0) {
+            bodyTypeHidden.value = [...selected].join(',');
+        } else if (currentVrsta) {
+            bodyTypeHidden.value = currentVrsta;
+        } else {
+            bodyTypeHidden.value = '';
+        }
+        if (hiddenVType) hiddenVType.value = currentVrsta || '';
+    }
+
+    function renderVrste() {
+        currentVrsta = null;
+        selected.clear();
+        if (header) header.style.display = 'none';
+        grid.innerHTML = COMMERCIAL_TAXONOMY.map(v => {
+            const iconHtml = v.icon && v.icon.startsWith('svg:') 
+                ? `<svg class="custom-v-icon"><use href="/icons/vehicles.svg${v.icon.slice(4)}"></use></svg>` 
+                : `<i class="${v.icon}"></i>`;
+            return `
+            <button type="button" class="body-type-card commercial-vrsta-card" data-key="${v.key}">
+                ${iconHtml}<span>${v.label}</span>
+            </button>`;
+        }).join('');
+        grid.querySelectorAll('.commercial-vrsta-card').forEach(card => {
+            card.addEventListener('click', () => drillInto(card.dataset.key));
+        });
+        writeFilter();
+        refreshIcons();
+    }
+
+    function drillInto(key) {
+        const vrsta = COMMERCIAL_BY_KEY[key];
+        if (!vrsta) return;
+        currentVrsta = key;
+        selected.clear();
+        if (header) header.style.display = 'flex';
+        if (title) title.textContent = vrsta.label;
+        grid.innerHTML = vrsta.categories.map(cat => {
+            const iconHtml = vrsta.icon && vrsta.icon.startsWith('svg:') 
+                ? `<svg class="custom-v-icon"><use href="/icons/vehicles.svg${vrsta.icon.slice(4)}"></use></svg>` 
+                : `<i class="${vrsta.icon}"></i>`;
+            return `
+            <button type="button" class="body-type-card commercial-cat-card" data-value="${cat}">
+                ${iconHtml}<span>${cat}</span>
+            </button>`;
+        }).join('');
+        grid.querySelectorAll('.commercial-cat-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const val = card.dataset.value;
+                if (selected.has(val)) { selected.delete(val); card.classList.remove('active'); }
+                else { selected.add(val); card.classList.add('active'); }
+                writeFilter();
+                if (onChange) onChange();
+            });
+        });
+        writeFilter();
+        if (onChange) onChange();
+        refreshIcons();
+    }
+
+    if (backBtn) backBtn.addEventListener('click', () => {
+        renderVrste();
+        if (onChange) onChange();
+    });
+
+    renderVrste();
+
+    return { renderVrste, drillInto, reset: renderVrste };
 }
 
 // ── Hybrid sub-option cascades ────────────────────────────────────────────────

@@ -91,3 +91,19 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ── Dark mode ─────────────────────────────────────────────────────── */
+body.dark-mode .page-header p { color: #94a3b8; }
+body.dark-mode .contact-info a { color: #e2e8f0; }
+body.dark-mode .social-media a { color: #94a3b8; }
+body.dark-mode .contact-form-container {
+    background-color: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #f1f5f9;
+}

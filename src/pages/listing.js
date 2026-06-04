@@ -2,7 +2,7 @@
 // Listing Detail Page — MojAvto.si
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { getListingById, incrementViewCount, formatPrice, getListings } from '../services/listingService.js';
+import { getListingById, recordListingView, getListingViewStats, formatPrice, getListings } from '../services/listingService.js';
 import { kmToMiles, kwToHp, l100kmToMpg, formatDisplacement } from '../utils/listingUtils.js';
 import { getVehicleRating } from '../utils/valuationScore.js';
 import { getEquipmentLabel, EQUIPMENT_GROUPS } from '../data/equipment.js';
@@ -32,8 +32,8 @@ export async function initListingPage() {
             getListingById(id),
             getListings().catch(() => []),
         ]);
+        recordListingView(id);      // log this view (local timeline + Firestore daily) before rendering stats
         renderListing(listing);
-        incrementViewCount(id);
         injectRating(listing, allListings);
         injectServiceHistory(listing);
     } catch (err) {
@@ -168,33 +168,88 @@ function renderStarsHtml(stars, dim) {
     return html;
 }
 
+// ── View statistics card ──────────────────────────────────────────────────────
+function renderViewStatsHtml(l) {
+    const stats = getListingViewStats(l);
+    const fmt = n => new Intl.NumberFormat(getCurrentLang() === 'sl' ? 'sl-SI' : 'en-US').format(n);
+
+    const cell = (num, label) => `
+        <div class="lp-view-stat">
+            <span class="lp-view-num">${fmt(num)}</span>
+            <span class="lp-view-label">${escHtml(label)}</span>
+        </div>`;
+
+    return `
+        <div class="lp-sidebar-card lp-views-card">
+            <div class="lp-views-title">
+                <i data-lucide="eye"></i>
+                <span>${t('views_stats_title', 'Ogledi oglasa')}</span>
+            </div>
+            <div class="lp-views-grid">
+                ${cell(stats.today, t('views_today', 'Danes'))}
+                ${cell(stats.week, t('views_week', 'Ta teden'))}
+                ${cell(stats.total, t('views_total', 'Skupaj'))}
+            </div>
+        </div>`;
+}
+
 // ── Animation helper — re-triggers on every click ────────────────────────────
 function popBtn(btn) {
     btn.classList.remove('lp-btn-pop');
     void btn.offsetWidth; // force reflow so animation restarts
     btn.classList.add('lp-btn-pop');
-    btn.addEventListener('animationend', () => btn.classList.remove('lp-btn-pop'), { once: true });
+    // Button + icon run two animations of differing length — use a timer so the
+    // class isn't stripped early (animationend fires per-animation).
+    clearTimeout(btn._popTimer);
+    btn._popTimer = setTimeout(() => btn.classList.remove('lp-btn-pop'), 480);
 }
 
 // ── Favourite button ──────────────────────────────────────────────────────────
+// localStorage is the UI source-of-truth so the heart colour never snaps back
+// due to Firebase latency / permission errors. Firebase is synced in the background.
+const FAV_STORE_KEY = 'mojavto_liked';
+
+function getLikedSet() {
+    try { return new Set(JSON.parse(localStorage.getItem(FAV_STORE_KEY) || '[]')); }
+    catch { return new Set(); }
+}
+function setLikedSet(s) {
+    try { localStorage.setItem(FAV_STORE_KEY, JSON.stringify([...s])); } catch { /* ignore */ }
+}
+
 async function initFavBtn(l) {
     const btn = document.getElementById('lpFavBtn');
     if (!btn) return;
 
-    const user = auth.currentUser;
-    if (user) {
-        const liked = await isFavourite(user.uid, l.id);
-        if (liked) btn.classList.add('active');
+    // Immediately reflect local liked state — no async wait needed.
+    if (getLikedSet().has(l.id)) btn.classList.add('active');
+
+    // Async: sync with Firebase liked state once auth resolves.
+    const syncWithFirebase = async (user) => {
+        if (!user) return;
+        try {
+            const liked = await isFavourite(user.uid, l.id);
+            const localSet = getLikedSet();
+            if (liked) { localSet.add(l.id); btn.classList.add('active'); }
+            else        { localSet.delete(l.id); btn.classList.remove('active'); }
+            setLikedSet(localSet);
+        } catch { /* non-critical */ }
+    };
+
+    // auth.currentUser can be null on first render — wait for auth to settle.
+    if (auth.currentUser) {
+        syncWithFirebase(auth.currentUser);
+    } else {
+        const unsub = auth.onAuthStateChanged(user => {
+            unsub();
+            syncWithFirebase(user);
+        });
     }
 
     btn.addEventListener('click', async () => {
         let currentUser = auth.currentUser;
 
-        // Optimistic UI update — give immediate visual feedback
-        const wasActive = btn.classList.contains('active');
-        if (wasActive) btn.classList.remove('active'); else btn.classList.add('active');
-        popBtn(btn);
-
+        // Auth gate for logged-out users — revert only on cancel, not on Firebase errors.
         if (!currentUser) {
             try {
                 currentUser = await showAuthGate({
@@ -203,12 +258,20 @@ async function initFavBtn(l) {
                     message: t('save_to_favorites_msg'),
                 });
             } catch {
-                // Revert optimistic update on cancel
-                if (wasActive) btn.classList.add('active'); else btn.classList.remove('active');
-                return;
+                return; // user cancelled auth gate — don't touch the button
             }
         }
 
+        // Optimistic update: toggle immediately and persist locally right away.
+        const wasActive = btn.classList.contains('active');
+        const newActive = !wasActive;
+        if (newActive) btn.classList.add('active'); else btn.classList.remove('active');
+        const localSet = getLikedSet();
+        if (newActive) localSet.add(l.id); else localSet.delete(l.id);
+        setLikedSet(localSet);
+        popBtn(btn);
+
+        // Background Firebase sync — never revert the visual state on failure.
         btn.disabled = true;
         try {
             if (wasActive) {
@@ -217,9 +280,7 @@ async function initFavBtn(l) {
                 await addToFavourites(currentUser.uid, { id: l.id, title: l.make + ' ' + l.model, price: l.priceEur || l.price, images: l.images });
             }
         } catch (err) {
-            // Revert on Firebase error
-            if (wasActive) btn.classList.add('active'); else btn.classList.remove('active');
-            console.error('[lpFavBtn] error:', err);
+            console.warn('[lpFavBtn] Firebase sync failed (local state kept):', err);
         } finally {
             btn.disabled = false;
         }
@@ -231,11 +292,25 @@ function initCompareBtn(l) {
     const btn = document.getElementById('lpCompareBtn');
     if (!btn) return;
 
-    const compareList = JSON.parse(localStorage.getItem('mojavto_compare') || '[]');
-    const inCompare = compareList.some(c => c.id === l.id);
-    if (inCompare) btn.classList.add('active');
+    // Reflect state immediately from localStorage — no auth wait needed.
+    const getList = () => { try { return JSON.parse(localStorage.getItem('mojavto_compare') || '[]'); } catch { return []; } };
+    if (getList().some(c => c.id === l.id)) btn.classList.add('active');
 
     btn.addEventListener('click', async () => {
+        const list = getList();
+        const idx  = list.findIndex(c => c.id === l.id);
+
+        if (idx !== -1) {
+            // Already in compare — remove without requiring auth.
+            list.splice(idx, 1);
+            btn.classList.remove('active');
+            popBtn(btn);
+            localStorage.setItem('mojavto_compare', JSON.stringify(list));
+            if (window.updateHeaderCompare) window.updateHeaderCompare();
+            return;
+        }
+
+        // Adding — require auth (same gate as the board).
         let currentUser = auth.currentUser;
         if (!currentUser) {
             try {
@@ -246,19 +321,14 @@ function initCompareBtn(l) {
                 });
             } catch { return; }
         }
-        const list = JSON.parse(localStorage.getItem('mojavto_compare') || '[]');
-        const idx = list.findIndex(c => c.id === l.id);
-        if (idx !== -1) {
-            list.splice(idx, 1);
-            btn.classList.remove('active');
-        } else {
-            if (list.length >= 3) {
-                alert(t('compare_limit_3'));
-                return;
-            }
-            list.push({ id: l.id, title: l.make + ' ' + l.model, image: l.images?.exterior?.[0] || '', price: l.priceEur || l.price });
-            btn.classList.add('active');
+
+        if (list.length >= 3) {
+            alert(t('compare_limit_3'));
+            return;
         }
+
+        list.push({ id: l.id, title: l.make + ' ' + l.model, image: l.images?.exterior?.[0] || '', price: l.priceEur || l.price });
+        btn.classList.add('active');
         popBtn(btn);
         localStorage.setItem('mojavto_compare', JSON.stringify(list));
         if (window.updateHeaderCompare) window.updateHeaderCompare();
@@ -384,6 +454,9 @@ function renderListing(l) {
                             </button>
                         </div>
                     </div>
+
+                    <!-- View statistics -->
+                    ${renderViewStatsHtml(l)}
 
                     <!-- Cost Panel -->
                     <div id="react-cost-panel-root"></div>

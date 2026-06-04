@@ -15,6 +15,7 @@ import { t, getCurrentLang } from '../core/i18n.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { getModelBodyType } from '../utils/bodyType.js';
 import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes, getPartTypeLabel } from '../data/partTypes.js';
+import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, getEquipmentGroupLabel, EQUIPMENT_SIZES } from '../data/equipmentTypes.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -51,6 +52,7 @@ const formatNumberWithCommas = (n) => {
 const isVehicleItem = s => (s.itemType || 'vehicle') === 'vehicle';
 const isPartItem = s => s.itemType === 'part';
 const isTireItem = s => s.itemType === 'tire';
+const isOpremaItem = s => s.itemType === 'oprema';
 
 const STEPS = [
     { id: 'typeSelect', title: null },  // 0: vehicle vs parts/tires
@@ -62,6 +64,7 @@ const STEPS = [
     { id: 'equipment', title: 'cl_step_features', number: true, condition: isVehicleItem },
     { id: 'partDetails', title: 'cl_step_part_details', number: true, condition: isPartItem },
     { id: 'tireDetails', title: 'cl_step_tire_details', number: true, condition: isTireItem },
+    { id: 'opremaDetails', title: 'cl_step_oprema_details', number: true, condition: isOpremaItem },
     { id: 'media', title: 'cl_step_photos', number: true },
     { id: 'description', title: 'cl_step_description', number: true },
     { id: 'price', title: 'cl_step_price', number: true },
@@ -88,6 +91,8 @@ let state = {
     // Parts
     partGroup: '', partType: '', partTypeLabel: '', oemNumber: '', brand: '',
     vehicleApplication: { make: '', model: '', yearFrom: '', yearTo: '' },
+    // Moto equipment (itemType === 'oprema')
+    equipmentGroup: '', equipmentType: '', equipmentTypeLabel: '', equipmentSize: '',
     // Tires
     tireSize: '', tireWidth: '', tireAspect: '', tireRim: '',
     tireSeason: '', treadDepthMm: '', dotYear: '', tireCount: '',
@@ -335,6 +340,7 @@ function renderCurrentStep() {
         equipment: renderEquipmentStep,
         partDetails: renderPartDetailsStep,
         tireDetails: renderTireDetailsStep,
+        opremaDetails: renderOpremaDetailsStep,
         media: renderMediaStep,
         description: renderDescriptionStep,
         price: renderPriceStep,
@@ -827,7 +833,7 @@ const CATEGORIES = [
 
 function renderCategoryStep() {
     // Parts/tires path: skip the vehicle category grid, show only Del/Pnevmatika + vehicle family pickers
-    if (state.itemType === 'part' || state.itemType === 'tire') {
+    if (state.itemType === 'part' || state.itemType === 'tire' || state.itemType === 'oprema') {
         setHtml(`
             <div class="cl-card">
                 <h2 class="cl-step-title">${t('cl_parts_category_title', 'Vrsta dela ali pnevmatike')}</h2>
@@ -922,15 +928,19 @@ function renderDeliConfig(row) {
             <i data-lucide="${vc.icon}" class="cl-sub-icon"></i> ${vc.label}
         </button>`;
 
+    // Moto equipment (oprema) is moto-only; hide the "for which vehicle" row for it.
+    const vehRowHidden = state.itemType === 'oprema';
+
     row.innerHTML = `
         <div style="width:100%;">
             <label class="cl-label" style="margin-bottom:0.5rem;display:block;">${t('cl_what_are_you_listing', 'Kaj objavljate?')}</label>
             <div class="cl-subcategory-row" id="deliItemRow" style="margin-bottom:1rem;">
-                ${itemPill('part', 'wrench', t('cl_sub_del', 'Del / oprema'))}
+                ${itemPill('part', 'wrench', t('cl_sub_del', 'Nadomestni del'))}
                 ${itemPill('tire', 'disc-3', t('cl_sub_guma', 'Pnevmatika'))}
+                ${itemPill('oprema', 'shield', t('cl_sub_oprema', 'Moto oprema'))}
             </div>
-            <label class="cl-label" style="margin-bottom:0.5rem;display:block;">${t('gd_choose_vehicle_cat', 'Za katero vozilo?')}</label>
-            <div class="cl-subcategory-row" id="deliVehRow">
+            <label class="cl-label" style="margin-bottom:0.5rem;display:block;${vehRowHidden ? 'display:none;' : ''}" id="deliVehLabel">${t('gd_choose_vehicle_cat', 'Za katero vozilo?')}</label>
+            <div class="cl-subcategory-row" id="deliVehRow" style="${vehRowHidden ? 'display:none;' : ''}">
                 ${VEHICLE_CATEGORIES.map(vehiclePill).join('')}
             </div>
         </div>`;
@@ -944,6 +954,10 @@ function renderDeliConfig(row) {
             state.itemType = p.dataset.item;
             // Reset part-specific selections when switching kind
             state.partGroup = ''; state.partType = ''; state.partTypeLabel = '';
+            state.equipmentGroup = ''; state.equipmentType = ''; state.equipmentTypeLabel = ''; state.equipmentSize = '';
+            // Equipment is moto gear — pin the vehicle family and re-render to hide the veh row
+            if (state.itemType === 'oprema') state.vehicleCategory = 'moto';
+            renderDeliConfig(row);
         });
     });
 
@@ -1073,6 +1087,122 @@ function renderPartDetailsStep() {
         };
         if (!state.partGroup || !state.partType) {
             return alert(t('cl_part_required_alert', 'Izberite sklop in vrsto dela.'));
+        }
+        goNext();
+    });
+}
+
+// ── Step: Moto equipment details ──────────────────────────────────────────────
+function renderOpremaDetailsStep() {
+    const groups = getEquipmentGroups();
+    const groupOpts = groups.map(g =>
+        `<option value="${g.value}" ${state.equipmentGroup === g.value ? 'selected' : ''}>${g.label}</option>`).join('');
+
+    const typeOpts = (state.equipmentGroup ? getEquipmentTypes(state.equipmentGroup) : [])
+        .map(tp => `<option value="${tp.value}" ${state.equipmentType === tp.value ? 'selected' : ''}>${tp.label}</option>`).join('');
+
+    const sizeOpts = EQUIPMENT_SIZES.map(s =>
+        `<option value="${s}" ${state.equipmentSize === s ? 'selected' : ''}>${s}</option>`).join('');
+
+    setHtml(`
+        <div class="cl-card">
+            <h2 class="cl-step-title">${t('cl_step_oprema_details', 'Podatki o opremi')}</h2>
+            <p class="cl-step-sub">${t('cl_oprema_details_sub', 'Opišite motoristično opremo, ki jo prodajate.')}</p>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_eq_group', 'Sklop opreme')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fEqGroup">
+                        <option value="">${t('cl_sel_eq_group', 'Izberite sklop')}</option>
+                        ${groupOpts}
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_eq_type', 'Vrsta')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fEqType" ${state.equipmentGroup ? '' : 'disabled'}>
+                        <option value="">${t('cl_sel_eq_type', 'Najprej izberite sklop')}</option>
+                        ${typeOpts}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
+                    <select class="cl-select" id="fEqBrand">
+                        <option value="">${t('all_brands', 'Vse znamke')}</option>
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_eq_size', 'Velikost')}</label>
+                    <select class="cl-select" id="fEqSize">
+                        <option value="">—</option>
+                        ${sizeOpts}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_condition', 'Stanje')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fEqCondition">
+                        <option value="Rabljeno" ${state.condition === 'Rabljeno' ? 'selected' : ''}>${t('gd_condition_used', 'Rabljeno')}</option>
+                        <option value="Novo" ${state.condition === 'Novo' ? 'selected' : ''}>${t('gd_condition_new', 'Novo')}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-nav">
+                <button class="cl-btn cl-btn--ghost" id="btnEqBack">${t('cl_back')}</button>
+                <button class="cl-btn cl-btn--primary" id="btnEqNext">${t('cl_continue')}</button>
+            </div>
+        </div>
+    `);
+
+    if (window.lucide) window.lucide.createIcons();
+
+    const groupSel = document.getElementById('fEqGroup');
+    const typeSel = document.getElementById('fEqType');
+    groupSel.addEventListener('change', () => {
+        state.equipmentGroup = groupSel.value;
+        state.equipmentType = '';
+        state.equipmentTypeLabel = '';
+        const types = getEquipmentTypes(state.equipmentGroup);
+        typeSel.innerHTML = `<option value="">${t('cl_sel_eq_type', 'Izberite vrsto')}</option>` +
+            types.map(tp => `<option value="${tp.value}">${tp.label}</option>`).join('');
+        typeSel.disabled = !state.equipmentGroup;
+    });
+    typeSel.addEventListener('change', () => {
+        state.equipmentType = typeSel.value;
+        state.equipmentTypeLabel = getEquipmentTypeLabel(state.equipmentGroup, typeSel.value);
+    });
+
+    // Brand dropdown — load from JSON (managed in admin center)
+    fetch('json/equipment_brands.json')
+        .then(r => r.json())
+        .then(brands => {
+            const sel = document.getElementById('fEqBrand');
+            if (!sel) return;
+            brands.forEach(b => {
+                const o = document.createElement('option');
+                o.value = b; o.textContent = b;
+                if (b === state.brand) o.selected = true;
+                sel.appendChild(o);
+            });
+            sel.value = state.brand || '';
+        })
+        .catch(() => {});
+
+    document.getElementById('btnEqBack').addEventListener('click', goPrev);
+    document.getElementById('btnEqNext').addEventListener('click', () => {
+        state.equipmentGroup = groupSel.value;
+        state.equipmentType = typeSel.value;
+        state.equipmentTypeLabel = getEquipmentTypeLabel(state.equipmentGroup, typeSel.value);
+        state.brand = document.getElementById('fEqBrand').value;
+        state.equipmentSize = document.getElementById('fEqSize').value;
+        state.condition = document.getElementById('fEqCondition').value;
+        if (!state.equipmentGroup || !state.equipmentType) {
+            return alert(t('cl_oprema_required_alert', 'Izberite sklop in vrsto opreme.'));
         }
         goNext();
     });
@@ -2516,7 +2646,7 @@ function renderReviewStep() {
         [t('cl_section_category'), state.category],
         [t('cl_label_subcategory'), state.subcategory],
     ]) : section(t('cl_section_category'), 'category', [
-        [t('cl_what_are_you_listing', 'Kaj objavljate?'), state.itemType === 'tire' ? t('cl_sub_guma', 'Pnevmatika') : t('cl_sub_del', 'Del / oprema')],
+        [t('cl_what_are_you_listing', 'Kaj objavljate?'), state.itemType === 'tire' ? t('cl_sub_guma', 'Pnevmatika') : state.itemType === 'oprema' ? t('cl_sub_oprema', 'Moto oprema') : t('cl_sub_del', 'Nadomestni del')],
         [t('gd_choose_vehicle_cat', 'Za katero vozilo?'), (VEHICLE_CATEGORIES.find(v => v.value === state.vehicleCategory) || {}).label],
     ])}
 
@@ -2558,6 +2688,14 @@ function renderReviewStep() {
         [t('gd_tire_count', 'Število kosov'), state.tireCount],
         [t('gd_tread_depth', 'Globina profila'), state.treadDepthMm ? state.treadDepthMm + ' mm' : ''],
         [t('gd_dot_year', 'DOT'), state.dotYear],
+    ]) : ''}
+
+            ${isOpremaItem(state) ? section(t('cl_step_oprema_details', 'Podatki o opremi'), 'opremaDetails', [
+        [t('gd_eq_group', 'Sklop opreme'), getEquipmentGroupLabel(state.equipmentGroup)],
+        [t('gd_eq_type', 'Vrsta'), state.equipmentTypeLabel || state.equipmentType],
+        [t('gd_part_brand', 'Znamka'), state.brand],
+        [t('gd_eq_size', 'Velikost'), state.equipmentSize],
+        [t('cl_condition', 'Stanje'), state.condition],
     ]) : ''}
 
             ${section(t('cl_section_price'), 'price', [

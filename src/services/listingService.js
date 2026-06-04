@@ -36,6 +36,7 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         vehicle: ['priceEur', 'make', 'model', 'fuel'],
         part: ['priceEur', 'partType', 'vehicleCategory'],
         tire: ['priceEur', 'tireSize', 'tireSeason', 'vehicleCategory'],
+        oprema: ['priceEur', 'equipmentType', 'vehicleCategory'],
     };
     const missing = (requiredByType[itemType] || requiredByType.vehicle).filter(k => !draft[k]);
     if (missing.length) throw new Error(`Missing key fields: ${missing.join(', ')}.`);
@@ -84,6 +85,11 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
                 yearTo: draft.vehicleApplication.yearTo || null,
             }
             : null,
+
+        // Moto equipment (itemType === 'oprema')
+        equipmentGroup: draft.equipmentGroup || '',
+        equipmentType: draft.equipmentType || '',
+        equipmentSize: draft.equipmentSize || '',
 
         // Tires (itemType === 'tire')
         tireSize: draft.tireSize || '',
@@ -193,7 +199,9 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
             ? `${draft.brand || ''} ${draft.tireSize || ''}`.trim() || 'Pnevmatike'
             : itemType === 'part'
                 ? `${draft.brand || ''} ${draft.partTypeLabel || draft.partType || ''}`.trim() || 'Avtodel'
-                : `${draft.make || ''} ${draft.model || ''} ${draft.variant || ''}`.trim(),
+                : itemType === 'oprema'
+                    ? `${draft.brand || ''} ${draft.equipmentTypeLabel || draft.equipmentType || ''}`.trim() || 'Moto oprema'
+                    : `${draft.make || ''} ${draft.model || ''} ${draft.variant || ''}`.trim(),
         price: Number(draft.priceEur) || 0,
         mileage: Number(draft.mileageKm) || 0,
         power: Number(draft.powerKw) || 0,
@@ -211,14 +219,110 @@ export async function updateListing(listingId, updates) {
     await updateDoc(docRef, { ...updates, updatedAt: serverTimestamp() });
 }
 
-// ── Increment view count ──────────────────────────────────────────────────────
-export async function incrementViewCount(listingId) {
+// ── View tracking ──────────────────────────────────────────────────────────────
+// We track views on two levels:
+//   • a per-browser timeline in localStorage (works for every listing, incl. the
+//     demo sample cars that have no Firestore document), and
+//   • Firestore counters for real listings — a running total plus a per-day map so
+//     "today / this week / overall" can be derived without an analytics backend.
+// One view is counted per listing per browser session (a "unique view").
+
+const VIEW_TS_PREFIX = 'mojavto_views_';        // localStorage timeline (array of ms timestamps)
+const VIEW_SESSION_PREFIX = 'mojavto_viewed_';  // sessionStorage dedup guard
+const VIEW_RETENTION_MS = 90 * 86400000;        // prune local timeline after 90 days
+
+function isoDay(d) {
+    return d.toISOString().slice(0, 10);
+}
+
+function hashString(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (Math.imul(h, 31) + str.charCodeAt(i)) | 0;
+    return Math.abs(h);
+}
+
+export async function recordListingView(listingId) {
+    if (!listingId) return;
+
+    const sessKey = VIEW_SESSION_PREFIX + listingId;
+    let alreadyThisSession = false;
     try {
-        const docRef = doc(db, 'listings', listingId);
-        await updateDoc(docRef, { viewCount: increment(1) });
-    } catch {
-        // Non-critical, ignore errors
+        alreadyThisSession = !!sessionStorage.getItem(sessKey);
+    } catch { /* sessionStorage unavailable */ }
+
+    if (alreadyThisSession) return;
+
+    // Local timeline — synchronous so getListingViewStats() picks it up immediately.
+    try {
+        const key = VIEW_TS_PREFIX + listingId;
+        const arr = JSON.parse(localStorage.getItem(key) || '[]');
+        const now = Date.now();
+        arr.push(now);
+        localStorage.setItem(key, JSON.stringify(arr.filter(t => t > now - VIEW_RETENTION_MS)));
+        sessionStorage.setItem(sessKey, '1');
+    } catch { /* storage unavailable — non-critical */ }
+
+    // Firestore counters for real (non-sample) listings.
+    if (!listingId.startsWith('car-')) {
+        try {
+            const today = isoDay(new Date());
+            const docRef = doc(db, 'listings', listingId);
+            await updateDoc(docRef, {
+                viewCount: increment(1),
+                [`viewDaily.${today}`]: increment(1),
+            });
+        } catch {
+            // Non-critical, ignore errors
+        }
     }
+}
+
+// Backwards-compatible alias.
+export const incrementViewCount = recordListingView;
+
+// Returns { today, week, total } for a listing. Prefers real Firestore per-day
+// data when present; otherwise derives a stable seeded baseline (so demo listings
+// look alive) and layers this browser's real views on top.
+export function getListingViewStats(listing) {
+    const id = listing?.id || '';
+    const now = Date.now();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const weekStart = now - 7 * 86400000;
+
+    let local = [];
+    try {
+        local = JSON.parse(localStorage.getItem(VIEW_TS_PREFIX + id) || '[]');
+    } catch { /* ignore */ }
+    const localToday = local.filter(t => t >= todayStart.getTime()).length;
+    const localWeek = local.filter(t => t >= weekStart).length;
+    const localTotal = local.length;
+
+    // Real per-day Firestore data.
+    const daily = listing?.viewDaily && typeof listing.viewDaily === 'object' ? listing.viewDaily : null;
+    if (daily) {
+        const today = daily[isoDay(new Date())] || 0;
+        let week = 0;
+        for (let i = 0; i < 7; i++) week += daily[isoDay(new Date(now - i * 86400000))] || 0;
+        return {
+            today: Math.max(today, localToday),
+            week: Math.max(week, localWeek),
+            total: listing.viewCount || localTotal,
+        };
+    }
+
+    // Seeded baseline for demo listings / listings without per-day tracking.
+    const h = hashString(id);
+    const base = (typeof listing?.viewCount === 'number' && listing.viewCount > 40)
+        ? listing.viewCount
+        : 280 + (h % 2400);                                       // ~280–2680
+    const weekBase = Math.round(base * (0.06 + (h % 60) / 1000));  // ~6–12% of total
+    const todayBase = Math.max(1, Math.round(weekBase * (0.14 + (h % 40) / 200))); // ~14–34% of week
+    return {
+        today: todayBase + localToday,
+        week: weekBase + localWeek,
+        total: base + localTotal,
+    };
 }
 
 // ── Get all listings (with promotion-aware sorting) ───────────────────────────
