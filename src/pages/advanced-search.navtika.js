@@ -105,7 +105,14 @@ function setupRentalToggle(ctx) {
 function renderCategoryTabs(ctx) {
     const tabs = document.getElementById('boatCategoryTabs');
     if (!tabs) return;
-    tabs.innerHTML = Object.values(MAIN_CATEGORIES).map(cat => `
+    // When entering via "Oprema za plovila" pill, hide the boat-category nav entirely.
+    const wrapper = tabs.closest('.home-tabs-container') || tabs.parentElement;
+    if (ctx.cat === 'oprema') { if (wrapper) wrapper.style.display = 'none'; tabs.style.display = 'none'; return; }
+    if (wrapper) wrapper.style.display = '';
+    tabs.style.display = '';
+    // 'oprema' must not appear as a tab alongside boat categories.
+    const SEARCH_CATS = Object.values(MAIN_CATEGORIES).filter(c => c.slug !== 'oprema');
+    tabs.innerHTML = SEARCH_CATS.map(cat => `
         <button type="button" class="tab-btn ${cat.slug === ctx.cat ? 'active' : ''}" data-cat="${cat.slug}" title="${t(cat.label)}">
             <i data-lucide="${cat.icon}"></i>
             <span class="hidden-md">${t(cat.label)}</span>
@@ -136,23 +143,46 @@ function typesForCategory(catSlug) {
 
 function applyCategory(ctx) {
     document.getElementById('hiddenCat').value = ctx.cat;
-    document.getElementById('hiddenNajem').value = ctx.najem;
+    document.getElementById('hiddenNajem').value = ctx.najem || '';
 
+    const isOprema = ctx.cat === 'oprema';
     const isEngine = ctx.cat === ENGINE_CAT;
-    // Toggle field groups by category kind
-    document.querySelectorAll('.boat-only-field').forEach(el => { el.style.display = isEngine ? 'none' : ''; });
-    document.querySelectorAll('.engine-only-field').forEach(el => { el.style.display = isEngine ? '' : 'none'; });
 
+    // Equipment page: hide boat/engine-specific field groups + rental toggle.
+    document.querySelectorAll('.boat-only-field').forEach(el => {
+        el.style.display = (isEngine || isOprema) ? 'none' : '';
+    });
+    document.querySelectorAll('.engine-only-field').forEach(el => {
+        el.style.display = isEngine ? '' : 'none';
+    });
+    // Hide rental toggle on equipment (equipment is sale-only for now)
+    const rentalToggle = document.getElementById('rentalModeToggle');
+    if (rentalToggle) rentalToggle.style.display = isOprema ? 'none' : '';
+
+    // Accordion title + icon
+    const titleEl = document.getElementById('searchAccordionTitle');
+    const iconEl = document.getElementById('searchAccordionIcon');
+    if (titleEl) {
+        if (isOprema) { titleEl.innerHTML = '<i data-lucide="package"></i> Oprema za plovila'; }
+        else if (isEngine) { titleEl.innerHTML = '<i data-lucide="cog"></i> Izvenkrmni motorji'; }
+        else { titleEl.innerHTML = '<i data-lucide="sailboat"></i> Osnovi podatki'; }
+    }
+    // Grid type label
     const label = document.getElementById('bodyTypeLabel');
-    if (label) label.textContent = isEngine ? 'Razred motorja' : 'Vrsta plovila';
+    if (label) {
+        if (isOprema) label.textContent = 'Vrsta opreme';
+        else if (isEngine) label.textContent = 'Razred motorja';
+        else label.textContent = 'Vrsta plovila';
+    }
 
     // Render type grid
     const grid = document.getElementById('boatTypeGrid');
     if (grid) {
         const types = typesForCategory(ctx.cat);
+        const icon = isOprema ? 'package' : (isEngine ? 'cog' : 'sailboat');
         grid.innerHTML = types.map(vt => `
             <button type="button" class="body-type-card" data-value="${vt.value}">
-                <i data-lucide="${isEngine ? 'cog' : 'sailboat'}"></i>
+                <i data-lucide="${icon}"></i>
                 <span>${t(vt.label)}</span>
             </button>`).join('');
         const hidden = document.getElementById('bodyTypeHidden');

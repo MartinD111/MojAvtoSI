@@ -32,44 +32,67 @@
     <!-- Simple vessel search: vrsta plovila + dolžina + moč motorja -->
     <div class="search-box-container">
         <form id="navtikaHomeSearch" class="search-box compact glass-card main-search-card card-squircle">
-            <div class="search-grid">
-                <div class="form-group">
+            <style>
+                #navtikaHomeSearch .nh-row { display:flex; gap:1rem; align-items:flex-end; margin-bottom:1.25rem; flex-wrap:wrap; }
+                #navtikaHomeSearch .nh-field { display:flex; flex-direction:column; gap:0.35rem; flex:1; min-width:140px; }
+                #navtikaHomeSearch .nh-field label { font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em; }
+                /* Length slider track */
+                #navtikaHomeSearch .nh-slider-wrap { position:relative; padding:0.5rem 0 0.25rem; }
+                #navtikaHomeSearch .nh-slider { -webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:2px; background:linear-gradient(to right, var(--color-primary-start) var(--sl-pct,40%), rgba(0,0,0,0.08) var(--sl-pct,40%)); outline:none; cursor:pointer; }
+                #navtikaHomeSearch .nh-slider::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--color-primary-start); border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.2); cursor:pointer; }
+                #navtikaHomeSearch .nh-slider::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:var(--color-primary-start); border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.2); cursor:pointer; }
+                #navtikaHomeSearch .nh-slider-labels { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted,#94a3b8); margin-top:0.2rem; }
+                #navtikaHomeSearch .nh-slider-val { font-size:0.78rem; font-weight:700; color:var(--color-primary-start); }
+                #navtikaHomeSearch .nh-actions { display:flex; gap:0.6rem; align-items:center; margin-top:0.25rem; }
+                @media (max-width:600px) { #navtikaHomeSearch .nh-row { flex-direction:column; } }
+            </style>
+
+            <!-- Vrstica 1: Vrsta plovila · Moč motorja · Ure motorja -->
+            <div class="nh-row">
+                <div class="nh-field" style="flex:2;">
                     <label for="nav-home-cat">Vrsta plovila</label>
                     <div class="pill-select-wrapper">
                         <select id="nav-home-cat" name="cat" class="pill-input"></select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="nav-home-length-from">Dolžina od (m)</label>
-                    <div class="pill-input-wrapper" style="width:100%;">
-                        <input type="number" step="0.1" min="0" id="nav-home-length-from" class="pill-input" placeholder="npr. 6">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="nav-home-length-to">Dolžina do (m)</label>
-                    <div class="pill-input-wrapper" style="width:100%;">
-                        <input type="number" step="0.1" min="0" id="nav-home-length-to" class="pill-input" placeholder="Brez omejitve">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="nav-home-power-from">Moč motorja od (KM)</label>
-                    <div class="pill-input-wrapper" style="width:100%;">
-                        <input type="number" min="0" id="nav-home-power-from" class="pill-input" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-group">
+                <div class="nh-field">
                     <label for="nav-home-power-to">Moč motorja do (KM)</label>
                     <div class="pill-input-wrapper" style="width:100%;">
-                        <input type="number" min="0" id="nav-home-power-to" class="pill-input" placeholder="Brez omejitve">
+                        <input type="number" min="0" id="nav-home-power-to" name="powerTo" class="pill-input" placeholder="Brez omejitve">
                     </div>
                 </div>
-                <div class="form-group" style="display:flex; flex-direction:row; align-items:flex-end; gap:0.5rem;">
-                    <button type="reset" class="icon-only-circle" title="Ponastavi"><i data-lucide="refresh-cw"></i></button>
-                    <a href="#/iskanje?cat=colni" class="icon-only-circle" id="navHomeAdvLink" title="Več filtrov"><i data-lucide="sliders-horizontal"></i></a>
-                    <button type="submit" class="pill-btn primary search-submit-btn compact-search" style="flex:1;">
-                        <i data-lucide="search"></i> <span>Išči plovila</span>
-                    </button>
+                <div class="nh-field">
+                    <label for="nav-home-hours-to">Ure motorja do</label>
+                    <div class="pill-input-wrapper" style="width:100%;">
+                        <input type="number" min="0" id="nav-home-hours-to" name="engineHoursTo" class="pill-input" placeholder="Brez omejitve">
+                    </div>
                 </div>
+            </div>
+
+            <!-- Vrstica 2: Dolžina slider -->
+            <div style="margin-bottom:1.25rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                    <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Dolžina plovila</label>
+                    <span class="nh-slider-val" id="navHomeLengthVal">do <strong id="navHomeLengthDisplay">30</strong> m</span>
+                </div>
+                <div class="nh-slider-wrap">
+                    <input type="range" id="nav-home-length-to" name="lengthTo" min="3" max="50" value="30" step="1" class="nh-slider">
+                </div>
+                <div class="nh-slider-labels"><span>3 m</span><span>15 m</span><span>30 m</span><span>50 m</span></div>
+                <input type="hidden" id="nav-home-length-from" name="lengthFrom" value="">
+            </div>
+
+            <!-- Vrstica 3: 3 gumbi -->
+            <div class="nh-actions">
+                <button type="reset" class="pill-btn secondary btn-sm" style="gap:0.4rem;" title="Ponastavi">
+                    <i data-lucide="refresh-cw" style="width:15px;height:15px;"></i> Ponastavi
+                </button>
+                <a href="#/iskanje?cat=colni" class="pill-btn secondary btn-sm" id="navHomeAdvLink" style="gap:0.4rem; text-decoration:none;" title="Napredna iskanje">
+                    <i data-lucide="sliders-horizontal" style="width:15px;height:15px;"></i> Napredna iskanje
+                </a>
+                <button type="submit" class="pill-btn primary search-submit-btn" style="flex:1; gap:0.5rem;">
+                    <i data-lucide="search" style="width:16px;height:16px;"></i> Išči plovila
+                </button>
             </div>
         </form>
     </div>

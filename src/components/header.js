@@ -12,7 +12,9 @@ export function initHeader() {
   function render(user) {
     const hash = window.location.hash;
     const cats = MAIN_CATEGORIES;
-    const isSearch = hash.startsWith('#/iskanje') || hash.startsWith('#/oglasi');
+    // "Oglasi" pill must NOT be active when on the equipment-only page (cat=oprema).
+    const isOprema = hash.includes('cat=oprema');
+    const isSearch = !isOprema && (hash.startsWith('#/iskanje') || hash.startsWith('#/oglasi'));
     headerEl.innerHTML = `
       <div class="sticky-nav">
         <div class="nav-container">
@@ -28,7 +30,7 @@ export function initHeader() {
                 </button>
                 <div class="mega-menu" id="oglasiMega" role="menu">
                   <div class="mega-vertical-list">
-                    ${Object.values(cats).map(cat => `
+                    ${Object.values(cats).filter(cat => cat.slug !== 'oprema').map(cat => `
                     <a href="${buildSearchUrl(cat.slug)}" class="mega-vertical-item ${isSearch && hash.includes('cat=' + cat.slug) ? 'active' : ''}" role="menuitem">
                       <i data-lucide="${cat.icon}"></i> ${t(cat.label)}
                     </a>`).join('')}
@@ -44,7 +46,7 @@ export function initHeader() {
               <!-- Gume in deli (avto) / Oprema za plovila (navtika) -->
               ${(() => {
                 const partsHref = PLATFORM.id === 'navtika' ? '#/iskanje?cat=oprema' : '#/gume-in-deli';
-                const partsActive = PLATFORM.id === 'navtika' ? hash.includes('cat=oprema') : hash.startsWith('#/gume-in-deli');
+                const partsActive = PLATFORM.id === 'navtika' ? isOprema : hash.startsWith('#/gume-in-deli');
                 return `<a href="${partsHref}" class="nav-pill ${partsActive ? 'active-pill' : ''}">
                 <i data-lucide="${PLATFORM.id === 'navtika' ? 'life-buoy' : 'disc-3'}"></i> ${t('header_tires_parts', 'Gume in deli')}
               </a>`;

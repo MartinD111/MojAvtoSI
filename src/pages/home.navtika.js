@@ -41,18 +41,36 @@ function fillCategorySelect() {
 function bindSearch() {
     const form = document.getElementById('navtikaHomeSearch');
     if (!form) return;
+
+    // Length slider live display
+    const slider = document.getElementById('nav-home-length-to');
+    const display = document.getElementById('navHomeLengthDisplay');
+    if (slider && display) {
+        const updateSlider = () => {
+            const v = Number(slider.value);
+            display.textContent = v >= 50 ? '50+' : v;
+            const pct = ((v - 3) / (50 - 3)) * 100;
+            slider.style.setProperty('--sl-pct', pct + '%');
+        };
+        slider.addEventListener('input', updateSlider);
+        updateSlider();
+    }
+
+    // Reset: restore slider display
+    form.addEventListener('reset', () => {
+        setTimeout(() => { if (slider && display) { slider.value = 30; slider.dispatchEvent(new Event('input')); } }, 0);
+    });
+
     form.addEventListener('submit', e => {
         e.preventDefault();
         const cat = document.getElementById('nav-home-cat')?.value || 'colni';
-        const lf = document.getElementById('nav-home-length-from')?.value || '';
-        const lt = document.getElementById('nav-home-length-to')?.value || '';
-        const pf = document.getElementById('nav-home-power-from')?.value || '';
+        const lt = slider?.value || '';
         const pt = document.getElementById('nav-home-power-to')?.value || '';
+        const ht = document.getElementById('nav-home-hours-to')?.value || '';
         const params = new URLSearchParams({ cat });
-        if (lf) params.set('lengthFrom', lf);
-        if (lt) params.set('lengthTo', lt);
-        if (pf) params.set('powerFrom', pf);
+        if (lt && Number(lt) < 50) params.set('lengthTo', lt);
         if (pt) params.set('powerTo', pt);
+        if (ht) params.set('engineHoursTo', ht);
         window.location.hash = `/iskanje?${params.toString()}`;
     });
 }
