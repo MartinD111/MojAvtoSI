@@ -65,6 +65,11 @@ document.addEventListener('beforeRouteChange', () => {
         window._oglasiUnsubscribe();
         delete window._oglasiUnsubscribe;
     }
+    // Clear word slider timeout if active
+    if (window._wordSliderTimeout) {
+        clearTimeout(window._wordSliderTimeout);
+        delete window._wordSliderTimeout;
+    }
 });
 
 document.addEventListener('routeChanged', (e) => {

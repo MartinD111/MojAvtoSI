@@ -3,6 +3,23 @@
 
     <!-- â•â•â• SIDEBAR: Filtri â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <aside class="oglasi-sidebar">
+        <style>
+            #sidebarFiltersForm .form-group { display: flex; flex-direction: column; gap: 0.4rem; align-items: center; text-align: center; width: 100%; }
+            #sidebarFiltersForm .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); text-align: center; width: 100%; display: block; }
+            #sidebarFiltersForm select { text-align: center; text-align-last: center; width: 100%; }
+            #sidebarFiltersForm input { text-align: center; width: 100%; }
+            #sidebarFiltersForm .adv-chip-group { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; width: 100%; }
+            #sidebarFiltersForm .remember-toggle { display: inline-flex; align-items: center; justify-content: center; }
+            @media (min-width: 769px) {
+                #filtersCard {
+                    overflow: visible !important;
+                    max-height: none !important;
+                }
+                .filters-card-inner {
+                    overflow: visible !important;
+                }
+            }
+        </style>
 
         <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
         <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
@@ -12,110 +29,193 @@
 
         <div class="oglasi-sidebar-card glass-card" id="filtersCard">
             <div class="filters-card-inner" style="min-height: 0; overflow: hidden;">
-                <div class="sidebar-filters-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+                <div class="sidebar-filters-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem; position: sticky; top: -1.5rem; background: var(--bg-glass, rgba(3, 27, 51, 0.96)); z-index: 10; margin-top: -1.5rem; padding-top: 1.5rem; width: 100%;">
                     <h3 style="margin:0; font-size:1.1rem; font-weight:700;" data-i18n-key="sidebar_filters_title">Filtri</h3>
                 </div>
 
-                <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:1.25rem;">
-    <!-- Tip ponudbe (Prodaja / Najem) -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Tip ponudbe</label>
-        <div style="display:flex; gap:1rem; align-items:center;">
-            <label class="remember-toggle" title="Prodaja">
-                <span class="toggle-label">Prodaja</span>
-                <input type="checkbox" class="remember-check" id="sidebarProdajaToggle" checked>
-                <span class="toggle-slider"></span>
-            </label>
-            <label class="remember-toggle" title="Najem">
-                <span class="toggle-label">Najem</span>
-                <input type="checkbox" class="remember-check" id="sidebarNajemToggle">
-                <span class="toggle-slider"></span>
-            </label>
-        </div>
-    </div>
+                <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:0.5rem;">
+                    <!-- Tip ponudbe (Prodaja / Najem) -->
+                    <div class="form-group">
+                        <label>Tip ponudbe</label>
+                        <div style="display:flex; gap:1rem; align-items:center; justify-content:center; width:100%;">
+                            <label class="remember-toggle" title="Prodaja">
+                                <span class="toggle-label">Prodaja</span>
+                                <input type="checkbox" class="remember-check" id="sidebarProdajaToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <label class="remember-toggle" title="Najem">
+                                <span class="toggle-label">Najem</span>
+                                <input type="checkbox" class="remember-check" id="sidebarNajemToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
 
-    <!-- Znamka -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="make">Znamka</label>
-        <select id="sidebarMake" name="make" class="glass-select">
-            <option value="">Vse znamke</option>
-        </select>
-    </div>
+                    <!-- Tip plovila -->
+                    <div class="form-group">
+                        <label>Tip plovila</label>
+                        <select id="sidebarBoatType" name="boatType" class="glass-select">
+                            <option value="">Vsa plovila</option>
+                            <option value="colni">Čolni</option>
+                            <option value="jadrnice">Jadrnice</option>
+                            <option value="gumenjaki">Gumenjaki</option>
+                            <option value="jet-ski">Jet-ski</option>
+                            <option value="izvenkrmni-motorji">Izvenkrmni motorji</option>
+                            <option value="oprema">Oprema za plovila</option>
+                        </select>
+                        <div class="sidebar-active-pills" id="activeBoatType"></div>
+                    </div>
 
-    <!-- Model -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="model">Model</label>
-        <select id="sidebarModel" name="model" class="glass-select" disabled>
-            <option value="">Vsi modeli</option>
-        </select>
-    </div>
+                    <!-- Kategorija plovila -->
+                    <div class="form-group">
+                        <label>Kategorija plovila</label>
+                        <select id="sidebarBoatSubcat" name="boatSubcat" class="glass-select" disabled>
+                            <option value="">Vse kategorije</option>
+                        </select>
+                        <div class="sidebar-active-pills" id="activeBoatSubcat"></div>
+                    </div>
 
-    <!-- Dolžina -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Dolžina (m)</label>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-            <input type="number" id="sidebarLengthFrom" name="lengthFrom" placeholder="Od (m)" class="pill-input" style="width:100%; box-sizing:border-box;">
-            <input type="number" id="sidebarLengthTo" name="lengthTo" placeholder="Do (m)" class="pill-input" style="width:100%; box-sizing:border-box;">
-        </div>
-    </div>
+                    <!-- Znamka -->
+                    <div class="form-group">
+                        <label data-i18n-key="make">Znamka</label>
+                        <select id="sidebarMake" name="make" class="glass-select">
+                            <option value="">Vse znamke</option>
+                        </select>
+                        <div class="sidebar-active-pills" id="activeMake"></div>
+                    </div>
 
-    <!-- Letnik od / do -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Letnik</label>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-            <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
-                <option value="">Od</option>
-            </select>
-            <select id="sidebarYearTo" name="yearTo" class="glass-select">
-                <option value="">Do</option>
-            </select>
-        </div>
-    </div>
+                    <!-- Model -->
+                    <div class="form-group">
+                        <label data-i18n-key="model">Model</label>
+                        <select id="sidebarModel" name="model" class="glass-select" disabled>
+                            <option value="">Vsi modeli</option>
+                        </select>
+                        <div class="sidebar-active-pills" id="activeModel"></div>
+                    </div>
 
-    <!-- Cena do -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Cena do (€)</label>
-        <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20.000 €" class="pill-input js-format-number" style="width:100%; box-sizing:border-box;" inputmode="numeric">
-    </div>
+                    <!-- Dolžina -->
+                    <div class="form-group">
+                        <label>Dolžina (m)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                            <input type="number" id="sidebarLengthFrom" name="lengthFrom" placeholder="Od (m)" class="pill-input" style="box-sizing:border-box;">
+                            <input type="number" id="sidebarLengthTo" name="lengthTo" placeholder="Do (m)" class="pill-input" style="box-sizing:border-box;">
+                        </div>
+                    </div>
 
-    <!-- Moč motorja (KM) -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Moč motorja (KM)</label>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-            <input type="number" id="sidebarPowerFrom" name="powerFrom" placeholder="Od (KM)" class="glass-select" style="width:100%; box-sizing:border-box;">
-            <input type="number" id="sidebarPowerTo" name="powerTo" placeholder="Do (KM)" class="glass-select" style="width:100%; box-sizing:border-box;">
-        </div>
-    </div>
+                    <!-- Letnik od / do -->
+                    <div class="form-group">
+                        <label>Letnik</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                            <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
+                                <option value="">Od</option>
+                            </select>
+                            <select id="sidebarYearTo" name="yearTo" class="glass-select">
+                                <option value="">Do</option>
+                            </select>
+                        </div>
+                    </div>
 
-    <!-- Ure motorja -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Ure motorja do</label>
-        <input type="number" id="sidebarEngineHoursTo" name="engineHoursTo" placeholder="npr. 500" class="pill-input" style="width:100%; box-sizing:border-box;">
-    </div>
+                    <!-- Cena od / do -->
+                    <div class="form-group">
+                        <label>Cena (€)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                            <input type="text" id="sidebarPriceFrom" name="priceFrom" placeholder="Od (€)" class="pill-input js-format-number" style="box-sizing:border-box;" inputmode="numeric">
+                            <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="Do (€)" class="pill-input js-format-number" style="box-sizing:border-box;" inputmode="numeric">
+                        </div>
+                    </div>
 
-    <!-- Gorivo -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Gorivo</label>
-        <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
-            <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Bencin"> Bencin</label>
-            <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
-            <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Električni"> Električni</label>
-        </div>
-    </div>
+                    <!-- Moč motorja (KM) -->
+                    <div class="form-group">
+                        <label>Moč motorja (KM)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                            <input type="number" id="sidebarPowerFrom" name="powerFrom" placeholder="Od (KM)" class="glass-select" style="box-sizing:border-box;">
+                            <input type="number" id="sidebarPowerTo" name="powerTo" placeholder="Do (KM)" class="glass-select" style="box-sizing:border-box;">
+                        </div>
+                    </div>
 
-    <!-- Material trupa -->
-    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Material trupa</label>
-        <select id="sidebarHull" name="hull" class="glass-select">
-            <option value="">Vsi materiali</option>
-            <option value="Stekloplastika">Stekloplastika (GRP)</option>
-            <option value="Aluminij">Aluminij</option>
-            <option value="Jeklo">Jeklo</option>
-            <option value="Les">Les</option>
-            <option value="PVC">PVC / Hypalon</option>
-        </select>
-    </div>
-</form>
+                    <!-- Ure motorja -->
+                    <div class="form-group">
+                        <label>Ure motorja do</label>
+                        <input type="number" id="sidebarEngineHoursTo" name="engineHoursTo" placeholder="npr. 500" class="pill-input" style="box-sizing:border-box;">
+                    </div>
+
+                    <!-- Znamka motorja (Engine manufacturer) -->
+                    <div class="form-group">
+                        <label>Znamka motorja</label>
+                        <select id="sidebarEngineMake" name="engineMake" class="glass-select">
+                            <option value="">Vse znamke</option>
+                            <option value="Yamaha">Yamaha</option>
+                            <option value="Mercury">Mercury</option>
+                            <option value="Suzuki">Suzuki</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Tohatsu">Tohatsu</option>
+                            <option value="Evinrude">Evinrude</option>
+                            <option value="Volvo Penta">Volvo Penta</option>
+                            <option value="Yanmar">Yanmar</option>
+                            <option value="MerCruiser">MerCruiser</option>
+                            <option value="Cummins">Cummins</option>
+                            <option value="Rotax">Rotax</option>
+                        </select>
+                        <div class="sidebar-active-pills" id="activeEngineMake"></div>
+                    </div>
+
+                    <!-- Ležišča in kabine -->
+                    <div class="form-group">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                            <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
+                                <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Min. ležišč</label>
+                                <input type="number" id="sidebarBerthsFrom" name="berthsFrom" placeholder="npr. 2" class="pill-input" style="box-sizing:border-box;">
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
+                                <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Min. kabin</label>
+                                <input type="number" id="sidebarCabinsFrom" name="cabinsFrom" placeholder="npr. 1" class="pill-input" style="box-sizing:border-box;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tip motorja / pogona -->
+                    <div class="form-group">
+                        <label>Tip motorja / pogona</label>
+                        <select id="sidebarEngineMount" name="engineMount" class="glass-select">
+                            <option value="">Vsi tipi</option>
+                            <option value="izvenkrmni">Izvenkrmni</option>
+                            <option value="krmni">Krmni</option>
+                            <option value="notranji">Notranji</option>
+                            <option value="jadrni">Jadrni</option>
+                        </select>
+                    </div>
+
+                    <!-- Gorivo -->
+                    <div class="form-group">
+                        <label>Gorivo</label>
+                        <select id="sidebarFuel" name="fuel" class="glass-select">
+                            <option value="">Vsa goriva</option>
+                            <option value="Bencin">Bencin</option>
+                            <option value="Dizel">Dizel</option>
+                            <option value="Električni">Električni</option>
+                        </select>
+                    </div>
+
+                    <!-- Material trupa -->
+                    <div class="form-group">
+                        <label>Material trupa</label>
+                        <select id="sidebarHull" name="hull" class="glass-select">
+                            <option value="">Vsi materiali</option>
+                            <option value="Stekloplastika">Stekloplastika (GRP)</option>
+                            <option value="Aluminij">Aluminij</option>
+                            <option value="Jeklo">Jeklo</option>
+                            <option value="Les">Les</option>
+                            <option value="PVC">PVC / Hypalon</option>
+                        </select>
+                    </div>
+
+                    <!-- Gumb za ponastavitev -->
+                    <div style="display:flex; justify-content:center; margin-top:0.5rem; padding-bottom:1.5rem; width:100%;">
+                        <button type="button" id="sidebarResetBtn" class="pill-btn primary" style="background: linear-gradient(135deg, #f97316, #ea580c); border: none; color: white; width: 100%; justify-content: center; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3); gap: 0.5rem;">
+                            <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Počisti vse
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </aside>

@@ -104,6 +104,10 @@ let state = {
     engineCc: '', powerKw: '', co2: '', emissionClass: '',
     fuelL100kmCombined: '', fuelL100kmCity: '', fuelL100kmHighway: '',
     batteryKwh: '', rangeKm: '', towingKg: '', a2Eligible: false,
+    // Navtika-specific fields
+    engineHoursUsed: '', lengthM: '', beamM: '', draughtM: '',
+    hullMaterial: '', engineCount: '1', driveSystem: '', maxSpeedKn: '',
+    fuelTankL: '', waterTankL: '', cabins: '', berths: '',
     equipment: [],
     exhaustBrand: '',
     exhaustType: '',
@@ -127,6 +131,7 @@ let state = {
 };
 
 let brandModelData = null;
+const isNavtika = () => PLATFORM.id === 'navtika';
 
 // ── Taxonomy auto-fill helpers (D-08 / D-09) ──────────────────────────────────
 /**
@@ -256,8 +261,20 @@ function applyBodyTypeAutoFill(make, model) {
 export async function initCreateListingPage() {
     console.log('[CreateListing] init');
 
-    // Load brands JSON in background
-    fetch('json/brands_models_global.json')
+    // Prevent browser auto-scroll when focusing inputs/selects inside the listing form
+    document.addEventListener('focus', () => {
+        const x = window.scrollX, y = window.scrollY;
+        requestAnimationFrame(() => window.scrollTo(x, y));
+    }, true);
+
+    // Default category for the platform
+    if (isNavtika() && state.category === 'avto') {
+        state.category = 'colni';
+    }
+
+    // Load brands JSON in background (navtika uses plovila JSON)
+    const brandsUrl = isNavtika() ? 'json/brands_models_plovila.json' : 'json/brands_models_global.json';
+    fetch(brandsUrl)
         .then(r => r.json())
         .then(d => { brandModelData = d; })
         .catch(() => { });
@@ -389,6 +406,40 @@ function jumpToStep(id) {
 
 // ── Step 0: Type selection (vehicle vs parts/tires) ───────────────────────────
 function renderTypeSelectStep() {
+    if (isNavtika()) {
+        setHtml(`
+            <div class="cl-card">
+                <h1 class="cl-step-title">${t('cl_type_select_title', 'Kaj želite objaviti?')}</h1>
+                <p class="cl-step-sub">${t('cl_type_select_sub', 'Izberite vrsto oglasa.')}</p>
+                <div class="cl-entry-cards">
+                    <div class="cl-entry-card" id="typeVehicle">
+                        <span class="cl-entry-card-icon">⛵</span>
+                        <p class="cl-entry-card-title">Plovilo</p>
+                        <p class="cl-entry-card-desc">Čoln, jadrnica, jahta, gumenjak, jet-ski ipd.</p>
+                    </div>
+                    <div class="cl-entry-card" id="typeParts">
+                        <span class="cl-entry-card-icon">⚓</span>
+                        <p class="cl-entry-card-title">Oprema / Motor</p>
+                        <p class="cl-entry-card-desc">Izvenkrmni motorji, navigacija, varnostna oprema.</p>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        document.getElementById('typeVehicle').addEventListener('click', () => {
+            state.itemType = 'vehicle';
+            state.category = 'colni';
+            goNext();
+        });
+
+        document.getElementById('typeParts').addEventListener('click', () => {
+            state.itemType = 'part';
+            state.category = 'deli';
+            goNext();
+        });
+        return;
+    }
+
     setHtml(`
         <div class="cl-card">
             <h1 class="cl-step-title">${t('cl_type_select_title', 'Kaj želite objaviti?')}</h1>
@@ -423,6 +474,61 @@ function renderTypeSelectStep() {
 
 // ── Step 1: Entry mode (vehicles only) ────────────────────────────────────────
 function renderEntryStep() {
+    const sellerToggleHtml = auth.currentUser
+        ? `<div style="padding:0.75rem 1rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,0.5);border-radius:12px;display:flex;align-items:center;gap:0.75rem;font-weight:600;">
+                ${state.sellerType === 'business' ? '🏢 ' + t('cl_business_dealership') : '👤 ' + t('cl_private_seller')}
+                <span style="font-size:0.75rem;color:#64748b;font-weight:400;margin-left:auto;">${t('cl_signed_in_as')} ${auth.currentUser.displayName || auth.currentUser.email}</span>
+           </div>`
+        : `<div class="cl-seller-toggle">
+                <button class="cl-seller-btn ${state.sellerType === 'private' ? 'active' : ''}" data-type="private">
+                    👤 ${t('cl_private_seller')}
+                </button>
+                <button class="cl-seller-btn ${state.sellerType === 'business' ? 'active' : ''}" data-type="business">
+                    🏢 ${t('cl_business_dealership')}
+                </button>
+           </div>`;
+
+    // Navtika: no VIN, no Smart Import — just seller type + manual entry
+    if (isNavtika()) {
+        setHtml(`
+            <div class="cl-card">
+                <h1 class="cl-step-title">Kako boste oddali oglas?</h1>
+                <p class="cl-step-sub">Izberite vašo vlogo in začnite z ročnim vnosom podatkov.</p>
+                <div class="cl-field" style="margin-bottom:1.5rem;">
+                    <label class="cl-label">${t('cl_seller_type')}</label>
+                    ${sellerToggleHtml}
+                </div>
+                <div class="cl-entry-cards">
+                    <div class="cl-entry-card recommended" id="entryClassic">
+                        <span class="cl-entry-card-icon">📋</span>
+                        <p class="cl-entry-card-title">Ročni vnos</p>
+                        <p class="cl-entry-card-desc">Izpolnite podatke o plovilu korak za korakom.</p>
+                        <ul class="cl-entry-card-features">
+                            <li>Vsa plovila in motorne čolne</li>
+                            <li>Jadrnice, jahte, jet-ski</li>
+                            <li>Vedno brezplačno</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        document.querySelectorAll('.cl-seller-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.cl-seller-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.sellerType = btn.dataset.type;
+            });
+        });
+
+        document.getElementById('entryClassic').addEventListener('click', () => {
+            state.entryType = 'classic';
+            state.vinVerified = false;
+            goNext();
+        });
+        return;
+    }
+
     setHtml(`
         <div class="cl-card">
             <h1 class="cl-step-title">${t('cl_step_entry_title')}</h1>
@@ -430,20 +536,7 @@ function renderEntryStep() {
 
             <div class="cl-field" style="margin-bottom:1.5rem;">
                 <label class="cl-label">${t('cl_seller_type')}</label>
-                ${auth.currentUser
-            ? `<div style="padding:0.75rem 1rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,0.5);border-radius:12px;display:flex;align-items:center;gap:0.75rem;font-weight:600;">
-                         ${state.sellerType === 'business' ? '🏢 ' + t('cl_business_dealership') : '👤 ' + t('cl_private_seller')}
-                         <span style="font-size:0.75rem;color:#64748b;font-weight:400;margin-left:auto;">${t('cl_signed_in_as')} ${auth.currentUser.displayName || auth.currentUser.email}</span>
-                       </div>`
-            : `<div class="cl-seller-toggle">
-                        <button class="cl-seller-btn ${state.sellerType === 'private' ? 'active' : ''}" data-type="private">
-                            👤 ${t('cl_private_seller')}
-                        </button>
-                        <button class="cl-seller-btn ${state.sellerType === 'business' ? 'active' : ''}" data-type="business">
-                            🏢 ${t('cl_business_dealership')}
-                        </button>
-                    </div>`
-        }
+                ${sellerToggleHtml}
             </div>
 
             <!-- Smart Import -->
@@ -1383,6 +1476,8 @@ function renderTireDetailsStep() {
 
 // ── Step 3: Basic data ────────────────────────────────────────────────────────
 function renderBasicStep() {
+    if (isNavtika()) return renderNavtikaBasicStep();
+
     const years = [];
     for (let y = new Date().getFullYear() + 1; y >= 1960; y--) years.push(y);
 
@@ -1738,8 +1833,302 @@ function renderBasicStep() {
     });
 }
 
+// ── Navtika validation helpers ────────────────────────────────────────────────
+function markInvalid(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('cl-input--error', 'cl-select--error');
+    const clear = () => { el.classList.remove('cl-input--error', 'cl-select--error'); };
+    el.addEventListener('input', clear, { once: true });
+    el.addEventListener('change', clear, { once: true });
+}
+
+function setupDecimalInput(el) {
+    if (!el) return;
+    el.addEventListener('input', () => {
+        let v = el.value.replace(/[^0-9.,]/g, '');
+        const dot = v.indexOf('.') !== -1 ? '.' : (v.indexOf(',') !== -1 ? ',' : null);
+        if (dot) {
+            const parts = v.split(/[.,]/);
+            v = parts[0] + ',' + parts.slice(1).join('');
+        }
+        el.value = v;
+    });
+    el.addEventListener('keypress', e => {
+        if (!/[\d.,]/.test(e.key)) e.preventDefault();
+    });
+}
+
+function parseDecimalInput(val) {
+    return parseFloat((val || '').replace(',', '.')) || '';
+}
+
+function blockWheelOnNumbers() {
+    document.querySelectorAll('input[type="number"]').forEach(el => {
+        el.addEventListener('wheel', e => e.preventDefault(), { passive: false });
+    });
+}
+
+// ── Step 3b: Basic data — Navtika (plovila) ───────────────────────────────────
+function renderNavtikaBasicStep() {
+    const years = [];
+    for (let y = new Date().getFullYear() + 1; y >= 1960; y--) years.push(y);
+    const yearOpts = years.map(y => `<option value="${y}" ${Number(state.year) === y ? 'selected' : ''}>${y}</option>`).join('');
+
+    const HULL_MATERIALS = ['GRP (Stekloplastika)', 'Aluminij', 'Les', 'Carbon', 'Jeklo', 'Guma (napihljivo)', 'Drugi'];
+    const COLORS_BOAT = ['Bela', 'Modra', 'Siva', 'Črna', 'Rdeča', 'Zelena', 'Rumena', 'Oranžna', 'Druga'];
+
+    const categorySubs = CATEGORIES.find(c => c.id === state.category)?.subs || [];
+    const bodyTypeOpts = categorySubs.map(s => {
+        const val = s.value || s.name;
+        return `<option value="${val}" ${state.bodyType === val ? 'selected' : ''}>${t(s.name)}</option>`;
+    }).join('');
+
+    setHtml(`
+        <div class="cl-card">
+            <h2 class="cl-step-title">Osnovni podatki plovila</h2>
+            <p class="cl-step-sub">Vnesite osnovne tehnične podatke o plovilu.</p>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Znamka <span class="req">*</span></label>
+                    <select class="cl-select" id="fMake">
+                        <option value="">— Izberite znamko —</option>
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Model</label>
+                    <select class="cl-select" id="fModel" disabled>
+                        <option value="">— Najprej izberite znamko —</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Letnik <span class="req">*</span></label>
+                    <select class="cl-select" id="fYear">
+                        <option value="">— Letnik —</option>${yearOpts}
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Dolžina plovila (m) <span class="req">*</span></label>
+                    <input class="cl-input" id="fLength" type="text" inputmode="decimal"
+                        value="${state.lengthM ? String(state.lengthM).replace('.', ',') : ''}" placeholder="npr. 8,5" />
+                </div>
+            </div>
+
+            ${categorySubs.length > 0 ? `
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Vrsta plovila <span class="req">*</span></label>
+                    <select class="cl-select" id="fBodyType">
+                        <option value="">— Izberite vrsto —</option>
+                        ${bodyTypeOpts}
+                    </select>
+                </div>
+            </div>` : ''}
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Ure motorja <span class="req">*</span></label>
+                    <div class="cl-mileage-wrap">
+                        <input class="cl-input" id="fEngineHours" type="text"
+                            value="${state.engineHoursUsed ? formatNumberWithCommas(state.engineHoursUsed) : ''}"
+                            placeholder="npr. 350" autocomplete="off" />
+                        <span class="cl-mileage-unit">h</span>
+                    </div>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Material trupa</label>
+                    <select class="cl-select" id="fHullMaterial">
+                        <option value="">—</option>
+                        ${HULL_MATERIALS.map(m => `<option value="${m}" ${state.hullMaterial === m ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Stanje <span class="req">*</span></label>
+                    <select class="cl-select" id="fCondition">
+                        ${[['Rabljeno','Rabljeno'],['Novo','Novo'],['Za dele','Za dele']].map(([v,l]) =>
+                            `<option value="${v}" ${state.condition === v ? 'selected' : ''}>${l}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Barva trupa</label>
+                    <select class="cl-select" id="fColor">
+                        <option value="">—</option>
+                        ${COLORS_BOAT.map(c => `<option value="${c}" ${state.color === c ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Število kabin</label>
+                    <select class="cl-select" id="fCabins">
+                        <option value="">—</option>
+                        ${[0,1,2,3,4,5,6].map(n => `<option value="${n}" ${String(state.cabins) === String(n) ? 'selected' : ''}>${n}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Število ležišč</label>
+                    <select class="cl-select" id="fBerths">
+                        <option value="">—</option>
+                        ${[0,1,2,3,4,5,6,7,8,10,12].map(n => `<option value="${n}" ${String(state.berths) === String(n) ? 'selected' : ''}>${n}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Širina (m)</label>
+                    <input class="cl-input" id="fBeam" type="text" inputmode="decimal"
+                        value="${state.beamM ? String(state.beamM).replace('.', ',') : ''}" placeholder="npr. 3,2" />
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Ugrez (m)</label>
+                    <input class="cl-input" id="fDraught" type="text" inputmode="decimal"
+                        value="${state.draughtM ? String(state.draughtM).replace('.', ',') : ''}" placeholder="npr. 1,8" />
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Leto prve registracije</label>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                        <select class="cl-select" id="fFirstRegMonth">
+                            <option value="">Mesec</option>
+                            ${[...Array(12)].map((_, i) => {
+                                const m = (i + 1).toString().padStart(2, '0');
+                                const cur = state.firstRegistration ? state.firstRegistration.split('-')[1] : '';
+                                return `<option value="${m}" ${cur === m ? 'selected' : ''}>${m}.</option>`;
+                            }).join('')}
+                        </select>
+                        <select class="cl-select" id="fFirstRegYear">
+                            <option value="">Leto</option>${yearOpts}
+                        </select>
+                    </div>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Število prejšnjih lastnikov</label>
+                    <select class="cl-select" id="fPrevOwners">
+                        <option value="">—</option>
+                        ${[['1st owner','1. lastnik'],['2nd owner','2. lastnik'],['3rd owner','3. lastnik'],['4th owner','4. lastnik'],['5 or more','5 ali več']].map(([v,l]) =>
+                            `<option value="${v}" ${state.previousOwnersCount === v ? 'selected' : ''}>${l}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="cl-nav">
+                <button class="cl-btn cl-btn--ghost" id="btnBasicBack">${t('cl_back')}</button>
+                <button class="cl-btn cl-btn--primary" id="btnBasicNext">${t('cl_continue')}</button>
+            </div>
+        </div>
+    `);
+
+    if (window.lucide) window.lucide.createIcons();
+    initCustomSelects();
+
+    // Populate brands from plovila JSON
+    fetch('json/brands_models_plovila.json')
+        .then(r => r.json())
+        .then(data => {
+            brandModelData = data;
+            const makeSel = document.getElementById('fMake');
+            const modelSel = document.getElementById('fModel');
+            if (!makeSel) return;
+            Object.keys(data).sort().forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b; opt.textContent = b;
+                if (state.make === b) opt.selected = true;
+                makeSel.appendChild(opt);
+            });
+            if (state.make && data[state.make]) {
+                const models = Object.keys(data[state.make]);
+                modelSel.innerHTML = `<option value="">— Izberite model —</option>` +
+                    models.map(m => `<option value="${m}" ${state.model === m ? 'selected' : ''}>${m}</option>`).join('');
+                modelSel.disabled = false;
+            }
+            makeSel.addEventListener('change', () => {
+                state.make = makeSel.value;
+                state.model = '';
+                if (state.make && data[state.make]) {
+                    const models = Object.keys(data[state.make]);
+                    modelSel.innerHTML = `<option value="">— Izberite model —</option>` +
+                        models.map(m => `<option value="${m}">${m}</option>`).join('');
+                    modelSel.disabled = false;
+                } else {
+                    modelSel.innerHTML = `<option value="">— Najprej izberite znamko —</option>`;
+                    modelSel.disabled = true;
+                }
+            });
+            modelSel.addEventListener('change', () => { state.model = modelSel.value; });
+        })
+        .catch(() => {
+            // allow free text if JSON unavailable
+            const makeSel = document.getElementById('fMake');
+            if (!makeSel) return;
+            makeSel.outerHTML = `<input class="cl-input" id="fMake" type="text" value="${escHtml(state.make || '')}" placeholder="npr. Beneteau" />`;
+        });
+
+    const hoursInput = document.getElementById('fEngineHours');
+    if (hoursInput) setupNumericFormatter(hoursInput);
+
+    setupDecimalInput(document.getElementById('fLength'));
+    setupDecimalInput(document.getElementById('fBeam'));
+    setupDecimalInput(document.getElementById('fDraught'));
+    blockWheelOnNumbers();
+
+    document.getElementById('fBodyType')?.addEventListener('change', e => {
+        state.bodyType = e.target.value;
+        state.subcategory = e.target.value;
+    });
+
+    document.getElementById('btnBasicBack').addEventListener('click', goPrev);
+    document.getElementById('btnBasicNext').addEventListener('click', () => {
+        const make = document.getElementById('fMake')?.value || state.make;
+        const year = document.getElementById('fYear').value;
+        const lengthRaw = document.getElementById('fLength').value;
+        const hoursRaw = document.getElementById('fEngineHours').value;
+        const hours = parseFormattedNumber(hoursRaw);
+        const bodyType = document.getElementById('fBodyType')?.value || '';
+
+        let valid = true;
+        if (!make) { markInvalid('fMake'); valid = false; }
+        if (!year) { markInvalid('fYear'); valid = false; }
+        if (!lengthRaw) { markInvalid('fLength'); valid = false; }
+        if (hoursRaw === '') { markInvalid('fEngineHours'); valid = false; }
+        if (categorySubs.length > 0 && !bodyType) { markInvalid('fBodyType'); valid = false; }
+        if (!valid) return;
+
+        state.make = make;
+        state.model = document.getElementById('fModel')?.value || state.model;
+        state.year = Number(year);
+        state.lengthM = parseDecimalInput(lengthRaw);
+        state.engineHoursUsed = hours;
+        state.hullMaterial = document.getElementById('fHullMaterial').value;
+        state.condition = document.getElementById('fCondition').value;
+        state.color = document.getElementById('fColor').value;
+        state.cabins = document.getElementById('fCabins').value;
+        state.berths = document.getElementById('fBerths').value;
+        state.beamM = parseDecimalInput(document.getElementById('fBeam').value);
+        state.draughtM = parseDecimalInput(document.getElementById('fDraught').value);
+        state.previousOwnersCount = document.getElementById('fPrevOwners').value;
+        const frMonth = document.getElementById('fFirstRegMonth').value;
+        const frYear = document.getElementById('fFirstRegYear').value;
+        if (frMonth && frYear) state.firstRegistration = `${frYear}-${frMonth}`;
+        if (bodyType) { state.bodyType = bodyType; state.subcategory = bodyType; }
+        goNext();
+    });
+}
+
 // ── Step 4: Technical ─────────────────────────────────────────────────────────
 function renderTechnicalStep() {
+    if (isNavtika()) return renderNavtikaTechnicalStep();
+
     const fuels = [
         ['Petrol', t('cl_fuel_petrol')],
         ['Dizel', t('cl_fuel_diesel')],
@@ -2006,6 +2395,170 @@ function renderTechnicalStep() {
     });
 }
 
+// ── Step 4b: Technical — Navtika ──────────────────────────────────────────────
+function renderNavtikaTechnicalStep() {
+    const engineTypes = [
+        ['Bencin', 'Bencin (bencinec)'],
+        ['Dizel', 'Dizel'],
+        ['Elektrika', 'Električni pogon'],
+        ['Hibrid', 'Hibrid (benzin + električni)'],
+        ['Brez motorja', 'Brez motorja (jadra)'],
+    ];
+    const driveSystems = [
+        ['Izvenkrmni', 'Izvenkrmni (outboard)'],
+        ['Notranji', 'Notranji (inboard)'],
+        ['Stern Drive', 'Stern drive (volvo/mercruiser)'],
+        ['Potisnik', 'Potisnik (pod trup)'],
+        ['Električni', 'Električni motor'],
+        ['Jadra', 'Samo jadra (brez motorja)'],
+    ];
+    const engineCounts = ['1', '2', '3', '4'];
+
+    const noEngine = state.fuel === 'Brez motorja';
+
+    setHtml(`
+        <div class="cl-card">
+            <h2 class="cl-step-title">Tehnični podatki motorja</h2>
+            <p class="cl-step-sub">Opišite pogonski sistem plovila.</p>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Vrsta goriva / pogona <span class="req">*</span></label>
+                    <select class="cl-select" id="fFuel">
+                        <option value="">— Izberite —</option>
+                        ${engineTypes.map(([v, l]) => `<option value="${v}" ${state.fuel === v ? 'selected' : ''}>${l}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Pogonski sistem <span class="req">*</span></label>
+                    <select class="cl-select" id="fDriveSystem">
+                        <option value="">—</option>
+                        ${driveSystems.map(([v, l]) => `<option value="${v}" ${state.driveSystem === v ? 'selected' : ''}>${l}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div id="navMotorFields" style="${noEngine ? 'display:none;' : ''}">
+                <div class="cl-row">
+                    <div class="cl-field">
+                        <div class="cl-label-with-toggle">
+                            <label class="cl-label">Moč motorja <span class="req">*</span></label>
+                            <div class="cl-unit-toggle" id="powerUnitToggle">
+                                <button type="button" class="cl-unit-btn active" data-unit="hp">KM</button>
+                                <button type="button" class="cl-unit-btn" data-unit="kw">kW</button>
+                            </div>
+                        </div>
+                        <div class="cl-input-wrap">
+                            <input class="cl-input" id="fPower" type="number" min="0"
+                                value="${state.powerKw ? Math.round(state.powerKw * 1.35962) : ''}" placeholder="npr. 150" />
+                            <span class="cl-input-unit" id="powerUnitLabel">KM</span>
+                        </div>
+                    </div>
+                    <div class="cl-field">
+                        <label class="cl-label">Prostornina motorja (cc)</label>
+                        <input class="cl-input" id="fEngineCC" type="number" min="0"
+                            value="${state.engineCc || ''}" placeholder="npr. 2700" />
+                    </div>
+                </div>
+
+                <div class="cl-row">
+                    <div class="cl-field">
+                        <label class="cl-label">Število motorjev <span class="req">*</span></label>
+                        <select class="cl-select" id="fEngineCount">
+                            ${engineCounts.map(n => `<option value="${n}" ${state.engineCount === n ? 'selected' : ''}>${n}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="cl-field">
+                        <label class="cl-label">Kapaciteta rezervoarja (L) <span class="req">*</span></label>
+                        <input class="cl-input" id="fFuelTank" type="number" min="0"
+                            value="${state.fuelTankL || ''}" placeholder="npr. 200" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Maks. hitrost (vozliči)</label>
+                    <input class="cl-input" id="fMaxSpeed" type="number" min="0"
+                        value="${state.maxSpeedKn || ''}" placeholder="npr. 28" />
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Rezervoar za vodo (L)</label>
+                    <input class="cl-input" id="fWaterTank" type="number" min="0"
+                        value="${state.waterTankL || ''}" placeholder="npr. 150" />
+                </div>
+            </div>
+
+            <div class="cl-nav">
+                <button class="cl-btn cl-btn--ghost" id="btnTechBack">${t('cl_back')}</button>
+                <button class="cl-btn cl-btn--primary" id="btnTechNext">${t('cl_continue')}</button>
+            </div>
+        </div>
+    `);
+
+    if (window.lucide) window.lucide.createIcons();
+    initCustomSelects();
+
+    const fuelSel = document.getElementById('fFuel');
+    fuelSel.addEventListener('change', () => {
+        const noMot = fuelSel.value === 'Brez motorja';
+        document.getElementById('navMotorFields').style.display = noMot ? 'none' : '';
+    });
+
+    // Power unit toggle
+    let currentPowerUnit = 'hp';
+    const powerInput = document.getElementById('fPower');
+    const unitBtns = document.querySelectorAll('#powerUnitToggle .cl-unit-btn');
+    const unitLabel = document.getElementById('powerUnitLabel');
+    unitBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newUnit = btn.dataset.unit;
+            if (newUnit === currentPowerUnit) return;
+            const val = parseFloat(powerInput.value);
+            if (!isNaN(val)) {
+                powerInput.value = newUnit === 'kw' ? Math.round(val / 1.35962) : Math.round(val * 1.35962);
+            }
+            unitBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentPowerUnit = newUnit;
+            unitLabel.textContent = newUnit === 'hp' ? 'KM' : 'kW';
+        });
+    });
+
+    document.getElementById('btnTechBack').addEventListener('click', goPrev);
+    document.getElementById('btnTechNext').addEventListener('click', () => {
+        const noMot = fuelSel.value === 'Brez motorja';
+        let valid = true;
+
+        if (!fuelSel.value) { markInvalid('fFuel'); valid = false; }
+        if (!noMot) {
+            if (!document.getElementById('fDriveSystem')?.value) { markInvalid('fDriveSystem'); valid = false; }
+            const powerVal = parseFloat(document.getElementById('fPower')?.value || '');
+            if (isNaN(powerVal) || powerVal <= 0) { markInvalid('fPower'); valid = false; }
+            if (!document.getElementById('fFuelTank')?.value) { markInvalid('fFuelTank'); valid = false; }
+        }
+        if (!valid) return;
+
+        state.fuel = fuelSel.value;
+        state.driveSystem = document.getElementById('fDriveSystem').value;
+        state.engineCount = document.getElementById('fEngineCount')?.value || '1';
+        state.fuelTankL = document.getElementById('fFuelTank')?.value || '';
+        state.maxSpeedKn = document.getElementById('fMaxSpeed').value;
+        state.waterTankL = document.getElementById('fWaterTank').value;
+
+        if (!noMot) {
+            const powerVal = parseFloat(document.getElementById('fPower')?.value || '');
+            state.powerKw = currentPowerUnit === 'kw' ? powerVal : Math.round(powerVal / 1.35962);
+            state.engineCc = document.getElementById('fEngineCC')?.value || '';
+        } else {
+            state.powerKw = 0;
+            state.engineCc = '';
+        }
+
+        goNext();
+    });
+}
+
 // ── Step 5: Equipment ─────────────────────────────────────────────────────────
 function renderEquipmentStep() {
     const groups = getEquipmentForCategory(state.category);
@@ -2116,11 +2669,11 @@ function renderMediaStep() {
 
             <div class="cl-media-tabs">
                 <button class="cl-media-tab ${_mediaTab === 'exterior' ? 'active' : ''}" data-tab="exterior">
-                    🚗 ${t('cl_media_exterior')}
+                    ${isNavtika() ? '⛵' : '🚗'} ${isNavtika() ? 'Plovilo' : t('cl_media_exterior')}
                     <span class="cl-media-tab-count" id="extCount">${state._exteriorFiles.length}</span>
                 </button>
                 <button class="cl-media-tab ${_mediaTab === 'interior' ? 'active' : ''}" data-tab="interior">
-                    🪑 ${t('cl_media_interior')}
+                    ${isNavtika() ? '🛋️' : '🪑'} ${isNavtika() ? 'Kabina / Cockpit' : t('cl_media_interior')}
                     <span class="cl-media-tab-count" id="intCount">${state._interiorFiles.length}</span>
                 </button>
             </div>
@@ -2752,7 +3305,17 @@ function renderReviewStep() {
         [t('gd_choose_vehicle_cat', 'Za katero vozilo?'), (VEHICLE_CATEGORIES.find(v => v.value === state.vehicleCategory) || {}).label],
     ])}
 
-            ${isVehicleItem(state) ? section(t('cl_section_basic'), 'basic', [
+            ${isVehicleItem(state) ? section(t('cl_section_basic'), 'basic', isNavtika() ? [
+        ['Znamka', state.make],
+        ['Model', state.model],
+        ['Letnik', state.year],
+        ['Dolžina', state.lengthM ? state.lengthM + ' m' : ''],
+        ['Ure motorja', state.engineHoursUsed !== '' ? fmt(state.engineHoursUsed) + ' h' : ''],
+        ['Stanje', state.condition],
+        ['Material trupa', state.hullMaterial],
+        ['Barva', state.color],
+        ['Kabine / Ležišča', (state.cabins || state.berths) ? `${state.cabins || '—'} / ${state.berths || '—'}` : ''],
+    ] : [
         [t('cl_label_make'), state.make],
         [t('cl_label_model'), state.model],
         [t('cl_label_year'), state.year],
@@ -2761,7 +3324,15 @@ function renderReviewStep() {
         [t('cl_label_color'), state.color],
     ]) : ''}
 
-            ${isVehicleItem(state) ? section(t('cl_section_technical'), 'technical', [
+            ${isVehicleItem(state) ? section(t('cl_section_technical'), 'technical', isNavtika() ? [
+        ['Gorivo / pogon', state.fuel],
+        ['Pogonski sistem', state.driveSystem],
+        ['Moč motorja', state.powerKw ? `${Math.round(state.powerKw * 1.34102)} KM (${state.powerKw} kW)` : ''],
+        ['Prostornina', state.engineCc ? state.engineCc + ' cc' : ''],
+        ['Število motorjev', state.engineCount],
+        ['Kapaciteta rezervoarja', state.fuelTankL ? state.fuelTankL + ' L' : ''],
+        ['Maks. hitrost', state.maxSpeedKn ? state.maxSpeedKn + ' vozličev' : ''],
+    ] : [
         [t('cl_label_fuel'), state.fuel],
         [t('cl_label_transmission'), state.transmission],
         [t('cl_label_power_review'), state.powerKw ? (getCurrentLang() === 'sl' ? state.powerKw + ' kW (' + Math.round(state.powerKw * 1.34102) + ' KM)' : Math.round(state.powerKw * 1.34102) + ' HP') : ''],

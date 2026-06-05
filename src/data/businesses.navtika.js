@@ -17,7 +17,8 @@ export const mockBusinessesNavtika = [
         rating: 4.7, reviewCount: 132, verified: true,
         authorizedBrands: ['Yamaha', 'Mercury'], supportedBrands: ['Yamaha', 'Mercury', 'Suzuki', 'Honda'],
         offersLeasing: false, leasingPartners: [],
-        offersTyreStorage: true, // = zimovanje / privez
+        offersTyreStorage: true,  // marina / mokri privez
+        offersDryStorage: true,   // suha marina
         servicesOffered: ['engine_service', 'antifouling', 'winter_storage'],
         createdAt: '2019-05-01',
     },
@@ -33,7 +34,7 @@ export const mockBusinessesNavtika = [
         rating: 4.9, reviewCount: 87, verified: true,
         authorizedBrands: ['Beneteau', 'Jeanneau'], supportedBrands: ['Beneteau', 'Jeanneau', 'Lagoon'],
         offersLeasing: true, leasingPartners: ['Summit Leasing'],
-        offersTyreStorage: false, servicesOffered: [],
+        offersTyreStorage: false, offersDryStorage: false, servicesOffered: [],
         createdAt: '2017-03-12',
     },
     {
@@ -48,7 +49,7 @@ export const mockBusinessesNavtika = [
         rating: 4.6, reviewCount: 64, verified: true,
         authorizedBrands: ['Highfield', 'Suzuki'], supportedBrands: ['Highfield', 'Brig', 'Zodiac', 'Suzuki', 'Tohatsu'],
         offersLeasing: false, leasingPartners: [],
-        offersTyreStorage: true, servicesOffered: ['engine_service', 'tubes_repair'],
+        offersTyreStorage: true, offersDryStorage: false, servicesOffered: ['engine_service', 'tubes_repair'],
         createdAt: '2018-09-08',
     },
     {
@@ -63,7 +64,7 @@ export const mockBusinessesNavtika = [
         rating: 4.8, reviewCount: 156, verified: true,
         authorizedBrands: ['Bavaria', 'Lagoon'], supportedBrands: ['Bavaria', 'Lagoon', 'Jeanneau', 'Fountaine Pajot'],
         offersLeasing: false, leasingPartners: [],
-        offersTyreStorage: false, servicesOffered: [],
+        offersTyreStorage: false, offersDryStorage: false, servicesOffered: [],
         createdAt: '2016-04-20',
     },
     {
@@ -78,7 +79,7 @@ export const mockBusinessesNavtika = [
         rating: 4.5, reviewCount: 41, verified: false,
         authorizedBrands: [], supportedBrands: ['Volvo Penta', 'Yanmar', 'Mercury', 'Yamaha'],
         offersLeasing: false, leasingPartners: [],
-        offersTyreStorage: false, servicesOffered: ['engine_service', 'electronics', 'hull_repair'],
+        offersTyreStorage: false, offersDryStorage: false, servicesOffered: ['engine_service', 'electronics', 'hull_repair'],
         createdAt: '2020-07-15',
     },
 ];

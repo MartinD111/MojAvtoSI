@@ -17,6 +17,7 @@ import { getListings } from '../services/listingService.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 import { getCurrentLang } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
+import { brandsFileFor } from '../data/brandFiles.js';
 
 import {
     getFuelPill,
@@ -223,6 +224,107 @@ async function checkFavouriteStates() {
     }
 }
 
+function getCategoryLabel(cat, lang) {
+    if (!cat) return '';
+    const slMap = {
+        'colni': 'Čoln',
+        'jadrnice': 'Jadrnica',
+        'gumenjaki': 'Gumenjak',
+        'jet-ski': 'Jet-ski',
+        'izvenkrmni-motorji': 'Izvenkrmni motor',
+        'oprema': 'Oprema'
+    };
+    const enMap = {
+        'colni': 'Boat',
+        'jadrnice': 'Sailboat',
+        'gumenjaki': 'RIB / Inflatable',
+        'jet-ski': 'Jet-Ski',
+        'izvenkrmni-motorji': 'Outboard Engine',
+        'oprema': 'Equipment'
+    };
+    return lang === 'sl' ? (slMap[cat] || cat) : (enMap[cat] || cat);
+}
+
+function getSubcategoryLabel(sub, lang) {
+    if (!sub) return '';
+    const slMap = {
+        'motorni-coln': 'Motorni čoln',
+        'jahte': 'Jahta',
+        'jadrnica': 'Jadrnica',
+        'katamaran': 'Katamaran',
+        'rib': 'RIB',
+        'mehki-gumenjak': 'Mehki gumenjak',
+        'enotrupci': 'Enotrupna',
+        'sportni': 'Športni',
+        'dnevni-cruiser': 'Dnevni cruiser'
+    };
+    const enMap = {
+        'motorni-coln': 'Motorboat',
+        'jahte': 'Yacht',
+        'jadrnica': 'Sailboat',
+        'katamaran': 'Catamaran',
+        'rib': 'RIB',
+        'mehki-gumenjak': 'Inflatable',
+        'enotrupci': 'Monohull',
+        'sportni': 'Sport',
+        'dnevni-cruiser': 'Day Cruiser'
+    };
+    return lang === 'sl' ? (slMap[sub] || sub) : (enMap[sub] || sub);
+}
+
+function getEngineMountLabel(mount, lang) {
+    if (!mount) return '';
+    const slMap = {
+        'izvenkrmni': 'Izvenkrmni',
+        'krmni': 'Krmni',
+        'notranji': 'Notranji',
+        'jadrni': 'Jadrni'
+    };
+    const enMap = {
+        'izvenkrmni': 'Outboard',
+        'krmni': 'Sterndrive',
+        'notranji': 'Inboard',
+        'jadrni': 'Saildrive'
+    };
+    return lang === 'sl' ? (slMap[mount.toLowerCase()] || mount) : (enMap[mount.toLowerCase()] || mount);
+}
+
+function getHullMaterialLabel(material, lang) {
+    if (!material) return '';
+    const slMap = {
+        'stekloplastika': 'Stekloplastika',
+        'aluminij': 'Aluminij',
+        'jeklo': 'Jeklo',
+        'les': 'Les',
+        'pvc': 'PVC',
+        'politeh': 'Politeh'
+    };
+    const enMap = {
+        'stekloplastika': 'Fiberglass',
+        'aluminij': 'Aluminum',
+        'jeklo': 'Steel',
+        'les': 'Wood',
+        'pvc': 'PVC',
+        'politeh': 'Polytec'
+    };
+    return lang === 'sl' ? (slMap[material.toLowerCase()] || material) : (enMap[material.toLowerCase()] || material);
+}
+
+function getEngineMake(car) {
+    if (car.engineMake) return car.engineMake;
+    if (car.itemType === 'motor' && car.make) return car.make;
+    const text = `${car.title} ${car.subtitle}`.toLowerCase();
+    const makes = ['volvo penta', 'mercury', 'yamaha', 'yanmar', 'suzuki', 'honda', 'tohatsu', 'evinrude', 'rotax', 'man', 'mercruiser', 'caterpillar', 'cummins'];
+    for (const m of makes) {
+        if (text.includes(m)) {
+            if (m === 'volvo penta') return 'Volvo Penta';
+            if (m === 'mercruiser') return 'MerCruiser';
+            return m.charAt(0).toUpperCase() + m.slice(1);
+        }
+    }
+    return '';
+}
+
 // ── Render Car Card ──────────────────────────────────────────
 function renderCarCard(car) {
     const inCompare = isInCompare(car.id);
@@ -269,7 +371,72 @@ function renderCarCard(car) {
                 : car.sellerNote)
             : null;
 
-        return `
+            // Build the vessel-specific secondary pills
+            const lang = getCurrentLang();
+            
+            // 1. Boat Category / Type
+            let boatTypePill = '';
+            const categoryLabel = getCategoryLabel(car.category, lang);
+            const subcategoryLabel = getSubcategoryLabel(car.subcategory, lang);
+            if (categoryLabel) {
+                let text = categoryLabel;
+                if (subcategoryLabel && subcategoryLabel !== categoryLabel) {
+                    text = `${categoryLabel} (${subcategoryLabel})`;
+                }
+                boatTypePill = `<div class="spec-pill category-pill" title="${lang === 'sl' ? 'Tip plovila' : 'Boat Type'}">
+                    <i data-lucide="ship"></i>
+                    <span>${text}</span>
+                </div>`;
+            }
+
+            // 2. Fuel Type
+            const fuelPill = getFuelPill(car); // standard helper
+
+            // 3. Engine Mount Type
+            let mountPill = '';
+            if (car.engineMountType) {
+                const mountLabel = getEngineMountLabel(car.engineMountType, lang);
+                mountPill = `<div class="spec-pill mount-pill" title="${lang === 'sl' ? 'Tip pogona' : 'Engine Mount'}">
+                    <i data-lucide="cpu"></i>
+                    <span>${mountLabel}</span>
+                </div>`;
+            }
+
+            // 4. Hull Material
+            let hullPill = '';
+            if (car.hullMaterial) {
+                const hullLabel = getHullMaterialLabel(car.hullMaterial, lang);
+                hullPill = `<div class="spec-pill hull-pill" title="${lang === 'sl' ? 'Material trupa' : 'Hull Material'}">
+                    <i data-lucide="anchor"></i>
+                    <span>${hullLabel}</span>
+                </div>`;
+            }
+
+            // 5. Engine Manufacturer
+            let engineMakePill = '';
+            const engineMake = getEngineMake(car);
+            if (engineMake) {
+                engineMakePill = `<div class="spec-pill engine-make-pill" title="${lang === 'sl' ? 'Znamka motorja' : 'Engine Make'}">
+                    <i data-lucide="cog"></i>
+                    <span>${engineMake}</span>
+                </div>`;
+            }
+
+            // 6. Cabins / Berths
+            let cabinsBerthsPill = '';
+            if (car.cabins || car.berths) {
+                const cabinsPart = car.cabins ? (lang === 'sl' ? `${car.cabins} kab.` : `${car.cabins} cab.`) : '';
+                const berthsPart = car.berths ? (lang === 'sl' ? `${car.berths} lež.` : `${car.berths} berths`) : '';
+                const text = [cabinsPart, berthsPart].filter(Boolean).join(' / ');
+                cabinsBerthsPill = `<div class="spec-pill berths-pill" title="${lang === 'sl' ? 'Kabine / ležišča' : 'Cabins / Berths'}">
+                    <i data-lucide="bed"></i>
+                    <span>${text}</span>
+                </div>`;
+            }
+
+            const kw = car.enginePowerKw || car.powerKw || (car.enginePowerHp ? Math.round(car.enginePowerHp / 1.34102) : (car.powerHp ? Math.round(car.powerHp / 1.34102) : null));
+
+            return `
     <div class="listing-card" data-car-id="${car.id}">
         <!-- Image Container -->
         <div class="listing-card-img" data-current-idx="0">
@@ -322,8 +489,9 @@ function renderCarCard(car) {
             <div class="listing-card-action-bar">
                 <div class="primary-specs">
                     ${getYearPill(car.year)}
-                    ${getKmPill(car.mileage)}
-                    ${getPowerPill(car.powerKw)}
+                    ${car.lengthM ? `<div class="spec-pill length-pill" title="${lang === 'sl' ? 'Dolžina' : 'Length'}"><i data-lucide="arrow-right-left"></i><span>${car.lengthM} m</span></div>` : ''}
+                    ${car.engineHours !== undefined ? `<div class="spec-pill hours-pill" title="${lang === 'sl' ? 'Ure motorja' : 'Engine Hours'}"><i data-lucide="clock"></i><span>${car.engineHours} ur</span></div>` : ''}
+                    ${getPowerPill(kw)}
                 </div>
 
                 <div class="listing-card-actions">
@@ -342,10 +510,12 @@ function renderCarCard(car) {
             <div class="listing-card-specs">
                 <div class="spec-row secondary">
                     <div class="spec-group-left">
-                        ${getDisplacementPill(car.engineCc)}
-                        ${getFuelPill(car)}
-                        ${getTransmissionPill(car)}
-                        ${getConsumptionPill(car)}
+                        ${boatTypePill}
+                        ${fuelPill}
+                        ${mountPill}
+                        ${hullPill}
+                        ${engineMakePill}
+                        ${cabinsBerthsPill}
                     </div>
                 </div>
             </div>
@@ -806,6 +976,53 @@ export function initNavtikaOglasiPage() {
 
 // ── Sidebar dynamic filtering implementation ──────────────────────────────────
 let _allActiveListings = [];
+let _sidebarBrandFile = null; // currently loaded brands JSON path (avoids redundant refetch)
+
+/**
+ * Loads the brands/models JSON appropriate for the given category and repopulates
+ * the make select. On navtika this is plovila vs izvenkrmni; the file is resolved
+ * centrally via brandsFileFor() so create-listing, home search and the board agree.
+ */
+function loadSidebarBrands(category, onReady) {
+    const makeSelect = document.getElementById("sidebarMake");
+    const modelSelect = document.getElementById("sidebarModel");
+    if (!makeSelect) return;
+
+    const file = brandsFileFor(category);
+
+    // Reset dependent selects whenever we (re)load brands.
+    const resetMake = (data) => {
+        window._sidebarBrandModelData = data;
+        const prevBrand = makeSelect.value;
+        makeSelect.innerHTML = '<option value="">Vse znamke</option>';
+        Object.keys(data).sort().forEach(brand => {
+            const o = document.createElement("option");
+            o.value = brand;
+            o.textContent = brand;
+            makeSelect.appendChild(o);
+        });
+        // Keep the previously selected brand only if it still exists in the new list.
+        if (prevBrand && data[prevBrand]) {
+            makeSelect.value = prevBrand;
+        } else if (modelSelect) {
+            modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+            modelSelect.disabled = true;
+        }
+        initCustomSelects();
+        if (typeof onReady === 'function') onReady();
+    };
+
+    if (file === _sidebarBrandFile && window._sidebarBrandModelData) {
+        resetMake(window._sidebarBrandModelData);
+        return;
+    }
+
+    _sidebarBrandFile = file;
+    fetch(file)
+        .then(res => res.json())
+        .then(resetMake)
+        .catch(err => console.error('[OglasiNavtika] brand file load failed:', file, err));
+}
 
 function updateSidebarHybridGroup() {
     const hibridCheck = document.getElementById("sidebarFuelHibrid");
@@ -850,31 +1067,75 @@ async function initSidebarFiltering() {
         const o2 = document.createElement("option"); o2.value = y; o2.textContent = y; yearToSelect.appendChild(o2);
     }
 
-    // Brands
-    fetch("json/brands_models_global.json")
-      .then(res => res.json())
-      .then(data => {
-          window._sidebarBrandModelData = data;
-          makeSelect.innerHTML = '<option value="">Vse znamke</option>';
-          Object.keys(data).sort().forEach(brand => {
-              const o = document.createElement("option");
-              o.value = brand;
-              o.textContent = brand;
-              makeSelect.appendChild(o);
-          });
-
-          // Sync custom selects once populated
-          initCustomSelects();
-
-          // Prefill from URL
-          prefillSidebarFromUrl();
-      });
+    // Brands — load the file matching the current boat type (plovila vs izvenkrmni)
+    const initialCat = parseHashParams().get('cat') || document.getElementById("sidebarBoatType")?.value || '';
+    loadSidebarBrands(initialCat, () => {
+        // Prefill from URL once the initial brand list is ready
+        prefillSidebarFromUrl();
+    });
 
     // 3. Bind events
     const modelSelect = document.getElementById("sidebarModel");
     const variantSelect = document.getElementById("sidebarVariant");
     const form = document.getElementById("sidebarFiltersForm");
     const resetBtn = document.getElementById("sidebarResetBtn");
+
+    const boatTypeSelect = document.getElementById("sidebarBoatType");
+    const boatSubcatSelect = document.getElementById("sidebarBoatSubcat");
+
+    if (boatTypeSelect && boatSubcatSelect) {
+        boatTypeSelect.addEventListener("change", () => {
+            const val = boatTypeSelect.value;
+            
+            // Populate subcategory — build all options first, then set disabled state once
+            const subcategoriesMap = {
+                colni: [
+                    { value: 'motorni-coln', label: 'Motorni čoln' },
+                    { value: 'jahte', label: 'Jahte' }
+                ],
+                jadrnice: [
+                    { value: 'jadrnica', label: 'Jadrnica' },
+                    { value: 'katamaran', label: 'Katamaran' }
+                ],
+                gumenjaki: [
+                    { value: 'rib', label: 'RIB (trdo dno)' },
+                    { value: 'mehki-gumenjak', label: 'Mehki gumenjak' }
+                ]
+            };
+
+            const subs = (val && subcategoriesMap[val]) ? subcategoriesMap[val] : [];
+            const newHtml = '<option value="">Vse kategorije</option>' +
+                subs.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+            boatSubcatSelect.innerHTML = newHtml;
+            boatSubcatSelect.disabled = subs.length === 0;
+
+            // Reload the brand list for this boat type (izvenkrmni motors have their
+            // own manufacturer list; all vessel types share the plovila list).
+            loadSidebarBrands(val, () => applySidebarFilters());
+
+            if (!window._isPrefilling) {
+                // Update URL params
+                const params = parseHashParams();
+                if (val) params.set('cat', val);
+                else params.delete('cat');
+                params.delete('subcategory');
+                window.location.hash = `/oglasi?${params.toString()}`;
+            }
+
+            applySidebarFilters();
+        });
+
+        boatSubcatSelect.addEventListener("change", () => {
+            if (!window._isPrefilling) {
+                const params = parseHashParams();
+                const sub = boatSubcatSelect.value;
+                if (sub) params.set('subcategory', sub);
+                else params.delete('subcategory');
+                window.location.hash = `/oglasi?${params.toString()}`;
+            }
+            applySidebarFilters();
+        });
+    }
 
     makeSelect.addEventListener("change", () => {
         const data = window._sidebarBrandModelData;
@@ -1001,7 +1262,7 @@ async function initSidebarFiltering() {
 
     if (form) {
         form.querySelectorAll("input, select").forEach(el => {
-            if (el !== makeSelect && el !== modelSelect && el !== variantSelect) {
+            if (el !== makeSelect && el !== modelSelect && el !== variantSelect && el !== boatTypeSelect && el !== boatSubcatSelect) {
                 if (el.id === 'sidebarProdajaToggle' || el.id === 'sidebarNajemToggle') {
                     el.addEventListener("change", () => {
                         const params = parseHashParams();
@@ -1032,6 +1293,13 @@ async function initSidebarFiltering() {
                 form.querySelectorAll("select").forEach(sel => {
                     sel.dispatchEvent(new Event('change'));
                 });
+                form.querySelectorAll("input[type=checkbox]").forEach(cb => {
+                    cb.checked = false;
+                });
+                // Restore default offer type checks
+                const prodajaToggle = document.getElementById("sidebarProdajaToggle");
+                if (prodajaToggle) prodajaToggle.checked = true;
+                
                 updateSidebarHybridGroup();
             }
             if (modelSelect) {
@@ -1045,13 +1313,61 @@ async function initSidebarFiltering() {
                 variantSelect.dispatchEvent(new Event('change'));
             }
             if (makeSelect) makeSelect.dispatchEvent(new Event('change'));
+            if (boatSubcatSelect) {
+                boatSubcatSelect.innerHTML = '<option value="">Vse kategorije</option>';
+                boatSubcatSelect.disabled = true;
+                boatSubcatSelect.dispatchEvent(new Event('change'));
+            }
+            if (boatTypeSelect) boatTypeSelect.dispatchEvent(new Event('change'));
             
-            // Clear URL search params as well, except category context
-            const params = parseHashParams();
-            const cat = params.get('cat');
-            window.location.hash = `/oglasi${cat ? '?cat=' + cat : ''}`;
+            // Clear URL search params as well
+            window.location.hash = `/oglasi`;
         });
     }
+}
+
+// ── Active filter pills ───────────────────────────────────────────────────────
+function makePill(label, onRemove) {
+    const span = document.createElement('span');
+    span.className = 'sidebar-active-pill';
+    span.innerHTML = `${label} <button type="button" class="sidebar-pill-remove" aria-label="Odstrani">×</button>`;
+    span.querySelector('.sidebar-pill-remove').addEventListener('click', onRemove);
+    return span;
+}
+
+function setSinglePill(containerId, label, onRemove) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    if (label) el.appendChild(makePill(label, onRemove));
+}
+
+function updateSidebarActivePills() {
+    const boatTypeEl = document.getElementById('sidebarBoatType');
+    const boatSubcatEl = document.getElementById('sidebarBoatSubcat');
+    const makeEl = document.getElementById('sidebarMake');
+    const modelEl = document.getElementById('sidebarModel');
+    const engineMakeEl = document.getElementById('sidebarEngineMake');
+
+    setSinglePill('activeBoatType',
+        boatTypeEl?.selectedOptions[0]?.text !== 'Vsa plovila' ? boatTypeEl?.selectedOptions[0]?.text : '',
+        () => { if (boatTypeEl) { boatTypeEl.value = ''; boatTypeEl.dispatchEvent(new Event('change')); } });
+
+    setSinglePill('activeBoatSubcat',
+        boatSubcatEl?.value ? boatSubcatEl.selectedOptions[0]?.text : '',
+        () => { if (boatSubcatEl) { boatSubcatEl.value = ''; boatSubcatEl.dispatchEvent(new Event('change')); } });
+
+    setSinglePill('activeMake',
+        makeEl?.value || '',
+        () => { if (makeEl) { makeEl.value = ''; makeEl.dispatchEvent(new Event('change')); } });
+
+    setSinglePill('activeModel',
+        modelEl?.value || '',
+        () => { if (modelEl) { modelEl.value = ''; modelEl.dispatchEvent(new Event('change')); } });
+
+    setSinglePill('activeEngineMake',
+        engineMakeEl?.value || '',
+        () => { if (engineMakeEl) { engineMakeEl.value = ''; engineMakeEl.dispatchEvent(new Event('change')); } });
 }
 
 function applySidebarFilters() {
@@ -1060,32 +1376,36 @@ function applySidebarFilters() {
     const fProdaja = prodajaToggle ? prodajaToggle.checked : true;
     const fNajem = najemToggle ? najemToggle.checked : true;
 
+    const cat = document.getElementById("sidebarBoatType")?.value || '';
+    const subcategory = document.getElementById("sidebarBoatSubcat")?.value || '';
     const make = document.getElementById("sidebarMake")?.value || '';
     const model = document.getElementById("sidebarModel")?.value || '';
     const lengthFrom = parseFloat(document.getElementById("sidebarLengthFrom")?.value) || 0;
     const lengthTo = parseFloat(document.getElementById("sidebarLengthTo")?.value) || Infinity;
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
+    const priceFrom = parseFormattedNumber(document.getElementById("sidebarPriceFrom")?.value) || 0;
     const priceTo = parseFormattedNumber(document.getElementById("sidebarPriceTo")?.value) || Infinity;
     const powerFrom = parseInt(document.getElementById("sidebarPowerFrom")?.value, 10) || 0;
     const powerTo = parseInt(document.getElementById("sidebarPowerTo")?.value, 10) || Infinity;
     const engineHoursTo = parseInt(document.getElementById("sidebarEngineHoursTo")?.value, 10) || Infinity;
+    const berthsFrom = parseInt(document.getElementById("sidebarBerthsFrom")?.value, 10) || 0;
+    const cabinsFrom = parseInt(document.getElementById("sidebarCabinsFrom")?.value, 10) || 0;
+    const engineMake = document.getElementById("sidebarEngineMake")?.value || '';
     const hull = document.getElementById("sidebarHull")?.value || '';
 
-    const form = document.getElementById("sidebarFiltersForm");
-    let fuels = [];
-    if (form) {
-        const fd = new FormData(form);
-        fuels = fd.getAll("fuel").filter(Boolean);
-    }
+    const fuelVal = document.getElementById("sidebarFuel")?.value || '';
+    const engineMountVal = document.getElementById("sidebarEngineMount")?.value || '';
+    const fuels = fuelVal ? [fuelVal] : [];
+    const engineMounts = engineMountVal ? [engineMountVal] : [];
 
     const params = parseHashParams();
-    const cat = params.get('cat');
     const extraEquipment = params.get('extraEquipment');
 
     const filtered = _allActiveListings.filter(car => {
         if (!['plovilo', 'motor'].includes(car.itemType)) return false;
         if (cat && car.category !== cat) return false;
+        if (subcategory && car.subcategory !== subcategory) return false;
 
         // Sale / rental
         if (fNajem || fProdaja) {
@@ -1104,6 +1424,7 @@ function applySidebarFilters() {
         if (!model && urlModel && car.model !== urlModel) return false;
 
         const price = car.priceRaw ?? car.priceEur ?? null;
+        if (priceFrom > 0 && price != null && price < priceFrom) return false;
         if (priceTo < Infinity && price != null && price > priceTo) return false;
 
         const carYear = Number(car.year) || null;
@@ -1113,11 +1434,27 @@ function applySidebarFilters() {
         if (lengthFrom > 0 && (car.lengthM || 0) < lengthFrom) return false;
         if (lengthTo < Infinity && car.lengthM && car.lengthM > lengthTo) return false;
 
-        const hp = car.powerHp || (car.powerKw ? Math.round(car.powerKw * 1.35962) : null);
+        const hp = car.powerHp || car.enginePowerHp || (car.powerKw ? Math.round(car.powerKw * 1.35962) : null);
         if (powerFrom > 0 && hp && hp < powerFrom) return false;
         if (powerTo < Infinity && hp && hp > powerTo) return false;
 
         if (engineHoursTo < Infinity && car.engineHours && car.engineHours > engineHoursTo) return false;
+
+        // berths & cabins
+        if (berthsFrom > 0 && (car.berths || 0) < berthsFrom) return false;
+        if (cabinsFrom > 0 && (car.cabins || 0) < cabinsFrom) return false;
+
+        // engine mount type
+        if (engineMounts.length > 0 && !engineMounts.includes(car.engineMountType)) return false;
+
+        // engine manufacturer/make (select value — exact match)
+        if (engineMake) {
+            const q = engineMake.toLowerCase();
+            const makeMatch = car.itemType === 'motor' && car.make && car.make.toLowerCase() === q;
+            const engineMakeMatch = car.engineMake && car.engineMake.toLowerCase() === q;
+            const titleMatch = car.title && car.title.toLowerCase().includes(q);
+            if (!makeMatch && !engineMakeMatch && !titleMatch) return false;
+        }
 
         if (hull && car.hullMaterial !== hull) return false;
 
@@ -1132,6 +1469,7 @@ function applySidebarFilters() {
     });
 
     renderListings(filtered);
+    updateSidebarActivePills();
 
     const countEl = document.querySelector(".results-header h1 span");
     if (countEl) {
@@ -1161,10 +1499,19 @@ function prefillSidebarFromUrl() {
         }
     };
 
-    prefillSelect("sidebarMake", "make");
+    prefillSelect("sidebarBoatType", "cat");
     setTimeout(() => {
-        prefillSelect("sidebarModel", "model");
+        prefillSelect("sidebarBoatSubcat", "subcategory");
     }, 50);
+
+    // Make/model are prefilled after the boat-type change has had a chance to
+    // (re)load the matching brand list (plovila vs izvenkrmni).
+    setTimeout(() => {
+        prefillSelect("sidebarMake", "make");
+        setTimeout(() => {
+            prefillSelect("sidebarModel", "model");
+        }, 60);
+    }, 80);
 
     prefillSelect("sidebarYearFrom", "yearFrom");
     prefillSelect("sidebarYearTo", "yearTo");
@@ -1174,6 +1521,9 @@ function prefillSidebarFromUrl() {
     prefillInput("sidebarPowerFrom", "powerFrom");
     prefillInput("sidebarPowerTo", "powerTo");
     prefillInput("sidebarEngineHoursTo", "engineHoursTo");
+    prefillInput("sidebarBerthsFrom", "berthsFrom");
+    prefillInput("sidebarCabinsFrom", "cabinsFrom");
+    prefillInput("sidebarEngineMake", "engineMake");
     prefillSelect("sidebarHull", "hull");
 
     const prodajaVal = params.get("prodaja");
@@ -1197,6 +1547,15 @@ function prefillSidebarFromUrl() {
         const fuelCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="fuel"]');
         fuelCheckboxes.forEach(cb => {
             cb.checked = fuels.includes(cb.value);
+        });
+    }
+
+    const engineMount = params.get("engineMount");
+    if (engineMount) {
+        const mounts = engineMount.split(',');
+        const mountCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="engineMount"]');
+        mountCheckboxes.forEach(cb => {
+            cb.checked = mounts.includes(cb.value);
         });
     }
 

@@ -4149,17 +4149,18 @@ body.dark-mode .stroke-pill {
   color: #38bdf8 !important;
 }
 
-.type-pill {
+/* Engine/type badge on listing cards — .spec-pill.type-pill only, not map filter buttons */
+.spec-pill.type-pill {
   background: rgba(139, 92, 246, 0.08) !important;
   border-color: rgba(139, 92, 246, 0.25) !important;
   color: #7c3aed !important;
 }
 
-.type-pill i {
+.spec-pill.type-pill i {
   color: #7c3aed !important;
 }
 
-body.dark-mode .type-pill {
+body.dark-mode .spec-pill.type-pill {
   background: rgba(167, 139, 250, 0.12) !important;
   border-color: rgba(167, 139, 250, 0.4) !important;
   color: #a78bfa !important;
@@ -4812,6 +4813,44 @@ body.dark-mode .seller-note-card {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* ── Sidebar active filter pills ──────────────────────────────────────────── */
+.sidebar-active-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  min-height: 0;
+  margin-top: 0.4rem;
+}
+
+.sidebar-active-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #2563eb;
+  border: 1px solid #1d4ed8;
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem 0.2rem 0.65rem;
+  white-space: nowrap;
+}
+
+.sidebar-pill-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.sidebar-pill-remove:hover { opacity: 1; }
 
 .oglasi-sidebar-card::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */

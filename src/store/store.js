@@ -20,7 +20,8 @@ export const store = {
         brands: [],          // [] = all, or ['BMW','Audi',...]
         authorized: false,   // true = only authorized businesses
         leasing: false,      // true = only businesses offering leasing
-        tyreStorage: false,  // true = only businesses with tyre storage
+        tyreStorage: false,  // true = only businesses with tyre storage / marina (navtika)
+        dryStorage: false,   // navtika only: suha marina
         minRating: 0,        // 0–5
         radius: 20           // km from userLocation
     },

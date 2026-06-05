@@ -228,6 +228,7 @@ function updateActiveFiltersCount() {
     if (f.authorized) count++;
     if (f.leasing) count++;
     if (f.tyreStorage) count++;
+    if (f.dryStorage) count++;
     if (f.minRating > 0) count++;
     if (f.radius !== 20) count++;
 
@@ -240,10 +241,13 @@ function updateActiveFiltersCount() {
 
 // ── Setup filter sidebar interactions ────────────────────────
 function setupFilters() {
-    // Type pills
+    // Type pills — at least one must stay active
     document.querySelectorAll('.type-pill').forEach(pill => {
         pill.addEventListener('click', () => {
-            const t = pill.getAttribute('data-type');
+            const isActive = pill.classList.contains('active');
+            const activeCount = document.querySelectorAll('.type-pill.active').length;
+            // Don't allow deselecting the last active pill
+            if (isActive && activeCount === 1) return;
             pill.classList.toggle('active');
             const active = [...document.querySelectorAll('.type-pill.active')].map(p => p.getAttribute('data-type'));
             store.updateFilters({ types: active });
@@ -307,9 +311,15 @@ function setupFilters() {
         scheduleFilterUpdate();
     });
 
-    // Tyre toggle
+    // Tyre / marina toggle
     document.getElementById('filterTyre')?.addEventListener('change', function () {
         store.updateFilters({ tyreStorage: this.checked });
+        scheduleFilterUpdate();
+    });
+
+    // Dry storage / suha marina toggle (navtika only)
+    document.getElementById('filterDryStorage')?.addEventListener('change', function () {
+        store.updateFilters({ dryStorage: this.checked });
         scheduleFilterUpdate();
     });
 
@@ -354,7 +364,7 @@ function setupFilters() {
 
 // ── Reset all filters ─────────────────────────────────────────
 function resetFilters() {
-    store.updateFilters({ types: ['dealer', 'service', 'vulcanizer'], brands: [], authorized: false, leasing: false, tyreStorage: false, minRating: 0, radius: 20 });
+    store.updateFilters({ types: ['dealer', 'service', 'vulcanizer'], brands: [], authorized: false, leasing: false, tyreStorage: false, dryStorage: false, minRating: 0, radius: 20 });
 
     document.querySelectorAll('.type-pill').forEach(p => p.classList.add('active'));
     // Reset brand dropdown pills
@@ -363,9 +373,11 @@ function resetFilters() {
     const filterAuthorized = document.getElementById('filterAuthorized');
     const filterLeasing = document.getElementById('filterLeasing');
     const filterTyre = document.getElementById('filterTyre');
+    const filterDryStorage = document.getElementById('filterDryStorage');
     if (filterAuthorized) filterAuthorized.checked = false;
     if (filterLeasing) filterLeasing.checked = false;
     if (filterTyre) filterTyre.checked = false;
+    if (filterDryStorage) filterDryStorage.checked = false;
 
     const ratingSlider = document.getElementById('ratingSlider');
     const ratingVal = document.getElementById('ratingSliderVal');
@@ -443,6 +455,37 @@ function closeMobileDrawer() {
     document.getElementById('mapFilters')?.classList.add('collapsed');
 }
 
+// ── Navtika: patch static filter HTML labels ──────────────────
+function patchMapUIForPlatform() {
+    if (PLATFORM.id !== 'navtika') return;
+
+    // Rename type pills
+    const dealerPill = document.getElementById('typeDealer');
+    if (dealerPill) dealerPill.childNodes[dealerPill.childNodes.length - 1].textContent = 'Prodajalci plovil';
+    const vulcPill = document.getElementById('typeVulcanizer');
+    if (vulcPill) vulcPill.childNodes[vulcPill.childNodes.length - 1].textContent = 'Marina';
+
+    // Rename tyre storage toggle → Marina (mokri privez)
+    const tyreLbl = document.querySelector('label[for="filterTyre"].toggle-row-label');
+    if (tyreLbl) tyreLbl.innerHTML = '<i data-lucide="anchor"></i> Marina';
+
+    // Inject Suha marina toggle after the marina toggle row
+    const tyreRow = document.getElementById('filterTyre')?.closest('.toggle-row');
+    if (tyreRow) {
+        const dryRow = document.createElement('div');
+        dryRow.className = 'toggle-row';
+        dryRow.innerHTML = `
+            <label class="toggle-row-label" for="filterDryStorage">
+                <i data-lucide="warehouse"></i> Suha marina
+            </label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="filterDryStorage" />
+                <span class="ios-toggle-track"></span>
+            </label>`;
+        tyreRow.after(dryRow);
+    }
+}
+
 // ── Map Page Init ─────────────────────────────────────────────
 export function initMapPage() {
     console.log('[MapPage] init');
@@ -469,6 +512,9 @@ export function initMapPage() {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19
     }).addTo(leafletMap);
+
+    // Patch UI labels for navtika (must run before setupFilters wires listeners)
+    patchMapUIForPlatform();
 
     // Setup filter sidebar
     setupFilters();

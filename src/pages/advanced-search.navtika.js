@@ -51,7 +51,7 @@ export function initNavtikaSearchPage() {
 
 // Carry length/power (and any range) filters from the home simple search.
 function prefillFromParams(params) {
-    const map = { lengthFrom: 'lengthFrom', lengthTo: 'lengthTo', powerFrom: 'powerFrom', powerTo: 'powerTo' };
+    const map = { lengthFrom: 'lengthFrom', lengthTo: 'lengthTo', powerFrom: 'powerFrom', powerTo: 'powerTo', engineMake: 'engineMake' };
     let any = false;
     for (const [param, field] of Object.entries(map)) {
         const val = params.get(param);
@@ -265,7 +265,7 @@ function bindForm(ctx) {
         if (ctx.sub) params.set('sub', ctx.sub);
         
         // Include common fields if they have a value
-        const fieldsToMap = ['make', 'model', 'powerFrom', 'powerTo', 'engineHoursTo', 'berthsFrom', 'cabinsFrom', 'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'najem', 'prodaja'];
+        const fieldsToMap = ['make', 'model', 'powerFrom', 'powerTo', 'engineHoursTo', 'berthsFrom', 'cabinsFrom', 'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'najem', 'prodaja', 'engineMake'];
         for (const field of fieldsToMap) {
             const val = fd.get(field);
             if (val) params.set(field, val);
@@ -327,6 +327,7 @@ function readFilters(ctx) {
         stroke: multi(form, 'stroke'),
         shaft: multi(form, 'shaft'),
         extraEquipment: multi(form, 'extraEquipment'),
+        engineMake: form.querySelector('[name="engineMake"]')?.value || '',
     };
 }
 
@@ -371,6 +372,14 @@ function matchesBoat(l, f) {
     if (f.engineHoursTo && l.engineHours && l.engineHours > f.engineHoursTo) return false;
     if (f.berthsFrom && (l.berths || 0) < f.berthsFrom) return false;
     if (f.cabinsFrom && (l.cabins || 0) < f.cabinsFrom) return false;
+
+    if (f.engineMake) {
+        const query = f.engineMake.toLowerCase();
+        const titleMatch = l.title && l.title.toLowerCase().includes(query);
+        const subtitleMatch = l.subtitle && l.subtitle.toLowerCase().includes(query);
+        const makeMatch = l.itemType === 'motor' && l.make && l.make.toLowerCase().includes(query);
+        if (!titleMatch && !subtitleMatch && !makeMatch) return false;
+    }
 
     if (f.fuel.length && !f.fuel.includes(l.fuel)) return false;
     if (f.engineMount.length && !f.engineMount.includes(l.engineMountType)) return false;

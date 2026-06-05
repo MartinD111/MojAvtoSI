@@ -32,9 +32,11 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
     if (!user) throw new Error('Sign in is required to publish a listing.');
 
     const itemType = draft.itemType || 'vehicle';
+    const navtikaCategories = ['colni', 'jadrnice', 'gumenjaki', 'jet-ski', 'izvenkrmni-motorji'];
+    const isNavtikaListing = navtikaCategories.includes(draft.category);
     // Validation depends on the kind of item being listed.
     const requiredByType = {
-        vehicle: ['priceEur', 'make', 'model', 'fuel'],
+        vehicle: isNavtikaListing ? ['priceEur', 'make', 'fuel', 'lengthM'] : ['priceEur', 'make', 'model', 'fuel'],
         part: ['priceEur', 'partType', 'vehicleCategory'],
         tire: ['priceEur', 'tireSize', 'tireSeason', 'vehicleCategory'],
         oprema: ['priceEur', 'equipmentType', 'vehicleCategory'],
@@ -137,6 +139,20 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         condition: draft.condition || 'Used',
         firstRegistration: draft.firstRegistration || '',
         registeredUntil: draft.registeredUntil || '',
+
+        // Navtika / vessel fields
+        engineHoursUsed: draft.engineHoursUsed !== '' ? (Number(draft.engineHoursUsed) || 0) : null,
+        lengthM: draft.lengthM ? Number(draft.lengthM) : null,
+        beamM: draft.beamM ? Number(draft.beamM) : null,
+        draughtM: draft.draughtM ? Number(draft.draughtM) : null,
+        hullMaterial: draft.hullMaterial || '',
+        engineCount: draft.engineCount ? Number(draft.engineCount) : null,
+        driveSystem: draft.driveSystem || '',
+        maxSpeedKn: draft.maxSpeedKn ? Number(draft.maxSpeedKn) : null,
+        fuelTankL: draft.fuelTankL ? Number(draft.fuelTankL) : null,
+        waterTankL: draft.waterTankL ? Number(draft.waterTankL) : null,
+        cabins: draft.cabins !== '' ? (Number(draft.cabins) || null) : null,
+        berths: draft.berths !== '' ? (Number(draft.berths) || null) : null,
 
         // Technical
         fuel: draft.fuel || '',

@@ -19,6 +19,8 @@ export async function initNavtikaHomePage() {
         const listings = await getListings();
         renderFeatured(listings);
         renderSponsored(listings);
+        initAutoScroll('rotating-ads-container', 'rot-prev-btn', 'rot-next-btn', 0.5);
+        initAutoScroll('featured-container', 'featured-prev-btn', 'featured-next-btn', 0.4);
     } catch (e) {
         console.error('[NavtikaHome] listings load failed', e);
     }
@@ -42,38 +44,92 @@ function bindSearch() {
     const form = document.getElementById('navtikaHomeSearch');
     if (!form) return;
 
-    // Length slider live display
-    const slider = document.getElementById('nav-home-length-to');
-    const display = document.getElementById('navHomeLengthDisplay');
-    if (slider && display) {
-        const updateSlider = () => {
-            const v = Number(slider.value);
-            display.textContent = v >= 50 ? '50+' : v;
-            const pct = ((v - 3) / (50 - 3)) * 100;
-            slider.style.setProperty('--sl-pct', pct + '%');
+    // Length slider live display (Dual range)
+    const sliderFrom = document.getElementById('nav-home-length-from');
+    const sliderTo = document.getElementById('nav-home-length-to');
+    const displayMin = document.getElementById('navHomeLengthMinDisplay');
+    const displayMax = document.getElementById('navHomeLengthMaxDisplay');
+    const track = document.getElementById('navHomeSliderTrack');
+    const sliderWrap = document.getElementById('navHomeSliderWrap');
+
+    if (sliderFrom && sliderTo && displayMin && displayMax && track) {
+        const updateSlider = (e) => {
+            let vMin = Number(sliderFrom.value);
+            let vMax = Number(sliderTo.value);
+
+            if (vMin > vMax) {
+                if (e && e.target === sliderFrom) {
+                    sliderFrom.value = vMax;
+                    vMin = vMax;
+                } else if (e && e.target === sliderTo) {
+                    sliderTo.value = vMin;
+                    vMax = vMin;
+                } else {
+                    sliderFrom.value = vMax;
+                    vMin = vMax;
+                }
+            }
+
+            displayMin.textContent = vMin;
+            displayMax.textContent = vMax >= 50 ? '50+' : vMax;
+
+            const pctMin = ((vMin - 3) / (50 - 3)) * 100;
+            const pctMax = ((vMax - 3) / (50 - 3)) * 100;
+            track.style.background = `linear-gradient(to right, rgba(255,255,255,0.08) ${pctMin}%, var(--color-primary-start) ${pctMin}%, var(--color-primary-start) ${pctMax}%, rgba(255,255,255,0.08) ${pctMax}%)`;
         };
-        slider.addEventListener('input', updateSlider);
+
+        sliderFrom.addEventListener('input', updateSlider);
+        sliderTo.addEventListener('input', updateSlider);
+
+        // Bring the closer thumb to top on hover
+        if (sliderWrap) {
+            sliderWrap.addEventListener('mousemove', (e) => {
+                const rect = sliderWrap.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                const val = 3 + (clickX / width) * (50 - 3);
+                const vMin = Number(sliderFrom.value);
+                const vMax = Number(sliderTo.value);
+                if (Math.abs(val - vMin) < Math.abs(val - vMax)) {
+                    sliderFrom.style.zIndex = '4';
+                    sliderTo.style.zIndex = '3';
+                } else {
+                    sliderTo.style.zIndex = '4';
+                    sliderFrom.style.zIndex = '3';
+                }
+            });
+        }
+
         updateSlider();
     }
 
     // Reset: restore slider display
     form.addEventListener('reset', () => {
-        setTimeout(() => { if (slider && display) { slider.value = 30; slider.dispatchEvent(new Event('input')); } }, 0);
+        setTimeout(() => {
+            if (sliderFrom && sliderTo) {
+                sliderFrom.value = 3;
+                sliderTo.value = 30;
+                sliderFrom.dispatchEvent(new Event('input'));
+            }
+        }, 0);
     });
 
     form.addEventListener('submit', e => {
         e.preventDefault();
         const cat = document.getElementById('nav-home-cat')?.value || 'colni';
-        const lt = slider?.value || '';
+        const lf = sliderFrom?.value || '';
+        const lt = sliderTo?.value || '';
         const pt = document.getElementById('nav-home-power-to')?.value || '';
         const ht = document.getElementById('nav-home-hours-to')?.value || '';
         const params = new URLSearchParams({ cat });
+        if (lf && Number(lf) > 3) params.set('lengthFrom', lf);
         if (lt && Number(lt) < 50) params.set('lengthTo', lt);
         if (pt) params.set('powerTo', pt);
         if (ht) params.set('engineHoursTo', ht);
         window.location.hash = `/iskanje?${params.toString()}`;
     });
 }
+
 
 // ── Sections ──────────────────────────────────────────────────────────────────
 function renderFeatured(listings) {
@@ -104,6 +160,33 @@ function fmt(n) { return new Intl.NumberFormat('sl-SI').format(n); }
 
 function esc(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function initAutoScroll(trackId, prevId, nextId, speed = 0.5) {
+    const track = document.getElementById(trackId);
+    if (!track || !track.children.length) return;
+    track.innerHTML += track.innerHTML;
+    track.style.transition = 'none';
+    let x = 0, paused = false;
+    requestAnimationFrame(() => {
+        const half = track.scrollWidth / 2;
+        function tick() {
+            if (!paused) {
+                x += speed;
+                if (x >= half) x = 0;
+            }
+            track.style.transform = `translateX(-${x}px)`;
+            requestAnimationFrame(tick);
+        }
+        tick();
+    });
+    track.addEventListener('mouseenter', () => { paused = true; });
+    track.addEventListener('mouseleave', () => { paused = false; });
+    track.addEventListener('touchstart', () => { paused = true; }, { passive: true });
+    track.addEventListener('touchend', () => { setTimeout(() => { paused = false; }, 1200); }, { passive: true });
+    const JUMP = 300;
+    document.getElementById(prevId)?.addEventListener('click', () => { x = Math.max(0, x - JUMP); });
+    document.getElementById(nextId)?.addEventListener('click', () => { x = Math.min(track.scrollWidth / 2, x + JUMP); });
 }
 
 function card(l) {

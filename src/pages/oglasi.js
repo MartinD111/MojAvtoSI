@@ -17,6 +17,7 @@ import { getListings } from '../services/listingService.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 import { getCurrentLang } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
+import { brandsFileFor } from '../data/brandFiles.js';
 
 import {
     getFuelPill,
@@ -806,6 +807,51 @@ export function initOglasiPage() {
 
 // ── Sidebar dynamic filtering implementation ──────────────────────────────────
 let _allActiveListings = [];
+let _sidebarBrandFile = null; // currently loaded brands JSON path (avoids redundant refetch)
+
+/**
+ * Loads the brands/models JSON appropriate for the given category and repopulates
+ * the make select. avto→global, motor/moto→moto, gospodarska→gospodarska — resolved
+ * centrally via brandsFileFor() so the home search, create-listing and board agree.
+ */
+function loadSidebarBrands(category, onReady) {
+    const makeSelect = document.getElementById("sidebarMake");
+    const modelSelect = document.getElementById("sidebarModel");
+    if (!makeSelect) return;
+
+    const file = brandsFileFor(category);
+
+    const resetMake = (data) => {
+        window._sidebarBrandModelData = data;
+        const prevBrand = makeSelect.value;
+        makeSelect.innerHTML = '<option value="">Vse znamke</option>';
+        Object.keys(data).sort().forEach(brand => {
+            const o = document.createElement("option");
+            o.value = brand;
+            o.textContent = brand;
+            makeSelect.appendChild(o);
+        });
+        if (prevBrand && data[prevBrand]) {
+            makeSelect.value = prevBrand;
+        } else if (modelSelect) {
+            modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+            modelSelect.disabled = true;
+        }
+        initCustomSelects();
+        if (typeof onReady === 'function') onReady();
+    };
+
+    if (file === _sidebarBrandFile && window._sidebarBrandModelData) {
+        resetMake(window._sidebarBrandModelData);
+        return;
+    }
+
+    _sidebarBrandFile = file;
+    fetch(file)
+        .then(res => res.json())
+        .then(resetMake)
+        .catch(err => console.error('[Oglasi] brand file load failed:', file, err));
+}
 
 function updateSidebarHybridGroup() {
     const hibridCheck = document.getElementById("sidebarFuelHibrid");
@@ -850,25 +896,12 @@ async function initSidebarFiltering() {
         const o2 = document.createElement("option"); o2.value = y; o2.textContent = y; yearToSelect.appendChild(o2);
     }
 
-    // Brands
-    fetch("json/brands_models_global.json")
-      .then(res => res.json())
-      .then(data => {
-          window._sidebarBrandModelData = data;
-          makeSelect.innerHTML = '<option value="">Vse znamke</option>';
-          Object.keys(data).sort().forEach(brand => {
-              const o = document.createElement("option");
-              o.value = brand;
-              o.textContent = brand;
-              makeSelect.appendChild(o);
-          });
-
-          // Sync custom selects once populated
-          initCustomSelects();
-
-          // Prefill from URL
-          prefillSidebarFromUrl();
-      });
+    // Brands — load the file matching the current category (avto/moto/gospodarska)
+    const initialCat = parseHashParams().get('cat') || '';
+    loadSidebarBrands(initialCat, () => {
+        // Prefill from URL once the initial brand list is ready
+        prefillSidebarFromUrl();
+    });
 
     // 3. Bind events
     const modelSelect = document.getElementById("sidebarModel");

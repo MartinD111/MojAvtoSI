@@ -97,8 +97,11 @@ export function filterBusinesses(businesses, filters, userLocation) {
         // 4. Leasing
         if (filters.leasing && !b.offersLeasing) return false;
 
-        // 5. Tyre storage
+        // 5. Tyre storage / marina (wet berth)
         if (filters.tyreStorage && !b.offersTyreStorage) return false;
+
+        // 5b. Dry storage / suha marina (navtika only)
+        if (filters.dryStorage && !b.offersDryStorage) return false;
 
         // 6. Minimum rating
         if (filters.minRating > 0 && b.rating < filters.minRating) return false;

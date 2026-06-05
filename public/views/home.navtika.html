@@ -2,7 +2,22 @@
     <div class="glass-hero">
         <h1 class="hero-title">
             <div class="hero-title-line1">
-                <span data-i18n-key="hero_let_your_next">Naj vas vaše naslednje</span>
+                <span data-i18n-key="hero_let_your_next_static">Naj vas</span>
+                <div class="hero-prefix-slider">
+                    <div class="hero-prefix-items">
+                        <span data-i18n-key="hero_let_your_next_pron_car">vaše naslednje</span>
+                        <span data-i18n-key="hero_let_your_next_pron_motorcycle">vaša naslednja</span>
+                        <span data-i18n-key="hero_let_your_next_pron_truck">vaš naslednji</span>
+                        <span data-i18n-key="hero_let_your_next_pron_forklift">vaša naslednja</span>
+                        <span data-i18n-key="hero_let_your_next_pron_jetski">vaš naslednji</span>
+                        <span data-i18n-key="hero_let_your_next_pron_snowmobile">vaš naslednji</span>
+                        <span data-i18n-key="hero_let_your_next_pron_tractor">vaš naslednji</span>
+                        <span data-i18n-key="hero_let_your_next_pron_bus">vaš naslednji</span>
+                        <span data-i18n-key="hero_let_your_next_pron_van">vaš naslednji</span>
+                        <span data-i18n-key="hero_let_your_next_pron_rv">vaš naslednji</span>
+                        <span data-i18n-key="hero_let_your_next_pron_car_loop">vaše naslednje</span>
+                    </div>
+                </div>
             </div>
             <div class="hero-word-slider">
                 <div class="hero-word-items">
@@ -20,8 +35,10 @@
                 </div>
             </div>
             <style>
-                .hero-word-items { display:flex; flex-direction:column; gap:0; margin:0; padding:0; animation:none; transform:translateY(0); }
+                .hero-prefix-slider { height: 1.4em; overflow: hidden; display: inline-flex; align-items: flex-start; justify-content: flex-start; min-width: 4.8em; }
+                .hero-word-items, .hero-prefix-items { display:flex; flex-direction:column; gap:0; margin:0; padding:0; animation:none; transform:translateY(0); }
                 .hero-word-items span { display:flex !important; align-items:center !important; justify-content:center !important; height:1.4em !important; min-height:1.4em !important; max-height:1.4em !important; line-height:1.4em !important; margin:0 !important; padding:0 !important; border:none !important; box-sizing:border-box !important; white-space:nowrap !important; color:inherit !important; }
+                .hero-prefix-items span { display:flex !important; align-items:center !important; justify-content:flex-start !important; height:1.4em !important; min-height:1.4em !important; max-height:1.4em !important; line-height:1.4em !important; margin:0 !important; padding:0 !important; border:none !important; box-sizing:border-box !important; white-space:nowrap !important; color:inherit !important; }
             </style>
             <div class="hero-title-line2">
                 <span class="text-gradient" data-i18n-key="hero_find_you">najde</span>
@@ -37,14 +54,14 @@
                 #navtikaHomeSearch .nh-field { display:flex; flex-direction:column; gap:0.35rem; flex:1; min-width:140px; }
                 #navtikaHomeSearch .nh-field label { font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em; text-align: center; width: 100%; }
                 /* Length slider track */
-                #navtikaHomeSearch .nh-slider-wrap { position:relative; padding:0.5rem 0 0.25rem; display: flex; align-items: center; }
-                #navtikaHomeSearch .nh-slider-wrap::before { content: ''; position: absolute; left: 5px; width: 6px; height: 6px; background-color: #fff; border-radius: 50%; z-index: 2; pointer-events: none; }
-                #navtikaHomeSearch .nh-slider { -webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:4px; background:linear-gradient(to right, var(--color-primary-start) var(--sl-pct,40%), rgba(0,0,0,0.08) var(--sl-pct,40%)); outline:none; cursor:pointer; }
-                #navtikaHomeSearch .nh-slider::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--color-primary-start); border:3.5px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25); cursor:pointer; margin-top: -1px; }
-                #navtikaHomeSearch .nh-slider::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:var(--color-primary-start); border:3.5px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25); cursor:pointer; }
-                #navtikaHomeSearch .nh-slider-labels { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted,#94a3b8); margin-top:0.2rem; }
+                #navtikaHomeSearch .nh-slider-wrap { position:relative; height:24px; display: flex; align-items: center; width: 100%; margin: 0.25rem 0; }
+                #navtikaHomeSearch .nh-slider-track { position: absolute; left: 0; right: 0; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); z-index: 1; pointer-events: none; }
+                #navtikaHomeSearch .nh-slider { position: absolute; -webkit-appearance:none; appearance:none; width:100%; height:8px; background:transparent; outline:none; pointer-events: none; margin: 0; z-index: 3; }
+                #navtikaHomeSearch .nh-slider::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--color-primary-start); border:3.5px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25); cursor:pointer; pointer-events: auto; position: relative; z-index: 4; margin-top: 0; }
+                #navtikaHomeSearch .nh-slider::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:var(--color-primary-start); border:3.5px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25); cursor:pointer; pointer-events: auto; position: relative; z-index: 4; }
+                #navtikaHomeSearch .nh-slider-labels { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted,#94a3b8); margin-top:0.4rem; }
                 #navtikaHomeSearch .nh-slider-val { font-size:0.78rem; font-weight:700; color:var(--color-primary-start); }
-                #navtikaHomeSearch .nh-actions { display:flex; gap:0.6rem; align-items:center; margin-top:0.25rem; }
+                #navtikaHomeSearch .nh-actions { display:flex; gap:1rem; align-items:center; justify-content:center; margin-top:0.75rem; flex-wrap:wrap; }
                 @media (max-width:600px) { #navtikaHomeSearch .nh-row { flex-direction:column; } }
             </style>
 
@@ -74,24 +91,30 @@
             <div style="margin-bottom:1.25rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
                     <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Dolžina plovila</label>
-                    <span class="nh-slider-val" id="navHomeLengthVal">do <strong id="navHomeLengthDisplay">30</strong> m</span>
+                    <span class="nh-slider-val" id="navHomeLengthVal"><strong id="navHomeLengthMinDisplay">3</strong> - <strong id="navHomeLengthMaxDisplay">30</strong> m</span>
                 </div>
-                <div class="nh-slider-wrap">
+                <div class="nh-slider-wrap" id="navHomeSliderWrap">
+                    <div class="nh-slider-track" id="navHomeSliderTrack"></div>
+                    <input type="range" id="nav-home-length-from" name="lengthFrom" min="3" max="50" value="3" step="1" class="nh-slider">
                     <input type="range" id="nav-home-length-to" name="lengthTo" min="3" max="50" value="30" step="1" class="nh-slider">
                 </div>
-                <div class="nh-slider-labels"><span>3 m</span><span>15 m</span><span>30 m</span><span>50 m</span></div>
-                <input type="hidden" id="nav-home-length-from" name="lengthFrom" value="">
+                <div class="nh-slider-labels" style="position:relative;height:1.2em;margin-top:0.4rem;">
+                    <span style="position:absolute;left:0%;transform:translateX(0%);">3 m</span>
+                    <span style="position:absolute;left:25.53%;transform:translateX(-50%);">15 m</span>
+                    <span style="position:absolute;left:57.45%;transform:translateX(-50%);">30 m</span>
+                    <span style="position:absolute;left:100%;transform:translateX(-100%);">50 m</span>
+                </div>
             </div>
 
             <!-- Vrstica 3: 3 gumbi -->
             <div class="nh-actions">
-                <button type="reset" class="pill-btn secondary btn-sm" style="gap:0.4rem;" title="Ponastavi">
-                    <i data-lucide="refresh-cw" style="width:15px;height:15px;"></i> Ponastavi
+                <button type="reset" class="pill-btn secondary" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem;" title="Ponastavi">
+                    <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Ponastavi
                 </button>
-                <a href="#/iskanje?cat=colni" class="pill-btn secondary btn-sm" id="navHomeAdvLink" style="gap:0.4rem; text-decoration:none;" title="Napredna iskanje">
-                    <i data-lucide="sliders-horizontal" style="width:15px;height:15px;"></i> Napredna iskanje
+                <a href="#/iskanje?cat=colni" class="pill-btn secondary" id="navHomeAdvLink" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem; text-decoration:none;" title="Napredna iskanje">
+                    <i data-lucide="sliders-horizontal" style="width:16px;height:16px;"></i> Napredna iskanje
                 </a>
-                <button type="submit" class="pill-btn primary search-submit-btn" style="flex:1; gap:0.5rem;">
+                <button type="submit" class="pill-btn primary search-submit-btn" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.5rem;">
                     <i data-lucide="search" style="width:16px;height:16px;"></i> Išči plovila
                 </button>
             </div>
@@ -100,13 +123,17 @@
 </div>
 
 <!-- Sponsored / rotating ads -->
-<div class="ad-banner-container rotating-ads-carousel">
-    <span class="sponsored-badge" data-i18n-key="sponsored_label">Sponzorirano</span>
-    <button class="carousel-btn prev" id="rot-prev-btn" aria-label="Prejšnji">&#10094;</button>
-    <div class="rotating-ads-track-container">
-        <div class="rotating-ads-track" id="rotating-ads-container"></div>
-    </div>
-    <button class="carousel-btn next" id="rot-next-btn" aria-label="Naslednji">&#10095;</button>
+<div class="page-container" style="margin-top:2rem; flex-direction:column;">
+    <section id="sponsored-section" class="carousel-section">
+        <span class="sponsored-badge" style="position:static;display:block;text-align:right;margin-bottom:0.5rem;" data-i18n-key="sponsored_label">Sponzorirano</span>
+        <div class="carousel-wrapper">
+            <button class="carousel-btn prev" id="rot-prev-btn" aria-label="Prejšnji">&#10094;</button>
+            <div class="carousel-track-container" style="mask-image:linear-gradient(to right,transparent,black 5%,black 95%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,black 5%,black 95%,transparent);">
+                <div class="carousel-track" id="rotating-ads-container"></div>
+            </div>
+            <button class="carousel-btn next" id="rot-next-btn" aria-label="Naslednji">&#10095;</button>
+        </div>
+    </section>
 </div>
 
 <!-- Featured listings -->

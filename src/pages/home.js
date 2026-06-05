@@ -426,8 +426,15 @@ function setupSearchForm() {
 }
 
 export function initWordSlider() {
+    if (window._wordSliderTimeout) {
+        clearTimeout(window._wordSliderTimeout);
+        window._wordSliderTimeout = null;
+    }
+
     const items = document.querySelector('.hero-word-items');
     if (!items) return;
+
+    const prefixItems = document.querySelector('.hero-prefix-items');
 
     const WORD_COUNT = 10; // real words (index 0–9); index 10 = car_loop clone
     const HOLD = 2000;     // ms each word is visible
@@ -435,6 +442,9 @@ export function initWordSlider() {
     let current = 0;
 
     items.style.transform = 'translateY(0)';
+    if (prefixItems) {
+        prefixItems.style.transform = 'translateY(0)';
+    }
 
     function slideToNext() {
         const isLast = current === WORD_COUNT - 1;
@@ -443,21 +453,32 @@ export function initWordSlider() {
         items.style.transition = `transform ${SLIDE}ms ease-in-out`;
         items.style.transform = `translateY(${-targetIndex * 1.4}em)`;
 
-        setTimeout(() => {
+        if (prefixItems) {
+            prefixItems.style.transition = `transform ${SLIDE}ms ease-in-out`;
+            prefixItems.style.transform = `translateY(${-targetIndex * 1.4}em)`;
+        }
+
+        window._wordSliderTimeout = setTimeout(() => {
             if (isLast) {
                 // Arrived at car_loop (avto) — snap silently back to position 0
                 items.style.transition = 'none';
                 items.style.transform = 'translateY(0)';
+
+                if (prefixItems) {
+                    prefixItems.style.transition = 'none';
+                    prefixItems.style.transform = 'translateY(0)';
+                }
+
                 current = 0;
                 requestAnimationFrame(() => requestAnimationFrame(() => {
-                    setTimeout(slideToNext, HOLD);
+                    window._wordSliderTimeout = setTimeout(slideToNext, HOLD);
                 }));
             } else {
                 current++;
-                setTimeout(slideToNext, HOLD);
+                window._wordSliderTimeout = setTimeout(slideToNext, HOLD);
             }
         }, SLIDE);
     }
 
-    setTimeout(slideToNext, HOLD);
+    window._wordSliderTimeout = setTimeout(slideToNext, HOLD);
 }
