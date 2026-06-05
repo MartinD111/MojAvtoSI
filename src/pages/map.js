@@ -11,6 +11,7 @@ import {
     getTypeLabels
 } from '../services/businessService.js';
 import { allBrands, serviceLabels } from '../data/businesses.js';
+import { PLATFORM } from '../config/platform.js';
 
 // ── State ────────────────────────────────────────────────────
 let leafletMap = null;
@@ -27,12 +28,13 @@ function getStars(rating) {
 }
 
 function getTypeBadgesHtml(business) {
-    const typeMap = { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
     if (business.businessTypes.length > 1) {
         return `<span class="biz-type-badge multi">⭐ Večnamenski</span>`;
     }
-    const t = business.businessTypes[0];
-    return `<span class="biz-type-badge ${t}">${typeMap[t] || t}</span>`;
+    const type = business.businessTypes[0];
+    // Platform-aware label (avto: Avto hiša/Servis/Vulkanizer, navtika: vessel roles)
+    const label = getTypeLabels(business)[0] || type;
+    return `<span class="biz-type-badge ${type}">${label}</span>`;
 }
 
 // ── Render business list ─────────────────────────────────────
@@ -408,9 +410,16 @@ function locateUser() {
         },
         err => {
             console.warn('[MapPage] Geolocation error:', err.message);
-            if (labelEl) labelEl.textContent = 'Ljubljana (privzeto)';
-            // Fallback: Ljubljana center
-            store.setUserLocation({ lat: 46.0511, lng: 14.5051 });
+            // MojaNavtika businesses are spread along the coast (and Croatia), so a
+            // tight default radius around an inland point would hide them all —
+            // leave location unset to show every marina/seller. MojAvto defaults to
+            // Ljubljana center as before.
+            if (PLATFORM.id === 'navtika') {
+                if (labelEl) labelEl.textContent = 'Vsa plovila (vse lokacije)';
+            } else {
+                if (labelEl) labelEl.textContent = 'Ljubljana (privzeto)';
+                store.setUserLocation({ lat: 46.0511, lng: 14.5051 });
+            }
             applyFilters();
         },
         { timeout: 8000 }
@@ -449,8 +458,9 @@ export function initMapPage() {
 
     // Init Leaflet map
     leafletMap = window.L.map('businessMap', {
-        center: [46.1512, 14.9955], // Slovenia center
-        zoom: 8,
+        // MojaNavtika centers on the Adriatic coast; MojAvto on Slovenia's centre.
+        center: PLATFORM.id === 'navtika' ? [45.3, 13.9] : [46.1512, 14.9955],
+        zoom: PLATFORM.id === 'navtika' ? 8 : 8,
         zoomControl: true
     });
 

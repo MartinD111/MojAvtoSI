@@ -609,9 +609,14 @@ export const mockBusinesses = [
     }
 ];
 
-// All unique brands across all businesses
+// Platform-aware business directory for derived lists below.
+import { mockBusinessesNavtika } from './businesses.navtika.js';
+import { PLATFORM as _PLATFORM } from '../config/platform.js';
+const _ACTIVE_BUSINESSES = _PLATFORM.id === 'navtika' ? mockBusinessesNavtika : mockBusinesses;
+
+// All unique brands across the active platform's businesses
 export const allBrands = [...new Set(
-    mockBusinesses.flatMap(b => [...b.authorizedBrands, ...b.supportedBrands]).filter(b => b && b !== 'vse znamke')
+    _ACTIVE_BUSINESSES.flatMap(b => [...b.authorizedBrands, ...b.supportedBrands]).filter(b => b && b !== 'vse znamke')
 )].sort();
 
 // All unique services
@@ -632,5 +637,12 @@ export const serviceLabels = {
     battery_service: 'Baterija (EV)',
     software_update: 'Software posodobitev',
     hybrid_service: 'Hibridni servis',
-    washing: 'Pranje'
+    washing: 'Pranje',
+    // ── MojaNavtika (vessel services) ──
+    engine_service: 'Servis motorja',
+    antifouling: 'Antifouling',
+    winter_storage: 'Zimovanje',
+    tubes_repair: 'Popravilo tub (gumenjaki)',
+    electronics: 'Navtična elektronika',
+    hull_repair: 'Popravilo trupa'
 };

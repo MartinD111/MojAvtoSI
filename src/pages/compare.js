@@ -1,5 +1,5 @@
-// Compare page — MojAvto.si
-// Renders side-by-side comparison of selected vehicles from localStorage
+// Compare page — renders side-by-side comparison of selected vehicles/vessels
+import { key as lsKey } from '../config/storageKeys.js';
 
 const ALL_FIELDS = [
     { key: 'year',         label: 'Letnik',           icon: 'calendar'   },
@@ -15,7 +15,7 @@ const ALL_FIELDS = [
     { key: 'engineStroke', label: 'Takt motorja',     icon: 'activity',   motoOnly: true },
 ];
 
-const STORAGE_KEY_FIELDS = 'mojavto_compare_fields';
+const STORAGE_KEY_FIELDS = lsKey('compare_fields');
 const DEFAULT_VISIBLE = ['year', 'mileage', 'power', 'fuel', 'location', 'seller'];
 
 function getVisibleFields() {
@@ -39,7 +39,7 @@ function renderComparison() {
     const container = document.getElementById('compareContent');
     if (!container) return;
 
-    const compareList = JSON.parse(localStorage.getItem('mojavto_compare') || '[]');
+    const compareList = JSON.parse(localStorage.getItem(lsKey('compare')) || '[]');
 
     if (compareList.length === 0) {
         container.innerHTML = `
@@ -119,9 +119,9 @@ function renderComparison() {
     container.querySelectorAll('.compare-remove-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const removeId = btn.getAttribute('data-remove-id');
-            let list = JSON.parse(localStorage.getItem('mojavto_compare') || '[]');
+            let list = JSON.parse(localStorage.getItem(lsKey('compare')) || '[]');
             list = list.filter(c => c.id !== removeId);
-            localStorage.setItem('mojavto_compare', JSON.stringify(list));
+            localStorage.setItem(lsKey('compare'), JSON.stringify(list));
             if (window.updateHeaderCompare) window.updateHeaderCompare();
             renderComparison();
         });
@@ -131,7 +131,7 @@ function renderComparison() {
     const clearBtn = document.getElementById('clearAllCompare');
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
-            localStorage.setItem('mojavto_compare', JSON.stringify([]));
+            localStorage.setItem(lsKey('compare'), JSON.stringify([]));
             if (window.updateHeaderCompare) window.updateHeaderCompare();
             renderComparison();
         });

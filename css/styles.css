@@ -38,6 +38,125 @@ body.dark-mode {
   /* slate-100 */
 }
 
+/* ── MojaNavtika Platform Marine Vibes overrides ── */
+body.platform-navtika {
+  --color-bg-base: #e0f2fe; /* Light sky blue (ocean tint) */
+  --bg-glass: rgba(240, 249, 255, 0.94); /* soft sky-50 glass */
+  --border-glass: 1.5px solid rgba(2, 132, 199, 0.26); /* visible ocean blue borders */
+  --shadow-glass: 0 10px 40px -10px rgba(2, 132, 199, 0.16);
+}
+
+/* Light mode card and input color overrides for navtika */
+body.platform-navtika .adv-accordion {
+  background: rgba(240, 249, 255, 0.75) !important;
+  border: 1px solid rgba(2, 132, 199, 0.22) !important;
+}
+
+body.platform-navtika .adv-input,
+body.platform-navtika .glass-select,
+body.platform-navtika .custom-select-trigger {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.3) !important;
+  color: #0369a1 !important;
+}
+
+body.platform-navtika .adv-input:focus,
+body.platform-navtika .glass-select:focus,
+body.platform-navtika .custom-select-trigger:focus {
+  border-color: var(--color-primary-start) !important;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15) !important;
+}
+
+body.platform-navtika .custom-select-menu {
+  background: #ffffff !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+}
+
+body.platform-navtika .custom-select-option:hover {
+  background: rgba(2, 132, 199, 0.1) !important;
+}
+
+body.platform-navtika .pill-input {
+  background: #ffffff !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+  color: #0369a1 !important;
+}
+
+body.platform-navtika .pill-input:focus {
+  border-color: var(--color-primary-start) !important;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15) !important;
+}
+
+body.platform-navtika .adv-chip {
+  background: rgba(240, 249, 255, 0.85);
+  border-color: rgba(2, 132, 199, 0.22);
+  color: #0369a1;
+}
+
+body.platform-navtika .adv-chip:hover {
+  background: #ffffff;
+  border-color: var(--color-primary-start);
+}
+
+body.platform-navtika.dark-mode {
+  --color-bg-base: #021b33; /* rich deep navy/ocean blue base */
+  --bg-glass: rgba(3, 27, 51, 0.96); /* rich deep ocean card bg */
+  --border-glass: 1.5px solid rgba(14, 165, 233, 0.32); /* sea blue borders */
+  --shadow-glass: 0 20px 60px rgba(1, 15, 33, 0.6);
+  color: #e2f1fc; /* soft sky/sea blue text tint */
+}
+
+/* Deep ocean card and input color overrides for dark mode */
+body.platform-navtika.dark-mode .adv-accordion {
+  background: rgba(6, 32, 59, 0.9) !important;
+  border: 1px solid rgba(14, 165, 233, 0.3) !important;
+}
+
+body.platform-navtika.dark-mode .adv-input,
+body.platform-navtika.dark-mode .glass-select,
+body.platform-navtika.dark-mode .custom-select-trigger {
+  background: rgba(4, 21, 38, 0.8) !important;
+  border: 1.5px solid rgba(14, 165, 233, 0.35) !important;
+  color: #e2f1fc !important;
+}
+
+body.platform-navtika.dark-mode .custom-select-menu {
+  background: #052038 !important;
+  border-color: rgba(14, 165, 233, 0.35) !important;
+}
+
+body.platform-navtika.dark-mode .custom-select-option:hover {
+  background: rgba(14, 165, 233, 0.25) !important;
+}
+
+body.platform-navtika.dark-mode .pill-input {
+  background: rgba(4, 21, 38, 0.85) !important;
+  border-color: rgba(14, 165, 233, 0.38) !important;
+  color: #e2f1fc !important;
+}
+
+body.platform-navtika.dark-mode .pill-input:focus {
+  background: rgba(4, 21, 38, 0.95) !important;
+  border-color: var(--color-primary-start) !important;
+}
+
+body.platform-navtika.dark-mode .body-type-card {
+  background: rgba(14, 165, 233, 0.08) !important;
+  border-color: rgba(14, 165, 233, 0.25) !important;
+}
+
+body.platform-navtika.dark-mode .body-type-card:hover,
+body.platform-navtika.dark-mode .body-type-card.active {
+  background: rgba(14, 165, 233, 0.25) !important;
+  border-color: var(--color-primary-start) !important;
+}
+
+body.platform-navtika.dark-mode .nav-pill.active-pill {
+  background: rgba(14, 165, 233, 0.3) !important;
+  border-color: rgba(14, 165, 233, 0.5) !important;
+  color: #ffffff;
+}
+
 body.dark-mode .glass-card {
   background: var(--bg-glass);
   border-color: rgba(255, 255, 255, 0.12);
@@ -5010,7 +5129,17 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
     gap: 0.5rem;
   }
 
+  .sort-wrap .sort-label {
+    order: 1;
+    flex: 1;
+  }
+
+  .sort-wrap .legend-btn {
+    order: 2;
+  }
+
   .sort-wrap .pill-select-wrapper {
+    order: 3;
     flex: 1 1 100%;
     min-width: 0;
     max-width: none;
@@ -5035,6 +5164,18 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
   transition: all 0.2s;
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .legend-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+body.dark-mode .legend-btn:hover {
+  background: rgba(51, 65, 85, 1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
 }
 
 /* ── View Toggle (Grid / List) ─────────────────────────────────────── */

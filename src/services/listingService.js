@@ -5,6 +5,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase.js';
 import { ALL_EQUIPMENT_VALUES } from '../data/equipment.js';
+import { key as lsKey } from '../config/storageKeys.js';
 
 // ── Image upload ──────────────────────────────────────────────────────────────
 export async function uploadImages(files, userId) {
@@ -67,10 +68,24 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         vinDetails: draft.vinData ? { ...draft.vinData } : null,
         vinOverrides: draft.vinOverrides || {},
 
-        // Item kind: 'vehicle' (default) | 'part' | 'tire'
+        // Item kind: 'vehicle' (default) | 'part' | 'tire' | 'oprema' | 'plovilo' | 'motor'
         itemType,
         // For parts/tires this records which vehicle family they are for.
         vehicleCategory: draft.vehicleCategory || (itemType === 'vehicle' ? (draft.category || 'avto') : ''),
+
+        // Sale vs rental — first-class on platforms with a global rental toggle
+        // (MojaNavtika charter). isRental kept as a denormalized boolean because
+        // the search filter (advanced-search matchesFilters) reads it directly.
+        listingType: draft.listingType === 'rental' ? 'rental' : 'sale',
+        isRental: draft.listingType === 'rental',
+        rentalPricing: draft.listingType === 'rental'
+            ? {
+                perDay: Number(draft.rentalPricing?.perDay) || null,
+                perWeek: Number(draft.rentalPricing?.perWeek) || null,
+                deposit: Number(draft.rentalPricing?.deposit) || null,
+                minDays: Number(draft.rentalPricing?.minDays) || null,
+            }
+            : null,
 
         // Parts (itemType === 'part')
         partGroup: draft.partGroup || '',
@@ -227,8 +242,8 @@ export async function updateListing(listingId, updates) {
 //     "today / this week / overall" can be derived without an analytics backend.
 // One view is counted per listing per browser session (a "unique view").
 
-const VIEW_TS_PREFIX = 'mojavto_views_';        // localStorage timeline (array of ms timestamps)
-const VIEW_SESSION_PREFIX = 'mojavto_viewed_';  // sessionStorage dedup guard
+const VIEW_TS_PREFIX = lsKey('views') + '_';        // localStorage timeline (array of ms timestamps)
+const VIEW_SESSION_PREFIX = lsKey('viewed') + '_';  // sessionStorage dedup guard
 const VIEW_RETENTION_MS = 90 * 86400000;        // prune local timeline after 90 days
 
 function isoDay(d) {
@@ -336,8 +351,8 @@ export async function getListings() {
         console.warn("Could not fetch listings from Firestore, using only sample data.", err);
     }
 
-    // Merge with sample cars for demo purposes
-    const allListings = [...listings, ...sampleCars];
+    // Merge with the active platform's sample listings for demo purposes
+    const allListings = [...listings, ...SAMPLE_LISTINGS];
     return sortByPromotion(allListings);
 }
 
@@ -357,14 +372,17 @@ export async function deleteListing(listingId) {
 }
 
 import { sampleCars } from '../data/sampleListings.js';
+import { sampleBoats } from '../data/sampleBoats.js';
+import { PLATFORM } from '../config/platform.js';
+
+// Active platform's demo/fallback listings.
+const SAMPLE_LISTINGS = PLATFORM.id === 'navtika' ? sampleBoats : sampleCars;
 
 // ── Get single listing ────────────────────────────────────────────────────────
 export async function getListingById(listingId) {
-    // Check sample cars first (for demo/development)
-    if (listingId.startsWith('car-')) {
-        const sample = sampleCars.find(c => c.id === listingId);
-        if (sample) return sample;
-    }
+    // Check sample listings first (for demo/development)
+    const sample = SAMPLE_LISTINGS.find(c => c.id === listingId);
+    if (sample) return sample;
 
     const { getDoc, doc: docFn } = await import('firebase/firestore');
     const docRef = docFn(db, 'listings', listingId);

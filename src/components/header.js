@@ -3,6 +3,8 @@
 import { onAuth, logout } from '../auth/auth.js';
 import { MAIN_CATEGORIES, buildSearchUrl } from '../data/categories.js';
 import { t } from '../core/i18n.js';
+import { PLATFORM } from '../config/platform.js';
+import { key as lsKey } from '../config/storageKeys.js';
 
 export function initHeader() {
   const headerEl = document.getElementById('header');
@@ -15,10 +17,10 @@ export function initHeader() {
       <div class="sticky-nav">
         <div class="nav-container">
           <div class="glass-card rounded-pill nav-inner">
-            <a href="#/" class="logo-text">MojAvto<span class="logo-accent">.si</span></a>
+            <a href="#/" class="logo-text">${PLATFORM.brandName}<span class="logo-accent">${PLATFORM.tld}</span></a>
 
             <nav id="navLinks" class="desktop-links">
-              <!-- Oglasi — hover dropdown holding the 4 vehicle categories -->
+              <!-- Oglasi — hover dropdown holding the platform's main categories -->
               <div class="mega-menu-wrapper" id="oglasiMenuWrapper">
                 <button type="button" class="nav-pill mega-trigger ${isSearch ? 'active-pill' : ''}" id="oglasiTrigger" aria-haspopup="true" aria-expanded="false">
                   <i data-lucide="newspaper"></i> ${t('header_listings', 'Oglasi')}
@@ -26,18 +28,10 @@ export function initHeader() {
                 </button>
                 <div class="mega-menu" id="oglasiMega" role="menu">
                   <div class="mega-vertical-list">
-                    <a href="${buildSearchUrl('avto')}" class="mega-vertical-item ${isSearch && hash.includes('cat=avto') ? 'active' : ''}" role="menuitem">
-                      <i data-lucide="${cats.avto.icon}"></i> ${t(cats.avto.label)}
-                    </a>
-                    <a href="${buildSearchUrl('moto')}" class="mega-vertical-item ${isSearch && hash.includes('cat=moto') ? 'active' : ''}" role="menuitem">
-                      <i data-lucide="${cats.moto.icon}"></i> ${t(cats.moto.label)}
-                    </a>
-                    <a href="${buildSearchUrl('gospodarska')}" class="mega-vertical-item ${isSearch && hash.includes('cat=gospodarska') ? 'active' : ''}" role="menuitem">
-                      <i data-lucide="${cats.gospodarska.icon}"></i> ${t(cats.gospodarska.label)}
-                    </a>
-                    <a href="${buildSearchUrl('prosti-cas')}" class="mega-vertical-item ${isSearch && hash.includes('cat=prosti-cas') ? 'active' : ''}" role="menuitem">
-                      <i data-lucide="${cats.prosti_cas.icon}"></i> ${t(cats.prosti_cas.label)}
-                    </a>
+                    ${Object.values(cats).map(cat => `
+                    <a href="${buildSearchUrl(cat.slug)}" class="mega-vertical-item ${isSearch && hash.includes('cat=' + cat.slug) ? 'active' : ''}" role="menuitem">
+                      <i data-lucide="${cat.icon}"></i> ${t(cat.label)}
+                    </a>`).join('')}
                   </div>
                 </div>
               </div>
@@ -47,10 +41,14 @@ export function initHeader() {
                 <i data-lucide="building-2"></i> ${t('header_dealers')}
               </a>
 
-              <!-- Gume in deli — parts & tires search -->
-              <a href="#/gume-in-deli" class="nav-pill ${hash.startsWith('#/gume-in-deli') ? 'active-pill' : ''}">
-                <i data-lucide="disc-3"></i> ${t('header_tires_parts', 'Gume in deli')}
-              </a>
+              <!-- Gume in deli (avto) / Oprema za plovila (navtika) -->
+              ${(() => {
+                const partsHref = PLATFORM.id === 'navtika' ? '#/iskanje?cat=oprema' : '#/gume-in-deli';
+                const partsActive = PLATFORM.id === 'navtika' ? hash.includes('cat=oprema') : hash.startsWith('#/gume-in-deli');
+                return `<a href="${partsHref}" class="nav-pill ${partsActive ? 'active-pill' : ''}">
+                <i data-lucide="${PLATFORM.id === 'navtika' ? 'life-buoy' : 'disc-3'}"></i> ${t('header_tires_parts', 'Gume in deli')}
+              </a>`;
+              })()}
 
               <!-- Mobile-only extras (hidden on desktop via CSS) -->
               <div class="mobile-nav-extras">
@@ -61,7 +59,7 @@ export function initHeader() {
                   <a href="#/garaža" class="nav-pill"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
                   <button type="button" class="nav-pill dropdown-logout" id="mobileLogoutBtn"><i data-lucide="log-out"></i> ${t('logout')}</button>
                 ` : `
-                  <a href="#/prijava" class="nav-pill" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;"><i data-lucide="user"></i> ${t('login')}</a>
+                  <a href="#/prijava" class="nav-pill" style="background:linear-gradient(135deg,${PLATFORM.colors.cta},${PLATFORM.colors.ctaEnd});color:#fff;font-weight:700;"><i data-lucide="user"></i> ${t('login')}</a>
                 `}
                 <button type="button" class="nav-pill" id="themeToggleMobileBtn" aria-label="Preklopi temo">
                   <i data-lucide="${document.body.classList.contains('dark-mode') ? 'sun' : 'moon'}"></i>
@@ -92,14 +90,14 @@ export function initHeader() {
                     </a>
                     <div class="dropdown-divider"></div>
                     <button id="logoutBtn" class="dropdown-logout"><i data-lucide="log-out"></i> ${t('logout')}</button>
-                    <a href="http://localhost:3000/#/admin" target="_blank" rel="noopener noreferrer" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
+                    <a href="#/admin" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
                   </div>
                 </div>
               ` : `
                 <a href="#/novi-oglas" class="pill-btn primary btn-sm">
                   <i data-lucide="plus"></i><span> ${t('publish_listing')}</span>
                 </a>
-                <a href="#/prijava" class="pill-btn success btn-sm" style="background: linear-gradient(135deg, #10b981, #059669) !important; color: white !important; font-weight: 700; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;">
+                <a href="#/prijava" class="pill-btn success btn-sm" style="background: linear-gradient(135deg, ${PLATFORM.colors.cta}, ${PLATFORM.colors.ctaEnd}) !important; color: white !important; font-weight: 700; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;">
                   <i data-lucide="user"></i> ${t('login')}
                 </a>
               `}
@@ -205,8 +203,9 @@ export function initHeader() {
       // Tap (mobile) / keyboard toggle
       oglasiTrigger.addEventListener('click', (e) => {
         if (!isMobile()) {
-          // On desktop, clicking "Oglasi" takes us to advanced search for avtomobili
-          window.location.hash = buildSearchUrl('avto');
+          // On desktop, clicking "Oglasi" opens search for the first/primary category.
+          const firstCat = Object.values(MAIN_CATEGORIES)[0];
+          window.location.hash = buildSearchUrl(firstCat?.slug || 'avto');
         } else {
           e.preventDefault();
           e.stopPropagation();
@@ -269,7 +268,7 @@ export function initHeader() {
   // Compare badge & preview
   // ═══════════════════════════════════════════════════════════════════════
   window.updateHeaderCompare = () => {
-    const compareList = JSON.parse(localStorage.getItem('mojavto_compare') || '[]');
+    const compareList = JSON.parse(localStorage.getItem(lsKey('compare')) || '[]');
     const badge = document.getElementById('compareBadgeDropdown');
 
     if (badge) {

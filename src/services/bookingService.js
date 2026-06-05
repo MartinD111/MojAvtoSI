@@ -10,6 +10,7 @@ import {
     perTyreServices,
     serviceIcons,
 } from '../data/bookingData.js';
+import { key as lsKey } from '../config/storageKeys.js';
 import { serviceLabels } from '../data/businesses.js';
 
 // ── ID generator ──────────────────────────────────────────────
@@ -106,7 +107,7 @@ export function calculateTotal(serviceIds, selectedProducts) {
  */
 export function getVehiclesForUser(userId) {
     try {
-        const stored = localStorage.getItem(`mojavto_vehicles_${userId}`);
+        const stored = localStorage.getItem(lsKey('vehicles', userId));
         const vehicles = stored ? JSON.parse(stored) : [];
         // Always include mock vehicles for the demo user
         if (!userId || userId === 'mock-user') {
@@ -131,7 +132,7 @@ export function saveVehicle(userId, vehicleData) {
     try {
         const existing = getVehiclesForUser(userId).filter(v => v.userId === userId);
         const updated = [...existing, vehicle];
-        localStorage.setItem(`mojavto_vehicles_${userId}`, JSON.stringify(updated));
+        localStorage.setItem(lsKey('vehicles', userId), JSON.stringify(updated));
     } catch {
         console.warn('[BookingService] Could not save vehicle to localStorage');
     }
@@ -147,7 +148,7 @@ export function saveVehicle(userId, vehicleData) {
  */
 export function getBookingsForUser(userId) {
     try {
-        const stored = localStorage.getItem(`mojavto_bookings_${userId}`);
+        const stored = localStorage.getItem(lsKey('bookings', userId));
         const bookings = stored ? JSON.parse(stored) : [];
         if (!userId || userId === 'mock-user') {
             const storedIds = bookings.map(b => b.id);
@@ -177,7 +178,7 @@ export function saveBooking(bookingData) {
         const userId = bookingData.userId || 'mock-user';
         const existing = getBookingsForUser(userId).filter(b => b.userId === userId);
         const updated = [...existing, booking];
-        localStorage.setItem(`mojavto_bookings_${userId}`, JSON.stringify(updated));
+        localStorage.setItem(lsKey('bookings', userId), JSON.stringify(updated));
     } catch {
         console.warn('[BookingService] Could not save booking to localStorage');
     }
@@ -197,7 +198,7 @@ export function cancelBooking(userId, bookingId) {
         const updated = all.map(b =>
             b.id === bookingId ? { ...b, status: 'cancelled' } : b
         ).filter(b => b.userId === userId);
-        localStorage.setItem(`mojavto_bookings_${userId}`, JSON.stringify(updated));
+        localStorage.setItem(lsKey('bookings', userId), JSON.stringify(updated));
         return true;
     } catch {
         return false;

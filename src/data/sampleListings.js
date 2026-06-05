@@ -753,3 +753,8 @@ export const sampleCars = [
         status: 'active'
     }
 ];
+
+// Platform-aware demo/fallback listing set. MojAvto → cars, MojaNavtika → vessels.
+import { sampleBoats } from './sampleBoats.js';
+import { PLATFORM as _PLATFORM } from '../config/platform.js';
+export const SAMPLE_LISTINGS = _PLATFORM.id === 'navtika' ? sampleBoats : sampleCars;

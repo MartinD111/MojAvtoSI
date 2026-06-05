@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { calculateTCO } from '../services/tcoEngine.js';
 import { getTCOPreferences } from '../services/tcoPreferencesService.js';
+import { key as lsKey } from '../config/storageKeys.js';
 import './CostPanel.css';
 
 const MONTH_OPTIONS = [12, 24, 36, 48, 60, 72, 84];
@@ -28,7 +29,7 @@ export default function CostPanel({ price, powerKw, fuelType, mpg, kWhPer100km, 
     const [userAge, setUserAge] = useState(35);
     const [excludedCategories, setExcludedCategories] = useState(() => {
         try {
-            const cached = localStorage.getItem('mojavto_tco_excluded');
+            const cached = localStorage.getItem(lsKey('tco_excluded'));
             return cached ? JSON.parse(cached) : [];
         } catch (e) {
             return [];
@@ -46,7 +47,7 @@ export default function CostPanel({ price, powerKw, fuelType, mpg, kWhPer100km, 
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('mojavto_tco_excluded', JSON.stringify(excludedCategories));
+        localStorage.setItem(lsKey('tco_excluded'), JSON.stringify(excludedCategories));
     }, [excludedCategories]);
 
     const toggleCategory = (key) => {

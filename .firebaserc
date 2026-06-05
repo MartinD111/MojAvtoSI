@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "mojavto-64b50"
+  },
+  "targets": {
+    "mojavto-64b50": {
+      "hosting": {
+        "avto": ["mojavto-64b50"],
+        "navtika": ["mojanavtika"]
+      }
+    }
   }
 }

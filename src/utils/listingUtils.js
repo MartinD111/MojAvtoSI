@@ -1,5 +1,6 @@
 // Shared utilities for vehicle listing cards (US-localized)
 import { getCurrentLang } from '../core/i18n.js';
+import { key as lsKey } from '../config/storageKeys.js';
 
 // =====================================================================
 // US LOCALIZATION HELPERS
@@ -240,7 +241,7 @@ export function formatDisplacement(cc, unit, lang = 'sl') {
 
 export function getDisplacementPill(engineCc) {
     if (!engineCc) return '';
-    const unit = localStorage.getItem('mojavto_displacement_unit') || 'cc';
+    const unit = localStorage.getItem(lsKey('displacement_unit')) || 'cc';
     const lang = getCurrentLang();
     const formatted = formatDisplacement(engineCc, unit, lang);
     return `<div class="spec-pill displacement-pill" data-cc="${engineCc}">

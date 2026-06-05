@@ -6,8 +6,9 @@
 
 import { db, auth } from '../firebase.js';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { key as lsKey } from '../config/storageKeys.js';
 
-const STORAGE_KEY = 'mojavto_tco_preferences';
+const STORAGE_KEY = lsKey('tco_preferences');
 const FIRESTORE_COLLECTION = 'users';
 
 // Default preferences

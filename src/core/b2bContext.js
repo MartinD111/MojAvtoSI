@@ -3,8 +3,9 @@
 
 import { auth, db } from '../firebase.js';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { key as lsKey } from '../config/storageKeys.js';
 
-const LS_KEY = 'mojavto_b2b_profile_cache';
+const LS_KEY = lsKey('b2b_profile_cache');
 
 let _profile = null;         // Firestore user doc (cached)
 let _unsub = null;           // snapshot unsubscriber

@@ -1,0 +1,22 @@
+{
+  "Bavaria": { "Cruiser 34": ["Cruiser 34"], "Cruiser 46": ["Cruiser 46"], "C42": ["C42"], "R40": ["R40"] },
+  "Beneteau": { "Oceanis 38.1": ["Oceanis 38.1"], "Oceanis 46.1": ["Oceanis 46.1"], "Antares 7": ["Antares 7"], "Flyer 8": ["Flyer 8 SUNdeck", "Flyer 8 SPACEdeck"], "Gran Turismo 32": ["Gran Turismo 32"] },
+  "Jeanneau": { "Sun Odyssey 410": ["Sun Odyssey 410"], "Sun Odyssey 490": ["Sun Odyssey 490"], "Cap Camarat 7.5": ["Cap Camarat 7.5 WA", "Cap Camarat 7.5 CC"], "Merry Fisher 795": ["Merry Fisher 795"], "Leader 33": ["Leader 33"] },
+  "Sea Ray": { "SPX 190": ["SPX 190"], "Sundancer 320": ["Sundancer 320"], "SLX 280": ["SLX 280"] },
+  "Bayliner": { "VR5": ["VR5 Bowrider"], "Element E18": ["Element E18"], "Ciera 8": ["Ciera 8"] },
+  "Quicksilver": { "Activ 605": ["Activ 605 Sundeck", "Activ 605 Cruiser"], "Activ 805": ["Activ 805 Cruiser"], "Captur 555": ["Captur 555 Pilothouse"] },
+  "Azimut": { "Atlantis 45": ["Atlantis 45"], "Magellano 43": ["Magellano 43"], "Flybridge 53": ["Flybridge 53"] },
+  "Princess": { "F45": ["F45"], "V40": ["V40"], "S66": ["S66"] },
+  "Sunseeker": { "Manhattan 55": ["Manhattan 55"], "Predator 55": ["Predator 55"] },
+  "Fairline": { "Targa 43": ["Targa 43"], "Squadron 50": ["Squadron 50"] },
+  "Elan": { "E4": ["E4"], "GT6": ["GT6"], "Impression 43": ["Impression 43"] },
+  "Lagoon": { "40": ["Lagoon 40"], "42": ["Lagoon 42"], "46": ["Lagoon 46"] },
+  "Fountaine Pajot": { "Lucia 40": ["Lucia 40"], "Astrea 42": ["Astrea 42"], "Elba 45": ["Elba 45"] },
+  "Zodiac": { "Medline 7.5": ["Medline 7.5"], "Pro 5.5": ["Pro 5.5"], "Open 5.5": ["Open 5.5"] },
+  "Brig": { "Eagle 6.7": ["Eagle 6.7"], "Navigator 700": ["Navigator 700"], "Falcon 500": ["Falcon 500"] },
+  "Highfield": { "Ocean Master 540": ["Ocean Master 540"], "Sport 660": ["Sport 660"], "Classic 460": ["Classic 460"] },
+  "Sealine": { "C330": ["C330"], "F430": ["F430"], "S330": ["S330"] },
+  "Yamaha": { "WaveRunner FX": ["FX Cruiser HO", "FX SVHO"], "WaveRunner VX": ["VX Cruiser", "VX Deluxe"], "WaveRunner GP": ["GP1800R HO"] },
+  "Sea-Doo": { "GTI": ["GTI 130", "GTI SE 170"], "RXP-X": ["RXP-X 325"], "Spark": ["Spark 2up", "Spark 3up"] },
+  "Kawasaki": { "Jet Ski Ultra": ["Ultra 310LX", "Ultra 160LX"], "Jet Ski SX-R": ["SX-R 160"] }
+}

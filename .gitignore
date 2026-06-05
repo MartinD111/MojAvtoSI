@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 dist/
+dist-avto/
+dist-navtika/
 dist-ssr/
 
 # Environment variables (NEVER commit these)

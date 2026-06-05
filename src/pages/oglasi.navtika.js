@@ -736,7 +736,7 @@ function initViewToggle() {
 }
 
 // ── Page Init ────────────────────────────────────────────────
-export function initOglasiPage() {
+export function initNavtikaOglasiPage() {
     console.log('[OglasiPage] init, SAMPLE_LISTINGS count:', SAMPLE_LISTINGS?.length);
 
     const container = document.getElementById('carListingsContainer');
@@ -1002,8 +1002,25 @@ async function initSidebarFiltering() {
     if (form) {
         form.querySelectorAll("input, select").forEach(el => {
             if (el !== makeSelect && el !== modelSelect && el !== variantSelect) {
-                el.addEventListener("change", applySidebarFilters);
-                el.addEventListener("input", applySidebarFilters);
+                if (el.id === 'sidebarProdajaToggle' || el.id === 'sidebarNajemToggle') {
+                    el.addEventListener("change", () => {
+                        const params = parseHashParams();
+                        const prodajaToggle = document.getElementById("sidebarProdajaToggle");
+                        const najemToggle = document.getElementById("sidebarNajemToggle");
+                        if (prodajaToggle) {
+                            if (prodajaToggle.checked) params.set('prodaja', '1');
+                            else params.delete('prodaja');
+                        }
+                        if (najemToggle) {
+                            if (najemToggle.checked) params.set('najem', '1');
+                            else params.delete('najem');
+                        }
+                        window.location.hash = `/oglasi?${params.toString()}`;
+                    });
+                } else {
+                    el.addEventListener("change", applySidebarFilters);
+                    el.addEventListener("input", applySidebarFilters);
+                }
             }
         });
     }
@@ -1038,250 +1055,77 @@ async function initSidebarFiltering() {
 }
 
 function applySidebarFilters() {
+    const prodajaToggle = document.getElementById("sidebarProdajaToggle");
+    const najemToggle = document.getElementById("sidebarNajemToggle");
+    const fProdaja = prodajaToggle ? prodajaToggle.checked : true;
+    const fNajem = najemToggle ? najemToggle.checked : true;
+
     const make = document.getElementById("sidebarMake")?.value || '';
     const model = document.getElementById("sidebarModel")?.value || '';
-    const variant = document.getElementById("sidebarVariant")?.value || '';
+    const lengthFrom = parseFloat(document.getElementById("sidebarLengthFrom")?.value) || 0;
+    const lengthTo = parseFloat(document.getElementById("sidebarLengthTo")?.value) || Infinity;
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
     const priceTo = parseFormattedNumber(document.getElementById("sidebarPriceTo")?.value) || Infinity;
-
-    // New car filters
-    const bodyType = document.getElementById("sidebarBodyType")?.value || '';
     const powerFrom = parseInt(document.getElementById("sidebarPowerFrom")?.value, 10) || 0;
     const powerTo = parseInt(document.getElementById("sidebarPowerTo")?.value, 10) || Infinity;
-    const driveType = document.getElementById("sidebarDriveType")?.value || '';
+    const engineHoursTo = parseInt(document.getElementById("sidebarEngineHoursTo")?.value, 10) || Infinity;
+    const hull = document.getElementById("sidebarHull")?.value || '';
 
-    // New moto filters
-    const engineType = document.getElementById("sidebarEngineType")?.value || '';
-    const engineStroke = document.getElementById("sidebarEngineStroke")?.value || '';
-
-    // New common filters
-    const color = document.getElementById("sidebarColor")?.value || '';
-    const sellerType = document.getElementById("sidebarSellerType")?.value || '';
-    const region = document.getElementById("sidebarRegion")?.value || '';
-
-    const onlySale = document.getElementById("sidebarOnlySale")?.checked || false;
-    const showNoPrice = document.getElementById("sidebarShowNoPrice")?.checked ?? true;
-
-    // Parse multi-select checkboxes for fuel and transmission
     const form = document.getElementById("sidebarFiltersForm");
     let fuels = [];
-    let transmissions = [];
     if (form) {
         const fd = new FormData(form);
         fuels = fd.getAll("fuel").filter(Boolean);
-        transmissions = fd.getAll("transmission").filter(Boolean);
     }
 
-    // Check category context from URL
     const params = parseHashParams();
     const cat = params.get('cat');
-    const najem = params.get('najem');
-    const variantParam = params.get('variant');
-    const mileageToParam = parseInt(params.get('mileageTo'), 10) || Infinity;
-
-    // Parse multi-vehicle search array
-    let vehiclesParam = [];
-    try {
-        const vRaw = params.get('vehicles');
-        if (vRaw) {
-            vehiclesParam = JSON.parse(vRaw);
-            if (!Array.isArray(vehiclesParam)) vehiclesParam = [];
-        }
-    } catch(e) {
-        console.warn("Failed to parse vehicles query parameter:", e);
-    }
+    const extraEquipment = params.get('extraEquipment');
 
     const filtered = _allActiveListings.filter(car => {
-        const carCat = (car.category === 'motor' || car.category === 'moto') ? 'moto' : car.category;
-        const filterCat = (cat === 'motor' || cat === 'moto') ? 'moto' : cat;
-        if (filterCat && carCat !== filterCat) return false;
-        if (najem === '1' && !car.isRental) return false;
+        if (!['plovilo', 'motor'].includes(car.itemType)) return false;
+        if (cat && car.category !== cat) return false;
 
-        // Vehicle (Make / Model / Variant) filtering:
-        if (make) {
-            if (car.make !== make) return false;
-            if (model && car.model !== model) return false;
-            
-            if (variant) {
-                const titleStr = (car.title || '').toLowerCase();
-                const subtitleStr = (car.subtitle || '').toLowerCase();
-                const variantLower = variant.toLowerCase();
-                if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
-            } else {
-                const urlMake = params.get('make');
-                const urlModel = params.get('model');
-                if (make === urlMake && (!urlModel || model === urlModel) && variantParam) {
-                    const titleStr = (car.title || '').toLowerCase();
-                    const subtitleStr = (car.subtitle || '').toLowerCase();
-                    const variantLower = variantParam.toLowerCase();
-                    if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
-                }
-            }
+        // Sale / rental
+        if (fNajem || fProdaja) {
+            if (fNajem && !fProdaja && !car.isRental) return false;
+            if (fProdaja && !fNajem && car.isRental) return false;
         } else {
-            if (vehiclesParam.length > 0) {
-                const match = vehiclesParam.some(v => {
-                    if (v.make && car.make !== v.make) return false;
-                    if (v.model && car.model !== v.model) return false;
-                    if (v.variant) {
-                        const titleStr = (car.title || '').toLowerCase();
-                        const subtitleStr = (car.subtitle || '').toLowerCase();
-                        const vLower = v.variant.toLowerCase();
-                        if (!titleStr.includes(vLower) && !subtitleStr.includes(vLower)) return false;
-                    }
-                    return true;
-                });
-                if (!match) return false;
-            } else {
-                const urlMake = params.get('make');
-                const urlModel = params.get('model');
-                if (urlMake && car.make !== urlMake) return false;
-                if (urlModel && car.model !== urlModel) return false;
-                if (variantParam) {
-                    const titleStr = (car.title || '').toLowerCase();
-                    const subtitleStr = (car.subtitle || '').toLowerCase();
-                    const variantLower = variantParam.toLowerCase();
-                    if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
-                }
-            }
+            return false;
         }
 
-        const carYear = parseInt(car.year, 10) || 0;
-        if (carYear < yearFrom || (yearTo !== Infinity && carYear > yearTo)) return false;
+        if (make && car.make !== make) return false;
+        if (model && car.model !== model) return false;
 
-        const carPrice = car.priceRaw || car.priceEur || 0;
-        if (carPrice > priceTo) return false;
+        const urlMake = params.get('make');
+        const urlModel = params.get('model');
+        if (!make && urlMake && car.make !== urlMake) return false;
+        if (!model && urlModel && car.model !== urlModel) return false;
 
-        const carMileage = car.mileageKm || (parseInt(car.mileage?.replace(/[^0-9]/g, ''), 10) || 0);
-        if (carMileage > mileageToParam) return false;
+        const price = car.priceRaw ?? car.priceEur ?? null;
+        if (priceTo < Infinity && price != null && price > priceTo) return false;
 
-        if (fuels.length > 0) {
-            let normalizedCarFuel = car.fuel;
-            if (car.fuel === 'Petrol') normalizedCarFuel = 'Bencin';
-            if (car.fuel === 'Diesel') normalizedCarFuel = 'Dizel';
-            if (car.fuel === 'Hybrid') normalizedCarFuel = 'Hibrid';
-            if (car.fuel === 'Electric') normalizedCarFuel = 'Elektrika';
-            if (car.fuel === 'Priključni hibrid') normalizedCarFuel = 'Plug-in hibrid';
+        const carYear = Number(car.year) || null;
+        if (yearFrom > 0 && carYear && carYear < yearFrom) return false;
+        if (yearTo < Infinity && carYear && carYear > yearTo) return false;
 
-            const isMatch = fuels.some(f => {
-                if (f === normalizedCarFuel) return true;
-                
-                // Match hybrid subtypes
-                if (normalizedCarFuel === 'Hibrid' || normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid') {
-                    if (f === 'Hibrid') return true;
-                    
-                    const titleText = ((car.title || '') + ' ' + (car.subtitle || '')).toLowerCase();
-                    if (f === 'Plug-in hibrid') {
-                        return normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid' || titleText.includes('plug') || titleText.includes('phev');
-                    }
-                    if (f === 'Blagi hibrid') {
-                        const isPlugin = normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid' || titleText.includes('plug') || titleText.includes('phev');
-                        return !isPlugin;
-                    }
-                    if (f === 'Bencin hibrid') {
-                        return titleText.includes('tsi') || titleText.includes('tfsi') || titleText.includes('bencin') || titleText.includes('petrol') || titleText.includes('i-mmd') || (!titleText.includes('tdi') && !titleText.includes('dci') && !titleText.includes('cdi') && !titleText.includes(' 2.0 d') && !titleText.includes('dizel'));
-                    }
-                    if (f === 'Dizel hibrid') {
-                        return titleText.includes('tdi') || titleText.includes('dci') || titleText.includes('cdi') || titleText.includes('dizel') || titleText.includes('diesel') || titleText.includes(' 2.0 d');
-                    }
-                }
-                return false;
-            });
-            if (!isMatch) return false;
-        }
-        if (transmissions.length > 0 && !transmissions.includes(car.transmission)) return false;
+        if (lengthFrom > 0 && (car.lengthM || 0) < lengthFrom) return false;
+        if (lengthTo < Infinity && car.lengthM && car.lengthM > lengthTo) return false;
 
-        // 🚗 Car Specific Filters
-        if (cat !== 'moto' && cat !== 'motor') {
-            // Body Type
-            if (bodyType) {
-                const seg = (car.segment || '').toLowerCase();
-                const title = (car.title || '').toLowerCase();
-                const bodyLower = bodyType.toLowerCase();
-                if (bodyLower === 'limuzina') {
-                    if (!seg.includes('sedan') && !seg.includes('limuzina')) return false;
-                } else if (bodyLower === 'karavan') {
-                    if (!seg.includes('wagon') && !seg.includes('karavan') && !title.includes('avant') && !title.includes('touring') && !title.includes('karavan')) return false;
-                } else if (bodyLower === 'enoprostorec') {
-                    if (!seg.includes('minivan') && !seg.includes('enoprostorec') && !seg.includes('mpv')) return false;
-                } else if (bodyLower === 'suv') {
-                    if (!seg.includes('suv') && !seg.includes('terensko') && !seg.includes('crossover')) return false;
-                } else if (bodyLower === 'coupe') {
-                    if (!seg.includes('coupe') && !title.includes('coupe')) return false;
-                } else if (bodyLower === 'kabriolet') {
-                    if (!seg.includes('convertible') && !seg.includes('cabriolet') && !seg.includes('kabriolet') && !title.includes('cabrio') && !title.includes('kabriolet')) return false;
-                } else if (bodyLower === 'kombi' || bodyLower === 'dostavnik') {
-                    if (!seg.includes('kombi') && !seg.includes('dostav') && !seg.includes('van')) return false;
-                } else if (bodyLower === 'drugo') {
-                    const commonSegs = ['sedan', 'limuzina', 'wagon', 'karavan', 'minivan', 'enoprostorec', 'mpv', 'suv', 'terensko', 'crossover', 'coupe', 'convertible', 'cabriolet', 'kabriolet', 'kombi', 'dostav', 'van'];
-                    if (commonSegs.some(s => seg.includes(s))) return false;
-                }
-            }
+        const hp = car.powerHp || (car.powerKw ? Math.round(car.powerKw * 1.35962) : null);
+        if (powerFrom > 0 && hp && hp < powerFrom) return false;
+        if (powerTo < Infinity && hp && hp > powerTo) return false;
 
-            // Engine Power (kW)
-            const carPower = car.powerKw || 0;
-            if (carPower < powerFrom || (powerTo !== Infinity && carPower > powerTo)) return false;
+        if (engineHoursTo < Infinity && car.engineHours && car.engineHours > engineHoursTo) return false;
 
-            // Drive Type
-            if (driveType) {
-                const carDrive = (car.driveType || '').toLowerCase();
-                if (driveType === 'FWD') {
-                    if (!carDrive.includes('spredaj') && !carDrive.includes('fwd')) return false;
-                } else if (driveType === 'RWD') {
-                    if (!carDrive.includes('zadaj') && !carDrive.includes('rwd')) return false;
-                } else if (driveType === 'AWD') {
-                    if (!carDrive.includes('4x4') && !carDrive.includes('4matic') && !carDrive.includes('awd') && !carDrive.includes('xdrive') && !carDrive.includes('quattro')) return false;
-                }
-            }
-        }
+        if (hull && car.hullMaterial !== hull) return false;
 
-        // 🏍️ Motorcycle Specific Filters
-        if (cat === 'moto' || cat === 'motor') {
-            // Engine Type
-            if (engineType) {
-                const carEng = (car.engineType || '').toLowerCase();
-                const filterEng = engineType.toLowerCase();
-                if (filterEng === 'vrstni') {
-                    if (!carEng.includes('vrstni') && !carEng.startsWith('i') && !carEng.startsWith('inline')) return false;
-                } else if (filterEng === 'v-motor') {
-                    if (!carEng.includes('v-') && !carEng.includes('v2') && !carEng.includes('v4')) return false;
-                } else if (carEng !== filterEng && !carEng.includes(filterEng)) {
-                    return false;
-                }
-            }
+        if (fuels.length > 0 && !fuels.includes(car.fuel)) return false;
 
-            // Engine Stroke
-            if (engineStroke && car.engineStroke !== engineStroke) return false;
-        }
-
-        // Color
-        if (color) {
-            const carColor = (car.color || '').toLowerCase();
-            const filterColor = color.toLowerCase();
-            if (filterColor === 'drugo') {
-                const commonColors = ['bela', 'črna', 'siva', 'srebrna', 'modra', 'rdeča', 'zelena', 'rumena', 'rjava', 'zlata', 'oranžna'];
-                if (commonColors.includes(carColor)) return false;
-            } else {
-                if (carColor !== filterColor && !carColor.includes(filterColor)) return false;
-            }
-        }
-
-        // Seller Type
-        if (sellerType && car.sellerType !== sellerType) return false;
-
-        // Region
-        if (region) {
-            const carRegion = car.location?.region || '';
-            if (carRegion !== region) return false;
-        }
-
-        // Only Sale
-        if (onlySale && !car.salePriceEur) return false;
-
-        // Show/Hide no price
-        if (!showNoPrice) {
-            const hasPrice = (car.priceRaw && car.priceRaw > 0) || (car.priceEur && car.priceEur > 0) || (car.price && car.price.toLowerCase() !== 'po dogovoru' && !car.callForPrice);
-            if (!hasPrice) return false;
+        if (extraEquipment) {
+            const selectedEqs = extraEquipment.split(',').filter(Boolean);
+            if (!car.equipment || !selectedEqs.every(eq => car.equipment.includes(eq))) return false;
         }
 
         return true;
@@ -1289,187 +1133,74 @@ function applySidebarFilters() {
 
     renderListings(filtered);
 
-    // Update count in header
     const countEl = document.querySelector(".results-header h1 span");
     if (countEl) {
-        countEl.textContent = `(${filtered.length} vozil)`;
+        countEl.textContent = `(${filtered.length} plovil)`;
     }
-}
-
-function renderSidebarVehicleCards(vehicles) {
-    const container = document.getElementById("sidebarVehicleCards");
-    if (!container) return;
-    
-    if (!vehicles || vehicles.length === 0) {
-        container.innerHTML = "";
-        return;
-    }
-    
-    container.innerHTML = vehicles.map((v, i) => {
-        const parts = [v.make];
-        if (v.model) parts.push(v.model);
-        if (v.variant) parts.push(v.variant);
-        return `
-            <div class="vehicle-entry-card" style="margin-bottom:0.25rem;">
-                <div class="vec-info">
-                    ${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}
-                </div>
-                <button type="button" class="vec-remove" data-idx="${i}">&times;</button>
-            </div>
-        `;
-    }).join('');
-
-    container.querySelectorAll('.vec-remove').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const idx = parseInt(btn.getAttribute('data-idx'), 10);
-            vehicles.splice(idx, 1);
-            
-            // Update URL hash with updated vehicles
-            const params = parseHashParams();
-            if (vehicles.length > 0) {
-                params.set('vehicles', JSON.stringify(vehicles));
-            } else {
-                params.delete('vehicles');
-            }
-            const paramStr = params.toString();
-            window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
-        });
-    });
 }
 
 function prefillSidebarFromUrl() {
     window._isPrefilling = true;
     const params = parseHashParams();
-    const make = params.get("make");
-    const model = params.get("model");
-    const variant = params.get("variant");
-    const yearFrom = params.get("yearFrom");
-    const yearTo = params.get("yearTo");
-    const priceTo = params.get("priceTo");
-    const fuel = params.get("fuel");
-    const transmission = params.get("transmission");
 
-    // New url params
-    const bodyType = params.get("bodyType");
-    const powerFrom = params.get("powerFrom");
-    const powerTo = params.get("powerTo");
-    const driveType = params.get("driveType");
-    const engineType = params.get("engineType");
-    const engineStroke = params.get("engineStroke");
-    const color = params.get("color");
-    const sellerType = params.get("sellerType");
-    const region = params.get("region");
-    const onlySale = params.get("onlySale");
-    const showNoPrice = params.get("showNoPrice");
-
-    // Parse and render multi-vehicle search array
-    let vehicles = [];
-    try {
-        const vRaw = params.get('vehicles');
-        if (vRaw) {
-            vehicles = JSON.parse(vRaw);
-            if (!Array.isArray(vehicles)) vehicles = [];
-        }
-    } catch(e) {
-        console.warn("Failed to parse vehicles query parameter:", e);
-    }
-    renderSidebarVehicleCards(vehicles);
-
-    const makeSelect = document.getElementById("sidebarMake");
-    const modelSelect = document.getElementById("sidebarModel");
-    const variantSelect = document.getElementById("sidebarVariant");
-    const yearFromSelect = document.getElementById("sidebarYearFrom");
-    const yearToSelect = document.getElementById("sidebarYearTo");
-    const priceToInput = document.getElementById("sidebarPriceTo");
-
-    if (make && makeSelect) {
-        makeSelect.value = make;
-        makeSelect.dispatchEvent(new Event('change'));
-        
-        setTimeout(() => {
-            if (model && modelSelect) {
-                modelSelect.value = model;
-                modelSelect.dispatchEvent(new Event('change'));
-                
-                setTimeout(() => {
-                    if (variant && variantSelect) {
-                        variantSelect.value = variant;
-                        variantSelect.dispatchEvent(new Event('change'));
-                    }
-                    applySidebarFilters();
-                }, 50);
+    const prefillSelect = (id, paramName) => {
+        const val = params.get(paramName);
+        if (val) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = val;
+                el.dispatchEvent(new Event('change'));
             }
-        }, 50);
-    }
-    if (yearFrom && yearFromSelect) {
-        yearFromSelect.value = yearFrom;
-        yearFromSelect.dispatchEvent(new Event('change'));
-    }
-    if (yearTo && yearToSelect) {
-        yearToSelect.value = yearTo;
-        yearToSelect.dispatchEvent(new Event('change'));
-    }
-    if (priceTo && priceToInput) {
-        priceToInput.value = priceTo;
-    }
-
-    const prefillSelect = (id, val) => {
-        const el = document.getElementById(id);
-        if (el && val) {
-            el.value = val;
-            el.dispatchEvent(new Event('change'));
         }
     };
-    prefillSelect("sidebarBodyType", bodyType);
-    prefillSelect("sidebarDriveType", driveType);
-    prefillSelect("sidebarEngineType", engineType);
-    prefillSelect("sidebarEngineStroke", engineStroke);
-    prefillSelect("sidebarColor", color);
-    prefillSelect("sidebarSellerType", sellerType);
-    prefillSelect("sidebarRegion", region);
+    const prefillInput = (id, paramName) => {
+        const val = params.get(paramName);
+        if (val) {
+            const el = document.getElementById(id);
+            if (el) el.value = val;
+        }
+    };
 
-    if (powerFrom && document.getElementById("sidebarPowerFrom")) {
-        document.getElementById("sidebarPowerFrom").value = powerFrom;
-    }
-    if (powerTo && document.getElementById("sidebarPowerTo")) {
-        document.getElementById("sidebarPowerTo").value = powerTo;
+    prefillSelect("sidebarMake", "make");
+    setTimeout(() => {
+        prefillSelect("sidebarModel", "model");
+    }, 50);
+
+    prefillSelect("sidebarYearFrom", "yearFrom");
+    prefillSelect("sidebarYearTo", "yearTo");
+    prefillInput("sidebarPriceTo", "priceTo");
+    prefillInput("sidebarLengthFrom", "lengthFrom");
+    prefillInput("sidebarLengthTo", "lengthTo");
+    prefillInput("sidebarPowerFrom", "powerFrom");
+    prefillInput("sidebarPowerTo", "powerTo");
+    prefillInput("sidebarEngineHoursTo", "engineHoursTo");
+    prefillSelect("sidebarHull", "hull");
+
+    const prodajaVal = params.get("prodaja");
+    const najemVal = params.get("najem");
+    const prodajaToggle = document.getElementById("sidebarProdajaToggle");
+    const najemToggle = document.getElementById("sidebarNajemToggle");
+    if (prodajaToggle && najemToggle) {
+        if (prodajaVal !== null || najemVal !== null) {
+            prodajaToggle.checked = prodajaVal === '1';
+            najemToggle.checked = najemVal === '1';
+        } else {
+            // Default when not in URL: Prodaja checked, Rent unchecked
+            prodajaToggle.checked = true;
+            najemToggle.checked = false;
+        }
     }
 
-    if (onlySale && document.getElementById("sidebarOnlySale")) {
-        document.getElementById("sidebarOnlySale").checked = onlySale === 'true';
-    }
-    if (showNoPrice && document.getElementById("sidebarShowNoPrice")) {
-        document.getElementById("sidebarShowNoPrice").checked = showNoPrice === 'true';
-    }
-
+    const fuel = params.get("fuel");
     if (fuel) {
-        const fuels = fuel.split(',').map(f => {
-            if (f === 'Petrol') return 'Bencin';
-            if (f === 'Diesel') return 'Dizel';
-            if (f === 'Hybrid') return 'Hibrid';
-            if (f === 'Electric') return 'Elektrika';
-            return f;
-        });
+        const fuels = fuel.split(',');
         const fuelCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="fuel"]');
         fuelCheckboxes.forEach(cb => {
             cb.checked = fuels.includes(cb.value);
         });
     }
 
-    if (transmission) {
-        const transList = transmission.split(',');
-        const transCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="transmission"]');
-        transCheckboxes.forEach(cb => {
-            cb.checked = transList.includes(cb.value);
-        });
-    }
-
-    // Expand hybrid types if prefilled
-    updateSidebarHybridGroup();
-
-    // Only apply immediately if make is not present (as make sets off a async populate chain)
-    if (!make) {
+    if (!params.get("make")) {
         applySidebarFilters();
     }
 
@@ -1477,6 +1208,7 @@ function prefillSidebarFromUrl() {
         window._isPrefilling = false;
     }, 200);
 }
+
 
 export function destroyOglasiPage() {
     if (window._oglasiUnsubscribe) {

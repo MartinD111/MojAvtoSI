@@ -3,13 +3,29 @@
 
 import { initLoginPage } from './auth/login.js';
 import { initRegisterPage } from './auth/register.js';
+import { PLATFORM } from './config/platform.js';
 
 // Lazy imports — only loaded when needed
 const pageModules = {
     home: () => import('./pages/home.js').then(m => m.initHomePage()),
-    oglasi: () => import('./pages/oglasi.js').then(m => m.initOglasiPage()),
-    'advanced-search': () => import('./pages/advanced-search.js').then(m => m.initAdvancedSearchPage()),
-    listing: () => import('./pages/listing.js').then(m => m.initListingPage()),
+    oglasi: () => {
+        if (window.PLATFORM_ID === 'navtika' || document.documentElement.dataset.platform === 'navtika' || (typeof PLATFORM !== 'undefined' && PLATFORM.id === 'navtika')) {
+            return import('./pages/oglasi.navtika.js').then(m => m.initNavtikaOglasiPage());
+        }
+        return import('./pages/oglasi.js').then(m => m.initOglasiPage());
+    },
+    'advanced-search': () => {
+        if (window.PLATFORM_ID === 'navtika' || document.documentElement.dataset.platform === 'navtika' || (typeof PLATFORM !== 'undefined' && PLATFORM.id === 'navtika')) {
+            return import('./pages/advanced-search.navtika.js').then(m => m.initAdvancedSearchPage());
+        }
+        return import('./pages/advanced-search.js').then(m => m.initAdvancedSearchPage());
+    },
+    listing: () => {
+        if (PLATFORM.id === 'navtika') {
+            return import('./pages/listing.navtika.js').then(m => m.initNavtikaListingPage());
+        }
+        return import('./pages/listing.js').then(m => m.initListingPage());
+    },
     'gume-in-deli': () => import('./pages/gume-in-deli.js').then(m => m.initGumeInDeliPage()),
     'catalog-product': () => import('./pages/catalog-product.js').then(m => m.initCatalogProductPage()),
     'create-listing': () => import('./pages/create-listing.js').then(m => m.initCreateListingPage()),

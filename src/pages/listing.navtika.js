@@ -16,7 +16,7 @@ import CostPanel from '../components/CostPanel.jsx';
 import { getServiceHistoryByVin } from '../services/serviceBookService.js';
 import { t, getCurrentLang } from '../core/i18n.js';
 
-export async function initListingPage() {
+export async function initNavtikaListingPage() {
     console.log('[ListingPage] init');
 
     const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
@@ -767,62 +767,28 @@ function vinRow(icon, label, value, cls) {
 
 // ── Technical specs ───────────────────────────────────────────────────────────
 function renderSpecsHtml(l) {
-    const km = l.mileageKm || l.mileage;
-    const powerKw = l.powerKw || l.power;
-    const powerLabel = powerKw
-        ? t('hp_val', { val: Math.round(powerKw * 1.34102) })
-        : null;
+    const keySpecs = [];
+    if (l.year) keySpecs.push({ label: t('spec_first_registration', 'Letnik'), value: l.year, icon: 'calendar-days' });
+    if (l.lengthM) keySpecs.push({ label: 'Dolžina', value: `${l.lengthM} m`, icon: 'ruler' });
+    if (l.fuel) keySpecs.push({ label: 'Gorivo', value: l.fuel, icon: 'fuel' });
+    if (l.enginePowerHp || l.powerHp) keySpecs.push({ label: 'Moč motorja', value: `${l.enginePowerHp || l.powerHp} KM`, icon: 'zap' });
+    if (l.engineHours) keySpecs.push({ label: 'Ure motorja', value: `${l.engineHours} h`, icon: 'clock' });
+    if (l.cabins) keySpecs.push({ label: 'Kabine', value: l.cabins, icon: 'bed' });
 
-    const fuelStr = (l.fuel || '').toLowerCase().trim();
-    const isElectric = fuelStr === 'elektrika' || fuelStr === 'električno' || fuelStr === 'electric' || fuelStr === 'e';
-    const isMoto = l.category === 'moto' || l.category === 'motor';
-
-    // 1. Key Specs for the primary box
-    const keySpecs = [
-        { label: t('spec_first_registration'), value: l.firstRegistration || l.year, icon: 'calendar-days' },
-        { label: t('spec_vehicle_type'), value: l.subcategory || l.segment, icon: 'car' },
-        { label: t('spec_mileage'), value: km ? fmtKm(km) : null, icon: 'gauge' },
-        { label: t('spec_power'), value: powerLabel, icon: 'zap' },
-        { label: t('spec_fuel'), value: isElectric ? 'E' : null, icon: 'fuel' },
-        { label: t('spec_gearbox'), value: !isElectric ? l.transmission : null, icon: 'settings-2' },
-        isMoto && l.engineStroke ? { label: 'Takt motorja', value: l.engineStroke, icon: 'activity' } : null,
-        isMoto && l.engineType ? { label: 'Vrsta motorja', value: l.engineType, icon: 'cpu' } : null,
-        { label: t('spec_displacement'), value: l.engineCc ? formatDisplacement(l.engineCc, localStorage.getItem(lsKey('displacement_unit')) || 'cc', getCurrentLang()) : null, icon: 'cpu' },
-        {
-            label: isElectric ? t('spec_range') : t('spec_fuel_economy'),
-            value: buildConsumptionLabel(l),
-            icon: isElectric ? 'battery-charging' : 'droplet'
-        },
-    ].filter(s => s && s.value !== null && s.value !== undefined && s.value !== '');
-
-    // 2. All other specs for the accordion
-    const secondarySpecs = [
-        [t('condition'), l.condition],
-        [t('drive_type'), l.driveType],
-        [t('previous_owners'), l.previousOwnersCount ? l.previousOwnersCount + '.' : null],
-        [t('color'), l.color ? (l.colorType && l.colorType !== 'solid' ? `${l.color} (${l.colorType})` : l.color) : null],
-        [t('doors'), l.doorsCount],
-        [t('seats'), l.seatsCount],
-        [t('co2_emissions'), l.co2 ? t('unit_gkm', { val: l.co2 }) : null],
-        [t('emission_class'), l.emissionClass],
-        [t('hybrid_type'), l.hybridType],
-        [t('consumption_combined'), l.fuelL100kmCombined ? t('unit_l100km', { val: l.fuelL100kmCombined }) : (l.fuelL100km ? t('unit_l100km', { val: l.fuelL100km }) : null)],
-        [t('consumption_city'), l.fuelL100kmCity ? t('unit_l100km', { val: l.fuelL100kmCity }) : null],
-        [t('consumption_highway'), l.fuelL100kmHighway ? t('unit_l100km', { val: l.fuelL100kmHighway }) : null],
-        [t('battery_capacity'), l.batteryKwh ? t('unit_kwh', { val: l.batteryKwh }) : null],
-        [t('range_wltp'), l.rangeKm ? t('unit_km', { val: l.rangeKm }) : null],
-        [t('towing_capacity'), l.towingKg ? t('unit_kg', { val: l.towingKg }) : null],
-        [t('registered_until'), l.registeredUntil],
-    ].filter(([, v]) => v !== null && v !== undefined && v !== '');
-
-    if (keySpecs.length === 0 && secondarySpecs.length === 0) return '';
+    const secondarySpecs = [];
+    if (l.beamM) secondarySpecs.push(['Širina', `${l.beamM} m`]);
+    if (l.draftM) secondarySpecs.push(['Ugrez', `${l.draftM} m`]);
+    if (l.hullMaterial) secondarySpecs.push(['Material trupa', l.hullMaterial]);
+    if (l.ceCategory) secondarySpecs.push(['CE kategorija', l.ceCategory]);
+    if (l.engineCount) secondarySpecs.push(['Število motorjev', l.engineCount]);
+    if (l.engineMountType) secondarySpecs.push(['Tip motorja', l.engineMountType]);
+    if (l.berths) secondarySpecs.push(['Ležišča', l.berths]);
 
     return `
         <section class="lp-section">
-            <h2 class="lp-section-title centered">${t('technical_specifications')}</h2>
+            <h2 class="lp-section-title centered">${t('technical_specifications', 'Tehnični podatki')}</h2>
             
             <div class="lp-specs-container">
-                <!-- Primary Grid Box -->
                 <div class="lp-key-specs-box">
                     <div class="lp-key-specs-grid">
                         ${keySpecs.map(s => `
@@ -834,7 +800,6 @@ function renderSpecsHtml(l) {
                     </div>
                 </div>
 
-                <!-- Secondary Specs Accordion -->
                 ${secondarySpecs.length > 0 ? `
                 <div class="adv-accordion glass-card">
                     <div class="adv-acc-header">
@@ -1086,7 +1051,10 @@ function catLabel(cat) {
         gospodarska: t('cat_commercial'),
         mehanizacija: t('cat_machinery'),
         'prosti-cas': t('cat_leisure'),
-        deli: t('cat_parts')
+        deli: t('cat_parts'),
+        plovila: 'Plovila',
+        colni: 'Čolni',
+        motorji: 'Motorji'
     };
     return map[cat] || t('header_listings');
 }

@@ -2,6 +2,7 @@
 // Multi-step wizard: Vehicle → Type → Services → Products → DateTime → Confirm
 
 import { getBusinessById } from '../services/businessService.js';
+import { key as lsKey } from '../config/storageKeys.js';
 import {
     getServicesForBusiness,
     getProductsForServices,
@@ -1226,12 +1227,12 @@ export async function initBookingPage() {
     resetState();
 
     // Check for tire purchase handoff
-    const tireHandoffRaw = sessionStorage.getItem('mojavto_tire_handoff');
+    const tireHandoffRaw = sessionStorage.getItem(lsKey('tire_handoff'));
     const tireHandoff = tireHandoffRaw ? (() => {
         try { return JSON.parse(tireHandoffRaw); } catch { return null; }
     })() : null;
     // Clear immediately so it doesn't re-trigger on next visit
-    if (tireHandoff) sessionStorage.removeItem('mojavto_tire_handoff');
+    if (tireHandoff) sessionStorage.removeItem(lsKey('tire_handoff'));
 
     // Parse URL params
     const hash = window.location.hash;

@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { onAuth } from './auth/auth';
 import AdvancedSearch from './pages/AdvancedSearch';
+import { PLATFORM } from './config/platform.js';
+
+const BRAND_FULL = `${PLATFORM.brandName}${PLATFORM.tld}`;
 
 // Ovojnica za komponente
 const Layout = ({ children }) => {
   return (
     <>
       <header className="site-header" style={{ padding: '20px', background: '#333', color: 'white', display: 'flex', gap: '20px', marginBottom: '20px' }}>
-        <Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>MojAvto.si</Link>
+        <Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>{BRAND_FULL}</Link>
         <Link to="/search" style={{ color: 'white', textDecoration: 'none' }}>Iskalnik</Link>
         <Link to="/create" style={{ color: 'white', textDecoration: 'none' }}>Dodaj Oglas</Link>
       </header>
@@ -16,7 +19,7 @@ const Layout = ({ children }) => {
         {children}
       </main>
       <footer style={{ padding: '40px 20px', background: '#f8f9fa', color: '#666', marginTop: '60px', textAlign: 'center', borderTop: '1px solid #eee' }}>
-        &copy; 2026 MojAvto.si — Vse pravice pridržane.
+        &copy; 2026 {BRAND_FULL} — Vse pravice pridržane.
       </footer>
     </>
   );

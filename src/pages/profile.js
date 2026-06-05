@@ -3,6 +3,7 @@
 import { getVehicles, addVehicle, updateVehicle, deleteVehicle } from '../services/garageService.js';
 import { getBrands, getModels } from '../services/adminService.js';
 import { t } from '../core/i18n.js';
+import { key as lsKey } from '../config/storageKeys.js';
 
 export async function initProfilePage() {
     const container = document.getElementById('app-container');
@@ -454,7 +455,7 @@ function fuelText(fuel) {
 }
 
 function formatNumber(num) {
-    const lang = localStorage.getItem('mojavto_lang') || 'en';
+    const lang = localStorage.getItem(lsKey('lang')) || 'en';
     const locale = lang === 'sl' ? 'sl-SI' : 'en-US';
     return new Intl.NumberFormat(locale).format(num);
 }

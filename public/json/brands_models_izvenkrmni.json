@@ -1,0 +1,12 @@
+{
+  "Yamaha": { "F4": ["F4"], "F9.9": ["F9.9"], "F40": ["F40"], "F70": ["F70"], "F115": ["F115"], "F200": ["F200"], "F300": ["F300"], "F425 XTO": ["F425 XTO"] },
+  "Mercury": { "F5": ["F5"], "F15": ["F15"], "F50": ["F50"], "F100": ["F100"], "F150": ["F150"], "Verado 250": ["Verado 250"], "Verado 350": ["Verado 350"], "Verado 600": ["Verado 600"] },
+  "Suzuki": { "DF6": ["DF6"], "DF20": ["DF20"], "DF60": ["DF60"], "DF115": ["DF115"], "DF175": ["DF175"], "DF300": ["DF300"], "DF350A": ["DF350A"] },
+  "Honda": { "BF5": ["BF5"], "BF20": ["BF20"], "BF50": ["BF50"], "BF100": ["BF100"], "BF150": ["BF150"], "BF250": ["BF250"] },
+  "Tohatsu": { "MFS6": ["MFS6"], "MFS20": ["MFS20"], "MFS60": ["MFS60"], "MFS115": ["MFS115"], "MFS140": ["MFS140"] },
+  "Selva": { "Guppy 5": ["Guppy 5"], "Dorado 40": ["Dorado 40"], "Murena 115": ["Murena 115"], "Swordfish 200": ["Swordfish 200"] },
+  "Mariner": { "F8": ["F8"], "F60": ["F60"], "F150": ["F150"] },
+  "Evinrude": { "E-TEC 30": ["E-TEC 30"], "E-TEC G2 150": ["E-TEC G2 150"], "E-TEC G2 300": ["E-TEC G2 300"] },
+  "Torqeedo": { "Travel 1103": ["Travel 1103 C"], "Cruise 3.0": ["Cruise 3.0 T", "Cruise 3.0 R"], "Cruise 12.0": ["Cruise 12.0"], "Deep Blue 50": ["Deep Blue 50"] },
+  "ePropulsion": { "Spirit 1.0": ["Spirit 1.0 Plus", "Spirit 1.0 Evo"], "Navy 3.0": ["Navy 3.0"], "Navy 6.0": ["Navy 6.0"] }
+}

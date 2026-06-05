@@ -16,6 +16,8 @@ import {
     getScrapingSources, createScrapingSource, updateScrapingSource, deleteScrapingSource,
     getCatalogProductsAdmin, createCatalogProduct, updateCatalogProduct, deleteCatalogProduct,
 } from '../services/adminService.js';
+import { PLATFORM } from '../config/platform.js';
+import { MAIN_CATEGORIES } from '../data/categories.js';
 
 // ── Global admin state ────────────────────────────────────────────────────────
 let _adminUser = null;
@@ -84,9 +86,9 @@ function renderShell() {
       <aside class="adm-sidebar" id="adm-sidebar">
         <div class="adm-brand">
           <div class="adm-brand-logo">
-            <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#f97316"/><path d="M6 20h20M9 20l1.5-6h11L23 20M10 17h12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="11" cy="22" r="1.5" fill="#fff"/><circle cx="21" cy="22" r="1.5" fill="#fff"/></svg>
+            <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="${PLATFORM.colors.primaryStart}"/><path d="M6 20h20M9 20l1.5-6h11L23 20M10 17h12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="11" cy="22" r="1.5" fill="#fff"/><circle cx="21" cy="22" r="1.5" fill="#fff"/></svg>
           </div>
-          <div class="adm-brand-text">MojAvto <span>Admin</span></div>
+          <div class="adm-brand-text">${PLATFORM.brandName} <span>Admin</span></div>
         </div>
 
         <div class="adm-sidebar-search">
@@ -105,10 +107,10 @@ function renderShell() {
           ${navItem('reports',      'reports',   'Poročila')}
 
           <div class="adm-nav-group-label">Katalog</div>
-          ${navItem('taxonomy',     'taxonomy',  'Taksonomija vozil')}
-          ${navItem('vozila-uvoz',  'vozila',    'Vnos vozil (Excel)')}
+          ${navItem('taxonomy',     'taxonomy',  PLATFORM.id === 'navtika' ? 'Taksonomija plovil' : 'Taksonomija vozil')}
+          ${navItem('vozila-uvoz',  'vozila',    PLATFORM.id === 'navtika' ? 'Vnos plovil (Excel)' : 'Vnos vozil (Excel)')}
 
-          <div class="adm-nav-group-label">Cenik (Gume in deli)</div>
+          <div class="adm-nav-group-label">${PLATFORM.id === 'navtika' ? 'Cenik (oprema)' : 'Cenik (Gume in deli)'}</div>
           ${navItem('webscraping',  'webscraping', 'Webscraping')}
           ${navItem('catalog',      'catalog',     'Katalog izdelkov')}
 
@@ -317,9 +319,7 @@ async function renderListings() {
           </select>
           <select id="lst-filter-cat" class="adm-select">
             <option value="">Vse kategorije</option>
-            <option value="avto">Avto</option>
-            <option value="moto">Moto</option>
-            <option value="gospodarska">Gospodarska</option>
+            ${Object.values(MAIN_CATEGORIES).map(c => `<option value="${c.slug}">${c.slug}</option>`).join('')}
           </select>
           <button class="adm-btn" id="lst-filter-btn">Filtriraj</button>
         </div>
@@ -377,7 +377,7 @@ async function loadListingsTable() {
                   <td><input type="checkbox" class="lst-row-check" value="${l.id}"></td>
                   <td>
                     <div class="adm-listing-cell">
-                      ${l.images?.exterior?.[0] ? `<img src="${l.images.exterior[0]}" class="adm-thumb">` : '<div class="adm-thumb adm-thumb--empty">🚗</div>'}
+                      ${l.images?.exterior?.[0] ? `<img src="${l.images.exterior[0]}" class="adm-thumb">` : `<div class="adm-thumb adm-thumb--empty">${PLATFORM.thumbFallback}</div>`}
                       <div>
                         <strong>${escHtml(l.make || '')} ${escHtml(l.model || '')} ${escHtml(l.variant || '')}</strong>
                         <div class="adm-sub">${l.year || ''} · ${fmtMileage(l.mileageKm || l.mileage)} · ${escHtml(l.fuel || '')}</div>
@@ -550,11 +550,19 @@ async function doToggleBan(uid, users) {
 
 // ── 4. TAXONOMY — unified tree view (source: JSON files) ─────────────────────
 
-const TAX_SOURCES = {
-    avto:        { file: 'json/brands_models_global.json',     label: 'Avtomobili' },
-    moto:        { file: 'json/brands_models_moto.json',       label: 'Motorji' },
-    gospodarska: { file: 'json/brands_models_gospodarska.json', label: 'Gospodarska' },
+const TAX_SOURCES_BY_PLATFORM = {
+    avto: {
+        avto:        { file: 'json/brands_models_global.json',     label: 'Avtomobili' },
+        moto:        { file: 'json/brands_models_moto.json',       label: 'Motorji' },
+        gospodarska: { file: 'json/brands_models_gospodarska.json', label: 'Gospodarska' },
+    },
+    navtika: {
+        plovila:    { file: 'json/brands_models_plovila.json',    label: 'Plovila' },
+        izvenkrmni: { file: 'json/brands_models_izvenkrmni.json', label: 'Izvenkrmni motorji' },
+    },
 };
+const TAX_SOURCES = TAX_SOURCES_BY_PLATFORM[PLATFORM.id] || TAX_SOURCES_BY_PLATFORM.avto;
+const TAX_FIRST_CAT = Object.keys(TAX_SOURCES)[0];
 const _taxCache = {};
 let _taxUnsaved = false;
 
@@ -589,15 +597,16 @@ function normalizeTrimEntry(entry) {
 function parseTaxData(rawData, cat) {
     return Object.entries(rawData).map(([brandName, modelsObj]) => {
         const models = Object.entries(modelsObj).map(([modelName, val]) => {
-            if (cat === 'avto') {
-                return { name: modelName, type: null, variants: Array.isArray(val) ? val.map(normalizeTrimEntry) : [] };
-            } else {
-                return {
-                    name: modelName,
-                    type: val.type || null,
-                    variants: Array.isArray(val.variants) ? val.variants.map(normalizeTrimEntry) : [],
-                };
+            // Array value → simple variants list (avto + navtika plovila/izvenkrmni).
+            // Object value → typed model with { type, variants[] } (moto/gospodarska).
+            if (Array.isArray(val)) {
+                return { name: modelName, type: null, variants: val.map(normalizeTrimEntry) };
             }
+            return {
+                name: modelName,
+                type: val.type || null,
+                variants: Array.isArray(val.variants) ? val.variants.map(normalizeTrimEntry) : [],
+            };
         }).sort((a, b) => a.name.localeCompare(b.name, 'en'));
         return { brand: brandName, models };
     }).sort((a, b) => a.brand.localeCompare(b.brand, 'en'));
@@ -608,15 +617,17 @@ async function renderTaxonomy() {
     c.innerHTML = `
       <div class="adm-card">
         <div class="adm-card-header" style="flex-wrap:wrap;gap:.75rem">
-          <h3 style="margin:0">Taksonomija vozil</h3>
+          <h3 style="margin:0">${PLATFORM.id === 'navtika' ? 'Taksonomija plovil' : 'Taksonomija vozil'}</h3>
           <span id="tax-unsaved-badge" class="tax-unsaved-badge" style="display:none">● Nezhranjene spremembe</span>
           <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-left:auto">
             <div class="adm-tabs" style="margin:0;border:none;gap:.25rem">
               ${Object.entries(TAX_SOURCES).map(([k, v]) => `
-                <button class="adm-tab${k === 'avto' ? ' active' : ''}" data-tax-cat="${k}">${v.label}</button>
+                <button class="adm-tab${k === TAX_FIRST_CAT ? ' active' : ''}" data-tax-cat="${k}">${v.label}</button>
               `).join('')}
-              <button class="adm-tab" data-tax-cat="izpuhi">🏍 Izpuhi</button>
-              <button class="adm-tab" data-tax-cat="oprema">🛡 Moto oprema</button>
+              ${PLATFORM.id === 'navtika'
+                ? `<button class="adm-tab" data-tax-cat="oprema">🛟 Oprema za plovila</button>`
+                : `<button class="adm-tab" data-tax-cat="izpuhi">🏍 Izpuhi</button>
+                   <button class="adm-tab" data-tax-cat="oprema">🛡 Moto oprema</button>`}
             </div>
             <select id="tax-type-filter" class="adm-select adm-input-sm" style="width:140px;display:none">
               <option value="">Vse vrste</option>
@@ -630,7 +641,7 @@ async function renderTaxonomy() {
         <div id="tax-tree"></div>
       </div>`;
 
-    let activeCat = 'avto';
+    let activeCat = TAX_FIRST_CAT;
 
     const tabBtns = c.querySelectorAll('[data-tax-cat]');
     tabBtns.forEach(btn => btn.addEventListener('click', () => {
@@ -665,7 +676,7 @@ async function renderTaxonomy() {
     document.getElementById('tax-export-btn').addEventListener('click', () => exportTaxExcel(activeCat));
     document.getElementById('tax-add-brand-btn').addEventListener('click', () => openTaxAddBrandModal(activeCat));
 
-    renderTaxTable('avto');
+    renderTaxTable(TAX_FIRST_CAT);
 }
 
 // ── Exhaust brands management ─────────────────────────────────────────────────
@@ -748,13 +759,15 @@ async function renderExhaustTab() {
     } catch (e) { wrap.innerHTML = errBox(e); }
 }
 
-// ── Moto equipment brands management (JSON + Excel) ───────────────────────────
+// ── Equipment brands management (JSON + Excel) — moto gear / boat gear ────────
 let _equipmentCache = null;
+const EQUIPMENT_FILE = PLATFORM.id === 'navtika' ? 'equipment_brands_navtika.json' : 'equipment_brands.json';
+const EQUIPMENT_LABEL = PLATFORM.id === 'navtika' ? 'znamk opreme za plovila' : 'znamk motoristične opreme';
 
 async function loadEquipmentBrands() {
     if (_equipmentCache) return _equipmentCache;
-    const res = await fetch('json/equipment_brands.json');
-    if (!res.ok) throw new Error('Napaka pri nalaganju equipment_brands.json');
+    const res = await fetch(`json/${EQUIPMENT_FILE}`);
+    if (!res.ok) throw new Error(`Napaka pri nalaganju ${EQUIPMENT_FILE}`);
     _equipmentCache = await res.json();
     return _equipmentCache;
 }
@@ -766,7 +779,7 @@ async function renderEquipmentBrandsTab() {
     wrap.innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam…</div>';
     try {
         const brands = await loadEquipmentBrands();
-        if (stats) stats.textContent = `${brands.length} znamk motoristične opreme`;
+        if (stats) stats.textContent = `${brands.length} ${EQUIPMENT_LABEL}`;
 
         wrap.innerHTML = `
           <div style="padding:1rem">
@@ -816,11 +829,11 @@ async function renderEquipmentBrandsTab() {
             const blob = new Blob([json], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'equipment_brands.json';
+            a.download = EQUIPMENT_FILE;
             a.click();
             _taxUnsaved = false;
             updateUnsavedBadge();
-            showToast('equipment_brands.json prenesen. Kopirajte v public/json/.', 'success');
+            showToast(`${EQUIPMENT_FILE} prenesen. Kopirajte v public/json/.`, 'success');
         });
 
         document.getElementById('equip-export-btn').addEventListener('click', () => {

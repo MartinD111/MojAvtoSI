@@ -1,12 +1,25 @@
+import { PLATFORM } from '../config/platform.js';
+import { key as lsKey } from '../config/storageKeys.js';
 
 let translations = {};
 // Slovenian market — single language
 let currentLang = 'sl';
 
+// Brand placeholder injected into every translation: "{brand}" → "MojAvto.si" |
+// "MojaNavtika.si". Lets one set of language strings serve both platforms.
+const BRAND_FULL = `${PLATFORM.brandName}${PLATFORM.tld}`;
+
+// Resolves once translations (incl. the platform overlay) are loaded. The router
+// awaits this before rendering the first view so no view paints with stale/base
+// strings (otherwise the home hero etc. could show base words before the overlay).
+let _resolveReady;
+export const i18nReady = new Promise(r => { _resolveReady = r; });
+
 export async function initI18n() {
     currentLang = 'sl';
     await loadTranslations(currentLang);
     document.documentElement.lang = currentLang;
+    _resolveReady();
 }
 
 async function loadTranslations(lang) {
@@ -17,28 +30,44 @@ async function loadTranslations(lang) {
     } catch (error) {
         console.error(`Could not load language file: ${lang}.json`, error);
     }
+    // Platform overlay: merge e.g. lang/sl.navtika.json over the base so MojaNavtika
+    // can override vehicle-specific copy (taglines, hero words) and add its own
+    // category/type labels. Base file stays focused on MojAvto.
+    if (PLATFORM.id !== 'avto') {
+        try {
+            const res = await fetch(`lang/${lang}.${PLATFORM.id}.json`);
+            if (res.ok) translations = { ...translations, ...(await res.json()) };
+        } catch { /* overlay is optional */ }
+    }
 }
 
 export function t(key, replacements = {}) {
     let translation = translations[key];
-    
+
     // Support fallback as second argument if it's a string
     if (!translation) {
-        if (typeof replacements === 'string') return replacements;
+        if (typeof replacements === 'string') return injectBrand(replacements);
         return key;
     }
 
-    if (typeof replacements !== 'object') return translation;
+    if (typeof replacements !== 'object') return injectBrand(translation);
 
     for (const placeholder in replacements) {
         translation = translation.replace(`{${placeholder}}`, replacements[placeholder]);
     }
-    return translation;
+    return injectBrand(translation);
+}
+
+// Replace the {brand} placeholder with the active platform's full brand name.
+function injectBrand(str) {
+    return typeof str === 'string' && str.includes('{brand}')
+        ? str.replaceAll('{brand}', BRAND_FULL)
+        : str;
 }
 
 export async function setLang(lang) {
     currentLang = lang;
-    localStorage.setItem('mojavto_lang', lang);
+    localStorage.setItem(lsKey('lang'), lang);
     await loadTranslations(lang);
     document.documentElement.lang = lang;
 }

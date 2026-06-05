@@ -16,6 +16,7 @@ import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputForma
 import { getModelBodyType } from '../utils/bodyType.js';
 import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes, getPartTypeLabel } from '../data/partTypes.js';
 import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, getEquipmentGroupLabel, EQUIPMENT_SIZES } from '../data/equipmentTypes.js';
+import { PLATFORM } from '../config/platform.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -113,6 +114,9 @@ let state = {
     coverIndex: 0,
     description: '',
     priceEur: '', salePriceEur: null, priceNegotiable: false, priceInclVat: false, leaseAvailable: false, callForPrice: false, priceIsFinal: false,
+    // Sale vs rental (rental = charter on MojaNavtika). Drives rentalPricing.
+    listingType: 'sale',
+    rentalPricing: { perDay: '', perWeek: '', deposit: '', minDays: '' },
     sellerType: 'private',
     sellerNote: '',
     businessHours: {},
@@ -762,7 +766,7 @@ function mapVinFuel(engineType) {
 }
 
 // ── Step 2: Category ──────────────────────────────────────────────────────────
-const CATEGORIES = [
+const CATEGORIES_AVTO = [
     {
         id: 'avto',
         label: 'cl_cat_avto',
@@ -828,8 +832,58 @@ const CATEGORIES = [
             { name: 'cl_sub_sotorska', icon: 'tent' }
         ]
     },
-    { id: 'deli', label: 'cl_cat_deli', icon: 'wrench', subs: [] },
+    { id: 'deli', label: 'cl_cat_deli', icon: 'wrench', subs: [] }
 ];
+
+const CATEGORIES_NAVTIKA = [
+    {
+        id: 'colni',
+        label: 'cat_boats',
+        icon: 'sailboat',
+        subs: [
+            { name: 'cat_motorboat', value: 'motorni-coln', icon: 'sailboat' },
+            { name: 'cat_yachts', value: 'jahte', icon: 'ship' }
+        ]
+    },
+    {
+        id: 'jadrnice',
+        label: 'cat_sailboats',
+        icon: 'sailboat',
+        subs: [
+            { name: 'cat_sailboat', value: 'jadrnica', icon: 'sailboat' },
+            { name: 'cat_catamaran', value: 'katamaran', icon: 'sailboat' }
+        ]
+    },
+    {
+        id: 'gumenjaki',
+        label: 'cat_inflatables',
+        icon: 'sailboat',
+        subs: [
+            { name: 'cat_rib', value: 'rib', icon: 'sailboat' },
+            { name: 'cat_soft_inflatable', value: 'mehki-gumenjak', icon: 'sailboat' }
+        ]
+    },
+    {
+        id: 'jet-ski',
+        label: 'cat_jet_ski',
+        icon: 'waves',
+        subs: [
+            { name: 'vtype_pwc_runabout', value: 'SedeciJetSki', icon: 'waves' },
+            { name: 'vtype_pwc_standup', value: 'StojeciJetSki', icon: 'waves' }
+        ]
+    },
+    {
+        id: 'izvenkrmni-motorji',
+        label: 'cat_outboard_engines',
+        icon: 'cog',
+        subs: [
+            { name: 'cat_engine_class', value: 'razred', icon: 'cog' }
+        ]
+    },
+    { id: 'deli', label: 'cat_boat_equipment', icon: 'wrench', subs: [] }
+];
+
+const CATEGORIES = PLATFORM.id === 'navtika' ? CATEGORIES_NAVTIKA : CATEGORIES_AVTO;
 
 function renderCategoryStep() {
     // Parts/tires path: skip the vehicle category grid, show only Del/Pnevmatika + vehicle family pickers
@@ -2231,11 +2285,34 @@ function renderDescriptionStep() {
 // ── Step 8: Price ─────────────────────────────────────────────────────────────
 function renderPriceStep() {
     const callForPrice = !!state.callForPrice;
+    const showRental = PLATFORM.hasGlobalRentalToggle;
+    const isRental = state.listingType === 'rental';
+    const rp = state.rentalPricing || {};
 
     setHtml(`
         <div class="cl-card">
             <h2 class="cl-step-title">${t('cl_price_title')}</h2>
             <p class="cl-step-sub">${t('cl_price_sub')}</p>
+
+            ${showRental ? `
+            <div class="cl-field">
+                <label class="cl-label">${t('cl_listing_type', 'Vrsta oglasa')}</label>
+                <div class="unit-toggle-pill" id="clListingTypeToggle" style="width:fit-content;">
+                    <button type="button" class="unit-btn ${isRental ? '' : 'active'}" data-mode="sale">${t('cl_sale', 'Prodaja')}</button>
+                    <button type="button" class="unit-btn ${isRental ? 'active' : ''}" data-mode="rental">${t('cl_rental', 'Najem')}</button>
+                </div>
+            </div>
+
+            <div class="cl-field" id="rentalPricingWrap" style="display:${isRental ? 'block' : 'none'};">
+                <label class="cl-label">${t('cl_rental_pricing', 'Cenik najema')}</label>
+                <div class="cl-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                    <div class="cl-price-wrap"><input class="cl-input" id="fRentDay" type="text" value="${escHtml(rp.perDay ?? '')}" placeholder="${t('cl_rent_per_day', 'Cena / dan')}" autocomplete="off" /><span class="cl-price-currency">€</span></div>
+                    <div class="cl-price-wrap"><input class="cl-input" id="fRentWeek" type="text" value="${escHtml(rp.perWeek ?? '')}" placeholder="${t('cl_rent_per_week', 'Cena / teden')}" autocomplete="off" /><span class="cl-price-currency">€</span></div>
+                    <div class="cl-price-wrap"><input class="cl-input" id="fRentDeposit" type="text" value="${escHtml(rp.deposit ?? '')}" placeholder="${t('cl_rent_deposit', 'Varščina')}" autocomplete="off" /><span class="cl-price-currency">€</span></div>
+                    <div class="cl-price-wrap"><input class="cl-input" id="fRentMinDays" type="text" value="${escHtml(rp.minDays ?? '')}" placeholder="${t('cl_rent_min_days', 'Min. dni')}" autocomplete="off" /></div>
+                </div>
+            </div>
+            ` : ''}
 
             <div class="cl-checkboxes" style="margin-bottom:1rem;">
                 <label class="cl-checkbox-label">
@@ -2325,6 +2402,20 @@ function renderPriceStep() {
         if (!e.target.checked) state.salePriceEur = null;
     });
 
+    // Sale / rental toggle (platforms with global rental toggle only)
+    const listingTypeToggle = document.getElementById('clListingTypeToggle');
+    if (listingTypeToggle) {
+        listingTypeToggle.querySelectorAll('.unit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                listingTypeToggle.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.listingType = btn.dataset.mode === 'rental' ? 'rental' : 'sale';
+                const wrap = document.getElementById('rentalPricingWrap');
+                if (wrap) wrap.style.display = state.listingType === 'rental' ? 'block' : 'none';
+            });
+        });
+    }
+
     const priceInput = document.getElementById('fPrice');
     if (state._imported?.price) priceInput?.classList.add('imported-field');
 
@@ -2383,6 +2474,17 @@ function renderPriceStep() {
         state.priceNegotiable = document.getElementById('fNeg').checked;
         state.priceIsFinal = document.getElementById('fFinalPrice').checked;
         state.priceInclVat = document.getElementById('fVat').checked;
+
+        // Capture rental pricing when in rental mode
+        if (PLATFORM.hasGlobalRentalToggle && state.listingType === 'rental') {
+            const num = id => parseFormattedNumber(document.getElementById(id)?.value || '') || '';
+            state.rentalPricing = {
+                perDay: num('fRentDay'),
+                perWeek: num('fRentWeek'),
+                deposit: num('fRentDeposit'),
+                minDays: num('fRentMinDays'),
+            };
+        }
 
         if (state.sellerType === 'business') {
             const offersLeasing = document.getElementById('fOffersLeasing')?.checked;

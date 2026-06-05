@@ -1,7 +1,23 @@
 // extensions.js — Plugin / Extension registry for B2B modules
 // Lets dealer/mechanic/vulcanizer tools register themselves declaratively.
 
+import { PLATFORM } from '../config/platform.js';
+
 const _registry = new Map(); // id → extension definition
+
+// Platform-specific display-name overrides. The B2B FEATURE SET stays identical
+// across platforms — only a few vehicle-specific labels are reworded for vessels.
+const NAME_OVERRIDES = {
+    navtika: {
+        'b2b-inventory': 'Zaloga plovil',
+        'b2b-tire-hotel': 'Zimovanje / privez',
+        'b2b-service-entry': 'Vnos servisa',
+    },
+};
+
+function platformName(id, fallback) {
+    return NAME_OVERRIDES[PLATFORM.id]?.[id] || fallback;
+}
 
 /**
  * Register a new extension.
@@ -42,14 +58,14 @@ export function registerDefaultExtensions() {
     registerExtension({ id: 'b2b-profile', name: 'Javni profil', icon: 'building-2', role: 'any', route: '/b2b/profil', order: 30 });
 
     // Dealer
-    registerExtension({ id: 'b2b-inventory', name: 'Zaloga vozil', icon: 'warehouse', role: 'dealer', route: '/b2b/zaloga', order: 40 });
+    registerExtension({ id: 'b2b-inventory', name: platformName('b2b-inventory', 'Zaloga vozil'), icon: 'warehouse', role: 'dealer', route: '/b2b/zaloga', order: 40 });
     registerExtension({ id: 'b2b-leads', name: 'Povpraševanja (CRM)', icon: 'inbox', role: 'dealer', route: '/b2b/leads', order: 50 });
     registerExtension({ id: 'b2b-import', name: 'Orodje za uvoz', icon: 'download', role: 'dealer', route: '/b2b/orodja', order: 60 });
 
     // Mechanic
     registerExtension({ id: 'b2b-workshop', name: 'Delavnica', icon: 'wrench', role: 'mechanic', route: '/b2b/delavnica', order: 40 });
-    registerExtension({ id: 'b2b-service-entry', name: 'VIN vnos servisa', icon: 'clipboard-list', role: 'mechanic', route: '/b2b/servis-vnos', order: 50 });
+    registerExtension({ id: 'b2b-service-entry', name: platformName('b2b-service-entry', 'VIN vnos servisa'), icon: 'clipboard-list', role: 'mechanic', route: '/b2b/servis-vnos', order: 50 });
 
     // Vulcanizer
-    registerExtension({ id: 'b2b-tire-hotel', name: 'Hotel za gume', icon: 'circle-dot', role: 'vulcanizer', route: '/b2b/hotel-gum', order: 40 });
+    registerExtension({ id: 'b2b-tire-hotel', name: platformName('b2b-tire-hotel', 'Hotel za gume'), icon: 'circle-dot', role: 'vulcanizer', route: '/b2b/hotel-gum', order: 40 });
 }

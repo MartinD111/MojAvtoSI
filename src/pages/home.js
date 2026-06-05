@@ -1,4 +1,4 @@
-import { sampleCars } from '../data/sampleListings.js';
+import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { getListings } from '../services/listingService.js';
 import { 
     getFuelPill, 
@@ -11,11 +11,23 @@ import {
 } from '../utils/listingUtils.js';
 import { t } from '../core/i18n.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
+import { MAIN_CATEGORIES } from '../data/categories.js';
+import { brandsFileFor } from '../data/brandFiles.js';
+import { PLATFORM } from '../config/platform.js';
 
 let allListings = [];
 
+// First/primary category of the active platform (e.g. 'avto' | 'colni').
+const PRIMARY_CATEGORY = Object.values(MAIN_CATEGORIES)[0]?.slug || 'avto';
+
 export async function initHomePage() {
     console.log('[HomePage] init');
+
+    // MojaNavtika uses a dedicated home view + controller (simple vessel search).
+    if (PLATFORM.id === 'navtika') {
+        const m = await import('./home.navtika.js');
+        return m.initNavtikaHomePage();
+    }
 
     // Setup rotating sponsored ads
     setupRotatingAds();
@@ -24,8 +36,8 @@ export async function initHomePage() {
     try {
         allListings = await getListings();
         
-        // Initial render (cars)
-        updateHomeCategory('Avtomobili');
+        // Initial render — primary category of the active platform
+        updateHomeCategory(PRIMARY_CATEGORY);
     } catch (err) {
         console.error("Error loading home page listings:", err);
     }
@@ -72,7 +84,7 @@ function setupRotatingAds() {
     if (!track || !prevBtn || !nextBtn) return;
 
     // Filter for rotating ads (usually premium/sponsored across all categories)
-    const sponsored = allListings.length > 0 ? allListings.filter(l => l.isPremium) : [...sampleCars];
+    const sponsored = allListings.length > 0 ? allListings.filter(l => l.isPremium) : [...SAMPLE_LISTINGS];
     if (sponsored.length === 0) return;
 
     function renderAdCard(car) {
@@ -255,12 +267,10 @@ function reloadBrands(category) {
     const modelSelect = document.getElementById("home-model");
     if (!brandSelect || !modelSelect) return;
 
-    let jsonFile = "json/brands_models_global.json";
-    if (category === 'motor') jsonFile = "json/brands_models_moto.json";
-    if (category === 'gospodarska') jsonFile = "json/brands_models_gospodarska.json";
+    const jsonFile = brandsFileFor(category);
 
     fetch(jsonFile)
-        .then(res => res.json())
+        .then(res => res.ok ? res.json() : {})
         .then(brandModelData => {
             // Clear current options
             brandSelect.innerHTML = `<option value="">${t('all_brands', 'All makes')}</option>`;
@@ -415,7 +425,7 @@ function setupSearchForm() {
     });
 }
 
-function initWordSlider() {
+export function initWordSlider() {
     const items = document.querySelector('.hero-word-items');
     if (!items) return;
 

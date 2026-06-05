@@ -5,8 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev:navtika": "cross-env VITE_PLATFORM=navtika vite",
+    "build": "cross-env VITE_PLATFORM=avto vite build",
+    "build:avto": "cross-env VITE_PLATFORM=avto vite build",
+    "build:navtika": "cross-env VITE_PLATFORM=navtika vite build",
+    "build:all": "npm run build:avto && npm run build:navtika",
+    "preview": "vite preview --outDir dist-avto",
+    "preview:navtika": "vite preview --outDir dist-navtika"
   },
   "dependencies": {
     "firebase": "^11.10.0",
@@ -19,6 +24,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.2",
     "autoprefixer": "^10.5.0",
+    "cross-env": "^7.0.3",
     "postcss": "^8.5.10",
     "tailwindcss": "^3.4.19",
     "vite": "^8.0.16"

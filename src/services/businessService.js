@@ -2,6 +2,11 @@
 // Prepared for Firebase Firestore integration (currently uses mock data)
 
 import { mockBusinesses } from '../data/businesses.js';
+import { mockBusinessesNavtika } from '../data/businesses.navtika.js';
+import { PLATFORM } from '../config/platform.js';
+
+// Active platform's business directory (car dealers vs marinas / boat sellers).
+const BUSINESSES = PLATFORM.id === 'navtika' ? mockBusinessesNavtika : mockBusinesses;
 
 // ── Cache ────────────────────────────────────────────────────
 let _cache = null;
@@ -11,7 +16,7 @@ let _cache = null;
  * @returns {Object[]}
  */
 export function getAllBusinesses() {
-    if (!_cache) _cache = [...mockBusinesses];
+    if (!_cache) _cache = [...BUSINESSES];
     return _cache;
 }
 
@@ -114,13 +119,18 @@ export function filterBusinesses(businesses, filters, userLocation) {
  * @param {Object} business
  * @returns {{ color: string, label: string }}
  */
+// Platform-specific business-type display labels.
+const TYPE_LABELS = PLATFORM.id === 'navtika'
+    ? { dealer: 'Prodajalec plovil', service: 'Servis plovil', vulcanizer: 'Marina / privez' }
+    : { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
+
 export function getBusinessTypeInfo(business) {
     const types = business.businessTypes;
     if (types.length > 1) return { color: '#7c3aed', label: 'Večnamenski', markerClass: 'marker-multi' };
     switch (types[0]) {
-        case 'dealer': return { color: '#2563eb', label: 'Avto hiša', markerClass: 'marker-dealer' };
-        case 'service': return { color: '#16a34a', label: 'Servis', markerClass: 'marker-service' };
-        case 'vulcanizer': return { color: '#ea580c', label: 'Vulkanizer', markerClass: 'marker-vulcanizer' };
+        case 'dealer': return { color: '#2563eb', label: TYPE_LABELS.dealer, markerClass: 'marker-dealer' };
+        case 'service': return { color: '#16a34a', label: TYPE_LABELS.service, markerClass: 'marker-service' };
+        case 'vulcanizer': return { color: '#ea580c', label: TYPE_LABELS.vulcanizer, markerClass: 'marker-vulcanizer' };
         default: return { color: '#64748b', label: 'Podjetje', markerClass: 'marker-other' };
     }
 }
@@ -131,8 +141,7 @@ export function getBusinessTypeInfo(business) {
  * @returns {string[]}
  */
 export function getTypeLabels(business) {
-    const map = { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
-    return business.businessTypes.map(t => map[t] || t);
+    return business.businessTypes.map(t => TYPE_LABELS[t] || t);
 }
 
 /**

@@ -1,0 +1,100 @@
+<div class="home-container">
+    <div class="glass-hero">
+        <h1 class="hero-title">
+            <div class="hero-title-line1">
+                <span data-i18n-key="hero_let_your_next">Naj vas vaše naslednje</span>
+            </div>
+            <div class="hero-word-slider">
+                <div class="hero-word-items">
+                    <span data-i18n-key="hero_word_car">plovilo</span>
+                    <span data-i18n-key="hero_word_motorcycle">jadrnica</span>
+                    <span data-i18n-key="hero_word_truck">čoln</span>
+                    <span data-i18n-key="hero_word_forklift">jahta</span>
+                    <span data-i18n-key="hero_word_jetski">jet-ski</span>
+                    <span data-i18n-key="hero_word_snowmobile">gumenjak</span>
+                    <span data-i18n-key="hero_word_tractor">katamaran</span>
+                    <span data-i18n-key="hero_word_bus">motorni čoln</span>
+                    <span data-i18n-key="hero_word_van">RIB</span>
+                    <span data-i18n-key="hero_word_rv">izvenkrmni motor</span>
+                    <span data-i18n-key="hero_word_car_loop">plovilo</span>
+                </div>
+            </div>
+            <style>
+                .hero-word-items { display:flex; flex-direction:column; gap:0; margin:0; padding:0; animation:none; transform:translateY(0); }
+                .hero-word-items span { display:flex !important; align-items:center !important; justify-content:center !important; height:1.4em !important; min-height:1.4em !important; max-height:1.4em !important; line-height:1.4em !important; margin:0 !important; padding:0 !important; border:none !important; box-sizing:border-box !important; white-space:nowrap !important; color:inherit !important; }
+            </style>
+            <div class="hero-title-line2">
+                <span class="text-gradient" data-i18n-key="hero_find_you">najde</span>
+            </div>
+        </h1>
+    </div>
+
+    <!-- Simple vessel search: vrsta plovila + dolžina + moč motorja -->
+    <div class="search-box-container">
+        <form id="navtikaHomeSearch" class="search-box compact glass-card main-search-card card-squircle">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label for="nav-home-cat">Vrsta plovila</label>
+                    <div class="pill-select-wrapper">
+                        <select id="nav-home-cat" name="cat" class="pill-input"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nav-home-length-from">Dolžina od (m)</label>
+                    <div class="pill-input-wrapper" style="width:100%;">
+                        <input type="number" step="0.1" min="0" id="nav-home-length-from" class="pill-input" placeholder="npr. 6">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nav-home-length-to">Dolžina do (m)</label>
+                    <div class="pill-input-wrapper" style="width:100%;">
+                        <input type="number" step="0.1" min="0" id="nav-home-length-to" class="pill-input" placeholder="Brez omejitve">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nav-home-power-from">Moč motorja od (KM)</label>
+                    <div class="pill-input-wrapper" style="width:100%;">
+                        <input type="number" min="0" id="nav-home-power-from" class="pill-input" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nav-home-power-to">Moč motorja do (KM)</label>
+                    <div class="pill-input-wrapper" style="width:100%;">
+                        <input type="number" min="0" id="nav-home-power-to" class="pill-input" placeholder="Brez omejitve">
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex; flex-direction:row; align-items:flex-end; gap:0.5rem;">
+                    <button type="reset" class="icon-only-circle" title="Ponastavi"><i data-lucide="refresh-cw"></i></button>
+                    <a href="#/iskanje?cat=colni" class="icon-only-circle" id="navHomeAdvLink" title="Več filtrov"><i data-lucide="sliders-horizontal"></i></a>
+                    <button type="submit" class="pill-btn primary search-submit-btn compact-search" style="flex:1;">
+                        <i data-lucide="search"></i> <span>Išči plovila</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Sponsored / rotating ads -->
+<div class="ad-banner-container rotating-ads-carousel">
+    <span class="sponsored-badge" data-i18n-key="sponsored_label">Sponzorirano</span>
+    <button class="carousel-btn prev" id="rot-prev-btn" aria-label="Prejšnji">&#10094;</button>
+    <div class="rotating-ads-track-container">
+        <div class="rotating-ads-track" id="rotating-ads-container"></div>
+    </div>
+    <button class="carousel-btn next" id="rot-next-btn" aria-label="Naslednji">&#10095;</button>
+</div>
+
+<!-- Featured listings -->
+<div class="page-container" style="margin-top:2rem; flex-direction:column;">
+    <section id="featured-section" class="carousel-section" style="display:none;">
+        <h2 data-i18n-key="featured_title">Izpostavljeni oglasi</h2>
+        <div class="carousel-wrapper">
+            <button class="carousel-btn prev" id="featured-prev-btn" aria-label="Prejšnji">&#10094;</button>
+            <div class="carousel-track-container">
+                <div class="carousel-track" id="featured-container"></div>
+            </div>
+            <button class="carousel-btn next" id="featured-next-btn" aria-label="Naslednji">&#10095;</button>
+        </div>
+    </section>
+</div>

@@ -1,7 +1,9 @@
-// Advanced Search page — MojAvto.si
+// Advanced Search page — platform-aware (vehicles / vessels)
 // Category-aware: reads ?cat=, ?sub=, ?searchType=, ?vtype=, ?najem= from URL
 import { getListings } from '../services/listingService.js';
 import { resolveCategory, SEARCH_TYPE_OPTIONS } from '../data/categories.js';
+import { PLATFORM } from '../config/platform.js';
+import { brandsFileFor } from '../data/brandFiles.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
 import { getModelBodyType, getModelVariants } from '../utils/bodyType.js';
@@ -19,6 +21,12 @@ import {
 export function initAdvancedSearchPage() {
     console.log('[AdvancedSearchPage] init');
 
+    // MojaNavtika uses a dedicated vessel/engine search controller + view.
+    if (PLATFORM.id === 'navtika') {
+        import('./advanced-search.navtika.js').then(m => m.initNavtikaSearchPage());
+        return;
+    }
+
     initCustomSelects();
 
     // Parse category params from current hash
@@ -31,6 +39,7 @@ export function initAdvancedSearchPage() {
         najem: params.get('najem') || '',
     };
 
+    injectRentalToggle(catContext);
     applyCategoryContext(catContext);
     bindAccordions();
     bindSearchLogic(catContext);
@@ -38,6 +47,49 @@ export function initAdvancedSearchPage() {
 
     // Setup numeric formatters
     document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
+
+    if (window.lucide) window.lucide.createIcons();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Global Prodaja / Najem (sale / rental) toggle.
+// Only rendered on platforms where rental is first-class (MojaNavtika charter).
+// Sets the existing hiddenNajem field ('' = sale, '1' = rental) and re-runs search.
+// ═══════════════════════════════════════════════════════════════════════════════
+function injectRentalToggle(ctx) {
+    if (!PLATFORM.hasGlobalRentalToggle) return;
+    const container = document.querySelector('.search-container');
+    if (!container || document.getElementById('rentalModeToggle')) return;
+
+    const isRental = ctx.najem === '1';
+    const bar = document.createElement('div');
+    bar.id = 'rentalModeToggle';
+    bar.className = 'home-tabs-container';
+    bar.style.cssText = 'margin-bottom:1.5rem; display:flex; justify-content:center;';
+    bar.innerHTML = `
+      <div class="glass-card rounded-pill tabs-glass" role="tablist" aria-label="Prodaja ali najem">
+        <button type="button" class="tab-btn ${isRental ? '' : 'active'}" data-mode="sale">
+          <i data-lucide="tag"></i><span>Prodaja</span>
+        </button>
+        <button type="button" class="tab-btn ${isRental ? 'active' : ''}" data-mode="rental">
+          <i data-lucide="calendar-clock"></i><span>Najem</span>
+        </button>
+      </div>`;
+    container.insertBefore(bar, container.firstChild);
+
+    bar.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const rental = btn.dataset.mode === 'rental';
+            ctx.najem = rental ? '1' : '';
+            const hiddenNajem = document.getElementById('hiddenNajem');
+            if (hiddenNajem) hiddenNajem.value = ctx.najem;
+            // Re-run the search through the existing form submit pipeline.
+            document.getElementById('advancedSearchForm')
+                ?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        });
+    });
 
     if (window.lucide) window.lucide.createIcons();
 }
@@ -353,12 +405,10 @@ function bindSearchLogic(catContext) {
 
     // ── Dynamic Brand Data Loading ──
     function fetchBrandData(category) {
-        let jsonFile = "json/brands_models_global.json";
-        if (category === 'moto') jsonFile = "json/brands_models_moto.json";
-        if (category === 'gospodarska') jsonFile = "json/brands_models_gospodarska.json";
+        const jsonFile = brandsFileFor(category);
 
         return fetch(jsonFile)
-            .then(r => r.json())
+            .then(r => r.ok ? r.json() : {})
             .then(data => {
                 window._brandModelData = data;
                 const prevMake = makeSelect.value;

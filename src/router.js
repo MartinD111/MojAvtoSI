@@ -1,8 +1,9 @@
-// SPA Router — MojAvto.si
+// SPA Router — platform-aware (MojAvto / MojaNavtika)
 import { auth } from './firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import { fetchB2BProfile } from './core/b2bContext.js';
-import { t, translatePage } from './core/i18n.js';
+import { t, translatePage, i18nReady } from './core/i18n.js';
+import { PLATFORM } from './config/platform.js';
 
 
 // ── Route definitions ─────────────────────────────────────────────────────────
@@ -57,6 +58,13 @@ const JS_ONLY_VIEWS = new Set([
     'tco-settings',
 ]);
 
+// Views that ship a platform-specific variant (views/<view>.<platform>.html).
+// An explicit allowlist is required because the SPA host returns index.html (HTTP
+// 200) for missing files, so a probe fetch can't reliably detect a missing variant.
+const PLATFORM_VIEW_VARIANTS = {
+    navtika: new Set(['home', 'advanced-search', 'oglasi']),
+};
+
 // ── Load a view HTML into the main container ──────────────────────────────────
 async function loadView(viewName) {
     try {
@@ -64,7 +72,12 @@ async function loadView(viewName) {
             // JS-only pages: clear container and let the page init render into it.
             APP.innerHTML = '';
         } else {
-            const res = await fetch(`views/${viewName}.html?v=${new Date().getTime()}`);
+            const v = `?v=${new Date().getTime()}`;
+            // Prefer a platform-specific view variant (e.g. advanced-search.navtika.html)
+            // only when one is known to exist; otherwise load the shared view.
+            const hasVariant = PLATFORM_VIEW_VARIANTS[PLATFORM.id]?.has(viewName);
+            const file = hasVariant ? `${viewName}.${PLATFORM.id}` : viewName;
+            const res = await fetch(`views/${file}.html${v}`);
             if (!res.ok) throw new Error(`View not found: ${viewName}`);
             APP.innerHTML = await res.text();
         }
@@ -80,6 +93,10 @@ async function loadView(viewName) {
 
 // ── Main router function ──────────────────────────────────────────────────────
 async function router() {
+    // Ensure translations (base + platform overlay) are ready before any view
+    // renders, so translatePage never paints stale/base strings on first load.
+    await i18nReady;
+
     const hash = window.location.hash.slice(1) || '/';
     // Strip query params and decode special characters (e.g. č, š, ž)
     const path = decodeURIComponent(hash.split('?')[0]);

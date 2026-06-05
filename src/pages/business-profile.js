@@ -3,7 +3,7 @@
 
 import { getBusinessById, getTypeLabels, getBusinessTypeInfo } from '../services/businessService.js';
 import { serviceLabels } from '../data/businesses.js';
-import { sampleCars } from '../data/sampleListings.js'; // Reuse existing listings
+import { SAMPLE_LISTINGS as sampleCars } from '../data/sampleListings.js'; // Reuse platform listings
 
 // ── Helpers ──────────────────────────────────────────────────
 function getStars(rating) {
