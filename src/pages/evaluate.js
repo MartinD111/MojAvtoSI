@@ -1,6 +1,9 @@
 import { getListings } from '../services/listingService.js';
 import { getVehicleRating } from '../utils/valuationScore.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
+import { t } from '../core/i18n.js';
+import { PLATFORM } from '../config/platform.js';
+import { brandsFileFor } from '../data/brandFiles.js';
 
 export function initEvaluatePage() {
     console.log('[EvaluatePage] init');
@@ -37,7 +40,10 @@ function bindEvaluationLogic() {
     }
 
     // --- Populate Makes and Models ---
-    fetch("json/brands_models_global.json")
+    const category = PLATFORM.id === 'navtika' ? 'colni' : 'avto';
+    const jsonFile = brandsFileFor(category);
+
+    fetch(jsonFile)
         .then(res => res.json())
         .then(brandModelData => {
             Object.keys(brandModelData).sort().forEach(brand => {
@@ -55,12 +61,13 @@ function bindEvaluationLogic() {
 
             brandSelect.addEventListener("change", function () {
                 const selectedMake = brandSelect.value;
-                modelSelect.innerHTML = '<option value="">Izberite model</option>';
+                modelSelect.innerHTML = `<option value="">${t('cl_select_model', 'Izberite model')}</option>`;
                 modelSelect.disabled = true;
 
                 if (selectedMake && brandModelData[selectedMake]) {
                     const models = brandModelData[selectedMake];
-                    Object.keys(models).sort().forEach(model => {
+                    const modelKeys = Array.isArray(models) ? models : Object.keys(models);
+                    modelKeys.sort().forEach(model => {
                         const option = document.createElement("option");
                         option.value = model;
                         option.textContent = model;
@@ -68,8 +75,9 @@ function bindEvaluationLogic() {
                     });
                     modelSelect.disabled = false;
                 }
+                import('../utils/customSelect.js').then(m => m.createCustomSelect(modelSelect));
             });
-        }).catch(err => console.warn("Could not load brands_models_global.json.", err));
+        }).catch(err => console.warn(`Could not load ${jsonFile}.`, err));
 
     // --- Form Submission ---
     form.addEventListener("submit", async (e) => {
@@ -80,12 +88,12 @@ function bindEvaluationLogic() {
         const year = parseInt(yearSelect.value, 10);
 
         if (!make || !model || !year) {
-            alert('Prosimo izpolnite vse obvezne podatke.');
+            alert(t('eval_fill_required', 'Prosimo, izpolnite vse obvezne podatke.'));
             return;
         }
 
         evalBtn.disabled = true;
-        evalBtn.querySelector('span').textContent = 'Ocenjujem...';
+        evalBtn.querySelector('span').textContent = t('eval_btn_evaluating', 'Ocenjujem...');
         resultsContainer.style.display = 'none';
 
         try {
@@ -116,10 +124,10 @@ function bindEvaluationLogic() {
 
         } catch (error) {
             console.error("Napaka pri oceni:", error);
-            alert("Prišlo je do napake pri oceni vrednosti vozila.");
+            alert(t('eval_error_alert', 'Prišlo je do napake pri oceni vrednosti vozila.'));
         } finally {
             evalBtn.disabled = false;
-            evalBtn.querySelector('span').textContent = 'Izračunaj vrednost';
+            evalBtn.querySelector('span').textContent = t('eval_btn_text', 'Izračunaj vrednost');
         }
     });
 
@@ -181,7 +189,8 @@ function bindEvaluationLogic() {
             topComps.forEach(l => {
                 const imgUrl = l.images && l.images.exterior ? l.images.exterior[0] : 'https://via.placeholder.com/300x200?text=Ni+slike';
                 const lPrice = new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(l.priceEur || l.price || 0);
-                const km = l.mileageKm || l.mileage;
+                const km = l.mileageKm || l.mileage || l.engineHours;
+                const unit = PLATFORM.id === 'navtika' ? ' ur' : ' km';
                 html += `
                     <a href="#/oglas?id=${l.id}" target="_blank" class="listing-card glass-card" style="text-decoration:none; color:inherit; display:block; padding:0; overflow:hidden; border-radius:1rem;">
                         <div style="position:relative; padding-top:60%; overflow:hidden;">
@@ -190,14 +199,14 @@ function bindEvaluationLogic() {
                         <div style="padding:10px;">
                             <div style="font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(l.make)} ${escHtml(l.model)}</div>
                             <div style="font-size:16px; font-weight:bold; color:var(--color-primary-start); margin:4px 0;">${lPrice}</div>
-                            <div style="font-size:12px; color:#6b7280;">L. ${l.year} • ${km ? new Intl.NumberFormat('sl-SI').format(km) + ' km' : '—'}</div>
+                            <div style="font-size:12px; color:#6b7280;">L. ${l.year} • ${km ? new Intl.NumberFormat('sl-SI').format(km) + unit : '—'}</div>
                         </div>
                     </a>
                 `;
             });
             compResultsContainer.innerHTML = html;
         } else {
-            compResultsContainer.innerHTML = '<p style="color:#6b7280; font-size:0.9rem; grid-column:1/-1;">Na portalu trenutno ni točno takšnih vozil. Ocena je narejena na podlagi splošnega algoritma padca vrednosti.</p>';
+            compResultsContainer.innerHTML = `<p style="color:#6b7280; font-size:0.9rem; grid-column:1/-1;">${t('eval_no_comparables', 'Na portalu trenutno ni točno takšnih vozil. Ocena je narejena na podlagi splošnega algoritma padca vrednosti.')}</p>`;
         }
 
         resultsContainer.style.display = 'block';

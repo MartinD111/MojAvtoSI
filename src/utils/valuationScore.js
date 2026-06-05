@@ -1,4 +1,5 @@
 import { getEquipmentLabel } from '../data/equipment.js';
+import { t } from '../core/i18n.js';
 
 // ── IQR outlier removal ───────────────────────────────────────────────────────
 function removeOutliers(listings, factor = 1.5) {
@@ -176,7 +177,7 @@ export function getVehicleRating(targetListing, allListings) {
     const confidence = comparablesCount >= 10 ? 'high' : comparablesCount >= 4 ? 'medium' : 'low';
 
     const warning = (priceScore.deltaPercent < -20 && comparablesCount >= 3)
-        ? 'Preveri zgodovino vozila'
+        ? t('eval_warning_history', 'Preveri zgodovino vozila')
         : null;
 
     return {

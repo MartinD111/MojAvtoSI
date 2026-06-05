@@ -1138,100 +1138,33 @@ async function initSidebarFiltering() {
     }
 
     makeSelect.addEventListener("change", () => {
-        const data = window._sidebarBrandModelData;
+        if (window._isPrefilling) return;
         const brand = makeSelect.value;
-        modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
-        modelSelect.disabled = true;
-        
-        if (variantSelect) {
-            variantSelect.innerHTML = '<option value="">Vse različice</option>';
-            variantSelect.disabled = true;
-        }
+        if (!brand) return;
 
-        if (brand && data && data[brand]) {
-            const models = data[brand];
-            const keys = typeof models === 'object' && !Array.isArray(models) ? Object.keys(models).sort() : (Array.isArray(models) ? models.sort() : []);
-            keys.forEach(m => {
-                const o = document.createElement("option");
-                o.value = m;
-                o.textContent = m;
-                modelSelect.appendChild(o);
-            });
-            if (keys.length) modelSelect.disabled = false;
-        }
+        const params = parseHashParams();
+        const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+        const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
 
-        // Notify custom select to update
-        modelSelect.dispatchEvent(new Event('change'));
-        if (variantSelect) variantSelect.dispatchEvent(new Event('change'));
-        applySidebarFilters();
+        if (!selectedMakes.includes(brand)) {
+            selectedMakes.push(brand);
+            updateUrlParams(selectedMakes, selectedModels);
+        }
     });
 
     if (modelSelect) {
         modelSelect.addEventListener("change", () => {
-            const data = window._sidebarBrandModelData;
-            const brand = makeSelect.value;
+            if (window._isPrefilling) return;
             const model = modelSelect.value;
-            
-            if (variantSelect) {
-                variantSelect.innerHTML = '<option value="">Vse različice</option>';
-                variantSelect.disabled = true;
-                
-                if (brand && model && data && data[brand]) {
-                    const variants = getModelVariants(data[brand][model]);
-                    variants.forEach(v => {
-                        const trim = typeof v === 'string' ? v : (v && v.trim) ? v.trim : '';
-                        if (!trim) return;
-                        const o = document.createElement("option");
-                        o.value = trim;
-                        o.textContent = trim;
-                        variantSelect.appendChild(o);
-                    });
-                    if (variants.length) variantSelect.disabled = false;
-                }
-                
-                variantSelect.dispatchEvent(new Event('change'));
-            }
-            applySidebarFilters();
-        });
-    }
+            if (!model) return;
 
-    if (variantSelect) {
-        variantSelect.addEventListener("change", () => {
-            if (window._isPrefilling) {
-                applySidebarFilters();
-                return;
-            }
-            
-            const make = makeSelect.value;
-            const model = modelSelect.value;
-            const variant = variantSelect.value;
-            
-            if (make && model && variant) {
-                const params = parseHashParams();
-                let vehicles = [];
-                try {
-                    const vRaw = params.get('vehicles');
-                    if (vRaw) {
-                        vehicles = JSON.parse(vRaw);
-                        if (!Array.isArray(vehicles)) vehicles = [];
-                    }
-                } catch(e) {}
-                
-                vehicles.push({ make, model, variant });
-                
-                // Clear selection dropdowns
-                makeSelect.value = '';
-                makeSelect.dispatchEvent(new Event('change'));
-                
-                params.set('vehicles', JSON.stringify(vehicles));
-                params.delete('make');
-                params.delete('model');
-                params.delete('variant');
-                
-                const paramStr = params.toString();
-                window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
-            } else {
-                applySidebarFilters();
+            const params = parseHashParams();
+            const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+
+            if (!selectedModels.includes(model)) {
+                selectedModels.push(model);
+                updateUrlParams(selectedMakes, selectedModels);
             }
         });
     }
@@ -1265,7 +1198,7 @@ async function initSidebarFiltering() {
             if (el !== makeSelect && el !== modelSelect && el !== variantSelect && el !== boatTypeSelect && el !== boatSubcatSelect) {
                 if (el.id === 'sidebarProdajaToggle' || el.id === 'sidebarNajemToggle') {
                     el.addEventListener("change", () => {
-                        const params = parseHashParams();
+                        const params = getSidebarFormState();
                         const prodajaToggle = document.getElementById("sidebarProdajaToggle");
                         const najemToggle = document.getElementById("sidebarNajemToggle");
                         if (prodajaToggle) {
@@ -1279,8 +1212,14 @@ async function initSidebarFiltering() {
                         window.location.hash = `/oglasi?${params.toString()}`;
                     });
                 } else {
-                    el.addEventListener("change", applySidebarFilters);
-                    el.addEventListener("input", applySidebarFilters);
+                    el.addEventListener("change", () => {
+                        applySidebarFilters();
+                        updateUrlParamsFromInputs();
+                    });
+                    el.addEventListener("input", () => {
+                        applySidebarFilters();
+                        updateUrlParamsFromInputs();
+                    });
                 }
             }
         });
@@ -1291,6 +1230,7 @@ async function initSidebarFiltering() {
             if (form) {
                 form.reset();
                 form.querySelectorAll("select").forEach(sel => {
+                    sel.value = '';
                     sel.dispatchEvent(new Event('change'));
                 });
                 form.querySelectorAll("input[type=checkbox]").forEach(cb => {
@@ -1305,27 +1245,23 @@ async function initSidebarFiltering() {
             if (modelSelect) {
                 modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
                 modelSelect.disabled = true;
-                modelSelect.dispatchEvent(new Event('change'));
             }
-            if (variantSelect) {
-                variantSelect.innerHTML = '<option value="">Vse različice</option>';
-                variantSelect.disabled = true;
-                variantSelect.dispatchEvent(new Event('change'));
+            if (makeSelect) {
+                makeSelect.value = '';
             }
-            if (makeSelect) makeSelect.dispatchEvent(new Event('change'));
             if (boatSubcatSelect) {
                 boatSubcatSelect.innerHTML = '<option value="">Vse kategorije</option>';
                 boatSubcatSelect.disabled = true;
-                boatSubcatSelect.dispatchEvent(new Event('change'));
             }
-            if (boatTypeSelect) boatTypeSelect.dispatchEvent(new Event('change'));
             
-            // Clear URL search params as well
-            window.location.hash = `/oglasi`;
+            const params = parseHashParams();
+            const cat = params.get('cat');
+            window.location.hash = `/oglasi${cat ? '?cat=' + cat : ''}`;
         });
     }
 }
 
+// ── Active filter pills ───────────────────────────────────────────────────────
 // ── Active filter pills ───────────────────────────────────────────────────────
 function makePill(label, onRemove) {
     const span = document.createElement('span');
@@ -1342,11 +1278,101 @@ function setSinglePill(containerId, label, onRemove) {
     if (label) el.appendChild(makePill(label, onRemove));
 }
 
-function updateSidebarActivePills() {
+function renderActivePills(containerId, values, onRemove) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    values.forEach(val => {
+        const pill = document.createElement('span');
+        pill.className = 'sidebar-active-pill';
+        pill.innerHTML = `${val} <button type="button" class="sidebar-pill-remove" aria-label="Odstrani">&times;</button>`;
+        pill.querySelector('.sidebar-pill-remove').addEventListener('click', (e) => {
+            e.preventDefault();
+            onRemove(val);
+        });
+        container.appendChild(pill);
+    });
+}
+
+function getSidebarFormState() {
+    const params = parseHashParams();
+    
+    // Mapping of element suffix to URL parameter key
+    const mapping = {
+        'BoatType': 'cat',
+        'BoatSubcat': 'subcategory',
+        'LengthFrom': 'lengthFrom',
+        'LengthTo': 'lengthTo',
+        'YearFrom': 'yearFrom',
+        'YearTo': 'yearTo',
+        'PriceFrom': 'priceFrom',
+        'PriceTo': 'priceTo',
+        'PowerFrom': 'powerFrom',
+        'PowerTo': 'powerTo',
+        'EngineHoursTo': 'engineHoursTo',
+        'EngineMake': 'engineMake',
+        'BerthsFrom': 'berthsFrom',
+        'CabinsFrom': 'cabinsFrom',
+        'EngineMount': 'engineMount',
+        'Fuel': 'fuel',
+        'Hull': 'hull'
+    };
+
+    Object.keys(mapping).forEach(suffix => {
+        const key = mapping[suffix];
+        const val = document.getElementById(`sidebar${suffix}`)?.value;
+        if (val) params.set(key, val); else params.delete(key);
+    });
+
+    const prodajaToggle = document.getElementById("sidebarProdajaToggle");
+    const najemToggle = document.getElementById("sidebarNajemToggle");
+    if (prodajaToggle) {
+        if (prodajaToggle.checked) params.set('prodaja', '1'); else params.delete('prodaja');
+    }
+    if (najemToggle) {
+        if (najemToggle.checked) params.set('najem', '1'); else params.delete('najem');
+    }
+    return params;
+}
+
+function updateUrlParamsFromInputs() {
+    const params = getSidebarFormState();
+    const hash = window.location.hash.split('?')[0];
+    const newParams = params.toString();
+    window.history.replaceState(null, '', `${hash}${newParams ? '?' + newParams : ''}`);
+}
+
+function updateUrlParams(makes, models) {
+    const params = getSidebarFormState();
+    if (makes && makes.length > 0) params.set('make', makes.join(',')); else params.delete('make');
+    if (models && models.length > 0) params.set('model', models.join(',')); else params.delete('model');
+    const paramStr = params.toString();
+    window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+}
+
+function updateFiltersUI() {
+    const params = parseHashParams();
+    const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+
+    renderActivePills('activeMake', selectedMakes, (val) => {
+        const updated = selectedMakes.filter(x => x !== val);
+        const data = window._sidebarBrandModelData;
+        const remainingModels = selectedModels.filter(m => updated.some(mk => {
+            const models = data?.[mk];
+            if (!models) return false;
+            if (Array.isArray(models)) return models.includes(m);
+            return models[m] !== undefined;
+        }));
+        updateUrlParams(updated, remainingModels);
+    });
+
+    renderActivePills('activeModel', selectedModels, (val) => {
+        updateUrlParams(selectedMakes, selectedModels.filter(x => x !== val));
+    });
+
     const boatTypeEl = document.getElementById('sidebarBoatType');
     const boatSubcatEl = document.getElementById('sidebarBoatSubcat');
-    const makeEl = document.getElementById('sidebarMake');
-    const modelEl = document.getElementById('sidebarModel');
     const engineMakeEl = document.getElementById('sidebarEngineMake');
 
     setSinglePill('activeBoatType',
@@ -1357,17 +1383,38 @@ function updateSidebarActivePills() {
         boatSubcatEl?.value ? boatSubcatEl.selectedOptions[0]?.text : '',
         () => { if (boatSubcatEl) { boatSubcatEl.value = ''; boatSubcatEl.dispatchEvent(new Event('change')); } });
 
-    setSinglePill('activeMake',
-        makeEl?.value || '',
-        () => { if (makeEl) { makeEl.value = ''; makeEl.dispatchEvent(new Event('change')); } });
-
-    setSinglePill('activeModel',
-        modelEl?.value || '',
-        () => { if (modelEl) { modelEl.value = ''; modelEl.dispatchEvent(new Event('change')); } });
-
     setSinglePill('activeEngineMake',
         engineMakeEl?.value || '',
         () => { if (engineMakeEl) { engineMakeEl.value = ''; engineMakeEl.dispatchEvent(new Event('change')); } });
+
+    const modelSelect = document.getElementById("sidebarModel");
+    const data = window._sidebarBrandModelData;
+
+    if (modelSelect) {
+        modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+        modelSelect.disabled = true;
+        if (selectedMakes.length > 0 && data) {
+            const allModels = new Set();
+            selectedMakes.forEach(mk => {
+                const models = data[mk];
+                if (models) {
+                    if (Array.isArray(models)) {
+                        models.forEach(m => allModels.add(m));
+                    } else if (typeof models === 'object') {
+                        Object.keys(models).forEach(m => allModels.add(m));
+                    }
+                }
+            });
+            Array.from(allModels).sort().forEach(m => {
+                if (!selectedModels.includes(m)) {
+                    const o = document.createElement("option");
+                    o.value = m; o.textContent = m;
+                    modelSelect.appendChild(o);
+                }
+            });
+            if (allModels.size > 0) modelSelect.disabled = false;
+        }
+    }
 }
 
 function applySidebarFilters() {
@@ -1378,8 +1425,6 @@ function applySidebarFilters() {
 
     const cat = document.getElementById("sidebarBoatType")?.value || '';
     const subcategory = document.getElementById("sidebarBoatSubcat")?.value || '';
-    const make = document.getElementById("sidebarMake")?.value || '';
-    const model = document.getElementById("sidebarModel")?.value || '';
     const lengthFrom = parseFloat(document.getElementById("sidebarLengthFrom")?.value) || 0;
     const lengthTo = parseFloat(document.getElementById("sidebarLengthTo")?.value) || Infinity;
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
@@ -1402,6 +1447,9 @@ function applySidebarFilters() {
     const params = parseHashParams();
     const extraEquipment = params.get('extraEquipment');
 
+    const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+
     const filtered = _allActiveListings.filter(car => {
         if (!['plovilo', 'motor'].includes(car.itemType)) return false;
         if (cat && car.category !== cat) return false;
@@ -1415,13 +1463,8 @@ function applySidebarFilters() {
             return false;
         }
 
-        if (make && car.make !== make) return false;
-        if (model && car.model !== model) return false;
-
-        const urlMake = params.get('make');
-        const urlModel = params.get('model');
-        if (!make && urlMake && car.make !== urlMake) return false;
-        if (!model && urlModel && car.model !== urlModel) return false;
+        if (selectedMakes.length > 0 && !selectedMakes.includes(car.make)) return false;
+        if (selectedModels.length > 0 && !selectedModels.includes(car.model)) return false;
 
         const price = car.priceRaw ?? car.priceEur ?? null;
         if (priceFrom > 0 && price != null && price < priceFrom) return false;
@@ -1469,7 +1512,7 @@ function applySidebarFilters() {
     });
 
     renderListings(filtered);
-    updateSidebarActivePills();
+    updateFiltersUI();
 
     const countEl = document.querySelector(".results-header h1 span");
     if (countEl) {
@@ -1504,17 +1547,9 @@ function prefillSidebarFromUrl() {
         prefillSelect("sidebarBoatSubcat", "subcategory");
     }, 50);
 
-    // Make/model are prefilled after the boat-type change has had a chance to
-    // (re)load the matching brand list (plovila vs izvenkrmni).
-    setTimeout(() => {
-        prefillSelect("sidebarMake", "make");
-        setTimeout(() => {
-            prefillSelect("sidebarModel", "model");
-        }, 60);
-    }, 80);
-
     prefillSelect("sidebarYearFrom", "yearFrom");
     prefillSelect("sidebarYearTo", "yearTo");
+    prefillInput("sidebarPriceFrom", "priceFrom");
     prefillInput("sidebarPriceTo", "priceTo");
     prefillInput("sidebarLengthFrom", "lengthFrom");
     prefillInput("sidebarLengthTo", "lengthTo");
@@ -1559,9 +1594,8 @@ function prefillSidebarFromUrl() {
         });
     }
 
-    if (!params.get("make")) {
-        applySidebarFilters();
-    }
+    updateFiltersUI();
+    applySidebarFilters();
 
     setTimeout(() => {
         window._isPrefilling = false;

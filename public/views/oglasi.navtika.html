@@ -4,12 +4,28 @@
     <!-- â•â•â• SIDEBAR: Filtri â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <aside class="oglasi-sidebar">
         <style>
-            #sidebarFiltersForm .form-group { display: flex; flex-direction: column; gap: 0.4rem; align-items: center; text-align: center; width: 100%; }
-            #sidebarFiltersForm .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); text-align: center; width: 100%; display: block; }
-            #sidebarFiltersForm select { text-align: center; text-align-last: center; width: 100%; }
-            #sidebarFiltersForm input { text-align: center; width: 100%; }
+            #sidebarFiltersForm { gap: 0.6rem !important; }
+            #sidebarFiltersForm .form-group { display: flex; flex-direction: column; gap: 0.2rem; align-items: center; text-align: center; width: 100%; }
+            #sidebarFiltersForm .form-group > label:not(.adv-chip) { font-size: 0.8rem; font-weight: 600; color: var(--text-dark); text-align: center; width: 100% !important; display: block !important; margin-bottom: 0px !important; }
+            #sidebarFiltersForm select { text-align: center; text-align-last: center; width: 100%; height: 38px !important; }
+            #sidebarFiltersForm input:not([type="checkbox"]):not([type="radio"]) { text-align: center; width: 100%; }
             #sidebarFiltersForm .adv-chip-group { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; width: 100%; }
+            #sidebarFiltersForm .adv-chip { width: auto !important; max-width: 100% !important; display: inline-flex !important; flex: none !important; }
             #sidebarFiltersForm .remember-toggle { display: inline-flex; align-items: center; justify-content: center; }
+            #sidebarFiltersForm .custom-select-trigger { height: 38px !important; padding: 0 15px !important; font-size: 0.88rem !important; }
+            #sidebarFiltersForm .custom-select-trigger .select-icon { width: 16px !important; height: 16px !important; }
+            #sidebarFiltersForm .pill-input { height: 38px !important; padding: 0 15px !important; font-size: 0.88rem !important; border-radius: 9999px !important; }
+            #sidebarFiltersForm .sidebar-active-pills { margin-top: 0.2rem !important; gap: 0.25rem !important; }
+            #sidebarFiltersForm .sidebar-pill-remove { font-size: 0.8rem !important; }
+            
+            /* Year select pills & dropdown optimizations */
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-container { width: 75px !important; min-width: 75px !important; flex: none !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger { justify-content: center !important; padding: 0 5px !important; text-align: center !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger .select-icon { display: none !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-value { font-weight: 700 !important; font-size: 0.95rem !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-option { justify-content: center !important; font-weight: 700 !important; font-size: 0.95rem !important; padding: 8px 10px !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #111827 !important; }
+            body.dark-mode #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #ffffff !important; }
             @media (min-width: 769px) {
                 #filtersCard {
                     overflow: visible !important;
@@ -33,38 +49,27 @@
                     <h3 style="margin:0; font-size:1.1rem; font-weight:700;" data-i18n-key="sidebar_filters_title">Filtri</h3>
                 </div>
 
-                <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:0.5rem;">
-                    <!-- Tip ponudbe (Prodaja / Najem) -->
-                    <div class="form-group">
-                        <label>Tip ponudbe</label>
-                        <div style="display:flex; gap:1rem; align-items:center; justify-content:center; width:100%;">
-                            <label class="remember-toggle" title="Prodaja">
-                                <span class="toggle-label">Prodaja</span>
-                                <input type="checkbox" class="remember-check" id="sidebarProdajaToggle" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <label class="remember-toggle" title="Najem">
-                                <span class="toggle-label">Najem</span>
-                                <input type="checkbox" class="remember-check" id="sidebarNajemToggle">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Tip plovila -->
-                    <div class="form-group">
-                        <label>Tip plovila</label>
-                        <select id="sidebarBoatType" name="boatType" class="glass-select">
-                            <option value="">Vsa plovila</option>
-                            <option value="colni">Čolni</option>
+                <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:1.25rem;">
+                <!-- Vessel Type (Vrsta plovila / Category tabs filled dynamically by JS) -->
+                <div class="form-group">
+                    <label>Tip plovila</label>
+                    <div class="pill-select-wrapper">
+                        <select id="sidebarBoatType" name="vtype" class="glass-select">
+                            <option value="">Vsi tipi</option>
+                            <option value="motorna">Motorna plovila</option>
                             <option value="jadrnice">Jadrnice</option>
                             <option value="gumenjaki">Gumenjaki</option>
+                            <option value="lesena">Lesena plovila</option>
+                            <option value="rečna">Rečna plovila</option>
+                            <option value="delovna">Delovna plovila</option>
+                            <option value="multi">Katamarani / Trimarni</option>
                             <option value="jet-ski">Jet-ski</option>
                             <option value="izvenkrmni-motorji">Izvenkrmni motorji</option>
                             <option value="oprema">Oprema za plovila</option>
                         </select>
                         <div class="sidebar-active-pills" id="activeBoatType"></div>
                     </div>
+                </div>
 
                     <!-- Kategorija plovila -->
                     <div class="form-group">
@@ -105,7 +110,7 @@
                     <!-- Letnik od / do -->
                     <div class="form-group">
                         <label>Letnik</label>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                        <div class="year-selects-wrapper" style="display:flex; gap:0.5rem; justify-content:center; width:100%;">
                             <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
                                 <option value="">Od</option>
                             </select>

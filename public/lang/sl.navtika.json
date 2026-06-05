@@ -132,5 +132,16 @@
   "eq_inverter": "Inverter",
   "eq_battery_charger": "Polnilec baterij",
   "eq_life_raft": "Rešilni splav",
-  "eq_tender": "Pomožni čoln"
+  "eq_tender": "Pomožni čoln",
+  "evaluate_vehicle_btn": "Ocenite vrednost mojega plovila",
+  "eval_page_title_highlight": "mojega plovila",
+  "eval_page_desc": "Vnesite osnovne podatke vašega plovila in ugotovite njegovo trenutno tržno vrednost glede na podobna plovila na naši platformi.",
+  "eval_mileage_label": "Ure motorja (približno)",
+  "eval_mileage_placeholder": "npr. 350",
+  "eval_results_desc_suffix": " podobnih plovil (+/- 2 leti).",
+  "eval_similar_title": "Podobna plovila na portalu:",
+  "eval_error_alert": "Prišlo je do napake pri oceni vrednosti plovila.",
+  "eval_no_comparables": "Na portalu trenutno ni točno takšnih plovil. Ocena je narejena na podlagi splošnega algoritma padca vrednosti.",
+  "eval_warning_history": "Preveri zgodovino plovila",
+  "eval_btn_evaluating": "Ocenujem..."
 }

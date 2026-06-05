@@ -1066,5 +1066,20 @@
   "faq_a_is_it_free": "Da, tako registracija kot objava oglasov za fizične osebe sta popolnoma brezplačni. Za poslovne uporabnike ponujamo posebne pakete.",
   "tco_settings_title": "Nastavitve TCO",
   "tco_settings_subtitle": "Nastavite ocene stroškov lastništva vozil",
-  "tco_settings_card_desc": "Prilagodite letne prevožene kilometre, cene goriva in ostale parametre za izračun skupnih stroškov lastništva (TCO)."
+  "tco_settings_card_desc": "Prilagodite letne prevožene kilometre, cene goriva in ostale parametre za izračun skupnih stroškov lastništva (TCO).",
+  "eval_page_title_prefix": "Oceni vrednost ",
+  "eval_page_title_highlight": "mojega avta",
+  "eval_page_desc": "Vnesite osnovne podatke vašega vozila in ugotovite njegovo trenutno tržno vrednost glede na podobna vozila na naši platformi.",
+  "eval_mileage_label": "Prevoženi kilometri (približno)",
+  "eval_mileage_placeholder": "npr. 150,000",
+  "eval_btn_text": "Izračunaj vrednost",
+  "eval_results_title": "Ocenjena tržna vrednost:",
+  "eval_results_desc_prefix": "Na podlagi primerjave ",
+  "eval_results_desc_suffix": " podobnih vozil (+/- 2 leti).",
+  "eval_similar_title": "Podobna vozila na portalu:",
+  "eval_error_alert": "Prišlo je do napake pri oceni vrednosti vozila.",
+  "eval_no_comparables": "Na portalu trenutno ni točno takšnih vozil. Ocena je narejena na podlagi splošnega algoritma padca vrednosti.",
+  "eval_warning_history": "Preveri zgodovino vozila",
+  "eval_fill_required": "Prosimo, izpolnite vse obvezne podatke.",
+  "eval_btn_evaluating": "Ocenjujem..."
 }

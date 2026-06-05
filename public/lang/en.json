@@ -948,6 +948,22 @@
   "profile_error_saving": "Error saving vehicle. Please try again.",
   "tco_settings_title": "TCO Settings",
   "tco_settings_subtitle": "Configure your vehicle cost estimates",
-  "tco_settings_card_desc": "Adjust annual mileage, fuel prices, and other parameters to calculate the total cost of ownership (TCO) for vehicles."
+  "tco_settings_card_desc": "Adjust annual mileage, fuel prices, and other parameters to calculate the total cost of ownership (TCO) for vehicles.",
+  "evaluate_vehicle_btn": "Evaluate my vehicle value",
+  "eval_page_title_prefix": "Evaluate the value of ",
+  "eval_page_title_highlight": "my car",
+  "eval_page_desc": "Enter the basic details of your vehicle to find out its current market value based on similar vehicles on our platform.",
+  "eval_mileage_label": "Mileage (approximate)",
+  "eval_mileage_placeholder": "e.g. 150,000",
+  "eval_btn_text": "Calculate value",
+  "eval_results_title": "Estimated market value:",
+  "eval_results_desc_prefix": "Based on comparison of ",
+  "eval_results_desc_suffix": " similar vehicles (+/- 2 years).",
+  "eval_similar_title": "Similar vehicles on the portal:",
+  "eval_error_alert": "An error occurred while evaluating the vehicle value.",
+  "eval_no_comparables": "There are currently no exact matching vehicles on the portal. The evaluation is based on a general depreciation algorithm.",
+  "eval_warning_history": "Check vehicle history",
+  "eval_fill_required": "Please fill in all required information.",
+  "eval_btn_evaluating": "Evaluating..."
 }
 

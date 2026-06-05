@@ -945,6 +945,22 @@
   "profile_fuel_lpg": "LPG",
   "profile_fuel_cng": "CNG",
   "profile_user_fallback": "User",
-  "profile_error_saving": "Error saving vehicle. Please try again."
+  "profile_error_saving": "Error saving vehicle. Please try again.",
+  "evaluate_vehicle_btn": "Evaluar el valor de mi vehículo",
+  "eval_page_title_prefix": "Evaluar el valor de ",
+  "eval_page_title_highlight": "mi coche",
+  "eval_page_desc": "Introduzca los datos básicos de su vehículo para averiguar su valor de mercado actual en función de vehículos similares en nuestra plataforma.",
+  "eval_mileage_label": "Kilometraje (aproximado)",
+  "eval_mileage_placeholder": "ej. 150.000",
+  "eval_btn_text": "Calcular valor",
+  "eval_results_title": "Valor de mercado estimado:",
+  "eval_results_desc_prefix": "Basado en la comparación de ",
+  "eval_results_desc_suffix": " vehículos similares (+/- 2 años).",
+  "eval_similar_title": "Vehículos similares en el portal:",
+  "eval_error_alert": "Se produjo un error al evaluar el valor del vehículo.",
+  "eval_no_comparables": "Actualmente no hay vehículos que coincidan exactamente en el portal. La evaluación se basa en un algoritmo de depreciación general.",
+  "eval_warning_history": "Comprobar el historial del vehículo",
+  "eval_fill_required": "Por favor, complete toda la información requerida.",
+  "eval_btn_evaluating": "Evaluando..."
 }
 

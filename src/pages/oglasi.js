@@ -910,100 +910,53 @@ async function initSidebarFiltering() {
     const resetBtn = document.getElementById("sidebarResetBtn");
 
     makeSelect.addEventListener("change", () => {
-        const data = window._sidebarBrandModelData;
+        if (window._isPrefilling) return;
         const brand = makeSelect.value;
-        modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
-        modelSelect.disabled = true;
-        
-        if (variantSelect) {
-            variantSelect.innerHTML = '<option value="">Vse različice</option>';
-            variantSelect.disabled = true;
-        }
+        if (!brand) return;
 
-        if (brand && data && data[brand]) {
-            const models = data[brand];
-            const keys = typeof models === 'object' && !Array.isArray(models) ? Object.keys(models).sort() : (Array.isArray(models) ? models.sort() : []);
-            keys.forEach(m => {
-                const o = document.createElement("option");
-                o.value = m;
-                o.textContent = m;
-                modelSelect.appendChild(o);
-            });
-            if (keys.length) modelSelect.disabled = false;
-        }
+        const params = parseHashParams();
+        const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+        const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+        const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
 
-        // Notify custom select to update
-        modelSelect.dispatchEvent(new Event('change'));
-        if (variantSelect) variantSelect.dispatchEvent(new Event('change'));
-        applySidebarFilters();
+        if (!selectedMakes.includes(brand)) {
+            selectedMakes.push(brand);
+            updateUrlParams(selectedMakes, selectedModels, selectedVariants);
+        }
     });
 
     if (modelSelect) {
         modelSelect.addEventListener("change", () => {
-            const data = window._sidebarBrandModelData;
-            const brand = makeSelect.value;
+            if (window._isPrefilling) return;
             const model = modelSelect.value;
-            
-            if (variantSelect) {
-                variantSelect.innerHTML = '<option value="">Vse različice</option>';
-                variantSelect.disabled = true;
-                
-                if (brand && model && data && data[brand]) {
-                    const variants = getModelVariants(data[brand][model]);
-                    variants.forEach(v => {
-                        const trim = typeof v === 'string' ? v : (v && v.trim) ? v.trim : '';
-                        if (!trim) return;
-                        const o = document.createElement("option");
-                        o.value = trim;
-                        o.textContent = trim;
-                        variantSelect.appendChild(o);
-                    });
-                    if (variants.length) variantSelect.disabled = false;
-                }
-                
-                variantSelect.dispatchEvent(new Event('change'));
+            if (!model) return;
+
+            const params = parseHashParams();
+            const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+
+            if (!selectedModels.includes(model)) {
+                selectedModels.push(model);
+                updateUrlParams(selectedMakes, selectedModels, selectedVariants);
             }
-            applySidebarFilters();
         });
     }
 
     if (variantSelect) {
         variantSelect.addEventListener("change", () => {
-            if (window._isPrefilling) {
-                applySidebarFilters();
-                return;
-            }
-            
-            const make = makeSelect.value;
-            const model = modelSelect.value;
+            if (window._isPrefilling) return;
             const variant = variantSelect.value;
-            
-            if (make && model && variant) {
-                const params = parseHashParams();
-                let vehicles = [];
-                try {
-                    const vRaw = params.get('vehicles');
-                    if (vRaw) {
-                        vehicles = JSON.parse(vRaw);
-                        if (!Array.isArray(vehicles)) vehicles = [];
-                    }
-                } catch(e) {}
-                
-                vehicles.push({ make, model, variant });
-                
-                // Clear selection dropdowns
-                makeSelect.value = '';
-                makeSelect.dispatchEvent(new Event('change'));
-                
-                params.set('vehicles', JSON.stringify(vehicles));
-                params.delete('make');
-                params.delete('model');
-                params.delete('variant');
-                
-                const paramStr = params.toString();
-                window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
-            } else {
-                applySidebarFilters();
+            if (!variant) return;
+
+            const params = parseHashParams();
+            const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+
+            if (!selectedVariants.includes(variant)) {
+                selectedVariants.push(variant);
+                updateUrlParams(selectedMakes, selectedModels, selectedVariants);
             }
         });
     }
@@ -1031,12 +984,17 @@ async function initSidebarFiltering() {
     if (hibridCheck) {
         hibridCheck.addEventListener("change", updateSidebarHybridGroup);
     }
-
     if (form) {
         form.querySelectorAll("input, select").forEach(el => {
             if (el !== makeSelect && el !== modelSelect && el !== variantSelect) {
-                el.addEventListener("change", applySidebarFilters);
-                el.addEventListener("input", applySidebarFilters);
+                el.addEventListener("change", () => {
+                    applySidebarFilters();
+                    updateUrlParamsFromInputs();
+                });
+                el.addEventListener("input", () => {
+                    applySidebarFilters();
+                    updateUrlParamsFromInputs();
+                });
             }
         });
     }
@@ -1053,16 +1011,12 @@ async function initSidebarFiltering() {
             if (modelSelect) {
                 modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
                 modelSelect.disabled = true;
-                modelSelect.dispatchEvent(new Event('change'));
             }
             if (variantSelect) {
                 variantSelect.innerHTML = '<option value="">Vse različice</option>';
                 variantSelect.disabled = true;
-                variantSelect.dispatchEvent(new Event('change'));
             }
-            if (makeSelect) makeSelect.dispatchEvent(new Event('change'));
             
-            // Clear URL search params as well, except category context
             const params = parseHashParams();
             const cat = params.get('cat');
             window.location.hash = `/oglasi${cat ? '?cat=' + cat : ''}`;
@@ -1071,24 +1025,18 @@ async function initSidebarFiltering() {
 }
 
 function applySidebarFilters() {
-    const make = document.getElementById("sidebarMake")?.value || '';
-    const model = document.getElementById("sidebarModel")?.value || '';
-    const variant = document.getElementById("sidebarVariant")?.value || '';
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
     const priceTo = parseFormattedNumber(document.getElementById("sidebarPriceTo")?.value) || Infinity;
 
-    // New car filters
     const bodyType = document.getElementById("sidebarBodyType")?.value || '';
     const powerFrom = parseInt(document.getElementById("sidebarPowerFrom")?.value, 10) || 0;
     const powerTo = parseInt(document.getElementById("sidebarPowerTo")?.value, 10) || Infinity;
     const driveType = document.getElementById("sidebarDriveType")?.value || '';
 
-    // New moto filters
     const engineType = document.getElementById("sidebarEngineType")?.value || '';
     const engineStroke = document.getElementById("sidebarEngineStroke")?.value || '';
 
-    // New common filters
     const color = document.getElementById("sidebarColor")?.value || '';
     const sellerType = document.getElementById("sidebarSellerType")?.value || '';
     const region = document.getElementById("sidebarRegion")?.value || '';
@@ -1096,7 +1044,6 @@ function applySidebarFilters() {
     const onlySale = document.getElementById("sidebarOnlySale")?.checked || false;
     const showNoPrice = document.getElementById("sidebarShowNoPrice")?.checked ?? true;
 
-    // Parse multi-select checkboxes for fuel and transmission
     const form = document.getElementById("sidebarFiltersForm");
     let fuels = [];
     let transmissions = [];
@@ -1106,24 +1053,14 @@ function applySidebarFilters() {
         transmissions = fd.getAll("transmission").filter(Boolean);
     }
 
-    // Check category context from URL
     const params = parseHashParams();
     const cat = params.get('cat');
     const najem = params.get('najem');
-    const variantParam = params.get('variant');
     const mileageToParam = parseInt(params.get('mileageTo'), 10) || Infinity;
 
-    // Parse multi-vehicle search array
-    let vehiclesParam = [];
-    try {
-        const vRaw = params.get('vehicles');
-        if (vRaw) {
-            vehiclesParam = JSON.parse(vRaw);
-            if (!Array.isArray(vehiclesParam)) vehiclesParam = [];
-        }
-    } catch(e) {
-        console.warn("Failed to parse vehicles query parameter:", e);
-    }
+    const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
 
     const filtered = _allActiveListings.filter(car => {
         const carCat = (car.category === 'motor' || car.category === 'moto') ? 'moto' : car.category;
@@ -1131,52 +1068,16 @@ function applySidebarFilters() {
         if (filterCat && carCat !== filterCat) return false;
         if (najem === '1' && !car.isRental) return false;
 
-        // Vehicle (Make / Model / Variant) filtering:
-        if (make) {
-            if (car.make !== make) return false;
-            if (model && car.model !== model) return false;
-            
-            if (variant) {
-                const titleStr = (car.title || '').toLowerCase();
-                const subtitleStr = (car.subtitle || '').toLowerCase();
-                const variantLower = variant.toLowerCase();
-                if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
-            } else {
-                const urlMake = params.get('make');
-                const urlModel = params.get('model');
-                if (make === urlMake && (!urlModel || model === urlModel) && variantParam) {
-                    const titleStr = (car.title || '').toLowerCase();
-                    const subtitleStr = (car.subtitle || '').toLowerCase();
-                    const variantLower = variantParam.toLowerCase();
-                    if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
-                }
-            }
-        } else {
-            if (vehiclesParam.length > 0) {
-                const match = vehiclesParam.some(v => {
-                    if (v.make && car.make !== v.make) return false;
-                    if (v.model && car.model !== v.model) return false;
-                    if (v.variant) {
-                        const titleStr = (car.title || '').toLowerCase();
-                        const subtitleStr = (car.subtitle || '').toLowerCase();
-                        const vLower = v.variant.toLowerCase();
-                        if (!titleStr.includes(vLower) && !subtitleStr.includes(vLower)) return false;
-                    }
-                    return true;
-                });
-                if (!match) return false;
-            } else {
-                const urlMake = params.get('make');
-                const urlModel = params.get('model');
-                if (urlMake && car.make !== urlMake) return false;
-                if (urlModel && car.model !== urlModel) return false;
-                if (variantParam) {
-                    const titleStr = (car.title || '').toLowerCase();
-                    const subtitleStr = (car.subtitle || '').toLowerCase();
-                    const variantLower = variantParam.toLowerCase();
-                    if (!titleStr.includes(variantLower) && !subtitleStr.includes(variantLower)) return false;
-                }
-            }
+        if (selectedMakes.length > 0 && !selectedMakes.includes(car.make)) return false;
+        if (selectedModels.length > 0 && !selectedModels.includes(car.model)) return false;
+        if (selectedVariants.length > 0) {
+            const titleStr = (car.title || '').toLowerCase();
+            const subtitleStr = (car.subtitle || '').toLowerCase();
+            const match = selectedVariants.some(v => {
+                const variantLower = v.toLowerCase();
+                return titleStr.includes(variantLower) || subtitleStr.includes(variantLower);
+            });
+            if (!match) return false;
         }
 
         const carYear = parseInt(car.year, 10) || 0;
@@ -1198,11 +1099,8 @@ function applySidebarFilters() {
 
             const isMatch = fuels.some(f => {
                 if (f === normalizedCarFuel) return true;
-                
-                // Match hybrid subtypes
                 if (normalizedCarFuel === 'Hibrid' || normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid') {
                     if (f === 'Hibrid') return true;
-                    
                     const titleText = ((car.title || '') + ' ' + (car.subtitle || '')).toLowerCase();
                     if (f === 'Plug-in hibrid') {
                         return normalizedCarFuel === 'Plug-in hibrid' || normalizedCarFuel === 'Priključni hibrid' || titleText.includes('plug') || titleText.includes('phev');
@@ -1222,11 +1120,15 @@ function applySidebarFilters() {
             });
             if (!isMatch) return false;
         }
-        if (transmissions.length > 0 && !transmissions.includes(car.transmission)) return false;
 
-        // 🚗 Car Specific Filters
+        if (transmissions.length > 0) {
+            let normalizedCarTrans = car.transmission;
+            if (car.transmission === 'Manual') normalizedCarTrans = 'Ročni';
+            if (car.transmission === 'Automatic') normalizedCarTrans = 'Avtomatski';
+            if (!transmissions.includes(normalizedCarTrans)) return false;
+        }
+
         if (cat !== 'moto' && cat !== 'motor') {
-            // Body Type
             if (bodyType) {
                 const seg = (car.segment || '').toLowerCase();
                 const title = (car.title || '').toLowerCase();
@@ -1250,12 +1152,8 @@ function applySidebarFilters() {
                     if (commonSegs.some(s => seg.includes(s))) return false;
                 }
             }
-
-            // Engine Power (kW)
             const carPower = car.powerKw || 0;
             if (carPower < powerFrom || (powerTo !== Infinity && carPower > powerTo)) return false;
-
-            // Drive Type
             if (driveType) {
                 const carDrive = (car.driveType || '').toLowerCase();
                 if (driveType === 'FWD') {
@@ -1268,9 +1166,7 @@ function applySidebarFilters() {
             }
         }
 
-        // 🏍️ Motorcycle Specific Filters
         if (cat === 'moto' || cat === 'motor') {
-            // Engine Type
             if (engineType) {
                 const carEng = (car.engineType || '').toLowerCase();
                 const filterEng = engineType.toLowerCase();
@@ -1282,12 +1178,9 @@ function applySidebarFilters() {
                     return false;
                 }
             }
-
-            // Engine Stroke
             if (engineStroke && car.engineStroke !== engineStroke) return false;
         }
 
-        // Color
         if (color) {
             const carColor = (car.color || '').toLowerCase();
             const filterColor = color.toLowerCase();
@@ -1299,19 +1192,12 @@ function applySidebarFilters() {
             }
         }
 
-        // Seller Type
         if (sellerType && car.sellerType !== sellerType) return false;
-
-        // Region
         if (region) {
             const carRegion = car.location?.region || '';
             if (carRegion !== region) return false;
         }
-
-        // Only Sale
         if (onlySale && !car.salePriceEur) return false;
-
-        // Show/Hide no price
         if (!showNoPrice) {
             const hasPrice = (car.priceRaw && car.priceRaw > 0) || (car.priceEur && car.priceEur > 0) || (car.price && car.price.toLowerCase() !== 'po dogovoru' && !car.callForPrice);
             if (!hasPrice) return false;
@@ -1321,190 +1207,169 @@ function applySidebarFilters() {
     });
 
     renderListings(filtered);
-
-    // Update count in header
     const countEl = document.querySelector(".results-header h1 span");
-    if (countEl) {
-        countEl.textContent = `(${filtered.length} vozil)`;
-    }
+    if (countEl) countEl.textContent = `(${filtered.length} vozil)`;
 }
 
-function renderSidebarVehicleCards(vehicles) {
-    const container = document.getElementById("sidebarVehicleCards");
-    if (!container) return;
+function getSidebarFormState() {
+    const params = parseHashParams();
+    const fields = [
+        'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'driveType', 
+        'engineType', 'engineStroke', 'color', 'sellerType', 'region', 
+        'powerFrom', 'powerTo'
+    ];
     
-    if (!vehicles || vehicles.length === 0) {
-        container.innerHTML = "";
-        return;
-    }
-    
-    container.innerHTML = vehicles.map((v, i) => {
-        const parts = [v.make];
-        if (v.model) parts.push(v.model);
-        if (v.variant) parts.push(v.variant);
-        return `
-            <div class="vehicle-entry-card" style="margin-bottom:0.25rem;">
-                <div class="vec-info">
-                    ${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}
-                </div>
-                <button type="button" class="vec-remove" data-idx="${i}">&times;</button>
-            </div>
-        `;
-    }).join('');
-
-    container.querySelectorAll('.vec-remove').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const idx = parseInt(btn.getAttribute('data-idx'), 10);
-            vehicles.splice(idx, 1);
-            
-            // Update URL hash with updated vehicles
-            const params = parseHashParams();
-            if (vehicles.length > 0) {
-                params.set('vehicles', JSON.stringify(vehicles));
-            } else {
-                params.delete('vehicles');
-            }
-            const paramStr = params.toString();
-            window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
-        });
+    fields.forEach(f => {
+        const val = document.getElementById(`sidebar${f.charAt(0).toUpperCase() + f.slice(1)}`)?.value;
+        if (val) params.set(f, val); else params.delete(f);
     });
+
+    const onlySale = document.getElementById("sidebarOnlySale")?.checked ? 'true' : '';
+    const showNoPrice = document.getElementById("sidebarShowNoPrice")?.checked ? 'true' : 'false';
+    if (onlySale) params.set('onlySale', onlySale); else params.delete('onlySale');
+    if (showNoPrice) params.set('showNoPrice', showNoPrice); else params.delete('showNoPrice');
+
+    const form = document.getElementById("sidebarFiltersForm");
+    if (form) {
+        const fd = new FormData(form);
+        const fuels = fd.getAll("fuel").filter(Boolean);
+        const trans = fd.getAll("transmission").filter(Boolean);
+        if (fuels.length > 0) params.set('fuel', fuels.join(',')); else params.delete('fuel');
+        if (trans.length > 0) params.set('transmission', trans.join(',')); else params.delete('transmission');
+    }
+    return params;
+}
+
+function updateUrlParamsFromInputs() {
+    const params = getSidebarFormState();
+    const hash = window.location.hash.split('?')[0];
+    const newParams = params.toString();
+    window.history.replaceState(null, '', `${hash}${newParams ? '?' + newParams : ''}`);
+}
+
+function renderActivePills(containerId, values, onRemove) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    values.forEach(val => {
+        const pill = document.createElement('span');
+        pill.className = 'sidebar-active-pill';
+        pill.innerHTML = `${val} <button type="button" class="sidebar-pill-remove" aria-label="Odstrani">&times;</button>`;
+        pill.querySelector('.sidebar-pill-remove').addEventListener('click', (e) => {
+            e.preventDefault();
+            onRemove(val);
+        });
+        container.appendChild(pill);
+    });
+}
+
+function updateUrlParams(makes, models, variants) {
+    const params = getSidebarFormState();
+    if (makes && makes.length > 0) params.set('make', makes.join(',')); else params.delete('make');
+    if (models && models.length > 0) params.set('model', models.join(',')); else params.delete('model');
+    if (variants && variants.length > 0) params.set('variant', variants.join(',')); else params.delete('variant');
+    const paramStr = params.toString();
+    window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+}
+
+function updateFiltersUI() {
+    const params = parseHashParams();
+    const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+
+    renderActivePills('activeMake', selectedMakes, (val) => {
+        const updated = selectedMakes.filter(x => x !== val);
+        const data = window._sidebarBrandModelData;
+        const remainingModels = selectedModels.filter(m => updated.some(mk => data?.[mk]?.[m]));
+        updateUrlParams(updated, remainingModels, selectedVariants);
+    });
+
+    renderActivePills('activeModel', selectedModels, (val) => {
+        updateUrlParams(selectedMakes, selectedModels.filter(x => x !== val), selectedVariants);
+    });
+
+    renderActivePills('activeVariant', selectedVariants, (val) => {
+        updateUrlParams(selectedMakes, selectedModels, selectedVariants.filter(x => x !== val));
+    });
+
+    const modelSelect = document.getElementById("sidebarModel");
+    const variantSelect = document.getElementById("sidebarVariant");
+    const data = window._sidebarBrandModelData;
+
+    if (modelSelect) {
+        modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+        modelSelect.disabled = true;
+        if (selectedMakes.length > 0 && data) {
+            const allModels = new Set();
+            selectedMakes.forEach(mk => Object.keys(data[mk] || {}).forEach(m => allModels.add(m)));
+            Array.from(allModels).sort().forEach(m => {
+                if (!selectedModels.includes(m)) {
+                    const o = document.createElement("option");
+                    o.value = m; o.textContent = m;
+                    modelSelect.appendChild(o);
+                }
+            });
+            if (allModels.size > 0) modelSelect.disabled = false;
+        }
+    }
+
+    if (variantSelect) {
+        variantSelect.innerHTML = '<option value="">Vse različice</option>';
+        variantSelect.disabled = true;
+        if (data) {
+            const allVariants = new Set();
+            const source = (selectedModels.length > 0) ? selectedModels : Object.keys(data[selectedMakes[0]] || {});
+            selectedMakes.forEach(mk => {
+                selectedModels.forEach(md => {
+                    const v = getModelVariants(data[mk]?.[md]);
+                    v.forEach(x => x && allVariants.add(x));
+                });
+            });
+            Array.from(allVariants).sort().forEach(v => {
+                if (!selectedVariants.includes(v)) {
+                    const o = document.createElement("option");
+                    o.value = v; o.textContent = v;
+                    variantSelect.appendChild(o);
+                }
+            });
+            if (allVariants.size > 0) variantSelect.disabled = false;
+        }
+    }
 }
 
 function prefillSidebarFromUrl() {
     window._isPrefilling = true;
     const params = parseHashParams();
-    const make = params.get("make");
-    const model = params.get("model");
-    const variant = params.get("variant");
-    const yearFrom = params.get("yearFrom");
-    const yearTo = params.get("yearTo");
-    const priceTo = params.get("priceTo");
-    const fuel = params.get("fuel");
-    const transmission = params.get("transmission");
+    
+    const fields = ['yearFrom', 'yearTo', 'priceTo', 'bodyType', 'driveType', 'engineType', 'engineStroke', 'color', 'sellerType', 'region', 'powerFrom', 'powerTo'];
+    fields.forEach(f => {
+        const el = document.getElementById(`sidebar${f.charAt(0).toUpperCase() + f.slice(1)}`);
+        if (el && params.get(f)) el.value = params.get(f);
+    });
 
-    // New url params
-    const bodyType = params.get("bodyType");
-    const powerFrom = params.get("powerFrom");
-    const powerTo = params.get("powerTo");
-    const driveType = params.get("driveType");
-    const engineType = params.get("engineType");
-    const engineStroke = params.get("engineStroke");
-    const color = params.get("color");
-    const sellerType = params.get("sellerType");
-    const region = params.get("region");
     const onlySale = params.get("onlySale");
     const showNoPrice = params.get("showNoPrice");
+    if (onlySale && document.getElementById("sidebarOnlySale")) document.getElementById("sidebarOnlySale").checked = onlySale === 'true';
+    if (showNoPrice && document.getElementById("sidebarShowNoPrice")) document.getElementById("sidebarShowNoPrice").checked = showNoPrice === 'true';
 
-    // Parse and render multi-vehicle search array
-    let vehicles = [];
-    try {
-        const vRaw = params.get('vehicles');
-        if (vRaw) {
-            vehicles = JSON.parse(vRaw);
-            if (!Array.isArray(vehicles)) vehicles = [];
-        }
-    } catch(e) {
-        console.warn("Failed to parse vehicles query parameter:", e);
-    }
-    renderSidebarVehicleCards(vehicles);
-
-    const makeSelect = document.getElementById("sidebarMake");
-    const modelSelect = document.getElementById("sidebarModel");
-    const variantSelect = document.getElementById("sidebarVariant");
-    const yearFromSelect = document.getElementById("sidebarYearFrom");
-    const yearToSelect = document.getElementById("sidebarYearTo");
-    const priceToInput = document.getElementById("sidebarPriceTo");
-
-    if (make && makeSelect) {
-        makeSelect.value = make;
-        makeSelect.dispatchEvent(new Event('change'));
-        
-        setTimeout(() => {
-            if (model && modelSelect) {
-                modelSelect.value = model;
-                modelSelect.dispatchEvent(new Event('change'));
-                
-                setTimeout(() => {
-                    if (variant && variantSelect) {
-                        variantSelect.value = variant;
-                        variantSelect.dispatchEvent(new Event('change'));
-                    }
-                    applySidebarFilters();
-                }, 50);
-            }
-        }, 50);
-    }
-    if (yearFrom && yearFromSelect) {
-        yearFromSelect.value = yearFrom;
-        yearFromSelect.dispatchEvent(new Event('change'));
-    }
-    if (yearTo && yearToSelect) {
-        yearToSelect.value = yearTo;
-        yearToSelect.dispatchEvent(new Event('change'));
-    }
-    if (priceTo && priceToInput) {
-        priceToInput.value = priceTo;
-    }
-
-    const prefillSelect = (id, val) => {
-        const el = document.getElementById(id);
-        if (el && val) {
-            el.value = val;
-            el.dispatchEvent(new Event('change'));
-        }
-    };
-    prefillSelect("sidebarBodyType", bodyType);
-    prefillSelect("sidebarDriveType", driveType);
-    prefillSelect("sidebarEngineType", engineType);
-    prefillSelect("sidebarEngineStroke", engineStroke);
-    prefillSelect("sidebarColor", color);
-    prefillSelect("sidebarSellerType", sellerType);
-    prefillSelect("sidebarRegion", region);
-
-    if (powerFrom && document.getElementById("sidebarPowerFrom")) {
-        document.getElementById("sidebarPowerFrom").value = powerFrom;
-    }
-    if (powerTo && document.getElementById("sidebarPowerTo")) {
-        document.getElementById("sidebarPowerTo").value = powerTo;
-    }
-
-    if (onlySale && document.getElementById("sidebarOnlySale")) {
-        document.getElementById("sidebarOnlySale").checked = onlySale === 'true';
-    }
-    if (showNoPrice && document.getElementById("sidebarShowNoPrice")) {
-        document.getElementById("sidebarShowNoPrice").checked = showNoPrice === 'true';
-    }
-
+    const fuel = params.get("fuel");
     if (fuel) {
-        const fuels = fuel.split(',').map(f => {
-            if (f === 'Petrol') return 'Bencin';
-            if (f === 'Diesel') return 'Dizel';
-            if (f === 'Hybrid') return 'Hibrid';
-            if (f === 'Electric') return 'Elektrika';
-            return f;
-        });
-        const fuelCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="fuel"]');
-        fuelCheckboxes.forEach(cb => {
-            cb.checked = fuels.includes(cb.value);
-        });
+        const fList = fuel.split(',');
+        document.querySelectorAll('#sidebarFiltersForm input[name="fuel"]').forEach(cb => cb.checked = fList.includes(cb.value));
     }
 
-    if (transmission) {
-        const transList = transmission.split(',');
-        const transCheckboxes = document.querySelectorAll('#sidebarFiltersForm input[name="transmission"]');
-        transCheckboxes.forEach(cb => {
-            cb.checked = transList.includes(cb.value);
-        });
+    const trans = params.get("transmission");
+    if (trans) {
+        const tList = trans.split(',');
+        document.querySelectorAll('#sidebarFiltersForm input[name="transmission"]').forEach(cb => cb.checked = tList.includes(cb.value));
     }
 
-    // Expand hybrid types if prefilled
     updateSidebarHybridGroup();
 
-    // Only apply immediately if make is not present (as make sets off a async populate chain)
-    if (!make) {
-        applySidebarFilters();
-    }
+    updateFiltersUI();
+
+    applySidebarFilters();
 
     setTimeout(() => {
         window._isPrefilling = false;

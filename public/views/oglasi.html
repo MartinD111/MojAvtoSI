@@ -3,6 +3,40 @@
 
     <!-- ═══ SIDEBAR: Filtri ════════════════════════════════════ -->
     <aside class="oglasi-sidebar">
+        <style>
+            #sidebarFiltersForm { gap: 0.6rem !important; }
+            #sidebarFiltersForm .form-group { display: flex; flex-direction: column; gap: 0.2rem; align-items: center; text-align: center; width: 100%; }
+            #sidebarFiltersForm .form-group > label:not(.adv-chip) { font-size: 0.8rem; font-weight: 600; color: var(--text-dark); text-align: center; width: 100% !important; display: block !important; margin-bottom: 0px !important; }
+            #sidebarFiltersForm select { text-align: center; text-align-last: center; width: 100%; height: 38px !important; }
+            #sidebarFiltersForm input:not([type="checkbox"]):not([type="radio"]) { text-align: center; width: 100%; }
+            #sidebarFiltersForm .adv-chip-group { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; width: 100%; }
+            #sidebarFiltersForm .adv-chip { width: auto !important; max-width: 100% !important; display: inline-flex !important; flex: none !important; }
+            #sidebarFiltersForm .remember-toggle { display: inline-flex; align-items: center; justify-content: center; }
+            #sidebarFiltersForm .custom-select-trigger { height: 38px !important; padding: 0 15px !important; font-size: 0.88rem !important; }
+            #sidebarFiltersForm .custom-select-trigger .select-icon { width: 16px !important; height: 16px !important; }
+            #sidebarFiltersForm .pill-input { height: 38px !important; padding: 0 15px !important; font-size: 0.88rem !important; border-radius: 9999px !important; }
+            #sidebarFiltersForm .sidebar-active-pills { margin-top: 0.2rem !important; gap: 0.25rem !important; }
+            #sidebarFiltersForm .sidebar-active-pill { padding: 0.15rem 0.45rem 0.15rem 0.55rem !important; font-size: 0.7rem !important; gap: 0.2rem !important; }
+            #sidebarFiltersForm .sidebar-pill-remove { font-size: 0.8rem !important; }
+            
+            /* Year select pills & dropdown optimizations */
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-container { width: 75px !important; min-width: 75px !important; flex: none !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger { justify-content: center !important; padding: 0 5px !important; text-align: center !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger .select-icon { display: none !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-value { font-weight: 700 !important; font-size: 0.95rem !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-option { justify-content: center !important; font-weight: 700 !important; font-size: 0.95rem !important; padding: 8px 10px !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #111827 !important; }
+            body.dark-mode #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #ffffff !important; }
+            @media (min-width: 769px) {
+                #filtersCard {
+                    overflow: visible !important;
+                    max-height: none !important;
+                }
+                .filters-card-inner {
+                    overflow: visible !important;
+                }
+            }
+        </style>
 
         <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
         <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
@@ -23,6 +57,7 @@
                     <select id="sidebarMake" name="make" class="glass-select">
                         <option value="">Vse znamke</option>
                     </select>
+                    <div class="sidebar-active-pills" id="activeMake"></div>
                 </div>
 
                 <!-- Model -->
@@ -31,6 +66,7 @@
                     <select id="sidebarModel" name="model" class="glass-select" disabled>
                         <option value="">Vsi modeli</option>
                     </select>
+                    <div class="sidebar-active-pills" id="activeModel"></div>
                 </div>
 
                 <!-- Različica -->
@@ -39,15 +75,16 @@
                     <select id="sidebarVariant" name="variant" class="glass-select" disabled>
                         <option value="">Vse različice</option>
                     </select>
+                    <div class="sidebar-active-pills" id="activeVariant"></div>
                 </div>
 
-                <!-- Dodana vozila (Multi-search chips) -->
-                <div id="sidebarVehicleCards" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.25rem;"></div>
+                <!-- Dodana vozila (Multi-search chips - hidden in new design) -->
+                <div id="sidebarVehicleCards" style="display:none; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.25rem;"></div>
 
                 <!-- Letnik od / do -->
                 <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                     <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Letnik</label>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                    <div class="year-selects-wrapper" style="display:flex; gap:0.5rem; justify-content:center; width:100%;">
                         <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
                             <option value="">Od</option>
                         </select>
