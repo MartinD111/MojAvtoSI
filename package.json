@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:navtika": "cross-env VITE_PLATFORM=navtika vite",
-    "build": "cross-env VITE_PLATFORM=avto vite build",
+    "build": "npm run build:all && node scripts/assemble-pages.js",
     "build:avto": "cross-env VITE_PLATFORM=avto vite build",
     "build:navtika": "cross-env VITE_PLATFORM=navtika vite build",
     "build:all": "npm run build:avto && npm run build:navtika",

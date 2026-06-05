@@ -74,6 +74,18 @@ const PLATFORM_ID = (import.meta.env.VITE_PLATFORM || 'avto');
 /** The active platform configuration object. */
 export const PLATFORM = PLATFORMS[PLATFORM_ID] || PLATFORMS.avto;
 
+// Adjust siblingUrl for relative GitHub Pages deployments
+if (typeof window !== 'undefined') {
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    if (isGitHubPages) {
+        if (PLATFORM.id === 'avto') {
+            PLATFORM.siblingUrl = './navtika/';
+        } else {
+            PLATFORM.siblingUrl = '../';
+        }
+    }
+}
+
 /** Returns the active platform id ('avto' | 'navtika'). */
 export function getPlatform() {
     return PLATFORM.id;
