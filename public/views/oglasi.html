@@ -178,6 +178,56 @@
                             <option value="AWD">Štirikolesni pogon (AWD / 4x4)</option>
                         </select>
                     </div>
+
+                    <!-- Konfiguracija motorja -->
+                    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Konfiguracija motorja</label>
+                        <select id="sidebarEngineConfig" name="engineConfig" class="glass-select">
+                            <option value="">Vsa konfiguracije</option>
+                            <optgroup label="Enovaljni">
+                                <option value="I1">I1 – Enovaljnik</option>
+                            </optgroup>
+                            <optgroup label="Dvovaljni">
+                                <option value="I2">I2 – Vrstni 2-valjnik</option>
+                                <option value="V2">V2 – V 2-valjnik</option>
+                                <option value="B2">B2 – Bokser 2-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Trivaljni">
+                                <option value="I3">I3 – Vrstni 3-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Štirivaljni">
+                                <option value="I4">I4 – Vrstni 4-valjnik</option>
+                                <option value="V4">V4 – V 4-valjnik</option>
+                                <option value="B4">B4 – Bokser 4-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Petvaljni">
+                                <option value="I5">I5 – Vrstni 5-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Šestvaljni">
+                                <option value="I6">I6 – Vrstni 6-valjnik</option>
+                                <option value="V6">V6 – V 6-valjnik</option>
+                                <option value="B6">B6 – Bokser 6-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Osemvaljni">
+                                <option value="V8">V8 – V 8-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Desetvaljni">
+                                <option value="V10">V10 – V 10-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Dvanajstvaljni">
+                                <option value="V12">V12 – V 12-valjnik</option>
+                                <option value="W12">W12 – W 12-valjnik</option>
+                            </optgroup>
+                            <optgroup label="16-valjni">
+                                <option value="W16">W16 – W 16-valjnik</option>
+                            </optgroup>
+                            <optgroup label="Posebni">
+                                <option value="Wankel">Wankel – Rotacijski motor</option>
+                                <option value="Electric">Električni motor</option>
+                                <option value="Hybrid">Hibridni pogon</option>
+                            </optgroup>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- 🏍️ Motorcycle Specific Fields -->

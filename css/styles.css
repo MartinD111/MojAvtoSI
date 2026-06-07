@@ -3621,6 +3621,11 @@ body.dark-mode #rot-next-btn {
   .add-exclude-row {
     justify-content: center !important;
   }
+
+  /* Center added vehicle chips on mobile */
+  .vehicle-drop-zone {
+    justify-content: center !important;
+  }
 }
 
 .adv-input {
@@ -5221,9 +5226,11 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
     width: calc(100% - 2rem);
   }
 
-  /* ── Sidebar: unified pill → squircle container ── */
+  /* ── Sidebar: unified pill → squircle container, same width as nav bar ── */
   .oglasi-sidebar {
-    width: 100%;
+    width: calc(100% + 2rem);
+    margin-left: -1rem;
+    box-sizing: border-box;
     border-radius: 1.25rem;
     border: 1px solid rgba(0, 0, 0, 0.08);
     background: #ffffff;
@@ -5241,43 +5248,73 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
     border-radius: 1.25rem;
   }
 
-  /* Toggle button: flush inside the container, no own border/bg */
+  /* Toggle button: borderless — outer .oglasi-sidebar provides the pill shape */
   .mobile-filter-toggle {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.6rem;
     width: 100%;
-    padding: 0.9rem 1.25rem;
+    height: 44px;
+    padding: 0 1.1rem;
     border: none;
     border-radius: 0;
     background: transparent;
     color: #1e293b;
     font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     box-shadow: none;
     box-sizing: border-box;
+    overflow: hidden;
   }
 
   body.dark-mode .mobile-filter-toggle {
-    color: #e2e8f0;
     background: transparent;
-    border-color: transparent;
+    color: #e2e8f0;
   }
 
-  .mobile-filter-toggle span {
+  .mobile-filter-toggle .mft-label {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
-  .mobile-filter-toggle .mft-chevron {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .mobile-filter-toggle .mft-active-pills {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+    min-width: 0;
   }
 
-  .mobile-filter-toggle.open .mft-chevron {
-    transform: rotate(180deg);
+  .mobile-filter-toggle .mft-active-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mft-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.18rem 0.6rem;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border: none;
+  }
+
+  body.dark-mode .mft-pill {
+    background: #2563eb;
+    color: #ffffff;
   }
 
   /* Filter card: slide in below the toggle */
@@ -5340,26 +5377,28 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
 
   .sort-wrap {
     width: 100%;
-    height: auto;
-    flex-wrap: wrap;
+    height: 44px;
+    flex-wrap: nowrap;
     gap: 0.5rem;
+    align-items: center;
   }
 
   .sort-wrap .sort-label {
     order: 1;
-    flex: 1;
-  }
-
-  .sort-wrap .legend-btn {
-    order: 2;
+    flex-shrink: 0;
   }
 
   .sort-wrap .pill-select-wrapper {
-    order: 3;
-    flex: 1 1 100%;
+    order: 2;
+    flex: 1;
     min-width: 0;
     max-width: none;
-    height: 44px;
+    height: 100%;
+  }
+
+  .sort-wrap .legend-btn {
+    order: 3;
+    flex-shrink: 0;
   }
 }
 
@@ -6926,8 +6965,8 @@ body.dark-mode .results-header h1 span {
 .sort-wrap .pill-select-wrapper {
   height: 100%;
   flex: 1;
-  min-width: 220px;
-  max-width: 280px;
+  min-width: 0;
+  max-width: none;
 }
 
 .sort-wrap .pill-input {

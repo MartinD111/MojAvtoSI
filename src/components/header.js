@@ -72,14 +72,17 @@ export function initHeader() {
 
             <!-- RIGHT: actions (desktop) / profile (mobile) -->
             <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+              <button class="pill-btn secondary btn-icon desktop-only-action" id="themeToggleBtn" aria-label="Preklopi temo" style="border-radius: 50%;">
+                <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
+              </button>
+
               ${user ? `
-                <a href="#/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);"><i data-lucide="plus"></i><span> ${t('publish_listing')}</span></a>
-                <div id="userMenu" class="relative">
-                  <button id="userMenuBtn" class="pill-btn secondary user-btn desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);">
+                <div id="userMenu" class="relative desktop-only-action">
+                  <button id="userMenuBtn" class="pill-btn secondary user-btn" style="border-radius: var(--md-sys-shape-corner-large);">
                     ${user.photoURL
                       ? `<img src="${user.photoURL}" class="avatar" style="border-radius:50%; width:24px; height:24px; object-fit:cover;" alt="Profil" />`
                       : `<i data-lucide="user"></i>`}
-                    <span>${user.displayName?.split(' ')[0] || t('my_account')}</span>
+                    <span>${user.displayName?.split(' ')[0] || t('my_profile')}</span>
                   </button>
                   <div id="userDropdown" class="glass-dropdown" style="background: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); border-radius: var(--md-sys-shape-corner-large);">
                     <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
@@ -96,15 +99,15 @@ export function initHeader() {
                     <a href="#/admin" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
                   </div>
                 </div>
+                <a href="#/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);"><i data-lucide="plus"></i><span> ${t('publish_listing')}</span></a>
               ` : `
+                <a href="#/profil" class="pill-btn secondary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);">
+                  <i data-lucide="user"></i><span> ${t('my_profile')}</span>
+                </a>
                 <a href="#/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);">
                   <i data-lucide="plus"></i><span> ${t('publish_listing')}</span>
                 </a>
               `}
-
-              <button class="pill-btn secondary btn-icon desktop-only-action" id="themeToggleBtn" aria-label="Preklopi temo" style="border-radius: 50%;">
-                <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
-              </button>
 
               <!-- Mobile profile button (right side) -->
               <div class="mobile-profile-wrap">

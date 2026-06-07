@@ -17,6 +17,9 @@ let vehicles = [];
 let excludedVehicles = [];
 const MAX_VEHICLES = 3;
 
+// Per-category form state — saved when switching tabs, restored on return.
+const _catState = {};
+
 export function initAdvancedSearchPage() {
     initNavtikaSearchPage();
 }
@@ -110,6 +113,34 @@ function setupRentalToggle(ctx) {
     }
 }
 
+// Capture all form field values (excluding category/hidden fields) for state memory.
+function snapshotForm() {
+    const form = document.getElementById('advancedSearchForm');
+    if (!form) return {};
+    const snap = {};
+    form.querySelectorAll('input:not([type=hidden]), select').forEach(el => {
+        if (!el.name || el.name === 'cat') return;
+        if (el.type === 'checkbox') snap[el.name] = el.checked;
+        else snap[el.name] = el.value;
+    });
+    snap._vehicles = [...vehicles];
+    snap._excludedVehicles = [...excludedVehicles];
+    return snap;
+}
+
+// Restore a previously snapshotted form state.
+function restoreForm(snap) {
+    const form = document.getElementById('advancedSearchForm');
+    if (!form || !snap) return;
+    form.querySelectorAll('input:not([type=hidden]), select').forEach(el => {
+        if (!el.name || el.name === 'cat' || !(el.name in snap)) return;
+        if (el.type === 'checkbox') el.checked = snap[el.name];
+        else el.value = snap[el.name];
+    });
+    if (snap._vehicles) { vehicles = snap._vehicles; }
+    if (snap._excludedVehicles) { excludedVehicles = snap._excludedVehicles; }
+}
+
 // ── Category tabs (built from the platform taxonomy) ─────────────────────────────
 function renderCategoryTabs(ctx) {
     const tabs = document.getElementById('boatCategoryTabs');
@@ -129,12 +160,17 @@ function renderCategoryTabs(ctx) {
 
     tabs.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (btn.dataset.cat === ctx.cat) return;
+            // Save current form state for the outgoing category
+            _catState[ctx.cat] = snapshotForm();
             tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             ctx.cat = btn.dataset.cat;
             ctx.sub = '';
             ctx.vtype = '';
             applyCategory(ctx);
+            // Restore saved state for the incoming category (after applyCategory populates the form)
+            if (_catState[ctx.cat]) restoreForm(_catState[ctx.cat]);
         });
     });
 }
@@ -210,7 +246,23 @@ function applyCategory(ctx) {
     }
 
     loadBrands(ctx.cat);
+    loadEngineMakeDropdown();
     if (window.lucide) window.lucide.createIcons();
+}
+
+function loadEngineMakeDropdown() {
+    const sel = document.getElementById('advEngineMake');
+    if (!sel || sel.options.length > 1) return;
+    fetch('json/brands_models_izvenkrmni.json')
+        .then(r => r.ok ? r.json() : {})
+        .then(data => {
+            Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
+                const o = document.createElement('option');
+                o.value = brand; o.textContent = brand;
+                sel.appendChild(o);
+            });
+        })
+        .catch(() => {});
 }
 
 // ── Brand/model options ─────────────────────────────────────────────────────────
@@ -257,18 +309,29 @@ function loadBrands(catSlug) {
             const make = makeSel.value;
             const model = modelSel.value;
             variantSel.innerHTML = '<option value="">Različica</option>';
-            
+            variantSel.closest('.form-group')?.classList.remove('adv-hidden');
+
             const rawVariants = (make && model && data[make]?.[model]) ? getModelVariants(data[make][model]) : [];
-            const variants = rawVariants.map(v => typeof v === 'object' ? v.trim : v).filter(Boolean);
-            
-            variants.sort().forEach(v => {
-                const o = document.createElement('option');
-                o.value = v;
-                o.textContent = v;
-                variantSel.appendChild(o);
-            });
-            variantSel.disabled = variants.length === 0;
-            createCustomSelect(variantSel);
+            const variants = rawVariants.map(v => typeof v === 'object' ? v.trim : v).filter(Boolean).sort();
+
+            if (variants.length === 1) {
+                // Only one variant — auto-select it and hide the dropdown
+                variantSel.innerHTML = `<option value="${variants[0]}">${variants[0]}</option>`;
+                variantSel.value = variants[0];
+                variantSel.disabled = false;
+                variantSel.closest('.form-group')?.classList.add('adv-hidden');
+                createCustomSelect(variantSel);
+                variantSel.dispatchEvent(new Event('change'));
+            } else {
+                variants.forEach(v => {
+                    const o = document.createElement('option');
+                    o.value = v;
+                    o.textContent = v;
+                    variantSel.appendChild(o);
+                });
+                variantSel.disabled = variants.length === 0;
+                createCustomSelect(variantSel);
+            }
         });
     }
 }
@@ -322,7 +385,7 @@ function bindForm(ctx) {
         }
 
         // Include other common fields if they have a value
-        const fieldsToMap = ['powerFrom', 'powerTo', 'engineHoursTo', 'berthsFrom', 'cabinsFrom', 'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'najem', 'prodaja', 'engineMake'];
+        const fieldsToMap = ['powerFrom', 'powerTo', 'engineHoursTo', 'berthsFrom', 'cabinsFrom', 'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'najem', 'prodaja', 'engineMake', 'engineType'];
         for (const field of fieldsToMap) {
             const val = fd.get(field);
             if (val) params.set(field, val);
@@ -524,6 +587,17 @@ function setupMultiVehicleSelector() {
         if (variantSelect) variantSelect.dispatchEvent(new Event('change'));
     }
 
+    if (variantSelect) {
+        variantSelect.addEventListener('change', () => {
+            const make = makeSelect?.value;
+            const model = modelSelect?.value;
+            const variant = variantSelect.value;
+            if (make && model && variant && addVehicleBtn) {
+                addVehicleBtn.click();
+            }
+        });
+    }
+
     if (addVehicleBtn) {
         addVehicleBtn.addEventListener('click', () => {
             const make = makeSelect ? makeSelect.value : '';
@@ -553,7 +627,7 @@ function setupMultiVehicleSelector() {
     function makeCardHTML(v, i, zone) {
         const parts = [v.make];
         if (v.model) parts.push(v.model);
-        if (v.variant) parts.push(v.variant);
+        if (v.variant && v.variant !== v.model) parts.push(v.variant);
         const cls = zone === 'exclude' ? 'vehicle-entry-card vec-excluded' : 'vehicle-entry-card';
         return `<div class="${cls}" draggable="true" data-idx="${i}" data-zone="${zone}">
             <div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div>

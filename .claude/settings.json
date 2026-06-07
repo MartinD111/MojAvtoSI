@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(ls \"C:\\\\Users\\\\marti\\\\OneDrive\\\\Desktop\\\\Vehicle Taxonomy\\\\\")",
+      "PowerShell(python -c \"import openpyxl; wb = openpyxl.load_workbook\\(r'C:\\\\Users\\\\marti\\\\OneDrive\\\\Desktop\\\\Vehicle Taxonomy\\\\taksonomija_avto_2026-06-02.xlsx', read_only=True\\); ws = wb.active; rows = list\\(ws.iter_rows\\(values_only=True\\)\\); print\\('Headers:', rows[0]\\); print\\('Row 1:', rows[1]\\); print\\('Row 2:', rows[2]\\)\")"
+    ]
+  }
+}

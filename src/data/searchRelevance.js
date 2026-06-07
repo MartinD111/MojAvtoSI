@@ -96,6 +96,50 @@ export const COMMERCIAL_FUEL_MAP = {
     Zimska:           ['Dizel'],
 };
 
+// Canonical engine configuration options for cars (code matches engine_config in JSON).
+export const AVTO_ENGINE_CONFIG_OPTIONS = [
+    { v: 'I3',      l: 'I3 Trivaljnik' },
+    { v: 'I4',      l: 'I4 Štirivaljnik' },
+    { v: 'V6',      l: 'V6 Šestvaljnik' },
+    { v: 'V8',      l: 'V8 Osemvaljnik' },
+    { v: 'V10',     l: 'V10 Desetvaljnik' },
+    { v: 'V12',     l: 'V12 Dvanajstvaljnik' },
+    { v: 'W12',     l: 'W12 Dvanajstvaljnik' },
+    { v: 'W16',     l: 'W16 Šestnajstvaljnik' },
+    { v: 'Electric', l: 'Električni motor' },
+];
+
+// Collect every avto trim variant for the current brand/model selections.
+// selections: array of { make, model } — model '' means any model of that brand.
+export function getAvtoVariants(data, selections) {
+    if (!data || !Array.isArray(selections) || selections.length === 0) return [];
+    const out = [];
+    for (const sel of selections) {
+        if (!sel || !sel.make) continue;
+        const brand = data[sel.make];
+        if (!brand) continue;
+        const modelEntries = sel.model && brand[sel.model]
+            ? [[sel.model, brand[sel.model]]]
+            : Object.entries(brand);
+        for (const [, trims] of modelEntries) {
+            if (!Array.isArray(trims)) continue;
+            for (const v of trims) {
+                if (v && typeof v === 'object') out.push(v);
+            }
+        }
+    }
+    return out;
+}
+
+// Returns the set of engine_config values present in the given variants.
+export function computeAvtoFacets(variants) {
+    const engineConfigs = new Set();
+    for (const v of variants) {
+        if (v.engine_config) engineConfigs.add(v.engine_config);
+    }
+    return { engineConfigs };
+}
+
 // Normalised cylinder value for a variant (Wankel collapses to 'Wankel').
 function cylinderOf(v) {
     if ((v.engine_type || '') === 'Wankel' || v.engine_code === 'Wankel') return 'Wankel';

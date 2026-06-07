@@ -210,6 +210,11 @@
         "trim": "A-Spec",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1498
+      },
+      {
+        "trim": "Type R (DC2)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1800
       }
     ],
     "Legend": [
@@ -747,6 +752,11 @@
         "trim": "4C Spider",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1742
+      },
+      {
+        "trim": "Spider 33 Stradale Tributo",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1750
       }
     ],
     "75": [
@@ -868,6 +878,11 @@
         "trim": "GTAm",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2891
+      },
+      {
+        "trim": "Quadrifoglio Racing",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2900
       }
     ],
     "Giulia (105)": [
@@ -1082,6 +1097,11 @@
         "trim": "Quadrifoglio",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2891
+      },
+      {
+        "trim": "Quadrifoglio Racing",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2900
       }
     ],
     "SZ/RZ": [
@@ -1448,6 +1468,11 @@
         "trim": "Volante",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "DB11 AMR",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
       }
     ],
     "DB12": [
@@ -1504,6 +1529,16 @@
       },
       {
         "trim": "Volante",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
+      },
+      {
+        "trim": "DBS 770 Ultimate",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
+      },
+      {
+        "trim": "Superleggera",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5204
       }
@@ -1578,6 +1613,11 @@
         "trim": "Spider",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 6498
+      },
+      {
+        "trim": "Valkyrie AMR Pro",
+        "fuel_type": "Hybrid",
+        "engine_capacity_cc": 6498
       }
     ],
     "Valour": [
@@ -1642,6 +1682,11 @@
       },
       {
         "trim": "Roadster",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "Vantage AMR",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3982
       }
@@ -1830,6 +1875,11 @@
         "trim": "g-tron",
         "fuel_type": "CNG",
         "engine_capacity_cc": 1500
+      },
+      {
+        "trim": "RS 3 Sportback",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2480
       }
     ],
     "A4": [
@@ -1857,6 +1907,16 @@
         "trim": "RS 4",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2900
+      },
+      {
+        "trim": "RS 4 Avant (B7)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4163
+      },
+      {
+        "trim": "RS 4 Avant (B9)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2894
       }
     ],
     "A5": [
@@ -1924,6 +1984,16 @@
       {
         "trim": "e-tron Avant",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "RS 6 Avant (C7)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3993
+      },
+      {
+        "trim": "RS 6 Avant (C8)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3996
       }
     ],
     "A7": [
@@ -1946,6 +2016,11 @@
         "trim": "e-tron",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "RS 7 Sportback (C7)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3993
       }
     ],
     "A8": [
@@ -2074,6 +2149,11 @@
         "trim": "TFSI e",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "SQ5 (8R)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2995
       }
     ],
     "Q6 e-tron": [
@@ -2106,6 +2186,11 @@
         "trim": "TFSI e",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "SQ7 TDI",
+        "fuel_type": "Diesel",
+        "engine_capacity_cc": 3956
       }
     ],
     "Q8": [
@@ -2158,6 +2243,21 @@
         "trim": "Spyder",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5200
+      },
+      {
+        "trim": "V10 Plus (Type 4S)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
+      },
+      {
+        "trim": "V10 RWS",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
+      },
+      {
+        "trim": "Spyder V10 Plus",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
       }
     ],
     "TT": [
@@ -2180,6 +2280,16 @@
         "trim": "TT RS",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "TT RS (8J)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2480
+      },
+      {
+        "trim": "TT RS Roadster (8S)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2480
       }
     ],
     "Ur-Quattro": [
@@ -2486,13 +2596,6 @@
         "engine_capacity_cc": 1990
       }
     ],
-    "2015-03-01 00:00:00": [
-      {
-        "trim": "Dixi",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 747
-      }
-    ],
     "328": [
       {
         "trim": "328",
@@ -2636,11 +2739,53 @@
         "engine_capacity_cc": 3453
       }
     ],
+    "M2": [
+      {
+        "trim": "M2 (F87)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      }
+    ],
     "M3 (E30)": [
       {
         "trim": "Sport Evolution",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2467
+      }
+    ],
+    "M3 (E36)": [
+      {
+        "trim": "M3 GT",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2990
+      }
+    ],
+    "M3 (E46)": [
+      {
+        "trim": "M3 GTR",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4000
+      }
+    ],
+    "M5 (E39)": [
+      {
+        "trim": "M5",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4941
+      }
+    ],
+    "M5 (E60)": [
+      {
+        "trim": "M5",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4999
+      }
+    ],
+    "Mar-15": [
+      {
+        "trim": "Dixi",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 747
       }
     ],
     "Series 1": [
@@ -2693,6 +2838,16 @@
         "trim": "Cabrio (E88)",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "M140i",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M135i xDrive",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Series 2": [
@@ -2743,6 +2898,16 @@
       },
       {
         "trim": "M2",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M2 Competition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M2 CS",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
       }
@@ -2827,6 +2992,31 @@
         "trim": "3.0 CSL",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M3 (E92)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3999
+      },
+      {
+        "trim": "M3 (F80)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M3 CS (F80)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M3 CSL (E46)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3246
+      },
+      {
+        "trim": "M3 Touring (G81)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "Series 4": [
@@ -2882,6 +3072,16 @@
       },
       {
         "trim": "M4",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M4 CSL (G82)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "M4 GTS (F82)",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
       }
@@ -2961,6 +3161,16 @@
         "trim": "M5",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4400
+      },
+      {
+        "trim": "M5 CS (F90)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4400
+      },
+      {
+        "trim": "M5 Touring (G99)",
+        "fuel_type": "Plug-in Hybrid",
+        "engine_capacity_cc": 4400
       }
     ],
     "Series 6": [
@@ -2986,6 +3196,11 @@
       },
       {
         "trim": "M6",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4400
+      },
+      {
+        "trim": "M6 Competition",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4400
       }
@@ -3039,6 +3254,11 @@
       {
         "trim": "i7",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "M760Li",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6600
       }
     ],
     "Series 8": [
@@ -3076,6 +3296,11 @@
         "trim": "M8",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4400
+      },
+      {
+        "trim": "M8 Competition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4400
       }
     ],
     "X1": [
@@ -3097,6 +3322,11 @@
         "trim": "X3",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "X3 M Competition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "X4": [
@@ -3104,6 +3334,11 @@
         "trim": "X4",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "X4 M Competition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "X5": [
@@ -3111,6 +3346,11 @@
         "trim": "X5",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "X5 M Competition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4400
       }
     ],
     "X6": [
@@ -3118,6 +3358,11 @@
         "trim": "X6",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "X6 M Competition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4400
       }
     ],
     "X7": [
@@ -3125,6 +3370,11 @@
         "trim": "X7",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "X7 M60i",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4400
       }
     ],
     "XM": [
@@ -3259,6 +3509,11 @@
       },
       {
         "trim": "Super Sport 300+",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 8000
+      },
+      {
+        "trim": "Chiron Sport 110 Ans",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 8000
       }
@@ -3731,6 +3986,11 @@
       {
         "trim": "IQ",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "ESV Platinum",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
       }
     ],
     "Fleetwood": [
@@ -3918,6 +4178,11 @@
       {
         "trim": "EV",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "RS",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3600
       }
     ],
     "Bolt": [
@@ -3955,6 +4220,16 @@
         "trim": "IROC-Z",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "ZL1 1LE",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
+      },
+      {
+        "trim": "SS 1LE",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
       }
     ],
     "Caprice": [
@@ -4028,6 +4303,11 @@
         "trim": "Colorado",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2700
+      },
+      {
+        "trim": "ZR2",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2700
       }
     ],
     "Corsica": [
@@ -4069,6 +4349,21 @@
         "trim": "E-Ray",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 6200
+      },
+      {
+        "trim": "Z06 (C5)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5700
+      },
+      {
+        "trim": "ZR1 (C7)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
+      },
+      {
+        "trim": "ZR1 (C4)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5700
       }
     ],
     "Corvette (C1)": [
@@ -4214,6 +4509,16 @@
       {
         "trim": "EV",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "1500 Trail Boss",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5300
+      },
+      {
+        "trim": "2500HD ZR2",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6600
       }
     ],
     "Spark": [
@@ -4235,6 +4540,11 @@
         "trim": "Suburban",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5300
+      },
+      {
+        "trim": "High Country",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5300
       }
     ],
     "Tahoe": [
@@ -4247,6 +4557,11 @@
         "trim": "RST",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6200
+      },
+      {
+        "trim": "Z71",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5300
       }
     ],
     "Trailblazer": [
@@ -4913,6 +5228,10 @@
       {
         "trim": "Born",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "77 kWh",
+        "fuel_type": "Electric"
       }
     ],
     "Formentor": [
@@ -5437,6 +5756,16 @@
         "trim": "Demon",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6200
+      },
+      {
+        "trim": "SRT Demon",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
+      },
+      {
+        "trim": "SRT Hellcat Redeye",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
       }
     ],
     "Charger": [
@@ -5469,6 +5798,11 @@
         "trim": "Daytona",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5700
+      },
+      {
+        "trim": "SRT Hellcat Redeye",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
       }
     ],
     "Colt": [
@@ -5869,6 +6203,11 @@
         "trim": "12Cilindri",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6500
+      },
+      {
+        "trim": "12Cilindri Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6496
       }
     ],
     "250 GT": [
@@ -5909,6 +6248,11 @@
         "trim": "296 GTS",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "296 GTB Assetto Fiorano",
+        "fuel_type": "Hybrid",
+        "engine_capacity_cc": 2992
       }
     ],
     "308 GTB/GTS": [
@@ -6019,6 +6363,11 @@
         "trim": "488 Pista",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3900
+      },
+      {
+        "trim": "488 Pista Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3902
       }
     ],
     "550 Maranello": [
@@ -6045,6 +6394,11 @@
         "trim": "GTO",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6000
+      },
+      {
+        "trim": "599 GTO",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5999
       }
     ],
     "612 Scaglietti": [
@@ -6069,6 +6423,11 @@
         "trim": "812 Competizione",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6500
+      },
+      {
+        "trim": "812 Competizione A",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6496
       }
     ],
     "California": [
@@ -6107,6 +6466,11 @@
         "trim": "Enzo Ferrari",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6000
+      },
+      {
+        "trim": "FXX",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5998
       }
     ],
     "F12berlinetta": [
@@ -6140,6 +6504,11 @@
         "trim": "F50",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4700
+      },
+      {
+        "trim": "F50 GT",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4700
       }
     ],
     "F8 Tributo": [
@@ -6152,6 +6521,11 @@
         "trim": "F8 Spider",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3900
+      },
+      {
+        "trim": "F8 Tributo Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3902
       }
     ],
     "F80": [
@@ -6190,6 +6564,11 @@
         "trim": "Aperta",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 6300
+      },
+      {
+        "trim": "FXX-K",
+        "fuel_type": "Hybrid",
+        "engine_capacity_cc": 6262
       }
     ],
     "Mondial": [
@@ -6365,6 +6744,16 @@
         "trim": "500 by Gucci",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1000
+      },
+      {
+        "trim": "Abarth 695 Biposto",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "Abarth 595 Esseesse",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
       }
     ],
     "500 Nuova": [
@@ -6809,6 +7198,26 @@
         "trim": "Bronco Sport",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1500
+      },
+      {
+        "trim": "Badlands",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2700
+      },
+      {
+        "trim": "Outer Banks",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2700
+      },
+      {
+        "trim": "Wildtrak",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2700
+      },
+      {
+        "trim": "Raptor",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "C-Max": [
@@ -6922,6 +7331,16 @@
         "trim": "Expedition",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "Platinum",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "King Ranch",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
       }
     ],
     "Explorer": [
@@ -6939,6 +7358,16 @@
         "trim": "Timberline",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2300
+      },
+      {
+        "trim": "ST",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "King Ranch",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "F-150": [
@@ -6955,6 +7384,46 @@
         "trim": "Raptor",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "XL",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2700
+      },
+      {
+        "trim": "XLT",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2700
+      },
+      {
+        "trim": "Lariat",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "King Ranch",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "Platinum",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "Limited",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "Tremor",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "Raptor R",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "Fairlane": [
@@ -7245,6 +7714,31 @@
         "trim": "Bullitt",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "EcoBoost Premium",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2300
+      },
+      {
+        "trim": "GT Premium",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "GT500",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5200
+      },
+      {
+        "trim": "Mach 1 Handling Package",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "Dark Horse",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "Mustang Mach-E": [
@@ -7333,6 +7827,11 @@
         "trim": "Raptor",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "Lariat",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2300
       }
     ],
     "S-Max": [
@@ -7501,6 +8000,11 @@
         "trim": "Shooting Brake",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Launch Edition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3300
       }
     ],
     "G80": [
@@ -7512,6 +8016,11 @@
       {
         "trim": "Electrified G80",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Sport",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3300
       }
     ],
     "G90": [
@@ -7931,6 +8440,16 @@
         "trim": "Coupé",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2400
+      },
+      {
+        "trim": "2.0T Sport",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Hybrid Touring",
+        "fuel_type": "Hybrid",
+        "engine_capacity_cc": 2000
       }
     ],
     "Accord (first gen)": [
@@ -7994,6 +8513,21 @@
         "trim": "CRX",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1500
+      },
+      {
+        "trim": "Type R (FK8)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Type R (FK2)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Type R (EP3)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Civic (first gen)": [
@@ -8139,6 +8673,16 @@
         "trim": "Type S",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 3493
+      },
+      {
+        "trim": "NSX-R (NA2)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3200
+      },
+      {
+        "trim": "NSX Type S (NC1)",
+        "fuel_type": "Hybrid",
+        "engine_capacity_cc": 3493
       }
     ],
     "Odyssey": [
@@ -8185,6 +8729,11 @@
     "S2000": [
       {
         "trim": "S2000",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "S2000 CR",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
       }
@@ -8359,6 +8908,13 @@
         "engine_capacity_cc": 2000
       }
     ],
+    "Elantra N": [
+      {
+        "trim": "Elantra N",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      }
+    ],
     "Equus": [
       {
         "trim": "Equus",
@@ -8525,6 +9081,12 @@
         "fuel_type": "Electric"
       }
     ],
+    "Ioniq 5 N": [
+      {
+        "trim": "Ioniq 5 N",
+        "fuel_type": "Electric"
+      }
+    ],
     "Ioniq 6": [
       {
         "trim": "Ioniq 6",
@@ -8585,6 +9147,13 @@
         "trim": "N Line",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1600
+      }
+    ],
+    "Kona N": [
+      {
+        "trim": "Kona N",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Lantra": [
@@ -8693,6 +9262,13 @@
       },
       {
         "trim": "N",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      }
+    ],
+    "Veloster N": [
+      {
+        "trim": "Veloster N",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
       }
@@ -8841,6 +9417,11 @@
         "trim": "Red Sport 400",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "Red Sport 400 AWD",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "Q70": [
@@ -8900,6 +9481,11 @@
     "QX80": [
       {
         "trim": "QX80",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5600
+      },
+      {
+        "trim": "Sensory",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5600
       }
@@ -9081,6 +9667,11 @@
         "trim": "Convertible",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Project 7",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "I-Pace": [
@@ -9151,6 +9742,11 @@
         "trim": "S",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "SV Project 8",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "XF": [
@@ -9195,6 +9791,11 @@
         "trim": "XJ220",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "XJR575",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "XJS": [
@@ -9317,6 +9918,11 @@
         "trim": "Rubicon",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3600
+      },
+      {
+        "trim": "Mojave",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3600
       }
     ],
     "Grand Cherokee": [
@@ -9414,6 +10020,11 @@
       {
         "trim": "Wagoneer S",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Series III",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6200
       }
     ],
     "Wagoneer (original)": [
@@ -9446,6 +10057,16 @@
       },
       {
         "trim": "Unlimited",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3600
+      },
+      {
+        "trim": "Rubicon 392",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6400
+      },
+      {
+        "trim": "Rubicon Xtreme Recon",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3600
       }
@@ -9638,6 +10259,10 @@
       {
         "trim": "GT",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "GT-Line AWD",
+        "fuel_type": "Electric"
       }
     ],
     "EV9": [
@@ -9815,6 +10440,11 @@
         "trim": "GT",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3300
+      },
+      {
+        "trim": "GT2",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3300
       }
     ],
     "Stonic": [
@@ -9882,6 +10512,11 @@
         "trim": "Final Edition",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "Agera RS",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "CC8S": [
@@ -9932,6 +10567,11 @@
       },
       {
         "trim": "Absolut",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "Jesko Absolut",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5000
       }
@@ -10074,6 +10714,23 @@
         "trim": "Roadster",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6500
+      },
+      {
+        "trim": "LP 750-4 SV",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6498
+      },
+      {
+        "trim": "LP 780-4 Ultimae",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6498
+      }
+    ],
+    "Centenario": [
+      {
+        "trim": "Centenario",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6498
       }
     ],
     "Countach": [
@@ -10174,6 +10831,11 @@
         "trim": "Spyder",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5200
+      },
+      {
+        "trim": "LP 610-4 Spyder",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
       }
     ],
     "Jalpa": [
@@ -10233,6 +10895,13 @@
         "engine_capacity_cc": 6500
       }
     ],
+    "Sesto Elemento": [
+      {
+        "trim": "Sesto Elemento",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5204
+      }
+    ],
     "Sian": [
       {
         "trim": "Sian FKP 37",
@@ -10245,6 +10914,13 @@
         "trim": "Silhouette",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      }
+    ],
+    "Sián": [
+      {
+        "trim": "Sián FKP 37",
+        "fuel_type": "Hybrid",
+        "engine_capacity_cc": 6498
       }
     ],
     "Temerario": [
@@ -10271,6 +10947,13 @@
         "trim": "Performante",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4000
+      }
+    ],
+    "Veneno": [
+      {
+        "trim": "Veneno",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6498
       }
     ]
   },
@@ -10474,6 +11157,11 @@
         "trim": "V8",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5000
+      },
+      {
+        "trim": "90 V8 Carpathian Edition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "Discovery": [
@@ -10536,6 +11224,11 @@
       {
         "trim": "Electric",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Sport SVR Ultimate",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
       }
     ],
     "Range Rover Evoque": [
@@ -10676,6 +11369,13 @@
         "engine_capacity_cc": 5000
       }
     ],
+    "GS F": [
+      {
+        "trim": "GS F",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
+      }
+    ],
     "GX": [
       {
         "trim": "GX 460",
@@ -10701,6 +11401,13 @@
       },
       {
         "trim": "IS-F",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
+      }
+    ],
+    "IS 500": [
+      {
+        "trim": "F Sport Performance",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5000
       }
@@ -10801,6 +11508,13 @@
         "engine_capacity_cc": 5000
       }
     ],
+    "RC F": [
+      {
+        "trim": "Track Edition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5000
+      }
+    ],
     "RX": [
       {
         "trim": "RX 350h",
@@ -10859,6 +11573,11 @@
         "trim": "Grand Touring",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 3600
+      },
+      {
+        "trim": "Grand Touring Black Label",
+        "fuel_type": "Plug-in Hybrid",
+        "engine_capacity_cc": 3000
       }
     ],
     "Blackwood": [
@@ -10873,6 +11592,11 @@
         "trim": "Continental",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3700
+      },
+      {
+        "trim": "Coach Door Edition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "Corsair": [
@@ -10960,6 +11684,11 @@
         "trim": "L",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "Black Label",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
       }
     ],
     "Town Car": [
@@ -11035,6 +11764,11 @@
         "trim": "Emira",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Emira V6",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
       }
     ],
     "Esprit": [
@@ -11108,6 +11842,10 @@
       },
       {
         "trim": "Air Sapphire",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "Grand Touring Performance",
         "fuel_type": "Electric"
       }
     ],
@@ -11457,6 +12195,11 @@
         "trim": "MPS",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2300
+      },
+      {
+        "trim": "Mazda3 Turbo",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
       }
     ],
     "323": [
@@ -11493,6 +12236,11 @@
         "trim": "MPS",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2300
+      },
+      {
+        "trim": "Mazda6 Signature",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
       }
     ],
     "626": [
@@ -11542,11 +12290,21 @@
         "trim": "CX-5",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Signature",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
       }
     ],
     "CX-50": [
       {
         "trim": "CX-50",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "Meridian",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2500
       }
@@ -11643,6 +12401,21 @@
         "trim": "Miata",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1800
+      },
+      {
+        "trim": "Miata RF Club",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Miata 30th Anniversary",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Miata Grand Touring",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "MX-6": [
@@ -11671,11 +12444,21 @@
         "trim": "RX-7",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1300
+      },
+      {
+        "trim": "RX-7 Spirit R",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1300
       }
     ],
     "RX-8": [
       {
         "trim": "RX-8",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1300
+      },
+      {
+        "trim": "RX-8 Spirit R",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1300
       }
@@ -11723,6 +12506,11 @@
         "trim": "570GT",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "570S GT4",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3800
       }
     ],
     "600LT": [
@@ -11754,6 +12542,11 @@
         "trim": "Spider",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "650S Can-Am",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3800
       }
     ],
     "675LT": [
@@ -11778,6 +12571,21 @@
         "trim": "Spider",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4000
+      },
+      {
+        "trim": "720S Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3994
+      },
+      {
+        "trim": "765LT",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3994
+      },
+      {
+        "trim": "765LT Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3994
       }
     ],
     "750S": [
@@ -11790,6 +12598,11 @@
         "trim": "Spider",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4000
+      },
+      {
+        "trim": "750S Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3994
       }
     ],
     "765LT": [
@@ -11871,6 +12684,11 @@
         "trim": "GTR",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "P1 GTR",
+        "fuel_type": "Plug-in Hybrid",
+        "engine_capacity_cc": 3800
       }
     ],
     "Senna": [
@@ -11883,6 +12701,16 @@
         "trim": "GTR",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4000
+      },
+      {
+        "trim": "Senna GTR",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3994
+      },
+      {
+        "trim": "Senna Can-Am",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3994
       }
     ]
   },
@@ -12073,6 +12901,26 @@
         "trim": "AMG C 63 S E Performance",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "AMG C 63 (W204)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6208
+      },
+      {
+        "trim": "AMG C 63 S (W205)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "AMG C 63 Black Series",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6208
+      },
+      {
+        "trim": "C 63 AMG (W204)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6208
       }
     ],
     "Citan": [
@@ -12230,6 +13078,11 @@
         "trim": "AMG CLS 63",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5500
+      },
+      {
+        "trim": "AMG CLS 63 S",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5500
       }
     ],
     "E-Class": [
@@ -12282,6 +13135,21 @@
         "trim": "AMG E 63 S",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4000
+      },
+      {
+        "trim": "AMG E 63 S (W213)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "AMG E 63 S Estate",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "AMG E 55 (W211)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5439
       }
     ],
     "EQA": [
@@ -12391,6 +13259,16 @@
       {
         "trim": "EQG",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "AMG G 63 (W463)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "AMG G 65 (W463)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5980
       }
     ],
     "GLA": [
@@ -12590,6 +13468,16 @@
         "trim": "4-Door Coupé",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "AMG GT R Pro",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "AMG GT Track Series",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3982
       }
     ],
     "R-Class": [
@@ -12639,6 +13527,21 @@
         "trim": "AMG S 63 E Performance",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 3982
+      },
+      {
+        "trim": "S 65 AMG (W222)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5980
+      },
+      {
+        "trim": "Maybach S 650 (X222)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5980
+      },
+      {
+        "trim": "Maybach S 600 (X222)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5980
       }
     ],
     "SL": [
@@ -12661,6 +13564,11 @@
         "trim": "300 SL Gullwing",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "SL 65 AMG (R230)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5980
       }
     ],
     "SLK/SLC": [
@@ -12707,6 +13615,11 @@
         "trim": "Black Series",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6200
+      },
+      {
+        "trim": "SLS AMG Black Series",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6208
       }
     ],
     "T-Class": [
@@ -12996,6 +13909,19 @@
         "trim": "Aceman S",
         "fuel_type": "Electric"
       }
+    ],
+    "Cooper": [
+      {
+        "trim": "SE Cabrio",
+        "fuel_type": "Electric"
+      }
+    ],
+    "John Cooper Works": [
+      {
+        "trim": "GP",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      }
     ]
   },
   "MINI": {
@@ -13219,6 +14145,11 @@
         "trim": "Eclipse",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "GSX",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Eclipse Cross": [
@@ -13290,6 +14221,21 @@
       },
       {
         "trim": "Evolution",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Evolution VI Tommi Makinen",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Evolution IX MR",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Evolution X FQ-440 MR",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
       }
@@ -13383,9 +14329,9 @@
     ]
   },
   "Morgan": {
-    "2026-04-04 00:00:00": [
+    "04-Apr": [
       {
-        "trim": "2026-04-04 00:00:00",
+        "trim": "04-Apr",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1800
       }
@@ -13407,6 +14353,11 @@
     "Plus 4": [
       {
         "trim": "Plus 4",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Plus 4 70th Edition",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
       }
@@ -13571,6 +14522,16 @@
         "trim": "Roadster",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3700
+      },
+      {
+        "trim": "370Z Nismo (Z34)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3700
+      },
+      {
+        "trim": "370Z Roadster",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3700
       }
     ],
     "Almera": [
@@ -13590,6 +14551,11 @@
         "trim": "Altima",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "SR VC-Turbo",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Ariya": [
@@ -13636,6 +14602,16 @@
         "trim": "Nismo",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "GT-R Nismo (R35)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "GT-R50",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3800
       }
     ],
     "Juke": [
@@ -13678,6 +14654,11 @@
     "Maxima": [
       {
         "trim": "Maxima",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "Platinum",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3500
       }
@@ -13842,6 +14823,16 @@
         "trim": "R34",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2568
+      },
+      {
+        "trim": "R33 Nismo 400R",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2800
+      },
+      {
+        "trim": "R34 Z-Tune",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2800
       }
     ],
     "Sunny": [
@@ -13868,6 +14859,11 @@
     "Titan": [
       {
         "trim": "Titan",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5600
+      },
+      {
+        "trim": "PRO-4X",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5600
       }
@@ -13905,6 +14901,11 @@
     "Z": [
       {
         "trim": "Z",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "Z Nismo",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
       }
@@ -14129,6 +15130,11 @@
       {
         "trim": "Electric",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "OPC",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Calibra": [
@@ -14266,6 +15272,11 @@
         "trim": "GSi",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "OPC",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2800
       }
     ],
     "Kadett": [
@@ -14471,11 +15482,26 @@
         "trim": "Roadster",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6000
+      },
+      {
+        "trim": "Huayra BC Roadster",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6000
+      },
+      {
+        "trim": "Huayra Tricolore",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6000
       }
     ],
     "Utopia": [
       {
         "trim": "Utopia",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6000
+      },
+      {
+        "trim": "Utopia Roadster",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6000
       }
@@ -14503,6 +15529,11 @@
       },
       {
         "trim": "Cinque",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 7300
+      },
+      {
+        "trim": "Zonda Cinque Roadster",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 7300
       }
@@ -14684,6 +15715,11 @@
         "trim": "GTI",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "GTi 30th",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1600
       }
     ],
     "3008": [
@@ -14774,6 +15810,11 @@
       },
       {
         "trim": "GTI",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "GTi by Peugeot Sport",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1600
       }
@@ -14974,6 +16015,14 @@
       }
     ]
   },
+  "Pininfarina": {
+    "Battista": [
+      {
+        "trim": "Anniversario",
+        "fuel_type": "Electric"
+      }
+    ]
+  },
   "Plymouth": {
     "Acclaim": [
       {
@@ -15090,6 +16139,10 @@
       },
       {
         "trim": "Performance pack",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "BST Edition 270",
         "fuel_type": "Electric"
       }
     ],
@@ -15412,6 +16465,46 @@
         "trim": "Sport Classic",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "GT2 RS (991)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "GT2 RS (997)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3600
+      },
+      {
+        "trim": "GT3 Touring (992)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3996
+      },
+      {
+        "trim": "GT3 RS (997)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3600
+      },
+      {
+        "trim": "Sport Classic (997)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3800
+      },
+      {
+        "trim": "Speedster (991)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4000
+      },
+      {
+        "trim": "R (991)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4000
+      },
+      {
+        "trim": "Carrera 4 GTS",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "914": [
@@ -15463,6 +16556,18 @@
         "engine_capacity_cc": 3000
       }
     ],
+    "Boxster": [
+      {
+        "trim": "Spyder (987)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3400
+      },
+      {
+        "trim": "Spyder (981)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3800
+      }
+    ],
     "Carrera GT": [
       {
         "trim": "Carrera GT",
@@ -15507,6 +16612,13 @@
         "engine_capacity_cc": 3000
       }
     ],
+    "Cayman": [
+      {
+        "trim": "GT4 RS",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4000
+      }
+    ],
     "Macan": [
       {
         "trim": "Macan",
@@ -15543,6 +16655,11 @@
       {
         "trim": "Macan 4S Electric",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Turbo",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3600
       }
     ],
     "Panamera": [
@@ -15585,6 +16702,11 @@
         "trim": "Sport Turismo",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2900
+      },
+      {
+        "trim": "Turbo S E-Hybrid",
+        "fuel_type": "Plug-in Hybrid",
+        "engine_capacity_cc": 3996
       }
     ],
     "Taycan": [
@@ -15684,6 +16806,11 @@
       {
         "trim": "REV",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Limited",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5700
       }
     ],
     "2500": [
@@ -15691,6 +16818,11 @@
         "trim": "2500",
         "fuel_type": "Diesel",
         "engine_capacity_cc": 6700
+      },
+      {
+        "trim": "Power Wagon",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 6400
       }
     ],
     "3500": [
@@ -15863,6 +16995,11 @@
       {
         "trim": "E-Tech 150 hp",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Turbo 2",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
       }
     ],
     "6": [
@@ -15884,6 +17021,13 @@
         "trim": "9",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1400
+      }
+    ],
+    "Alpine A110": [
+      {
+        "trim": "R",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1800
       }
     ],
     "Arkana": [
@@ -15942,6 +17086,21 @@
       },
       {
         "trim": "V6",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "R.S. Trophy",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "R.S. 220 Trophy",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "V6 Phase 2",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
       }
@@ -16064,6 +17223,11 @@
         "trim": "Coupé",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "R.S. Trophy-R",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1800
       }
     ],
     "Modus": [
@@ -16205,11 +17369,19 @@
       {
         "trim": "R1S",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Adventure Package",
+        "fuel_type": "Electric"
       }
     ],
     "R1T": [
       {
         "trim": "R1T",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "Launch Edition",
         "fuel_type": "Electric"
       }
     ],
@@ -16477,9 +17649,9 @@
     ]
   },
   "Saab": {
-    "2026-03-09 00:00:00": [
+    "09-Mar": [
       {
-        "trim": "2026-03-09 00:00:00",
+        "trim": "09-Mar",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
       },
@@ -16514,9 +17686,9 @@
         "engine_capacity_cc": 2800
       }
     ],
-    "2026-05-09 00:00:00": [
+    "09-May": [
       {
-        "trim": "2026-05-09 00:00:00",
+        "trim": "09-May",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
       },
@@ -16543,6 +17715,13 @@
         "engine_capacity_cc": 2500
       }
     ],
+    "9-3": [
+      {
+        "trim": "Turbo X",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2800
+      }
+    ],
     "9-4X": [
       {
         "trim": "9-4X",
@@ -16551,6 +17730,13 @@
       },
       {
         "trim": "Aero",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2800
+      }
+    ],
+    "9-5": [
+      {
+        "trim": "Aero Turbo6",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2800
       }
@@ -16871,6 +18057,11 @@
         "trim": "Cupra",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "Cupra Bocanegra",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
       }
     ],
     "Leon": [
@@ -16896,6 +18087,16 @@
       },
       {
         "trim": "Cupra",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Cupra R",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Cupra 290",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
       }
@@ -17158,6 +18359,11 @@
         "trim": "BRZ",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2400
+      },
+      {
+        "trim": "BRZ tS",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2400
       }
     ],
     "Crosstrek": [
@@ -17165,6 +18371,11 @@
         "trim": "Crosstrek",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Sport",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
       }
     ],
     "Forester": [
@@ -17182,6 +18393,11 @@
         "trim": "e-Boxer",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Sport",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
       }
     ],
     "Impreza": [
@@ -17202,6 +18418,21 @@
       },
       {
         "trim": "22B STi",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2212
+      },
+      {
+        "trim": "WRX STI S209",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "WRX STI S204",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "WRX STI 22B",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2212
       }
@@ -17249,6 +18480,11 @@
         "trim": "Outback",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "Onyx Edition XT",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2400
       }
     ],
     "Solterra": [
@@ -17284,6 +18520,11 @@
       },
       {
         "trim": "STI",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "STI Limited",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2500
       }
@@ -17615,6 +18856,10 @@
       {
         "trim": "Plaid",
         "fuel_type": "Electric"
+      },
+      {
+        "trim": "Plaid+",
+        "fuel_type": "Electric"
       }
     ],
     "Model X": [
@@ -17659,6 +18904,11 @@
     "4Runner": [
       {
         "trim": "4Runner",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4000
+      },
+      {
+        "trim": "TRD Pro",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4000
       }
@@ -17752,6 +19002,11 @@
         "trim": "Hybrid",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "TRD",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
       }
     ],
     "Carina": [
@@ -17808,6 +19063,11 @@
       },
       {
         "trim": "AE86",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "GR Corolla Circuit Edition",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1600
       }
@@ -17871,6 +19131,11 @@
         "trim": "GR86",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2400
+      },
+      {
+        "trim": "GR86 Premium",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2400
       }
     ],
     "Highlander": [
@@ -17883,6 +19148,11 @@
         "trim": "Hybrid",
         "fuel_type": "Hybrid",
         "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "Platinum",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
       }
     ],
     "Hilux": [
@@ -17914,6 +19184,16 @@
         "trim": "J40",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3878
+      },
+      {
+        "trim": "70 Series LX",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4500
+      },
+      {
+        "trim": "70 Series Hardtop",
+        "fuel_type": "Diesel",
+        "engine_capacity_cc": 4200
       }
     ],
     "Mirai": [
@@ -18004,6 +19284,11 @@
         "trim": "Adventure",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2500
+      },
+      {
+        "trim": "Prime",
+        "fuel_type": "Plug-in Hybrid",
+        "engine_capacity_cc": 2500
       }
     ],
     "Sequoia": [
@@ -18051,6 +19336,11 @@
         "trim": "RZ (A80)",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2998
+      },
+      {
+        "trim": "GR Supra A90 Final Edition",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3000
       }
     ],
     "Supra (A70)": [
@@ -18065,6 +19355,11 @@
         "trim": "Tacoma",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3500
+      },
+      {
+        "trim": "TRD Pro",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3500
       }
     ],
     "Tercel": [
@@ -18077,6 +19372,11 @@
     "Tundra": [
       {
         "trim": "Tundra",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5700
+      },
+      {
+        "trim": "TRD Pro",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 5700
       }
@@ -18117,6 +19417,11 @@
         "trim": "GR Yaris",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "GR Yaris Circuit Pack",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1618
       }
     ],
     "Yaris Cross": [
@@ -18352,6 +19657,11 @@
         "trim": "eHybrid",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 1500
+      },
+      {
+        "trim": "R-Line",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Beetle": [
@@ -18472,6 +19782,31 @@
         "trim": "Sportsvan",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "R (Mk7)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1984
+      },
+      {
+        "trim": "GTI Clubsport S",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1984
+      },
+      {
+        "trim": "GTI TCR",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1984
+      },
+      {
+        "trim": "R32 (Mk5)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3189
+      },
+      {
+        "trim": "R32 (Mk4)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3189
       }
     ],
     "ID. Buzz": [
@@ -18485,6 +19820,10 @@
       },
       {
         "trim": "GTX",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "1st Edition",
         "fuel_type": "Electric"
       }
     ],
@@ -18511,6 +19850,10 @@
       },
       {
         "trim": "GTX",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "Pro S",
         "fuel_type": "Electric"
       }
     ],
@@ -18600,6 +19943,11 @@
         "trim": "CC",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "R36",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3597
       }
     ],
     "Phaeton": [
@@ -18631,6 +19979,11 @@
         "trim": "R",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "R (Mk3)",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1984
       }
     ],
     "Sharan": [
@@ -18698,6 +20051,11 @@
         "trim": "eHybrid",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "R-Line",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Touareg": [
@@ -18715,6 +20073,11 @@
         "trim": "eHybrid",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 3000
+      },
+      {
+        "trim": "R50",
+        "fuel_type": "Diesel",
+        "engine_capacity_cc": 5000
       }
     ],
     "Touran": [
@@ -19701,6 +21064,11 @@
         "trim": "iV",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "RS 245",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Popular": [
@@ -19776,6 +21144,11 @@
         "trim": "iV",
         "fuel_type": "Plug-in Hybrid",
         "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "Laurin & Klement L&K",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
       }
     ],
     "Yeti": [

@@ -15,8 +15,7 @@
         { "id": "jadrnice",         "label": "Jadrnice",             "href": "#/iskanje?cat=jadrnice",             "icon": "sailboat" },
         { "id": "gumenjaki",        "label": "Gumenjaki",            "href": "#/iskanje?cat=gumenjaki",            "icon": "waves" },
         { "id": "jet-ski",          "label": "Jet-ski",              "href": "#/iskanje?cat=jet-ski",              "icon": "zap" },
-        { "id": "izvenkrmni",       "label": "Izvenkrmni motorji",   "href": "#/iskanje?cat=izvenkrmni-motorji",   "icon": "cog" },
-        { "id": "oprema",           "label": "Oprema za plovila",    "href": "#/iskanje?cat=oprema",               "icon": "anchor" }
+        { "id": "izvenkrmni",       "label": "Izvenkrmni motorji",   "href": "#/iskanje?cat=izvenkrmni-motorji",   "icon": "cog" }
       ]
     },
     {

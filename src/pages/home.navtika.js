@@ -37,11 +37,45 @@ function fillCategorySelect() {
     sel.innerHTML = Object.values(MAIN_CATEGORIES)
         .map(c => `<option value="${c.slug}">${t(c.label)}</option>`).join('');
     const advLink = document.getElementById('navHomeAdvLink');
-    fillSubcatSelect(sel.value); // populate "Kategorija" for the initial selection
-    sel.addEventListener('change', () => {
-        if (advLink) advLink.href = `#/iskanje?cat=${encodeURIComponent(sel.value)}`;
-        fillSubcatSelect(sel.value);
+    fillSubcatSelect(sel.value);
+
+    const form = document.getElementById('navtikaHomeSearch');
+
+    const updateAdvLink = () => {
+        if (!advLink) return;
+        const cat = sel.value;
+        const params = new URLSearchParams({ cat });
+        const sc = document.getElementById('nav-home-subcat')?.value;
+        if (sc) params.set('vtype', sc);
+        const lf = document.getElementById('nav-home-length-from')?.value;
+        const lt = document.getElementById('nav-home-length-to')?.value;
+        const pt = document.getElementById('nav-home-power-to')?.value;
+        const ht = document.getElementById('nav-home-hours-to')?.value;
+        if (lf && Number(lf) > 3) params.set('lengthFrom', lf);
+        if (lt && Number(lt) < 50) params.set('lengthTo', lt);
+        if (pt) params.set('powerTo', pt);
+        if (ht) params.set('engineHoursTo', ht);
+        const prodaja = document.getElementById('homeNavProdajaToggle')?.checked;
+        const najem = document.getElementById('homeNavNajemToggle')?.checked;
+        if (prodaja) params.set('prodaja', '1');
+        if (najem) params.set('najem', '1');
+        advLink.dataset.target = `#/iskanje?${params.toString()}`;
+    };
+
+    updateAdvLink();
+    advLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const target = advLink.dataset.target || '#/iskanje?cat=colni';
+        const hash = target.startsWith('#') ? target.slice(1) : target;
+        window.location.hash = hash;
     });
+    sel.addEventListener('change', () => { fillSubcatSelect(sel.value); updateAdvLink(); });
+
+    if (form) {
+        form.addEventListener('change', updateAdvLink);
+        form.addEventListener('input', updateAdvLink);
+    }
 }
 
 // Returns the flat list of { value, label } vehicle types for a category slug.
@@ -149,6 +183,7 @@ function bindSearch() {
 
     form.addEventListener('submit', e => {
         e.preventDefault();
+        if (e.submitter?.id === 'navHomeAdvLink') return;
         const cat = document.getElementById('nav-home-cat')?.value || 'colni';
         const sc = document.getElementById('nav-home-subcat')?.value || '';
         const lf = sliderFrom?.value || '';
@@ -165,7 +200,7 @@ function bindSearch() {
         if (ht) params.set('engineHoursTo', ht);
         if (prodaja) params.set('prodaja', '1');
         if (najem) params.set('najem', '1');
-        window.location.hash = `/iskanje?${params.toString()}`;
+        window.location.hash = `/oglasi?${params.toString()}`;
     });
 }
 

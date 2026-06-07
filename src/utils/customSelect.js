@@ -93,11 +93,13 @@ export function createCustomSelect(select) {
         ? `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(initialOpt.value)}<span>${initialOpt.text}</span></div>`
         : initialOpt?.text || '';
 
+    const noChevron = select.dataset.noChevron === "true";
+
     const trigger = document.createElement('div');
     trigger.className = 'custom-select-trigger';
     trigger.innerHTML = `
         <span class="custom-select-value">${initialValHtml}</span>
-        <i data-lucide="chevron-down" class="select-icon"></i>
+        ${noChevron ? '' : '<i data-lucide="chevron-down" class="select-icon"></i>'}
     `;
 
     const menu = document.createElement('div');
@@ -215,14 +217,16 @@ export function createCustomSelect(select) {
                 searchInput.dispatchEvent(new Event('input'));
             }
 
-            // Scroll so the label is visible above the pill on mobile
-            const fieldGroup = container.closest('.form-group, .field-group');
-            const scrollTarget = fieldGroup || container;
-            const stickyNav = document.querySelector('.sticky-nav');
-            const navHeight = stickyNav ? stickyNav.getBoundingClientRect().height : 0;
-            const rect = scrollTarget.getBoundingClientRect();
-            const absoluteTop = rect.top + window.scrollY - navHeight - 8;
-            window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
+            // Scroll so the label is visible above the pill — mobile only
+            if (window.innerWidth < 768) {
+                const fieldGroup = container.closest('.form-group, .field-group');
+                const scrollTarget = fieldGroup || container;
+                const stickyNav = document.querySelector('.sticky-nav');
+                const navHeight = stickyNav ? stickyNav.getBoundingClientRect().height : 0;
+                const rect = scrollTarget.getBoundingClientRect();
+                const absoluteTop = rect.top + window.scrollY - navHeight - 8;
+                window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
+            }
         }
     });
 

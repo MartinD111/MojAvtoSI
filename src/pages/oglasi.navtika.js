@@ -16,7 +16,7 @@ import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite, getFavourites } from '../services/garageService.js';
 import { getListings } from '../services/listingService.js';
 import { initCustomSelects } from '../utils/customSelect.js';
-import { getCurrentLang } from '../core/i18n.js';
+import { getCurrentLang, t } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { brandsFileFor } from '../data/brandFiles.js';
 
@@ -1069,6 +1069,24 @@ async function initSidebarFiltering() {
         prefillSidebarFromUrl();
     });
 
+    // Populate engine make dropdown from taxonomy
+    const engineMakeSel = document.getElementById('sidebarEngineMake');
+    if (engineMakeSel && engineMakeSel.options.length <= 1) {
+        fetch('json/brands_models_izvenkrmni.json')
+            .then(r => r.ok ? r.json() : {})
+            .then(data => {
+                Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
+                    const o = document.createElement('option');
+                    o.value = brand; o.textContent = brand;
+                    engineMakeSel.appendChild(o);
+                });
+                // Re-prefill after options are loaded
+                const urlVal = parseHashParams().get('engineMake');
+                if (urlVal) engineMakeSel.value = urlVal;
+            })
+            .catch(() => {});
+    }
+
     // 3. Bind events
     const modelSelect = document.getElementById("sidebarModel");
     const variantSelect = document.getElementById("sidebarVariant");
@@ -1078,33 +1096,33 @@ async function initSidebarFiltering() {
     const boatTypeSelect = document.getElementById("sidebarBoatType");
     const boatSubcatSelect = document.getElementById("sidebarBoatSubcat");
 
-    // Populate boat type select from taxonomy
+    // Populate boat type select from taxonomy — labels from i18n like advanced search
     if (boatTypeSelect) {
         const typeOptions = Object.values(MAIN_CATEGORIES).map(cat =>
-            `<option value="${cat.slug}">${cat.slug === 'colni' ? 'Čolni' :
-              cat.slug === 'jadrnice' ? 'Jadrnice' :
-              cat.slug === 'gumenjaki' ? 'Gumenjaki (RIB)' :
-              cat.slug === 'jet-ski' ? 'Jet-ski' :
-              cat.slug === 'izvenkrmni-motorji' ? 'Izvenkrmni motorji' :
-              cat.slug === 'oprema' ? 'Oprema za plovila' : cat.slug}</option>`
+            `<option value="${cat.slug}">${t(cat.label)}</option>`
         ).join('');
         boatTypeSelect.innerHTML = '<option value="">Vsi tipi</option>' + typeOptions;
     }
+
+    // Helper: populate vehicle types for a given boat type
+    const populateVtypes = (catSlug) => {
+        if (!boatSubcatSelect) return;
+        const vtypes = vtypesForCategory(catSlug);
+        boatSubcatSelect.innerHTML = '<option value="">Vse vrste</option>' +
+            vtypes.map(vt => `<option value="${vt.value}">${t(vt.label)}</option>`).join('');
+        boatSubcatSelect.disabled = vtypes.length === 0;
+    };
+
+    // Pre-populate based on initial cat value (e.g. from URL)
+    const initialCatForVtype = parseHashParams().get('cat') || boatTypeSelect?.value || '';
+    populateVtypes(initialCatForVtype);
 
     if (boatTypeSelect && boatSubcatSelect) {
         boatTypeSelect.addEventListener("change", () => {
             const val = boatTypeSelect.value;
 
-            // Build subcategories dynamically from taxonomy
-            const catData = Object.values(MAIN_CATEGORIES).find(c => c.slug === val);
-            const subs = catData?.subcategories
-                ? Object.values(catData.subcategories).map(s => ({ value: s.slug, label: s.slug === 'motorni-coln' ? 'Motorni čoln' : s.slug === 'jahte' ? 'Jahte' : s.slug === 'jadrnica' ? 'Jadrnica' : s.slug === 'katamaran' ? 'Katamaran' : s.slug === 'rib' ? 'RIB (trdo dno)' : s.slug === 'mehki-gumenjak' ? 'Mehki gumenjak' : s.slug === 'razred' ? 'Razred motorja' : s.slug }))
-                : [];
-
-            const newHtml = '<option value="">Vse kategorije</option>' +
-                subs.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
-            boatSubcatSelect.innerHTML = newHtml;
-            boatSubcatSelect.disabled = subs.length === 0;
+            populateVtypes(val);
+            boatSubcatSelect.value = '';
 
             // Reload the brand list for this boat type (izvenkrmni motors have their
             // own manufacturer list; all vessel types share the plovila list).
@@ -1149,6 +1167,7 @@ async function initSidebarFiltering() {
 
         applySidebarFilters();
         updateUrlParamsFromInputs();
+        updateFiltersUI();
     });
 
     if (modelSelect) {
@@ -1160,9 +1179,10 @@ async function initSidebarFiltering() {
             if (variantSelect) {
                 const data = window._sidebarBrandModelData;
                 const brand = makeSelect?.value;
-                const variants = (model && data && brand && data[brand]?.[model]?.variants)
-                    ? data[brand][model].variants.map(v => v.trim).filter(Boolean)
+                const rawVariants = (model && data && brand && data[brand]?.[model])
+                    ? getModelVariants(data[brand][model])
                     : [];
+                const variants = rawVariants.map(v => typeof v === 'object' ? v.trim : v).filter(Boolean).sort();
                 variantSelect.innerHTML = '<option value="">Vse različice</option>' +
                     variants.map(v => `<option value="${v}">${v}</option>`).join('');
                 variantSelect.disabled = variants.length === 0;
@@ -1170,6 +1190,7 @@ async function initSidebarFiltering() {
 
             applySidebarFilters();
             updateUrlParamsFromInputs();
+            updateFiltersUI();
         });
     }
 
@@ -1177,6 +1198,8 @@ async function initSidebarFiltering() {
         variantSelect.addEventListener("change", () => {
             if (window._isPrefilling) return;
             applySidebarFilters();
+            updateUrlParamsFromInputs();
+            updateFiltersUI();
         });
     }
 
@@ -1301,7 +1324,7 @@ function getSidebarFormState() {
     // Mapping of element suffix to URL parameter key
     const mapping = {
         'BoatType': 'cat',
-        'BoatSubcat': 'subcategory',
+        'BoatSubcat': 'vtype',
         'Make': 'make',
         'Model': 'model',
         'Variant': 'variant',
@@ -1315,6 +1338,7 @@ function getSidebarFormState() {
         'PowerTo': 'powerTo',
         'EngineHoursTo': 'engineHoursTo',
         'EngineMake': 'engineMake',
+        'EngineType': 'engineType',
         'BerthsFrom': 'berthsFrom',
         'CabinsFrom': 'cabinsFrom',
         'EngineMount': 'engineMount',
@@ -1391,34 +1415,91 @@ function updateFiltersUI() {
         engineMakeEl?.value || '',
         () => { if (engineMakeEl) { engineMakeEl.value = ''; engineMakeEl.dispatchEvent(new Event('change')); } });
 
-    const modelSelect = document.getElementById("sidebarModel");
-    const data = window._sidebarBrandModelData;
+    const engineTypeEl = document.getElementById('sidebarEngineType');
+    setSinglePill('activeEngineType',
+        engineTypeEl?.value ? engineTypeEl.selectedOptions[0]?.text : '',
+        () => { if (engineTypeEl) { engineTypeEl.value = ''; engineTypeEl.dispatchEvent(new Event('change')); } });
 
-    if (modelSelect) {
-        modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
-        modelSelect.disabled = true;
-        if (selectedMakes.length > 0 && data) {
-            const allModels = new Set();
-            selectedMakes.forEach(mk => {
-                const models = data[mk];
-                if (models) {
-                    if (Array.isArray(models)) {
-                        models.forEach(m => allModels.add(m));
-                    } else if (typeof models === 'object') {
-                        Object.keys(models).forEach(m => allModels.add(m));
-                    }
-                }
-            });
-            Array.from(allModels).sort().forEach(m => {
-                if (!selectedModels.includes(m)) {
-                    const o = document.createElement("option");
-                    o.value = m; o.textContent = m;
-                    modelSelect.appendChild(o);
-                }
-            });
-            if (allModels.size > 0) modelSelect.disabled = false;
-        }
-    }
+    const modelSelect = document.getElementById("sidebarModel");
+    const variantSelectEl = document.getElementById("sidebarVariant");
+    const currentModel = modelSelect?.value || '';
+    const currentVariant = variantSelectEl?.value || '';
+
+    setSinglePill('activeModel', currentModel,
+        () => {
+            if (modelSelect) { modelSelect.value = ''; modelSelect.dispatchEvent(new Event('change')); }
+        });
+
+    setSinglePill('activeVariant', currentVariant,
+        () => {
+            if (variantSelectEl) { variantSelectEl.value = ''; variantSelectEl.dispatchEvent(new Event('change')); }
+        });
+}
+
+// Vehicle types for a category — mirrors home.navtika.js typesForCategory
+function vtypesForCategory(catSlug) {
+    const cat = Object.values(MAIN_CATEGORIES).find(c => c.slug === catSlug);
+    if (!cat) return [];
+    if (Array.isArray(cat.vehicleTypes)) return cat.vehicleTypes;
+    if (cat.subcategories) return Object.values(cat.subcategories).flatMap(s => s.vehicleTypes || []);
+    return [];
+}
+
+function updateMftPills() {
+    const container = document.getElementById('mftActivePills');
+    if (!container) return;
+
+    const labels = [];
+    const get = id => document.getElementById(id);
+
+    const boatType = get('sidebarBoatType');
+    if (boatType?.value) labels.push(boatType.selectedOptions[0]?.text || boatType.value);
+
+    const boatSubcat = get('sidebarBoatSubcat');
+    if (boatSubcat?.value) labels.push(boatSubcat.selectedOptions[0]?.text || boatSubcat.value);
+
+    const params = parseHashParams();
+    const makes = params.get('make') ? params.get('make').split(',').filter(Boolean) : [];
+    makes.forEach(m => labels.push(m));
+
+    const models = params.get('model') ? params.get('model').split(',').filter(Boolean) : [];
+    models.forEach(m => labels.push(m));
+
+    const yearFrom = get('sidebarYearFrom')?.value;
+    const yearTo = get('sidebarYearTo')?.value;
+    if (yearFrom && yearTo) labels.push(`${yearFrom}–${yearTo}`);
+    else if (yearFrom) labels.push(`od ${yearFrom}`);
+    else if (yearTo) labels.push(`do ${yearTo}`);
+
+    const priceFrom = get('sidebarPriceFrom')?.value;
+    const priceTo = get('sidebarPriceTo')?.value;
+    if (priceFrom || priceTo) labels.push(`${priceFrom || '0'} – ${priceTo || '∞'} €`);
+
+    const lengthFrom = get('sidebarLengthFrom')?.value;
+    const lengthTo = get('sidebarLengthTo')?.value;
+    if (lengthFrom || lengthTo) labels.push(`${lengthFrom || '0'}–${lengthTo || '∞'} m`);
+
+    const fuel = get('sidebarFuel');
+    if (fuel?.value) labels.push(fuel.selectedOptions[0]?.text || fuel.value);
+
+    const engineType = get('sidebarEngineType');
+    if (engineType?.value) labels.push(engineType.selectedOptions[0]?.text || engineType.value);
+
+    const hull = get('sidebarHull');
+    if (hull?.value) labels.push(hull.selectedOptions[0]?.text || hull.value);
+
+    const engineMake = get('sidebarEngineMake');
+    if (engineMake?.value) labels.push(engineMake.value);
+
+    const berthsFrom = get('sidebarBerthsFrom')?.value;
+    if (berthsFrom) labels.push(`${berthsFrom}+ ležišč`);
+
+    const najemToggle = get('sidebarNajemToggle');
+    if (najemToggle?.checked) labels.push('Najem');
+
+    container.innerHTML = labels
+        .map(l => `<span class="mft-pill">${l}</span>`)
+        .join('');
 }
 
 function applySidebarFilters() {
@@ -1428,7 +1509,7 @@ function applySidebarFilters() {
     const fNajem = najemToggle ? najemToggle.checked : true;
 
     const cat = document.getElementById("sidebarBoatType")?.value || '';
-    const subcategory = document.getElementById("sidebarBoatSubcat")?.value || '';
+    const selectedVtype = document.getElementById("sidebarBoatSubcat")?.value || '';
     const lengthFrom = parseFloat(document.getElementById("sidebarLengthFrom")?.value) || 0;
     const lengthTo = parseFloat(document.getElementById("sidebarLengthTo")?.value) || Infinity;
     const yearFrom = parseInt(document.getElementById("sidebarYearFrom")?.value, 10) || 0;
@@ -1441,6 +1522,7 @@ function applySidebarFilters() {
     const berthsFrom = parseInt(document.getElementById("sidebarBerthsFrom")?.value, 10) || 0;
     const cabinsFrom = parseInt(document.getElementById("sidebarCabinsFrom")?.value, 10) || 0;
     const engineMake = document.getElementById("sidebarEngineMake")?.value || '';
+    const engineType = document.getElementById("sidebarEngineType")?.value || '';
     const hull = document.getElementById("sidebarHull")?.value || '';
 
     const fuelVal = document.getElementById("sidebarFuel")?.value || '';
@@ -1474,7 +1556,7 @@ function applySidebarFilters() {
     const filtered = _allActiveListings.filter(car => {
         if (!['plovilo', 'motor'].includes(car.itemType)) return false;
         if (cat && car.category !== cat) return false;
-        if (subcategory && car.subcategory !== subcategory) return false;
+        if (selectedVtype && car.bodyType !== selectedVtype) return false;
         if (selectedVariant && car.variant !== selectedVariant) return false;
 
         // Sale / rental
@@ -1556,6 +1638,8 @@ function applySidebarFilters() {
             if (!makeMatch && !engineMakeMatch && !titleMatch) return false;
         }
 
+        if (engineType && car.driveSystem !== engineType) return false;
+
         if (hull && car.hullMaterial !== hull) return false;
 
         if (fuels.length > 0 && !fuels.includes(car.fuel)) return false;
@@ -1570,6 +1654,7 @@ function applySidebarFilters() {
 
     renderListings(filtered);
     updateFiltersUI();
+    updateMftPills();
 
     const countEl = document.querySelector(".results-header h1 span");
     if (countEl) {
@@ -1601,7 +1686,7 @@ function prefillSidebarFromUrl() {
 
     prefillSelect("sidebarBoatType", "cat");
     setTimeout(() => {
-        prefillSelect("sidebarBoatSubcat", "subcategory");
+        prefillSelect("sidebarBoatSubcat", "vtype");
     }, 50);
 
     prefillSelect("sidebarYearFrom", "yearFrom");
@@ -1616,6 +1701,7 @@ function prefillSidebarFromUrl() {
     prefillInput("sidebarBerthsFrom", "berthsFrom");
     prefillInput("sidebarCabinsFrom", "cabinsFrom");
     prefillInput("sidebarEngineMake", "engineMake");
+    prefillSelect("sidebarEngineType", "engineType");
     prefillSelect("sidebarHull", "hull");
 
     const prodajaVal = params.get("prodaja");

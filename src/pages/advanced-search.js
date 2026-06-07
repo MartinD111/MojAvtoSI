@@ -673,15 +673,23 @@ function bindSearchLogic(catContext) {
         const mk = makeSelect.value, md = modelSelect.value;
         variantSelect.innerHTML = '<option value="">Različica</option>';
         variantSelect.disabled = true;
+        variantSelect.closest('.form-group')?.classList.remove('adv-hidden');
         if (mk && md && data && data[mk]) {
             const variants = getModelVariants(data[mk][md]);
-            variants.forEach(v => {
-                const trim = typeof v === 'string' ? v : (v && v.trim) ? v.trim : '';
-                if (!trim) return;
-                const o = document.createElement("option"); o.value = trim; o.textContent = trim;
-                variantSelect.appendChild(o);
-            });
-            if (variants.length) variantSelect.disabled = false;
+            const trimmed = variants.map(v => typeof v === 'string' ? v : (v && v.trim) ? v.trim : '').filter(Boolean);
+            if (trimmed.length === 1) {
+                // Only one variant — auto-select it and hide the dropdown
+                variantSelect.innerHTML = `<option value="${trimmed[0]}">${trimmed[0]}</option>`;
+                variantSelect.value = trimmed[0];
+                variantSelect.closest('.form-group')?.classList.add('adv-hidden');
+                variantSelect.dispatchEvent(new Event('change'));
+            } else {
+                trimmed.forEach(trim => {
+                    const o = document.createElement("option"); o.value = trim; o.textContent = trim;
+                    variantSelect.appendChild(o);
+                });
+                if (trimmed.length) variantSelect.disabled = false;
+            }
         }
         // Auto-select the body-type card from the taxonomy (cars only)
         autoSelectBodyType(mk, md);
@@ -1119,6 +1127,7 @@ bindCardDrag(excludedVehicleCardsEl);
                 bodyTypes: selectedBodyTypes,
                 conditions: fd.getAll('condition'), damaged: fd.get('damaged'),
                 fuels: fd.getAll('fuel').filter(Boolean), gears: fd.getAll('transmission').filter(Boolean), drivetrain: fd.getAll('drivetrain'),
+                engineConfigs: fd.getAll('engineConfig').filter(Boolean),
                 stroke: fd.get('stroke'), cylinders: fd.get('cylinders'), cylinderLayout: fd.get('cylinderLayout'),
                 cylFilters: window._cylFilters || [],
                 motoDrivetrain: fd.getAll('motoDrivetrain'),
@@ -1369,10 +1378,11 @@ function matchesFilters(l, filters) {
         return false;
     }
 
-    // Fuel, Transmission, Drivetrain
+    // Fuel, Transmission, Drivetrain, Engine Configuration
     if (filters.fuels.length > 0 && !filters.fuels.includes(l.fuel)) return false;
     if (filters.gears.length > 0 && !filters.gears.includes(l.transmission)) return false;
     if (filters.drivetrain.length > 0 && !filters.drivetrain.includes(l.drivetrain)) return false;
+    if (filters.engineConfigs && filters.engineConfigs.length > 0 && !filters.engineConfigs.includes(l.engineConfig)) return false;
 
     // Features (Equipment)
     if (filters.features && filters.features.length > 0) {

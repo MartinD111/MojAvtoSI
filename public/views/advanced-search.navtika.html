@@ -170,8 +170,27 @@
                 </div>
 
                 <div class="adv-field-group boat-only-field">
-                    <label class="adv-label">Znamka motorja (npr. Yamaha, Mercury, ...)</label>
-                    <input type="text" name="engineMake" placeholder="Yamaha, Mercury, Volvo Penta ..." class="adv-input">
+                    <label class="adv-label">Znamka motorja</label>
+                    <div class="pill-select-wrapper">
+                        <select name="engineMake" id="advEngineMake" class="pill-input" data-no-chevron="true">
+                            <option value="">Vse znamke</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="adv-field-group boat-only-field">
+                    <label class="adv-label">Vrsta motorja / pogona</label>
+                    <div class="pill-select-wrapper">
+                        <select name="engineType" id="advEngineType" class="pill-input" data-no-chevron="true">
+                            <option value="">Vse vrste</option>
+                            <option value="Izvenkrmni">Izvenkrmni (outboard)</option>
+                            <option value="Notranji">Notranji (inboard)</option>
+                            <option value="Stern Drive">Stern drive</option>
+                            <option value="Potisnik">Potisnik (pod trup)</option>
+                            <option value="Električni">Električni motor</option>
+                            <option value="Jadra">Samo jadra</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="adv-field-group">
