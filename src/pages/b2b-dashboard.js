@@ -25,6 +25,7 @@ export async function initB2bDashboardPage() {
                 <div class="b2b-quick-actions">
                     <a href="#/b2b/storitve" class="b2b-quick-btn"><i data-lucide="plus"></i> Dodaj storitev</a>
                     <a href="#/novi-oglas" class="b2b-quick-btn"><i data-lucide="car"></i> Dodaj oglas</a>
+                    ${roles.includes('dealer') && profile?.businessTier === 'verified' ? `<a href="#/b2b/bulk-import" class="b2b-quick-btn"><i data-lucide="file-json"></i> Skupinski uvoz</a>` : ''}
                     <a href="#/b2b/rezervacije?status=pending" class="b2b-quick-btn"><i data-lucide="calendar-check"></i> Odpri rezervacije</a>
                     <a href="#/b2b/profil" class="b2b-quick-btn"><i data-lucide="edit"></i> Uredi javni profil</a>
                     ${roles.includes('dealer') ? `<a href="#/b2b/zaloga" class="b2b-quick-btn"><i data-lucide="warehouse"></i> Upravljaj zalogo</a>` : ''}

@@ -44,6 +44,7 @@ const routes = {
     '/b2b/delavnica': { view: 'b2b-workshop', protected: true, b2bOnly: true },
     '/b2b/servis-vnos': { view: 'service-entry', protected: true, b2bOnly: true },
     '/b2b/hotel-gum': { view: 'b2b-tire-hotel', protected: true, b2bOnly: true },
+    '/b2b/bulk-import': { view: 'bulk-import', protected: true, b2bOnly: true },
 };
 
 const PROTECTED_REDIRECT = '/prijava';
@@ -53,7 +54,7 @@ const APP = document.getElementById('app-container');
 const JS_ONLY_VIEWS = new Set([
     'b2b-dashboard', 'b2b-reservations', 'b2b-services', 'b2b-profile-editor',
     'b2b-inventory', 'b2b-leads', 'b2b-workshop', 'b2b-tire-hotel',
-    'tco-settings',
+    'tco-settings', 'bulk-import',
 ]);
 
 // Views that ship a platform-specific variant (views/<view>.<platform>.html).

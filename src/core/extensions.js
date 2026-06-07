@@ -67,4 +67,7 @@ export function registerDefaultExtensions() {
 
     // Vulcanizer
     registerExtension({ id: 'b2b-tire-hotel', name: platformName('b2b-tire-hotel', 'Hotel za gume'), icon: 'circle-dot', role: 'vulcanizer', route: '/b2b/hotel-gum', order: 40 });
+
+    // Dealer — bulk import (verified business only; gated inside the page itself)
+    registerExtension({ id: 'b2b-bulk-import', name: 'Skupinski uvoz', icon: 'file-json', role: 'dealer', route: '/b2b/bulk-import', order: 55 });
 }

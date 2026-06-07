@@ -117,19 +117,17 @@
             </div>
 
             <!-- Vrstica 3: Prodaja / Najem toggles -->
-            <div style="display:flex; gap:1.5rem; justify-content:center; margin-bottom:1rem;">
-                <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
-                    <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Prodaja</span>
-                    <label class="remember-toggle" title="Prodaja">
-                        <input type="checkbox" class="remember-check" id="homeNavProdajaToggle" checked>
-                        <span class="toggle-slider"></span>
+            <div style="display:flex; justify-content:center; margin-bottom:1rem;">
+                <div style="display:flex; flex-direction:row; flex-wrap:nowrap; gap:2rem; align-items:center;">
+                    <label style="display:inline-flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" class="remember-check" id="homeNavProdajaToggle" checked style="display:none;">
+                        <span class="toggle-slider" style="width:32px; height:18px; flex-shrink:0;"></span>
+                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted,#64748b); text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;">Prodaja</span>
                     </label>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
-                    <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Najem</span>
-                    <label class="remember-toggle" title="Najem">
-                        <input type="checkbox" class="remember-check" id="homeNavNajemToggle">
-                        <span class="toggle-slider"></span>
+                    <label style="display:inline-flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" class="remember-check" id="homeNavNajemToggle" style="display:none;">
+                        <span class="toggle-slider" style="width:32px; height:18px; flex-shrink:0;"></span>
+                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted,#64748b); text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;">Najem</span>
                     </label>
                 </div>
             </div>
@@ -139,8 +137,8 @@
                 <button type="reset" class="pill-btn secondary" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem;" title="Ponastavi">
                     <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Ponastavi
                 </button>
-                <a href="#/iskanje?cat=colni" class="pill-btn secondary" id="navHomeAdvLink" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem; text-decoration:none;" title="Napredna iskanje">
-                    <i data-lucide="sliders-horizontal" style="width:16px;height:16px;"></i> Napredna iskanje
+                <a href="#/iskanje?cat=colni" class="pill-btn secondary" id="navHomeAdvLink" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem; text-decoration:none;" title="Več filtrov">
+                    <i data-lucide="sliders-horizontal" style="width:16px;height:16px;"></i> Več filtrov
                 </a>
                 <button type="submit" class="pill-btn primary search-submit-btn" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.5rem;">
                     <i data-lucide="search" style="width:16px;height:16px;"></i> Išči plovila

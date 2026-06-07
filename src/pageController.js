@@ -51,6 +51,7 @@ const pageModules = {
     'b2b-leads': () => import('./pages/b2b-leads.js').then(m => m.initB2bLeadsPage()),
     'b2b-workshop': () => import('./pages/b2b-workshop.js').then(m => m.initB2bWorkshopPage()),
     'b2b-tire-hotel': () => import('./pages/b2b-tire-hotel.js').then(m => m.initB2bTireHotelPage()),
+    'bulk-import': () => import('./pages/bulk-import.js').then(m => m.initBulkImportPage()),
 };
 
 document.addEventListener('beforeRouteChange', () => {

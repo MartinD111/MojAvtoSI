@@ -295,18 +295,16 @@
 
         <!-- ══ 1. BASIC INFORMATION ═══════════════════════════════════════ -->
         <div class="adv-accordion glass-card persistent-open" style="border-radius:2rem; margin-bottom:1rem;">
-            <div class="adv-acc-header">
-                <button type="button" class="adv-acc-trigger" aria-expanded="true">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="true" style="flex:1;">
                     <span class="adv-acc-title"><i data-lucide="clipboard-list"></i> Osnovni podatki</span>
-                    <div class="adv-acc-right">
-                        <label class="remember-toggle" title="Remember selection" onclick="event.stopPropagation()">
-                            <span class="toggle-label">Remember</span>
-                            <input type="checkbox" class="remember-check" data-category="osnovni">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
-                    </div>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
                 </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="osnovni">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="adv-acc-body" style="display:flex;">
                 <!-- Body Type / Vehicle Type -->
@@ -430,7 +428,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="display:flex; justify-content:flex-start; align-items:center; gap:1rem; margin-bottom:1rem;">
+                    <div class="add-exclude-row" style="display:flex; justify-content:flex-start; align-items:center; gap:1rem; margin-bottom:1rem;">
                         <button type="button" id="addVehicleBtn" class="pill-btn primary"
                             style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px;">
                             <i data-lucide="plus" style="width:14px;height:14px;"></i> Dodaj
@@ -531,18 +529,16 @@
 
         <!-- ══ 2. ENGINE & DRIVETRAIN ════════════════════════════════════════ -->
         <div class="adv-accordion glass-card" style="border-radius:2rem; margin-bottom:1rem;">
-            <div class="adv-acc-header">
-                <button type="button" class="adv-acc-trigger" aria-expanded="false">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
                     <span class="adv-acc-title"><i data-lucide="settings-2"></i> Motor in pogon</span>
-                    <div class="adv-acc-right">
-                        <label class="remember-toggle" title="Remember selection" onclick="event.stopPropagation()">
-                            <span class="toggle-label">Remember</span>
-                            <input type="checkbox" class="remember-check" data-category="motor">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
-                    </div>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
                 </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="motor">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="adv-acc-body" style="display:none;">
                 <div class="adv-field-group car-only-field" style="margin-bottom: 0.75rem;">
@@ -704,18 +700,16 @@
 
         <!-- ══ 4. EXTERIOR ═════════════════════════════════════════════ -->
         <div class="adv-accordion glass-card" style="border-radius:2rem; margin-bottom:1rem;">
-            <div class="adv-acc-header">
-                <button type="button" class="adv-acc-trigger" aria-expanded="false">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
                     <span class="adv-acc-title"><i data-lucide="palette"></i> Zunanjost</span>
-                    <div class="adv-acc-right">
-                        <label class="remember-toggle" title="Remember selection" onclick="event.stopPropagation()">
-                            <span class="toggle-label">Remember</span>
-                            <input type="checkbox" class="remember-check" data-category="zunanjost">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
-                    </div>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
                 </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="zunanjost">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="adv-acc-body" style="display:none;">
                 <div class="car-only-field">
@@ -777,18 +771,16 @@
         <!-- ══ 5. INTERIOR & COMFORT ══════════════════════════════════ -->
         <div class="adv-accordion glass-card car-only-field" style="border-radius:2rem; margin-bottom:1rem;"
             id="acc-interior">
-            <div class="adv-acc-header">
-                <button type="button" class="adv-acc-trigger" aria-expanded="false">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
                     <span class="adv-acc-title"><i data-lucide="armchair"></i> Notranjost in udobje</span>
-                    <div class="adv-acc-right">
-                        <label class="remember-toggle" title="Remember selection" onclick="event.stopPropagation()">
-                            <span class="toggle-label">Remember</span>
-                            <input type="checkbox" class="remember-check" data-category="notranjost">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
-                    </div>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
                 </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="notranjost">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="adv-acc-body" style="display:none;">
                 <div class="adv-grid-2">
@@ -858,18 +850,16 @@
 
         <!-- ══ 6. EQUIPMENT ════════════════════════════════════════════════ -->
         <div class="adv-accordion glass-card" style="border-radius:2rem; margin-bottom:1rem;">
-            <div class="adv-acc-header">
-                <button type="button" class="adv-acc-trigger" aria-expanded="false">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
                     <span class="adv-acc-title"><i data-lucide="star"></i> Oprema</span>
-                    <div class="adv-acc-right">
-                        <label class="remember-toggle" title="Remember selection" onclick="event.stopPropagation()">
-                            <span class="toggle-label">Remember</span>
-                            <input type="checkbox" class="remember-check" data-category="oprema">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
-                    </div>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
                 </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="oprema">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="adv-acc-body" style="display:none;">
                 <div class="car-only-field">
@@ -980,18 +970,16 @@
 
         <!-- ══ 7. SELLER & LOCATION ══════════════════════════════════════ -->
         <div class="adv-accordion glass-card" style="border-radius:2rem; margin-bottom:1rem;">
-            <div class="adv-acc-header">
-                <button type="button" class="adv-acc-trigger" aria-expanded="false">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
                     <span class="adv-acc-title"><i data-lucide="map-pin"></i> Ponudnik in lokacija</span>
-                    <div class="adv-acc-right">
-                        <label class="remember-toggle" title="Remember selection" onclick="event.stopPropagation()">
-                            <span class="toggle-label">Remember</span>
-                            <input type="checkbox" class="remember-check" data-category="ponudnik">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
-                    </div>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
                 </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="ponudnik">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="adv-acc-body" style="display:none;">
                 <div class="adv-field-group">
@@ -1033,18 +1021,16 @@
 
         <!-- ══ 8. WARRANTY & SERVICE ═══════════════════════════════════ -->
         <div class="adv-accordion glass-card" style="border-radius:2rem; margin-bottom:2rem;">
-            <div class="adv-acc-header">
-                <button type="button" class="adv-acc-trigger" aria-expanded="false">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
                     <span class="adv-acc-title"><i data-lucide="badge-check"></i> Garancija in servis</span>
-                    <div class="adv-acc-right">
-                        <label class="remember-toggle" title="Remember selection" onclick="event.stopPropagation()">
-                            <span class="toggle-label">Remember</span>
-                            <input type="checkbox" class="remember-check" data-category="garancija">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
-                    </div>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
                 </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="garancija">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="adv-acc-body" style="display:none;">
                 <div style="display:flex; flex-direction:column; gap:0.5rem;">
