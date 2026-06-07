@@ -6,6 +6,7 @@ const MAX_NOTE_CHARS = 110;
 
 import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { PLATFORM } from '../config/platform.js';
+import { MAIN_CATEGORIES } from '../data/categories.navtika.js';
 import { auth } from '../firebase.js';
 
 // itemTypes shown on the main listings board for the active platform.
@@ -31,26 +32,9 @@ import {
 } from '../utils/listingUtils.js';
 
 import { getVehicleRating } from '../utils/valuationScore.js';
+import { renderRatingBadgeCard, ratingFallbackStars } from '../utils/priceRatingUi.js';
 import { getModelVariants } from '../utils/bodyType.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
-
-// ── Render star SVG (sm size, inline) ────────────────────────
-function renderStarBadge(stars) {
-    const dim = 13;
-    const color = 'var(--color-primary-start, #f59e0b)';
-    let svgs = '';
-    for (let i = 1; i <= 5; i++) {
-        const fill = stars >= i ? 'full' : stars >= i - 0.5 ? 'half' : 'empty';
-        const fc = fill === 'empty' ? '#374151' : color;
-        const gradId = `sg-${i}-${Math.random().toString(36).slice(2, 6)}`;
-        if (fill === 'half') {
-            svgs += `<svg width="${dim}" height="${dim}" viewBox="0 0 24 24" fill="none" style="display:block"><defs><linearGradient id="${gradId}"><stop offset="50%" stop-color="${color}"/><stop offset="50%" stop-color="#374151"/></linearGradient></defs><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="url(#${gradId})"/></svg>`;
-        } else {
-            svgs += `<svg width="${dim}" height="${dim}" viewBox="0 0 24 24" style="display:block"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="${fc}"/></svg>`;
-        }
-    }
-    return `<div style="display:inline-flex;align-items:center;gap:1px;">${svgs}</div>`;
-}
 
 // ── Power unit toggle ────────────────────────────────────────
 let currentPowerUnit = 'kw';
@@ -363,7 +347,14 @@ function renderCarCard(car) {
             equipment: c.equipment || [],
         }));
         const vRating = getVehicleRating(listingShape, allListingsShape);
-        const showStars = vRating && vRating.confidence !== 'low';
+        // Always show stars + label below — never an English text pill. Use the
+        // comparables-based rating when confident, else fall back to the price ratio.
+        const starRating = (vRating && vRating.confidence !== 'low')
+            ? { stars: vRating.stars, label: vRating.label }
+            : ratingFallbackStars(rating);
+        const ratingTitle = vRating && vRating.confidence !== 'low'
+            ? `${vRating.label} · ${vRating.priceSignal}`
+            : starRating.label;
 
         const note = car.sellerNote
             ? (car.sellerNote.length > MAX_NOTE_CHARS
@@ -445,7 +436,9 @@ function renderCarCard(car) {
             </div>
             
             ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
-            ${car.condition ? `<span class="condition-overlay-badge">${car.condition}</span>` : ''}
+            ${car.isRental
+                ? `<span class="rental-overlay-badge">${lang === 'sl' ? 'Najem' : 'Rental'}${car.skipperOptional ? (lang === 'sl' ? ' · skipper opcijsko' : ' · skipper optional') : ''}</span>`
+                : (car.condition ? `<span class="condition-overlay-badge">${car.condition}</span>` : '')}
 
             ${images.length > 1 ? `
                 <div class="listing-carousel-dots">
@@ -464,8 +457,10 @@ function renderCarCard(car) {
         <div class="listing-card-content">
             <div class="listing-card-header">
                 <div class="car-info">
-                    <h2 class="listing-card-title">${car.title}</h2>
-                    <span class="spec-pill condition-pill">${car.condition}</span>
+                    <h2 class="listing-card-title navtika-title">
+                        <span class="navtika-title-make">${car.make || car.title}</span>
+                        ${(car.variant || car.model) ? `<span class="navtika-title-model">${car.variant || car.model}</span>` : ''}
+                    </h2>
                 </div>
                 
                 <div class="car-price-box">
@@ -479,10 +474,7 @@ function renderCarCard(car) {
                             </svg>
                         </span>` : ''}
                     </div>
-                    ${showStars
-                        ? `<span class="price-rating" title="${vRating.label} · ${vRating.priceSignal}">${renderStarBadge(vRating.stars)}</span>`
-                        : `<span class="price-rating rating-${rating.color}">${rating.label}</span>`
-                    }
+                    ${renderRatingBadgeCard(starRating, ratingTitle)}
                 </div>
             </div>
 
@@ -492,18 +484,6 @@ function renderCarCard(car) {
                     ${car.lengthM ? `<div class="spec-pill length-pill" title="${lang === 'sl' ? 'Dolžina' : 'Length'}"><i data-lucide="arrow-right-left"></i><span>${car.lengthM} m</span></div>` : ''}
                     ${car.engineHours !== undefined ? `<div class="spec-pill hours-pill" title="${lang === 'sl' ? 'Ure motorja' : 'Engine Hours'}"><i data-lucide="clock"></i><span>${car.engineHours} ur</span></div>` : ''}
                     ${getPowerPill(kw)}
-                </div>
-
-                <div class="listing-card-actions">
-                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="Save to favorites">
-                        <i data-lucide="heart"></i>
-                    </button>
-                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
-                        <i data-lucide="scale"></i>
-                    </button>
-                    <button class="action-pill-btn contact-btn grid-contact-btn" data-car-id="${car.id}" title="Contact">
-                        <i data-lucide="phone"></i>
-                    </button>
                 </div>
             </div>
 
@@ -520,29 +500,24 @@ function renderCarCard(car) {
                 </div>
             </div>
 
-            <!-- Compact action row shown on 13-inch screens (below secondary specs) -->
-            <div class="listing-card-bottom-actions">
-                <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="Save to favorites">
-                    <i data-lucide="heart"></i>
-                </button>
-                <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
-                    <i data-lucide="scale"></i>
-                </button>
-                <button class="action-pill-btn contact-btn" data-car-id="${car.id}" title="Contact">
-                    <i data-lucide="phone"></i>
-                </button>
-            </div>
-
             <div class="note-contact-row">
-                ${note ? `
-                <div class="seller-note-card">
-                    <i data-lucide="bell-ring"></i>
-                    <span>"${note}"</span>
+                <div class="navtika-card-location">
+                    ${car.location?.city ? `
+                    <i data-lucide="map-pin"></i>
+                    <span>${car.location.city}${car.location.region ? ', ' + car.location.region : ''}</span>
+                    ` : ''}
                 </div>
-                ` : '<div style="flex: 1;"></div>'}
-                <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
-                    <i data-lucide="phone"></i>
-                </button>
+                <div class="navtika-card-actions">
+                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="Save to favorites">
+                        <i data-lucide="heart"></i>
+                    </button>
+                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
+                        <i data-lucide="scale"></i>
+                    </button>
+                    <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
+                        <i data-lucide="phone"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>`;
@@ -960,6 +935,26 @@ export function initNavtikaOglasiPage() {
 
     initLegendPopup();
 
+    // Sort select
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            const val = sortSelect.value;
+            if (!_allActiveListings.length) return;
+            const sorted = [..._allActiveListings];
+            if (val === 'price-asc') sorted.sort((a, b) => (a.priceRaw ?? Infinity) - (b.priceRaw ?? Infinity));
+            else if (val === 'price-desc') sorted.sort((a, b) => (b.priceRaw ?? 0) - (a.priceRaw ?? 0));
+            else if (val === 'year-desc') sorted.sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0));
+            else if (val === 'length-asc') sorted.sort((a, b) => (a.lengthM ?? Infinity) - (b.lengthM ?? Infinity));
+            renderListings(sorted);
+        });
+    }
+
+    // When only URL params change (filter updates from external navigation), re-apply filters.
+    const _onRouteParamsChanged = () => prefillSidebarFromUrl();
+    document.addEventListener('routeParamsChanged', _onRouteParamsChanged);
+    window._oglasiParamsListener = _onRouteParamsChanged;
+
     // Mobile filter panel toggle (collapsed by default on phones)
     const mobileFilterToggle = document.getElementById('mobileFilterToggle');
     const oglasiSidebar = document.querySelector('.oglasi-sidebar');
@@ -1083,27 +1078,29 @@ async function initSidebarFiltering() {
     const boatTypeSelect = document.getElementById("sidebarBoatType");
     const boatSubcatSelect = document.getElementById("sidebarBoatSubcat");
 
+    // Populate boat type select from taxonomy
+    if (boatTypeSelect) {
+        const typeOptions = Object.values(MAIN_CATEGORIES).map(cat =>
+            `<option value="${cat.slug}">${cat.slug === 'colni' ? 'Čolni' :
+              cat.slug === 'jadrnice' ? 'Jadrnice' :
+              cat.slug === 'gumenjaki' ? 'Gumenjaki (RIB)' :
+              cat.slug === 'jet-ski' ? 'Jet-ski' :
+              cat.slug === 'izvenkrmni-motorji' ? 'Izvenkrmni motorji' :
+              cat.slug === 'oprema' ? 'Oprema za plovila' : cat.slug}</option>`
+        ).join('');
+        boatTypeSelect.innerHTML = '<option value="">Vsi tipi</option>' + typeOptions;
+    }
+
     if (boatTypeSelect && boatSubcatSelect) {
         boatTypeSelect.addEventListener("change", () => {
             const val = boatTypeSelect.value;
-            
-            // Populate subcategory — build all options first, then set disabled state once
-            const subcategoriesMap = {
-                colni: [
-                    { value: 'motorni-coln', label: 'Motorni čoln' },
-                    { value: 'jahte', label: 'Jahte' }
-                ],
-                jadrnice: [
-                    { value: 'jadrnica', label: 'Jadrnica' },
-                    { value: 'katamaran', label: 'Katamaran' }
-                ],
-                gumenjaki: [
-                    { value: 'rib', label: 'RIB (trdo dno)' },
-                    { value: 'mehki-gumenjak', label: 'Mehki gumenjak' }
-                ]
-            };
 
-            const subs = (val && subcategoriesMap[val]) ? subcategoriesMap[val] : [];
+            // Build subcategories dynamically from taxonomy
+            const catData = Object.values(MAIN_CATEGORIES).find(c => c.slug === val);
+            const subs = catData?.subcategories
+                ? Object.values(catData.subcategories).map(s => ({ value: s.slug, label: s.slug === 'motorni-coln' ? 'Motorni čoln' : s.slug === 'jahte' ? 'Jahte' : s.slug === 'jadrnica' ? 'Jadrnica' : s.slug === 'katamaran' ? 'Katamaran' : s.slug === 'rib' ? 'RIB (trdo dno)' : s.slug === 'mehki-gumenjak' ? 'Mehki gumenjak' : s.slug === 'razred' ? 'Razred motorja' : s.slug }))
+                : [];
+
             const newHtml = '<option value="">Vse kategorije</option>' +
                 subs.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
             boatSubcatSelect.innerHTML = newHtml;
@@ -1113,59 +1110,73 @@ async function initSidebarFiltering() {
             // own manufacturer list; all vessel types share the plovila list).
             loadSidebarBrands(val, () => applySidebarFilters());
 
-            if (!window._isPrefilling) {
-                // Update URL params
-                const params = parseHashParams();
-                if (val) params.set('cat', val);
-                else params.delete('cat');
-                params.delete('subcategory');
-                window.location.hash = `/oglasi?${params.toString()}`;
-            }
-
             applySidebarFilters();
+            if (!window._isPrefilling) updateUrlParamsFromInputs();
         });
 
         boatSubcatSelect.addEventListener("change", () => {
-            if (!window._isPrefilling) {
-                const params = parseHashParams();
-                const sub = boatSubcatSelect.value;
-                if (sub) params.set('subcategory', sub);
-                else params.delete('subcategory');
-                window.location.hash = `/oglasi?${params.toString()}`;
-            }
             applySidebarFilters();
+            if (!window._isPrefilling) updateUrlParamsFromInputs();
         });
     }
 
     makeSelect.addEventListener("change", () => {
         if (window._isPrefilling) return;
         const brand = makeSelect.value;
-        if (!brand) return;
 
-        const params = parseHashParams();
-        const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
-        const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
-
-        if (!selectedMakes.includes(brand)) {
-            selectedMakes.push(brand);
-            updateUrlParams(selectedMakes, selectedModels);
+        // Populate model select from taxonomy JSON
+        const data = window._sidebarBrandModelData;
+        if (modelSelect) {
+            modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+            if (brand && data && data[brand]) {
+                const models = typeof data[brand] === 'object' && !Array.isArray(data[brand])
+                    ? Object.keys(data[brand]).sort()
+                    : (Array.isArray(data[brand]) ? data[brand].sort() : []);
+                models.forEach(m => {
+                    const o = document.createElement('option');
+                    o.value = m; o.textContent = m;
+                    modelSelect.appendChild(o);
+                });
+                modelSelect.disabled = models.length === 0;
+            } else {
+                modelSelect.disabled = true;
+            }
         }
+        if (variantSelect) {
+            variantSelect.innerHTML = '<option value="">Vse različice</option>';
+            variantSelect.disabled = true;
+        }
+
+        applySidebarFilters();
+        updateUrlParamsFromInputs();
     });
 
     if (modelSelect) {
         modelSelect.addEventListener("change", () => {
             if (window._isPrefilling) return;
             const model = modelSelect.value;
-            if (!model) return;
 
-            const params = parseHashParams();
-            const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
-            const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
-
-            if (!selectedModels.includes(model)) {
-                selectedModels.push(model);
-                updateUrlParams(selectedMakes, selectedModels);
+            // Populate variant select from taxonomy JSON
+            if (variantSelect) {
+                const data = window._sidebarBrandModelData;
+                const brand = makeSelect?.value;
+                const variants = (model && data && brand && data[brand]?.[model]?.variants)
+                    ? data[brand][model].variants.map(v => v.trim).filter(Boolean)
+                    : [];
+                variantSelect.innerHTML = '<option value="">Vse različice</option>' +
+                    variants.map(v => `<option value="${v}">${v}</option>`).join('');
+                variantSelect.disabled = variants.length === 0;
             }
+
+            applySidebarFilters();
+            updateUrlParamsFromInputs();
+        });
+    }
+
+    if (variantSelect) {
+        variantSelect.addEventListener("change", () => {
+            if (window._isPrefilling) return;
+            applySidebarFilters();
         });
     }
 
@@ -1198,18 +1209,8 @@ async function initSidebarFiltering() {
             if (el !== makeSelect && el !== modelSelect && el !== variantSelect && el !== boatTypeSelect && el !== boatSubcatSelect) {
                 if (el.id === 'sidebarProdajaToggle' || el.id === 'sidebarNajemToggle') {
                     el.addEventListener("change", () => {
-                        const params = getSidebarFormState();
-                        const prodajaToggle = document.getElementById("sidebarProdajaToggle");
-                        const najemToggle = document.getElementById("sidebarNajemToggle");
-                        if (prodajaToggle) {
-                            if (prodajaToggle.checked) params.set('prodaja', '1');
-                            else params.delete('prodaja');
-                        }
-                        if (najemToggle) {
-                            if (najemToggle.checked) params.set('najem', '1');
-                            else params.delete('najem');
-                        }
-                        window.location.hash = `/oglasi?${params.toString()}`;
+                        applySidebarFilters();
+                        updateUrlParamsFromInputs();
                     });
                 } else {
                     el.addEventListener("change", () => {
@@ -1301,6 +1302,9 @@ function getSidebarFormState() {
     const mapping = {
         'BoatType': 'cat',
         'BoatSubcat': 'subcategory',
+        'Make': 'make',
+        'Model': 'model',
+        'Variant': 'variant',
         'LengthFrom': 'lengthFrom',
         'LengthTo': 'lengthTo',
         'YearFrom': 'yearFrom',
@@ -1376,7 +1380,7 @@ function updateFiltersUI() {
     const engineMakeEl = document.getElementById('sidebarEngineMake');
 
     setSinglePill('activeBoatType',
-        boatTypeEl?.selectedOptions[0]?.text !== 'Vsa plovila' ? boatTypeEl?.selectedOptions[0]?.text : '',
+        boatTypeEl?.value ? boatTypeEl.selectedOptions[0]?.text : '',
         () => { if (boatTypeEl) { boatTypeEl.value = ''; boatTypeEl.dispatchEvent(new Event('change')); } });
 
     setSinglePill('activeBoatSubcat',
@@ -1449,11 +1453,29 @@ function applySidebarFilters() {
 
     const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedVariant = document.getElementById("sidebarVariant")?.value || '';
+
+    // Parse multi-vehicle query parameters from advanced search
+    let urlVehicles = [];
+    let urlExcludedVehicles = [];
+    try {
+        const urlVehiclesStr = params.get('vehicles');
+        if (urlVehiclesStr) urlVehicles = JSON.parse(urlVehiclesStr);
+    } catch (e) {
+        console.warn("Failed to parse vehicles parameter:", e);
+    }
+    try {
+        const urlExcludedVehiclesStr = params.get('excludedVehicles');
+        if (urlExcludedVehiclesStr) urlExcludedVehicles = JSON.parse(urlExcludedVehiclesStr);
+    } catch (e) {
+        console.warn("Failed to parse excludedVehicles parameter:", e);
+    }
 
     const filtered = _allActiveListings.filter(car => {
         if (!['plovilo', 'motor'].includes(car.itemType)) return false;
         if (cat && car.category !== cat) return false;
         if (subcategory && car.subcategory !== subcategory) return false;
+        if (selectedVariant && car.variant !== selectedVariant) return false;
 
         // Sale / rental
         if (fNajem || fProdaja) {
@@ -1463,8 +1485,43 @@ function applySidebarFilters() {
             return false;
         }
 
-        if (selectedMakes.length > 0 && !selectedMakes.includes(car.make)) return false;
-        if (selectedModels.length > 0 && !selectedModels.includes(car.model)) return false;
+        // Multi-vehicle exclusion logic (AND: listing must not match any excluded entry)
+        if (urlExcludedVehicles.length > 0) {
+            const isExcluded = urlExcludedVehicles.some(v => {
+                if (v.make && car.make !== v.make) return false;
+                if (v.model && car.model !== v.model) return false;
+                if (v.variant) {
+                    const varLower = v.variant.toLowerCase();
+                    const carVar = (car.variant || '').toLowerCase();
+                    const carTitle = (car.title || '').toLowerCase();
+                    const carSub = (car.subtitle || '').toLowerCase();
+                    if (!carVar.includes(varLower) && !carTitle.includes(varLower) && !carSub.includes(varLower)) return false;
+                }
+                return true;
+            });
+            if (isExcluded) return false;
+        }
+
+        // Multi-vehicle inclusion logic (OR between entries)
+        if (urlVehicles.length > 0) {
+            const match = urlVehicles.some(v => {
+                if (v.make && car.make !== v.make) return false;
+                if (v.model && car.model !== v.model) return false;
+                if (v.variant) {
+                    const varLower = v.variant.toLowerCase();
+                    const carVar = (car.variant || '').toLowerCase();
+                    const carTitle = (car.title || '').toLowerCase();
+                    const carSub = (car.subtitle || '').toLowerCase();
+                    if (!carVar.includes(varLower) && !carTitle.includes(varLower) && !carSub.includes(varLower)) return false;
+                }
+                return true;
+            });
+            if (!match) return false;
+        } else {
+            // Fallback to single/sidebar make/model/variant filters if no multi-vehicle list is provided
+            if (selectedMakes.length > 0 && !selectedMakes.includes(car.make)) return false;
+            if (selectedModels.length > 0 && !selectedModels.includes(car.model)) return false;
+        }
 
         const price = car.priceRaw ?? car.priceEur ?? null;
         if (priceFrom > 0 && price != null && price < priceFrom) return false;
@@ -1607,6 +1664,10 @@ export function destroyOglasiPage() {
     if (window._oglasiUnsubscribe) {
         window._oglasiUnsubscribe();
         delete window._oglasiUnsubscribe;
+    }
+    if (window._oglasiParamsListener) {
+        document.removeEventListener('routeParamsChanged', window._oglasiParamsListener);
+        delete window._oglasiParamsListener;
     }
     unmountSidebarFilters();
 }

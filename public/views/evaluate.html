@@ -1,3 +1,35 @@
+<style>
+    @media (max-width: 600px) {
+        #evaluationForm {
+            padding: 1.5rem !important;
+        }
+        #evaluationForm .form-group {
+            align-items: center !important;
+            text-align: center !important;
+        }
+        #evaluationForm .form-group label {
+            text-align: center !important;
+            width: 100%;
+        }
+        #evaluationForm .pill-input-wrapper {
+            width: 100% !important;
+        }
+        #evaluationForm .pill-input {
+            text-align: center !important;
+        }
+        #evaluationForm .custom-select-trigger {
+            justify-content: center !important;
+        }
+        #evaluationForm .custom-select-value {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #evaluationForm .custom-select-trigger .select-icon {
+            margin-left: 0;
+        }
+    }
+</style>
+
 <div class="search-container" style="max-width:800px; margin:3rem auto; padding:0 1rem;">
     <h1 class="hero-title text-center" style="font-size: 2.5rem; margin-bottom: 1rem;">
         <span data-i18n-key="eval_page_title_prefix">Oceni vrednost </span><span class="text-gradient" data-i18n-key="eval_page_title_highlight">mojega avta</span>
@@ -8,13 +40,13 @@
     <form id="evaluationForm" class="glass-card" style="padding: 2.5rem; border-radius: 2.5rem; margin-bottom: 2rem;">
         <div class="form-row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom:2rem;">
             <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <label for="eval-make" style="font-weight: 600; font-size: 0.875rem; color:#374151;" data-i18n-key="cl_make">Znamka</label>
+                <label for="eval-make" style="font-weight: 600; font-size: 0.875rem;" data-i18n-key="cl_make">Znamka</label>
                 <select id="eval-make" name="make" class="glass-select" required>
                     <option value="" data-i18n-key="cl_select_make">Izberite znamko</option>
                 </select>
             </div>
             <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <label for="eval-model" style="font-weight: 600; font-size: 0.875rem; color:#374151;" data-i18n-key="cl_model">Model</label>
+                <label for="eval-model" style="font-weight: 600; font-size: 0.875rem;" data-i18n-key="cl_model">Model</label>
                 <select id="eval-model" name="model" class="glass-select" disabled required>
                     <option value="" data-i18n-key="cl_select_model">Izberite model</option>
                 </select>
@@ -23,13 +55,13 @@
 
         <div class="form-row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom:2rem;">
             <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <label for="eval-year" style="font-weight: 600; font-size: 0.875rem; color:#374151;" data-i18n-key="cl_year">Letnik</label>
+                <label for="eval-year" style="font-weight: 600; font-size: 0.875rem;" data-i18n-key="cl_year">Letnik</label>
                 <select id="eval-year" name="year" class="glass-select" required>
                     <option value="" data-i18n-key="cl_select_year">Izberite letnik</option>
                 </select>
             </div>
             <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <label for="eval-mileage" style="font-weight: 600; font-size: 0.875rem; color:#374151;" data-i18n-key="eval_mileage_label">Prevoženi kilometri (približno)</label>
+                <label for="eval-mileage" style="font-weight: 600; font-size: 0.875rem;" data-i18n-key="eval_mileage_label">Prevoženi kilometri (približno)</label>
                 <div class="pill-input-wrapper">
                     <input type="text" id="eval-mileage" name="mileage" class="pill-input js-format-number" placeholder="npr. 150,000" data-i18n-key="eval_mileage_placeholder" data-i18n-target="placeholder" inputmode="numeric" required>
                 </div>

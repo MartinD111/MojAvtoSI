@@ -78,6 +78,15 @@
                     <div class="sidebar-active-pills" id="activeVariant"></div>
                 </div>
 
+                <!-- Linija -->
+                <div class="form-group" id="sidebarLineGroup" style="display:none; flex-direction:column; gap:0.4rem;">
+                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Linija</label>
+                    <select id="sidebarLine" name="line" class="glass-select">
+                        <option value="">Vse linije</option>
+                    </select>
+                    <div class="sidebar-active-pills" id="activeLine"></div>
+                </div>
+
                 <!-- Dodana vozila (Multi-search chips - hidden in new design) -->
                 <div id="sidebarVehicleCards" style="display:none; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.25rem;"></div>
 
@@ -273,11 +282,11 @@
                 <span class="sort-label">Sort by:</span>
                 <div class="pill-select-wrapper">
                     <select class="pill-input" id="sortSelect" data-no-search="true">
-                        <option>Default</option>
-                        <option>Price: Lowest first</option>
-                        <option>Price: Highest first</option>
-                        <option>Year: Newest</option>
-                        <option>Mileage: Lowest</option>
+                        <option value="">Privzeto</option>
+                        <option value="price-asc">Cena: najnižja</option>
+                        <option value="price-desc">Cena: najvišja</option>
+                        <option value="year-desc">Letnik: najnovejši</option>
+                        <option value="km-asc">Kilometrina: najnižja</option>
                     </select>
                 </div>
                 <button class="legend-btn" id="legendBtn" title="Icon legend">

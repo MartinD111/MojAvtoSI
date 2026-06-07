@@ -22,6 +22,7 @@ import { store } from '../store/store.js';
 import QRCode from 'qrcode';
 import { buildGoogleCalendarUrl } from '../services/googleCalendarService.js';
 import { getTireOrder, markTireOrderOrdered } from '../services/b2bService.js';
+import { scrollToTopOnMobile } from '../utils/viewport.js';
 
 // ── Wizard state (reset on every initBookingPage call) ────────
 let state = {};
@@ -1088,7 +1089,7 @@ function goNext() {
     renderProgress();
     renderStep(state.currentStep);
     updateNavButtons();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTopOnMobile();
 }
 
 function goBack() {
@@ -1104,7 +1105,7 @@ function goBack() {
     renderProgress();
     renderStep(state.currentStep);
     updateNavButtons();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTopOnMobile();
 }
 
 function showStepError(msg) {

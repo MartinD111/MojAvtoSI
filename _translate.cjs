@@ -22,14 +22,12 @@ const files = [
   'src/pages/tire-product.js',
   'src/pages/tire-search.js',
   'src/pages/b2b-dashboard.js',
-  'src/pages/b2b-evaluate.js',
   'src/pages/b2b-inventory.js',
   'src/pages/b2b-leads.js',
   'src/pages/b2b-profile-editor.js',
   'src/pages/b2b-reservations.js',
   'src/pages/b2b-services.js',
   'src/pages/b2b-tire-hotel.js',
-  'src/pages/b2b-tools.js',
   'src/pages/b2b-workshop.js',
 ];
 

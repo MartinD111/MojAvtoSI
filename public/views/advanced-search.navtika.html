@@ -1,8 +1,26 @@
 <div class="search-container" style="max-width:1060px; margin:3rem auto; padding:0 1rem;">
 
     <!-- Category tabs (filled from platform taxonomy by JS) -->
-    <div class="home-tabs-container" style="margin-bottom:2rem;">
-        <div id="boatCategoryTabs" class="glass-card rounded-pill tabs-glass"></div>
+    <div class="home-tabs-container" style="margin-bottom:2rem; width:100%;">
+        <div id="boatCategoryTabs" class="glass-card rounded-pill tabs-glass" style="width:100%; display:flex;"></div>
+    </div>
+
+    <!-- Prodaja / Najem Toggles -->
+    <div id="rentalModeToggle" style="display: flex; gap: 0.75rem; justify-content: center; align-items: center; margin: 0 auto 1.5rem; max-width: 320px; width: 100%;">
+        <div class="glass-card" style="flex: 1; display:flex; gap: 0.625rem; justify-content: center; align-items: center; padding: 0.5rem 0.75rem; border-radius: 9999px;">
+            <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.025em; line-height:1; margin:0;">Prodaja</span>
+            <label class="remember-toggle" title="Prodaja" style="padding:0; margin:0;">
+                <input type="checkbox" class="remember-check" id="searchProdajaToggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="glass-card" style="flex: 1; display:flex; gap: 0.625rem; justify-content: center; align-items: center; padding: 0.5rem 0.75rem; border-radius: 9999px;">
+            <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.025em; line-height:1; margin:0;">Najem</span>
+            <label class="remember-toggle" title="Najem" style="padding:0; margin:0;">
+                <input type="checkbox" class="remember-check" id="searchNajemToggle">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
     </div>
 
     <form id="advancedSearchForm" data-v="1-navtika">
@@ -19,15 +37,10 @@
             <div class="adv-acc-header">
                 <button type="button" class="adv-acc-trigger" aria-expanded="true">
                     <span class="adv-acc-title" id="searchAccordionTitle"><i data-lucide="sailboat" id="searchAccordionIcon"></i> Osnovni podatki</span>
-                    <div class="adv-acc-right" onclick="event.stopPropagation()" style="display: flex; gap: 1rem; align-items: center;">
-                        <label class="remember-toggle" title="Prodaja">
-                            <span class="toggle-label">Prodaja</span>
-                            <input type="checkbox" class="remember-check" id="searchProdajaToggle" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <label class="remember-toggle" title="Najem">
-                            <span class="toggle-label">Najem</span>
-                            <input type="checkbox" class="remember-check" id="searchNajemToggle">
+                    <div class="adv-acc-right" onclick="event.stopPropagation()">
+                        <label class="remember-toggle" title="Zapomni si izbiro">
+                            <span class="toggle-label">Zapomni si</span>
+                            <input type="checkbox" class="remember-check" data-category="navtika_osnovni" id="searchOsnovniRememberToggle">
                             <span class="toggle-slider"></span>
                         </label>
                         <i data-lucide="chevron-down" class="adv-acc-chevron"></i>
@@ -41,20 +54,53 @@
                     <div class="body-type-grid" id="boatTypeGrid"></div>
                 </div>
 
-                <!-- Make / Model -->
+                <!-- Vessel Selector (Brands, Models, Variants, Add/Exclude functionality) -->
                 <div class="adv-field-group">
-                    <div class="search-grid" style="margin-bottom:1rem; display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+                    <div id="vehicleSelectorRow" class="search-grid" style="margin-bottom:1.5rem; display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
                         <div class="form-group" style="flex:1; max-width:240px; min-width:180px;">
                             <label for="make" class="adv-label" style="text-align:center;">Znamka</label>
                             <div class="pill-select-wrapper">
-                                <select id="make" name="make" class="pill-input"><option value="">Znamka</option></select>
+                                <select id="make" name="make" class="pill-input">
+                                    <option value="">Znamka</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group" style="flex:1; max-width:240px; min-width:180px;">
                             <label for="model" class="adv-label" style="text-align:center;">Model</label>
                             <div class="pill-select-wrapper">
-                                <select id="model" name="model" disabled class="pill-input"><option value="">Model</option></select>
+                                <select id="model" name="model" disabled class="pill-input">
+                                    <option value="">Model</option>
+                                </select>
                             </div>
+                        </div>
+                        <div class="form-group" style="flex:1; max-width:240px; min-width:180px;">
+                            <label for="variant" class="adv-label" style="text-align:center;">Različica</label>
+                            <div class="pill-select-wrapper">
+                                <select id="variant" name="variant" disabled class="pill-input">
+                                    <option value="">Različica</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-start; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <button type="button" id="addVehicleBtn" class="pill-btn primary"
+                            style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px;">
+                            <i data-lucide="plus" style="width:14px;height:14px;"></i> Dodaj
+                        </button>
+                        <button type="button" id="excludeVehicleBtn" class="pill-btn"
+                            style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px; background:rgba(239,68,68,0.12); color:#ef4444; border:1px solid rgba(239,68,68,0.3);">
+                            <i data-lucide="minus-circle" style="width:14px;height:14px;"></i> Izloči
+                        </button>
+                        <p class="brand-limit-note" id="brandLimitNote" style="margin:0; text-align:left;"></p>
+                    </div>
+                    <div id="vehicleCards" class="vehicle-drop-zone" data-zone="include" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                    </div>
+                    <div id="excludedVehiclesSection" style="display:none; margin-top:1.25rem; margin-bottom:0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                            <i data-lucide="ban" style="width:13px;height:13px;color:#ef4444;"></i>
+                            <span style="font-size:0.75rem; font-weight:700; color:#ef4444; text-transform:uppercase; letter-spacing:0.05em;">Izločena plovila</span>
+                        </div>
+                        <div id="excludedVehicleCards" class="vehicle-drop-zone" data-zone="exclude" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem; padding:0.25rem 0; align-items:center;">
                         </div>
                     </div>
                 </div>

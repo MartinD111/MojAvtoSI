@@ -283,6 +283,25 @@ function validateTrimSpecs(row, rowLabel) {
     const errs = [];
     const specs = {};
 
+    // ── Navtika branches: plovila (vessels) + izvenkrmni (outboard motors) ────
+    const navCat = (row.category || '').toLowerCase();
+    if (navCat === 'plovila') {
+        // Vessels carry body-type (Vrsta), subcategory (Kategorija) + variant; no engine specs.
+        if (row.vrsta)      specs.vrsta      = String(row.vrsta);
+        if (row.kategorija) specs.kategorija = String(row.kategorija);
+        return { valid: true, specs, errors: errs };
+    }
+    if (navCat === 'izvenkrmni') {
+        // Outboard motors: horsepower (KM) integer 1–2000, or empty (electric).
+        if (row.horsepower_km !== '' && row.horsepower_km != null) {
+            const km = parseInt(row.horsepower_km, 10);
+            if (isNaN(km) || km < 1 || km > 2000) {
+                errs.push(`${rowLabel}: KM "${row.horsepower_km}" mora biti celo število 1–2000 (ali prazno)`);
+            } else { specs.horsepower_km = km; }
+        }
+        return { valid: errs.length === 0, specs, errors: errs };
+    }
+
     // ── Moto (v2) branch: SL fields produced by the moto template/parser ──────
     if ((row.category || '').toLowerCase() === 'moto') {
         if (row.displacement_cc !== '' && row.displacement_cc != null) {
@@ -400,6 +419,22 @@ export async function importTaxonomyRows(rows, adminUid, adminName) {
     const brandMap = new Map(existingBrands.map(b => [normalize(b.name + '|' + b.category), b]));
     const modelMap = new Map(existingModels.map(m => [normalize(m.name + '|' + m.brandId), m]));
 
+    // Load existing taxonomy_import_log variants for updates/merging
+    const categories = [...new Set(rows.map(r => (r.category || 'avto').trim().toLowerCase()))];
+    const logsMap = new Map();
+    for (const c of categories) {
+        try {
+            const snap = await getDocs(query(collection(db, 'taxonomy_import_log'), where('category', '==', c)));
+            snap.forEach(d => {
+                const data = d.data();
+                const key = normalize(c + '|' + data.brand + '|' + data.model + '|' + data.trim);
+                logsMap.set(key, { id: d.id, ref: d.ref, specs: data.specs || {} });
+            });
+        } catch (err) {
+            console.warn(`[Admin] Failed to load existing logs for category ${c}:`, err);
+        }
+    }
+
     let batch = writeBatch(db);
     let batchCount = 0;
 
@@ -427,8 +462,6 @@ export async function importTaxonomyRows(rows, adminUid, adminName) {
                 brandMap.set(brandKey, brand);
                 batchCount++;
                 report.imported++;
-            } else {
-                report.skipped++;
             }
 
             // Model dedup
@@ -447,12 +480,10 @@ export async function importTaxonomyRows(rows, adminUid, adminName) {
                     modelMap.set(modelKey, { id: newModelRef.id });
                     batchCount++;
                     report.imported++;
-                } else {
-                    report.skipped++;
                 }
             }
 
-            // Variant dedup + tech-spec validation + import-log write (D-10)
+            // Variant dedup + tech-spec validation + import-log write/update
             if (modelName && row.variant) {
                 const trimName = String(row.variant).trim();
                 if (trimName) {
@@ -462,11 +493,26 @@ export async function importTaxonomyRows(rows, adminUid, adminName) {
 
                     if (valid || Object.keys(specs).length === 0) {
                         const variantObj = { trim: trimName, ...specs };
-                        const modelEntry = modelMap.get(normalize(modelName + '|' + brand.id));
-                        const variantKey = normalize(trimName + '|' + (modelEntry?.id || '__new__'));
-                        if (!report._variantsSeen) report._variantsSeen = new Set();
-                        if (!report._variantsSeen.has(variantKey)) {
-                            report._variantsSeen.add(variantKey);
+                        const variantKey = normalize(cat + '|' + brandName + '|' + modelName + '|' + trimName);
+                        
+                        const existingLog = logsMap.get(variantKey);
+                        if (existingLog) {
+                            // Merge specs (specifically fuel_type and engine_capacity_cc)
+                            const mergedSpecs = { ...existingLog.specs, ...variantObj };
+                            const hasChanges = JSON.stringify(existingLog.specs) !== JSON.stringify(mergedSpecs);
+                            if (hasChanges) {
+                                batch.update(existingLog.ref, {
+                                    specs: mergedSpecs,
+                                    updatedAt: serverTimestamp(),
+                                    updatedBy: adminUid,
+                                });
+                                existingLog.specs = mergedSpecs; // Update in-memory
+                                batchCount++;
+                                report.imported++;
+                            } else {
+                                report.skipped++;
+                            }
+                        } else {
                             // Log variant + specs to import audit collection
                             const variantRef = doc(collection(db, 'taxonomy_import_log'));
                             batch.set(variantRef, {
@@ -478,10 +524,9 @@ export async function importTaxonomyRows(rows, adminUid, adminName) {
                                 importedAt: serverTimestamp(),
                                 importedBy: adminUid,
                             });
+                            logsMap.set(variantKey, { id: variantRef.id, ref: variantRef, specs: variantObj });
                             batchCount++;
                             report.imported++;
-                        } else {
-                            report.skipped++;
                         }
                     }
                 }
@@ -489,16 +534,21 @@ export async function importTaxonomyRows(rows, adminUid, adminName) {
 
             // Firestore batch limit: 500 ops
             if (batchCount >= 490) {
-                await batch.commit();
-                batch = writeBatch(db);
-                batchCount = 0;
+                try {
+                    await batch.commit();
+                } finally {
+                    batch = writeBatch(db);
+                    batchCount = 0;
+                }
             }
         } catch (e) {
             report.errors.push(`Napaka pri vrstici ${JSON.stringify(row)}: ${e.message}`);
         }
     }
 
-    if (batchCount > 0) await batch.commit();
+    if (batchCount > 0) {
+        await batch.commit();
+    }
 
     await addAuditLog(adminUid, adminName, 'TAXONOMY_IMPORT', 'taxonomy', {
         imported: report.imported,
@@ -506,8 +556,54 @@ export async function importTaxonomyRows(rows, adminUid, adminName) {
         errors: report.errors.length,
     });
 
-    delete report._variantsSeen;
     return report;
+}
+
+export async function clearCarTaxonomy(adminUid, adminName) {
+    let batch = writeBatch(db);
+    let count = 0;
+
+    // 1. Delete brands where category == 'avto'
+    const brandsSnap = await getDocs(query(collection(db, 'brands'), where('category', '==', 'avto')));
+    for (const d of brandsSnap.docs) {
+        batch.delete(d.ref);
+        count++;
+        if (count >= 450) {
+            await batch.commit();
+            batch = writeBatch(db);
+            count = 0;
+        }
+    }
+
+    // 2. Delete models where category == 'avto'
+    const modelsSnap = await getDocs(query(collection(db, 'models'), where('category', '==', 'avto')));
+    for (const d of modelsSnap.docs) {
+        batch.delete(d.ref);
+        count++;
+        if (count >= 450) {
+            await batch.commit();
+            batch = writeBatch(db);
+            count = 0;
+        }
+    }
+
+    // 3. Delete taxonomy_import_log where category == 'avto'
+    const logsSnap = await getDocs(query(collection(db, 'taxonomy_import_log'), where('category', '==', 'avto')));
+    for (const d of logsSnap.docs) {
+        batch.delete(d.ref);
+        count++;
+        if (count >= 450) {
+            await batch.commit();
+            batch = writeBatch(db);
+            count = 0;
+        }
+    }
+
+    if (count > 0) {
+        await batch.commit();
+    }
+
+    await addAuditLog(adminUid, adminName, 'TAXONOMY_CLEAR', 'taxonomy', { category: 'avto' });
 }
 
 // ── Reports / Moderation ──────────────────────────────────────────────────────

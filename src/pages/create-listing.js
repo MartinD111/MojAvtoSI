@@ -2,14 +2,11 @@
 // Create Listing — Multi-step Controller — MojAvto.si
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { validateVinFormat, decodeVin } from '../services/vinService.js';
 import { createListing } from '../services/listingService.js';
 import { EQUIPMENT_GROUPS, getEquipmentForCategory } from '../data/equipment.js';
 import { auth } from '../firebase.js';
 import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
-import { fetchRawListingData } from '../utils/scraper.js';
-import { parseListingWithGemini } from '../services/geminiService.js';
 import { getCurrentUserDoc } from '../auth/auth.js';
 import { t, getCurrentLang } from '../core/i18n.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
@@ -17,6 +14,7 @@ import { getModelBodyType } from '../utils/bodyType.js';
 import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes, getPartTypeLabel } from '../data/partTypes.js';
 import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, getEquipmentGroupLabel, EQUIPMENT_SIZES } from '../data/equipmentTypes.js';
 import { PLATFORM } from '../config/platform.js';
+import { scrollToTopOnMobile } from '../utils/viewport.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -57,12 +55,11 @@ const isOpremaItem = s => s.itemType === 'oprema';
 
 const STEPS = [
     { id: 'typeSelect', title: null },  // 0: vehicle vs parts/tires
-    { id: 'entry', title: null, condition: isVehicleItem },  // 1: entry mode (vehicles only)
-    { id: 'vin', title: null, condition: s => s.entryType === 'vin' && isVehicleItem(s) },
+    { id: 'entry', title: null, condition: s => isVehicleItem(s) && !auth.currentUser },  // 1: entry mode (logged-out vehicles only)
     { id: 'category', title: 'cl_step_category', number: true },
     { id: 'basic', title: 'cl_step_basic', number: true, condition: isVehicleItem },
-    { id: 'technical', title: 'cl_step_technical', number: true, condition: isVehicleItem },
-    { id: 'equipment', title: 'cl_step_features', number: true, condition: isVehicleItem },
+    { id: 'technical', title: 'cl_step_technical', number: true, condition: s => isVehicleItem(s) && (!isNavtika() || !vesselCfg().basicEngine) },
+    { id: 'equipment', title: 'cl_step_features', number: true, condition: s => isVehicleItem(s) && (!isNavtika() || vesselCfg().equipmentStep !== false) },
     { id: 'partDetails', title: 'cl_step_part_details', number: true, condition: isPartItem },
     { id: 'tireDetails', title: 'cl_step_tire_details', number: true, condition: isTireItem },
     { id: 'opremaDetails', title: 'cl_step_oprema_details', number: true, condition: isOpremaItem },
@@ -79,10 +76,6 @@ const STEPS = [
 let state = {
     currentStep: 0,
     entryType: null,
-    vin: null,
-    vinVerified: false,
-    vinData: null,
-    vinOverrides: {},
     category: 'avto',
     subcategory: '',
     bodyType: '',
@@ -97,13 +90,13 @@ let state = {
     // Tires
     tireSize: '', tireWidth: '', tireAspect: '', tireRim: '',
     tireSeason: '', treadDepthMm: '', dotYear: '', tireCount: '',
-    make: '', model: '', variant: '', year: '', mileageKm: '',
+    make: '', model: '', variant: '', linija: '', year: '', mileageKm: '',
     color: '', colorType: 'solid', doorsCount: '', seatsCount: '',
     condition: 'Rabljeno', firstRegistration: '', previousOwnersCount: '',
     fuel: '', hybridType: null, transmission: '', driveType: '',
     engineCc: '', powerKw: '', co2: '', emissionClass: '',
     fuelL100kmCombined: '', fuelL100kmCity: '', fuelL100kmHighway: '',
-    batteryKwh: '', rangeKm: '', towingKg: '', a2Eligible: false,
+    batteryKwh: '', rangeKm: '', batteryHealth: '', consumptionKwh100: '', towingKg: '', a2Eligible: false,
     // Navtika-specific fields
     engineHoursUsed: '', lengthM: '', beamM: '', draughtM: '',
     hullMaterial: '', engineCount: '1', driveSystem: '', maxSpeedKn: '',
@@ -169,6 +162,61 @@ const TAX_FUEL_MAP = {
  *   (tracked via state._manualFields Set)
  * - Fires immediately on trim selection change
  */
+function parseSpecsFromTrimName(trimName) {
+    const specs = {};
+    if (!trimName) return specs;
+
+    // 1. Parse engine capacity in cc from decimal liters (e.g., "1.6", "2.0")
+    const literMatch = trimName.match(/\b([0-8]\.[0-9])(l|L)?\b/);
+    if (literMatch) {
+        const liters = parseFloat(literMatch[1]);
+        if (liters >= 0.8 && liters <= 8.0) {
+            specs.engine_capacity_cc = Math.round(liters * 1000);
+        }
+    } else {
+        // Look for 3 or 4 digit numbers between 800 and 8000 representing cc directly
+        const ccMatch = trimName.match(/\b([89][0-9]{2}|[1-7][0-9]{3})\b/);
+        if (ccMatch) {
+            specs.engine_capacity_cc = parseInt(ccMatch[1], 10);
+        }
+    }
+
+    // 2. Parse fuel type from common abbreviations
+    const lowerTrim = trimName.toLowerCase();
+    const dieselKeywords = ['tdi', 'cdi', 'jtd', 'hdi', 'crdi', 'dci', 'ddis', 'tdci', 'dizel', 'diesel'];
+    const petrolKeywords = ['tsi', 'tfsi', 'vti', 'gti', 'mpi', 'fsi', 't-gdi', 'tce', 'vtec', 'ts', 'bencin', 'petrol', 'gasoline'];
+    const hybridKeywords = ['phev', 'hybrid', 'hibrid', 'e-hybrid', 'gte'];
+    const electricKeywords = ['electric', 'električni', 'ev', 'plaid'];
+
+    if (hybridKeywords.some(kw => new RegExp(`\\b${kw}\\b|${kw}`).test(lowerTrim))) {
+        specs.fuel_type = 'Hybrid';
+    } else if (electricKeywords.some(kw => new RegExp(`\\b${kw}\\b|${kw}`).test(lowerTrim))) {
+        specs.fuel_type = 'Electric';
+    } else if (dieselKeywords.some(kw => {
+        if (kw === 'd') {
+            return /\b\d{3}d\b|\bd\b/.test(lowerTrim) || lowerTrim.endsWith('d');
+        }
+        return new RegExp(`\\b${kw}\\b|${kw}`).test(lowerTrim);
+    })) {
+        specs.fuel_type = 'Diesel';
+    } else if (petrolKeywords.some(kw => new RegExp(`\\b${kw}\\b|${kw}`).test(lowerTrim))) {
+        specs.fuel_type = 'Petrol';
+    }
+
+    return specs;
+}
+
+/**
+ * Looks up the selected trim in brandModelData and fills state + live DOM fields
+ * with tech specs from the matching variant object.
+ *
+ * Auto-fill rules (D-09):
+ * - Only fills if variant is an object with specs (string variants do nothing)
+ * - Sets state properties for fields that have values in the variant object
+ * - Does NOT overwrite fields the user already manually changed this session
+ *   (tracked via state._manualFields Set)
+ * - Fires immediately on trim selection change
+ */
 function applyTrimAutoFill(selectedTrim, make, model) {
     if (!selectedTrim || !make || !model || !brandModelData) return;
 
@@ -185,9 +233,19 @@ function applyTrimAutoFill(selectedTrim, make, model) {
     }
 
     const matched = variantsList.find(v => normalizeTrimEntryLocal(v).trim === selectedTrim);
-    if (!matched || typeof matched === 'string') return;  // no specs to fill
+    if (!matched) return;
 
-    const specs = normalizeTrimEntryLocal(matched);
+    let specs = {};
+    if (typeof matched === 'string') {
+        specs = parseSpecsFromTrimName(matched);
+    } else {
+        specs = normalizeTrimEntryLocal(matched);
+        // Fallback: parse missing specs from name
+        const parsed = parseSpecsFromTrimName(specs.trim);
+        if (!specs.fuel_type && parsed.fuel_type) specs.fuel_type = parsed.fuel_type;
+        if (!specs.engine_capacity_cc && parsed.engine_capacity_cc) specs.engine_capacity_cc = parsed.engine_capacity_cc;
+    }
+
     const hasSpecs = Object.keys(specs).some(k => k !== 'trim' && specs[k] != null && specs[k] !== '');
     if (!hasSpecs) return;
 
@@ -219,6 +277,8 @@ function applyTrimAutoFill(selectedTrim, make, model) {
     if (specs.fuel_type) {
         const mappedFuel = TAX_FUEL_MAP[specs.fuel_type] || specs.fuel_type;
         fillField('fuel', mappedFuel, 'fFuel');
+        // Also fill the basic-step inline fuel selector if visible
+        fillField('fuel', mappedFuel, 'fFuelBasic');
 
         const fuelEl = document.getElementById('fFuel');
         if (fuelEl && fuelEl.value) {
@@ -229,7 +289,11 @@ function applyTrimAutoFill(selectedTrim, make, model) {
         }
     }
 
-    if (specs.engine_capacity_cc != null) fillField('engineCc', specs.engine_capacity_cc, 'fEngineCC');
+    if (specs.engine_capacity_cc != null) {
+        fillField('engineCc', specs.engine_capacity_cc, 'fEngineCC');
+        // Also fill the basic-step inline CC input if visible
+        fillField('engineCc', specs.engine_capacity_cc, 'fEngineCCBasic');
+    }
     if (specs.fuel_consumption_city)     fillField('fuelL100kmCity',     specs.fuel_consumption_city,     'fConsCity');
     if (specs.fuel_consumption_highway)  fillField('fuelL100kmHighway',  specs.fuel_consumption_highway,  'fConsHighway');
     if (specs.fuel_consumption_combined) fillField('fuelL100kmCombined', specs.fuel_consumption_combined, 'fConsCombined');
@@ -354,7 +418,6 @@ function renderCurrentStep() {
     const renderers = {
         typeSelect: renderTypeSelectStep,
         entry: renderEntryStep,
-        vin: renderVinStep,
         category: renderCategoryStep,
         basic: renderBasicStep,
         technical: renderTechnicalStep,
@@ -374,7 +437,7 @@ function renderCurrentStep() {
     const fn = renderers[def.id];
     if (fn) fn();
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTopOnMobile();
     if (window.lucide) window.lucide.createIcons();
 }
 
@@ -435,6 +498,7 @@ function renderTypeSelectStep() {
         document.getElementById('typeParts').addEventListener('click', () => {
             state.itemType = 'part';
             state.category = 'deli';
+            state.vehicleCategory = 'colni';
             goNext();
         });
         return;
@@ -488,7 +552,7 @@ function renderEntryStep() {
                 </button>
            </div>`;
 
-    // Navtika: no VIN, no Smart Import — just seller type + manual entry
+    // Navtika: just seller type + manual entry
     if (isNavtika()) {
         setHtml(`
             <div class="cl-card">
@@ -523,7 +587,6 @@ function renderEntryStep() {
 
         document.getElementById('entryClassic').addEventListener('click', () => {
             state.entryType = 'classic';
-            state.vinVerified = false;
             goNext();
         });
         return;
@@ -539,30 +602,8 @@ function renderEntryStep() {
                 ${sellerToggleHtml}
             </div>
 
-            <!-- Smart Import -->
-            <div class="cl-smart-import" id="smartImportBox">
-                <div class="cl-smart-import-header">
-                    <i data-lucide="wand-2"></i>
-                    <span>${t('cl_smart_import_title')}</span>
-                    <span class="cl-smart-import-badge">AI</span>
-                </div>
-                <p class="cl-smart-import-hint">${t('cl_smart_import_hint')}</p>
-                <div class="cl-smart-import-row">
-                    <input id="importUrlInput" type="url" class="cl-input" placeholder="${t('cl_smart_import_placeholder')}">
-                    <button id="btnSmartImport" class="cl-btn cl-btn--primary">${t('cl_import')}</button>
-                </div>
-                <div id="importLoader" style="display:none;" class="cl-smart-import-loader">
-                    <i data-lucide="loader-2" class="cl-spin"></i>
-                    <span id="importLoaderText">${t('cl_ai_analyzing')}</span>
-                </div>
-                <div id="importWarning" style="display:none;" class="cl-smart-import-warning">
-                    ✅ ${t('cl_import_success')}
-                </div>
-                <div id="importError" style="display:none;" class="cl-smart-import-error"></div>
-            </div>
-
             <div class="cl-entry-cards">
-                <div class="cl-entry-card" id="entryClassic">
+                <div class="cl-entry-card recommended" id="entryClassic">
                     <span class="cl-entry-card-icon">📋</span>
                     <p class="cl-entry-card-title">${t('cl_manual_entry')}</p>
                     <p class="cl-entry-card-desc">${t('cl_manual_entry_desc')}</p>
@@ -570,17 +611,6 @@ function renderEntryStep() {
                         <li>${t('cl_manual_entry_older')}</li>
                         <li>${t('cl_manual_entry_imported')}</li>
                         <li>${t('cl_always_free')}</li>
-                    </ul>
-                </div>
-                <div class="cl-entry-card recommended" id="entryVin">
-                    <span class="cl-entry-card-badge">${t('cl_recommended')}</span>
-                    <span class="cl-entry-card-icon">🛡</span>
-                    <p class="cl-entry-card-title">${t('cl_verified_entry')}</p>
-                    <p class="cl-entry-card-desc">${t('cl_verified_entry_desc')}</p>
-                    <ul class="cl-entry-card-features">
-                        <li>${t('cl_higher_confidence')}</li>
-                        <li>${t('cl_auto_fill')}</li>
-                        <li>${t('cl_vehicle_history')}</li>
                     </ul>
                 </div>
             </div>
@@ -597,265 +627,8 @@ function renderEntryStep() {
 
     document.getElementById('entryClassic').addEventListener('click', () => {
         state.entryType = 'classic';
-        state.vinVerified = false;
         goNext();
     });
-
-    document.getElementById('entryVin').addEventListener('click', () => {
-        state.entryType = 'vin';
-        goNext();
-    });
-
-    document.getElementById('btnSmartImport')?.addEventListener('click', runSmartImport);
-}
-
-// ── Smart Import ──────────────────────────────────────────────────────────────
-async function runSmartImport() {
-    const urlInput = document.getElementById('importUrlInput');
-    const loader = document.getElementById('importLoader');
-    const loaderTxt = document.getElementById('importLoaderText');
-    const warning = document.getElementById('importWarning');
-    const errorEl = document.getElementById('importError');
-    const btn = document.getElementById('btnSmartImport');
-
-    const url = urlInput?.value?.trim();
-    if (!url || !url.startsWith('http')) {
-        showImportError(errorEl, t('cl_import_url_error'));
-        return;
-    }
-
-    // UI: loading state
-    btn.disabled = true;
-    if (loader) loader.style.display = 'flex';
-    if (warning) warning.style.display = 'none';
-    if (errorEl) errorEl.style.display = 'none';
-
-    try {
-        // Step 1: fetch raw text via CORS proxy
-        if (loaderTxt) loaderTxt.textContent = 'Pridobivam vsebino oglasa...';
-        const rawText = await fetchRawListingData(url);
-
-        // Step 2: collect allowed values from local data
-        const allowedBrands = brandModelData ? Object.keys(brandModelData) : [];
-        const allowedSlugs = EQUIPMENT_GROUPS.flatMap(g => g.items.map(i => i.value));
-
-        // Step 3: send to Gemini
-        if (loaderTxt) loaderTxt.textContent = 'AI is analyzing the listing...';
-        const parsed = await parseListingWithGemini(rawText, allowedBrands, allowedSlugs);
-
-        // Step 4: apply to state
-        applyImportedData(parsed);
-
-        // UI: success
-        if (loader) loader.style.display = 'none';
-        if (warning) warning.style.display = 'block';
-
-    } catch (err) {
-        console.error('[SmartImport]', err);
-        if (loader) loader.style.display = 'none';
-        showImportError(errorEl, t('cl_import_failed') + ' (' + err.message + ')');
-    } finally {
-        btn.disabled = false;
-    }
-}
-
-function showImportError(el, msg) {
-    if (!el) return;
-    el.textContent = msg;
-    el.style.display = 'block';
-}
-
-function applyImportedData(d) {
-    if (!d || typeof d !== 'object') return;
-
-    // Basic fields → state (steps will read from state when rendered)
-    if (d.brand) state.make = d.brand;
-    if (d.model) state.model = d.model;
-    if (d.year) state.year = Number(d.year);
-    if (d.mileage) state.mileageKm = Number(d.mileage);
-    if (d.fuel) state.fuel = d.fuel;
-    if (d.transmission) state.transmission = d.transmission;
-    if (d.powerKw) state.powerKw = Number(d.powerKw);
-    if (d.price) state.priceEur = Number(d.price);
-
-    // Equipment — merge with existing selection
-    if (Array.isArray(d.equipment) && d.equipment.length) {
-        const existing = new Set(state.equipment);
-        d.equipment.forEach(s => existing.add(s));
-        state.equipment = [...existing];
-    }
-
-    // Mark state as imported so steps can highlight fields
-    state._imported = d;
-
-    saveDraft(state);
-}
-
-// ── Step 1: VIN input (conditional) ──────────────────────────────────────────
-function renderVinStep() {
-    setHtml(`
-        <div class="cl-card">
-            <h2 class="cl-step-title">🛡 ${t('cl_vin_title')}</h2>
-            <p class="cl-step-sub">${t('cl_vin_sub')}</p>
-
-            <div class="cl-field">
-                <label class="cl-label">${t('cl_vin_label')} <span class="req">*</span></label>
-                <div class="cl-vin-wrap">
-                    <input class="cl-input" id="vinInput" type="text" maxlength="17"
-                        placeholder="npr. WVWZZZ1KZ9W012345"
-                        value="${state.vin || ''}" autocomplete="off" spellcheck="false" />
-                    <button class="cl-btn cl-btn--primary" id="btnVerifyVin" disabled>
-                        <i data-lucide="search"></i> ${t('cl_verify')}
-                    </button>
-                </div>
-                <span id="vinError" style="color:#dc2626;font-size:0.8rem;display:none;"></span>
-            </div>
-
-            <div class="cl-vin-hint">
-                <strong>${t('cl_vin_hint_title')}</strong><br>
-                • ${t('cl_vin_hint_1')}<br>
-                • ${t('cl_vin_hint_2')}<br>
-                • ${t('cl_vin_hint_3')}
-            </div>
-
-            <div id="vinResultArea"></div>
-
-            <div class="cl-nav">
-                <button class="cl-btn cl-btn--ghost" id="btnVinBack">${t('cl_back')}</button>
-            </div>
-        </div>
-    `);
-
-    const input = document.getElementById('vinInput');
-    const btn = document.getElementById('btnVerifyVin');
-    const errEl = document.getElementById('vinError');
-
-    input.addEventListener('input', () => {
-        const val = input.value.trim().toUpperCase();
-        input.value = val;
-        const { valid, message } = validateVinFormat(val);
-        btn.disabled = !valid;
-        errEl.textContent = val.length > 0 && !valid ? message : '';
-        errEl.style.display = (val.length > 0 && !valid) ? 'block' : 'none';
-    });
-
-    btn.addEventListener('click', () => runVinDecode(input.value.trim().toUpperCase()));
-    document.getElementById('btnVinBack').addEventListener('click', goPrev);
-
-    // If VIN already verified, show result immediately
-    if (state.vinVerified && state.vinData) {
-        renderVinResult(state.vin, state.vinData);
-    }
-}
-
-async function runVinDecode(vin) {
-    const area = document.getElementById('vinResultArea');
-    const btn = document.getElementById('btnVerifyVin');
-    btn.disabled = true;
-
-    area.innerHTML = `
-        <div class="cl-vin-loading" style="margin-top:1.5rem;">
-            <div class="cl-vin-spinner"></div>
-            <p class="cl-vin-loading-label">${t('cl_vin_verifying')}</p>
-        </div>`;
-
-    if (window.lucide) window.lucide.createIcons();
-
-    const result = await decodeVin(vin);
-
-    if (!result.success) {
-        area.innerHTML = `
-            <div class="cl-vin-error" style="margin-top:1.25rem;">
-                <p>${t('cl_vin_not_found')}</p>
-                <small>${result.message}</small>
-            </div>
-            <div class="cl-nav" style="margin-top:1rem;">
-                <button class="cl-btn cl-btn--ghost" id="btnRetryVin">${t('cl_retry')}</button>
-                <button class="cl-btn cl-btn--secondary" id="btnFallbackClassic">${t('cl_continue_without_vin')}</button>
-            </div>`;
-        document.getElementById('btnRetryVin')?.addEventListener('click', () => {
-            area.innerHTML = '';
-            btn.disabled = false;
-        });
-        document.getElementById('btnFallbackClassic')?.addEventListener('click', () => {
-            state.entryType = 'classic';
-            state.vinVerified = false;
-            goNext();
-        });
-        btn.disabled = false;
-        return;
-    }
-
-    state.vin = result.vin;
-    state.vinData = result.data;
-    state.vinVerified = true;
-
-    // Pre-fill basic data from VIN
-    if (result.data.make) state.make = result.data.make;
-    if (result.data.model) state.model = result.data.model;
-    if (result.data.year) state.year = result.data.year;
-    if (result.data.engineType) state.fuel = mapVinFuel(result.data.engineType);
-    if (result.data.powerKw) state.powerKw = result.data.powerKw;
-    if (result.data.engineCc) state.engineCc = result.data.engineCc;
-
-    renderVinResult(result.vin, result.data);
-    btn.disabled = false;
-    if (window.lucide) window.lucide.createIcons();
-}
-
-function renderVinResult(vin, data) {
-    const area = document.getElementById('vinResultArea');
-    if (!area) return;
-
-    const accidentText = () => {
-        if (data.accidentCount === null) return { text: t('cl_ni_podatka'), cls: '' };
-        if (data.accidentCount === 0) return { text: t('cl_ni_zabelezenih'), cls: 'clean' };
-        return { text: t('cl_accidents_recorded').replace('{count}', data.accidentCount), cls: data.accidentSeverity === 'major' ? 'danger' : 'warn' };
-    };
-
-    const recall = data.hasOpenRecalls ? { text: t('cl_recalls_open'), cls: 'danger' } : { text: t('cl_recalls_none'), cls: 'clean' };
-    const owners = data.previousOwners !== null ? data.previousOwners : '—';
-    const acc = accidentText();
-    const partialNote = data.partial ? `
-        <div class="cl-vin-partial-note">
-            ⚠ ${t('cl_partial_note')}
-        </div>` : '';
-
-    area.innerHTML = `
-        <div class="cl-vin-result" style="margin-top:1.25rem;">
-            <div class="cl-vin-result-header">
-                <span class="cl-vin-badge"><i data-lucide="shield-check"></i> ${t('cl_vin_verified_badge')}</span>
-                <span class="cl-vin-code">${vin}</span>
-            </div>
-            <div class="cl-vin-rows">
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">🏭</span><span class="cl-vin-row-label">${t('cl_make')}</span><span class="cl-vin-row-value">${data.make || '—'}</span></div>
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">🚗</span><span class="cl-vin-row-label">${t('cl_model')}</span><span class="cl-vin-row-value">${data.model || '—'}</span></div>
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">📅</span><span class="cl-vin-row-label">${t('cl_year')}</span><span class="cl-vin-row-value">${data.year || '—'}</span></div>
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">⚙️</span><span class="cl-vin-row-label">${t('cl_engine')}</span><span class="cl-vin-row-value">${data.engineType || '—'}${data.powerKw ? ' / ' + Math.round(data.powerKw * 1.34102) + ' ' + t('cl_hp') : ''}</span></div>
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">🌍</span><span class="cl-vin-row-label">${t('cl_country_origin')}</span><span class="cl-vin-row-value">${data.countryOfOrigin || '—'}</span></div>
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">👤</span><span class="cl-vin-row-label">${t('cl_prev_owners')}</span><span class="cl-vin-row-value">${owners}</span></div>
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">💥</span><span class="cl-vin-row-label">${t('cl_accidents')}</span><span class="cl-vin-row-value ${acc.cls}">${acc.text}</span></div>
-                <div class="cl-vin-row"><span class="cl-vin-row-icon">🔔</span><span class="cl-vin-row-label">${t('cl_recalls')}</span><span class="cl-vin-row-value ${recall.cls}">${recall.text}</span></div>
-            </div>
-        </div>
-        ${partialNote}
-        <div class="cl-nav" style="margin-top:1.25rem;">
-            <span></span>
-            <button class="cl-btn cl-btn--primary" id="btnVinAccept">
-                ${t('cl_accept_continue')}
-            </button>
-        </div>`;
-
-    document.getElementById('btnVinAccept')?.addEventListener('click', () => {
-        goNext();
-    });
-
-    if (window.lucide) window.lucide.createIcons();
-}
-
-function mapVinFuel(engineType) {
-    const map = { 'Dizel': 'Dizel', 'Petrol': 'Petrol', 'Diesel': 'Dizel', 'Bencin': 'Petrol', 'Electric': 'Elektrika', 'Hybrid': 'Hibrid' };
-    return map[engineType] || engineType;
 }
 
 // ── Step 2: Category ──────────────────────────────────────────────────────────
@@ -977,6 +750,27 @@ const CATEGORIES_NAVTIKA = [
 ];
 
 const CATEGORIES = PLATFORM.id === 'navtika' ? CATEGORIES_NAVTIKA : CATEGORIES_AVTO;
+
+// ── Per-vessel-type listing config (navtika) ──────────────────────────────────
+// Keyed by state.category (the CATEGORIES_NAVTIKA ids — note hyphens). Drives which
+// field groups / engine options the navtika Basic + Technical steps render, and
+// whether the equipment step applies. See renderNavtikaBasicStep / *TechnicalStep.
+//   hullComfort  : show "trup in udobje" (hull material, cabins/berths, beam/draught)
+//   engineBrand  : show the "Znamka motorja" custom dropdown
+//   equipmentStep: include the additional-equipment wizard step
+//   engineTypes  : 'all' (incl. sail) | 'noSail' (drop "Brez motorja"/"Jadra")
+//   driveSystem  : show the "Pogonski sistem" field
+//   basicEngine  : show engine power/hours/type inside the Basic step (jet-ski)
+//   motorProduct : the listing IS the engine (outboard motors) — no drive grouping
+//   hullMaterials: 'inflatable' for a RIB-specific hull-material list
+const VESSEL_TYPE_CONFIG = {
+    'colni':              { hullComfort: true,  engineBrand: true,  equipmentStep: true,  engineTypes: 'noSail', driveSystem: true },
+    'jadrnice':           { hullComfort: true,  engineBrand: true,  equipmentStep: true,  engineTypes: 'all',    driveSystem: true },
+    'gumenjaki':          { hullComfort: true,  engineBrand: true,  equipmentStep: true,  engineTypes: 'noSail', driveSystem: true, hullMaterials: 'inflatable' },
+    'jet-ski':            { hullComfort: false, engineBrand: false, equipmentStep: false, engineTypes: 'all',    driveSystem: true, basicEngine: true },
+    'izvenkrmni-motorji': { hullComfort: false, engineBrand: false, equipmentStep: true,  engineTypes: 'all',    driveSystem: false, motorProduct: true },
+};
+const vesselCfg = () => VESSEL_TYPE_CONFIG[state.category] || VESSEL_TYPE_CONFIG['colni'];
 
 function renderCategoryStep() {
     // Parts/tires path: skip the vehicle category grid, show only Del/Pnevmatika + vehicle family pickers
@@ -1121,6 +915,7 @@ function renderDeliConfig(row) {
 
 // ── Step: Part details ────────────────────────────────────────────────────────
 function renderPartDetailsStep() {
+    const nav = isNavtika();
     const groups = getPartGroups(state.vehicleCategory);
     const groupOpts = groups.map(g =>
         `<option value="${g.value}" ${state.partGroup === g.value ? 'selected' : ''}>${g.label}</option>`).join('');
@@ -1128,49 +923,10 @@ function renderPartDetailsStep() {
     const typeOpts = (state.partGroup ? getPartTypes(state.vehicleCategory, state.partGroup) : [])
         .map(tp => `<option value="${tp.value}" ${state.partType === tp.value ? 'selected' : ''}>${tp.label}</option>`).join('');
 
-    setHtml(`
-        <div class="cl-card">
-            <h2 class="cl-step-title">${t('cl_step_part_details', 'Podatki o delu')}</h2>
-            <p class="cl-step-sub">${t('cl_part_details_sub', 'Opišite del, ki ga prodajate.')}</p>
+    const brandPlaceholder = nav ? 'npr. Garmin, Yamaha, Musto' : 'npr. Bosch, Sachs';
+    const oemPlaceholder = nav ? 'npr. 4XE-45728-00' : 'npr. 1K0615301AA';
 
-            <div class="cl-row">
-                <div class="cl-field">
-                    <label class="cl-label">${t('gd_part_group', 'Sklop')} <span class="req">*</span></label>
-                    <select class="cl-select" id="fPartGroup">
-                        <option value="">${t('cl_sel_part_group', 'Izberite sklop')}</option>
-                        ${groupOpts}
-                    </select>
-                </div>
-                <div class="cl-field">
-                    <label class="cl-label">${t('gd_part_type', 'Vrsta dela')} <span class="req">*</span></label>
-                    <select class="cl-select" id="fPartType" ${state.partGroup ? '' : 'disabled'}>
-                        <option value="">${t('cl_sel_part_type', 'Najprej izberite sklop')}</option>
-                        ${typeOpts}
-                    </select>
-                </div>
-            </div>
-
-            <div class="cl-row">
-                <div class="cl-field">
-                    <label class="cl-label">${t('cl_condition', 'Stanje')} <span class="req">*</span></label>
-                    <select class="cl-select" id="fPartCondition">
-                        <option value="Rabljeno" ${state.condition === 'Rabljeno' ? 'selected' : ''}>${t('gd_condition_used', 'Rabljeno')}</option>
-                        <option value="Novo" ${state.condition === 'Novo' ? 'selected' : ''}>${t('gd_condition_new', 'Novo')}</option>
-                    </select>
-                </div>
-                <div class="cl-field">
-                    <label class="cl-label">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
-                    <input class="cl-input" id="fPartBrand" type="text" value="${escHtml(state.brand || '')}" placeholder="npr. Bosch, Sachs" />
-                </div>
-            </div>
-
-            <div class="cl-row">
-                <div class="cl-field">
-                    <label class="cl-label">${t('gd_oem_number', 'OEM / kataloška številka')}</label>
-                    <input class="cl-input" id="fOem" type="text" value="${escHtml(state.oemNumber || '')}" placeholder="npr. 1K0615301AA" />
-                </div>
-            </div>
-
+    const compatibilityHtml = nav ? '' : `
             <div class="cl-label" style="margin:1.25rem 0 0.5rem;border-top:1px solid rgba(0,0,0,0.08);padding-top:1rem;font-weight:700;">${t('gd_compatibility', 'Združljivost (neobvezno)')}</div>
             <div class="cl-row">
                 <div class="cl-field">
@@ -1191,7 +947,52 @@ function renderPartDetailsStep() {
                     <label class="cl-label">${t('cl_year_to', 'Letnik do')}</label>
                     <input class="cl-input" id="fAppYearTo" type="number" value="${escHtml(String(state.vehicleApplication?.yearTo || ''))}" placeholder="npr. 2020" />
                 </div>
+            </div>`;
+
+    setHtml(`
+        <div class="cl-card">
+            <h2 class="cl-step-title">${nav ? 'Podatki o opremi' : t('cl_step_part_details', 'Podatki o delu')}</h2>
+            <p class="cl-step-sub">${nav ? 'Opišite opremo ali motor, ki ga prodajate.' : t('cl_part_details_sub', 'Opišite del, ki ga prodajate.')}</p>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_part_group', 'Sklop')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fPartGroup">
+                        <option value="">${t('cl_sel_part_group', 'Izberite sklop')}</option>
+                        ${groupOpts}
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${nav ? 'Vrsta opreme' : t('gd_part_type', 'Vrsta dela')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fPartType" ${state.partGroup ? '' : 'disabled'}>
+                        <option value="">${t('cl_sel_part_type', 'Najprej izberite sklop')}</option>
+                        ${typeOpts}
+                    </select>
+                </div>
             </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_condition', 'Stanje')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fPartCondition">
+                        <option value="Rabljeno" ${state.condition === 'Rabljeno' ? 'selected' : ''}>${t('gd_condition_used', 'Rabljeno')}</option>
+                        <option value="Novo" ${state.condition === 'Novo' ? 'selected' : ''}>${t('gd_condition_new', 'Novo')}</option>
+                    </select>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
+                    <input class="cl-input" id="fPartBrand" type="text" value="${escHtml(state.brand || '')}" placeholder="${brandPlaceholder}" />
+                </div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">${t('gd_oem_number', 'OEM / kataloška številka')}</label>
+                    <input class="cl-input" id="fOem" type="text" value="${escHtml(state.oemNumber || '')}" placeholder="${oemPlaceholder}" />
+                </div>
+            </div>
+
+            ${compatibilityHtml}
 
             <div class="cl-nav">
                 <button class="cl-btn cl-btn--ghost" id="btnPartBack">${t('cl_back')}</button>
@@ -1226,14 +1027,16 @@ function renderPartDetailsStep() {
         state.condition = document.getElementById('fPartCondition').value;
         state.brand = document.getElementById('fPartBrand').value.trim();
         state.oemNumber = document.getElementById('fOem').value.trim();
-        state.vehicleApplication = {
-            make: document.getElementById('fAppMake').value.trim(),
-            model: document.getElementById('fAppModel').value.trim(),
-            yearFrom: document.getElementById('fAppYearFrom').value.trim(),
-            yearTo: document.getElementById('fAppYearTo').value.trim(),
-        };
+        if (!nav) {
+            state.vehicleApplication = {
+                make: document.getElementById('fAppMake').value.trim(),
+                model: document.getElementById('fAppModel').value.trim(),
+                yearFrom: document.getElementById('fAppYearFrom').value.trim(),
+                yearTo: document.getElementById('fAppYearTo').value.trim(),
+            };
+        }
         if (!state.partGroup || !state.partType) {
-            return alert(t('cl_part_required_alert', 'Izberite sklop in vrsto dela.'));
+            return alert(nav ? 'Izberite sklop in vrsto opreme.' : t('cl_part_required_alert', 'Izberite sklop in vrsto dela.'));
         }
         goNext();
     });
@@ -1481,25 +1284,7 @@ function renderBasicStep() {
     const years = [];
     for (let y = new Date().getFullYear() + 1; y >= 1960; y--) years.push(y);
 
-    const isVin = state.vinVerified;
-
-    function field(id, label, value, locked) {
-        const lockBadge = locked
-            ? `<span class="cl-field-badge cl-field-badge--locked"><i data-lucide="lock"></i> Verified (VIN)</span>`
-            : '';
-        return `
-            <div class="cl-field ${locked ? 'cl-field--locked' : ''}">
-                <label class="cl-label">${label} <span class="req">*</span></label>
-                <input class="cl-input" id="${id}" type="text" value="${escHtml(String(value || ''))}" ${locked ? 'readonly' : ''} />
-                ${lockBadge}
-            </div>`;
-    }
-
     const COLORS = ['Bela', 'Črna', 'Siva', 'Srebrna', 'Modra', 'Rdeča', 'Zelena', 'Rumena', 'Rjava', 'Oranžna', 'Vijolična', 'Zlata', 'Bronasta', 'Druga'];
-
-    const makeLocked = isVin && !state.vinOverrides?.make;
-    const modelLocked = isVin && !state.vinOverrides?.model;
-    const yearLocked = isVin && !state.vinOverrides?.year;
 
     const yearOpts = years.map(y => `<option value="${y}" ${Number(state.year) === y ? 'selected' : ''}>${y}</option>`).join('');
 
@@ -1515,35 +1300,69 @@ function renderBasicStep() {
             <p class="cl-step-sub">${t('cl_basic_sub')}</p>
 
             <div class="cl-row">
-                <div class="cl-field ${makeLocked ? 'cl-field--locked' : ''}">
+                <div class="cl-field">
                     <label class="cl-label">${t('cl_label_make')} <span class="req">*</span></label>
-                    <select class="cl-select" id="fMake" ${makeLocked ? 'disabled' : ''}>
+                    <select class="cl-select" id="fMake">
                         <option value="">${t('cl_sel_make')}</option>
                     </select>
-                    ${makeLocked ? `<span class="cl-field-badge cl-field-badge--locked"><i data-lucide="lock"></i> ${t('cl_verified_vin')}</span>` : ''}
                 </div>
-                <div class="cl-field ${modelLocked ? 'cl-field--locked' : ''}">
+                <div class="cl-field">
                     <label class="cl-label">${t('cl_label_model')} <span class="req">*</span></label>
-                    <select class="cl-select" id="fModel" ${modelLocked ? 'disabled' : ''}>
+                    <select class="cl-select" id="fModel">
                         <option value="">${t('cl_sel_model_first')}</option>
                     </select>
-                    ${modelLocked ? `<span class="cl-field-badge cl-field-badge--locked"><i data-lucide="lock"></i> ${t('cl_verified_vin')}</span>` : ''}
                 </div>
             </div>
 
             <div class="cl-row">
-                <div class="cl-field ${yearLocked ? 'cl-field--locked' : ''}">
+                <div class="cl-field">
                     <label class="cl-label">${t('cl_label_year')} <span class="req">*</span></label>
-                    <select class="cl-select" id="fYear" ${yearLocked ? 'disabled' : ''}>
+                    <select class="cl-select" id="fYear">
                         <option value="">${t('cl_sel_year')}</option>${yearOpts}
                     </select>
-                    ${yearLocked ? `<span class="cl-field-badge cl-field-badge--locked"><i data-lucide="lock"></i> ${t('cl_verified_vin')}</span>` : ''}
                 </div>
                 <div class="cl-field">
                     <label class="cl-label">${t('cl_label_variant')}</label>
                     <select class="cl-select" id="fVariant">
                         <option value="">${t('cl_sel_trim')}</option>
                     </select>
+                </div>
+            </div>
+
+            <div class="cl-row" id="fLinijaRow" style="display:none">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_label_line', 'Linija')}</label>
+                    <select class="cl-select" id="fLinija">
+                        <option value="">${t('cl_sel_line', '— Izberite linijo —')}</option>
+                    </select>
+                </div>
+                <div class="cl-field"></div>
+            </div>
+
+            <div class="cl-row cl-autofill-row" id="fuelCcRow">
+                <div class="cl-field" id="fFuelBasicWrap">
+                    <label class="cl-label">${t('cl_label_fuel', 'Gorivo')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fFuelBasic">
+                        <option value="">${t('cl_select', 'Izberite')}</option>
+                        ${[
+                            ['Petrol', t('cl_fuel_petrol', 'Bencin')],
+                            ['Dizel', t('cl_fuel_diesel', 'Dizel')],
+                            ['Hibrid', t('cl_fuel_hybrid', 'Hibrid')],
+                            ['Elektrika', t('cl_fuel_electric', 'Elektrika')],
+                            ['LPG', t('cl_fuel_lpg', 'LPG')],
+                            ['CNG', t('cl_fuel_cng', 'CNG')],
+                            ['Vodik', t('cl_fuel_hydrogen', 'Vodik')]
+                        ].map(([v, l]) => `<option value="${v}" ${state.fuel === v ? 'selected' : ''}>${l}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="cl-field" id="fEngineCCBasicWrap">
+                    <label class="cl-label">${t('cl_label_displacement', 'Prostornina motorja')} (cc)</label>
+                    <div class="cl-input-wrap">
+                        <input class="cl-input" id="fEngineCCBasic" type="number" min="0" max="15000"
+                            value="${state.engineCc || ''}"
+                            placeholder="${t('cl_placeholder_displacement', 'npr. 1998')}" />
+                        <span class="cl-input-unit">cc</span>
+                    </div>
                 </div>
             </div>
 
@@ -1669,6 +1488,37 @@ function renderBasicStep() {
     const makeSel = document.getElementById('fMake');
     const modelSel = document.getElementById('fModel');
     const variantSel = document.getElementById('fVariant');
+    const linijaSel = document.getElementById('fLinija');
+    const linijaRow = document.getElementById('fLinijaRow');
+
+    let _clVehicleLines = null;
+    function loadClVehicleLines() {
+        if (_clVehicleLines) return Promise.resolve(_clVehicleLines);
+        return fetch('json/vehicle_lines.json')
+            .then(r => r.ok ? r.json() : {})
+            .then(d => { _clVehicleLines = d; return d; })
+            .catch(() => { _clVehicleLines = {}; return {}; });
+    }
+
+    function updateLinijaOptions(make) {
+        if (!linijaSel || !linijaRow) return;
+        linijaSel.innerHTML = `<option value="">${t('cl_sel_line', '— Izberite linijo —')}</option>`;
+        linijaSel.value = '';
+        const lines = (_clVehicleLines || {})[make] || [];
+        if (lines.length) {
+            lines.forEach(l => {
+                const opt = document.createElement('option');
+                opt.value = l; opt.textContent = l;
+                if (state.linija === l) opt.selected = true;
+                linijaSel.appendChild(opt);
+            });
+            linijaRow.style.display = '';
+        } else {
+            linijaRow.style.display = 'none';
+        }
+    }
+
+    loadClVehicleLines().then(() => updateLinijaOptions(state.make || ''));
 
     // Highlight imported fields
     if (state._imported) {
@@ -1706,7 +1556,7 @@ function renderBasicStep() {
                 if (currentModel === m) opt.selected = true;
                 modelSel.appendChild(opt);
             });
-            modelSel.disabled = false || modelLocked;
+            modelSel.disabled = false;
         } else {
             modelSel.disabled = true;
         }
@@ -1755,6 +1605,8 @@ function renderBasicStep() {
         state.make = makeSel.value;
         state.model = '';
         state.variant = '';
+        state.linija = '';
+        loadClVehicleLines().then(() => updateLinijaOptions(makeSel.value));
         updateModels();
     });
 
@@ -1764,22 +1616,34 @@ function renderBasicStep() {
         updateVariants();
     });
 
+    if (linijaSel) {
+        linijaSel.addEventListener('change', () => { state.linija = linijaSel.value; });
+    }
+
     variantSel.addEventListener('change', () => {
         state.variant = variantSel.value;
         applyTrimAutoFill(variantSel.value, makeSel.value, modelSel.value);
+        // Show the fuel/cc row with a highlight after variant selection
+        const fuelCcRow = document.getElementById('fuelCcRow');
+        if (fuelCcRow && variantSel.value) {
+            fuelCcRow.classList.add('cl-autofill-row--highlighted');
+            setTimeout(() => fuelCcRow.classList.remove('cl-autofill-row--highlighted'), 2000);
+        }
+    });
+
+    // Track manual edits to fFuelBasic and fEngineCCBasic
+    document.getElementById('fFuelBasic')?.addEventListener('change', (e) => {
+        state.fuel = e.target.value;
+        if (!state._manualFields) state._manualFields = new Set();
+        state._manualFields.add('fuel');
+    });
+    document.getElementById('fEngineCCBasic')?.addEventListener('input', (e) => {
+        state.engineCc = e.target.value;
+        if (!state._manualFields) state._manualFields = new Set();
+        state._manualFields.add('engineCc');
     });
 
     updateModels(); // Initialize visibility
-
-    // Unlock logic for VIN fields
-    [makeSel, modelSel].forEach(el => {
-        const field = el?.closest('.cl-field--locked');
-        if (!field) return;
-        el.addEventListener('focus', (e) => {
-            // Since it's a select, we might need a custom way to handle "focus to unlock"
-            // or just a button. For now, let's allow unlocking on click if it's disabled.
-        }, true);
-    });
 
     document.getElementById('fBodyType')?.addEventListener('change', (e) => {
         state.bodyType = e.target.value;
@@ -1819,6 +1683,7 @@ function renderBasicStep() {
         state.make = make;
         state.model = modelSel.value;
         state.variant = variantSel.value;
+        state.linija = (linijaSel && linijaSel.value) || '';
         state.year = Number(year);
         state.mileageKm = mileage;
         state.color = document.getElementById('fColor').value;
@@ -1829,6 +1694,11 @@ function renderBasicStep() {
         state.firstRegistration = `${firstRegYear}-${firstRegMonth}`;
         state.previousOwnersCount = document.getElementById('fPrevOwners').value;
         if (bodyType) { state.bodyType = bodyType; state.subcategory = bodyType; }
+        // Persist inline fuel & cc from basic step
+        const fuelBasic = document.getElementById('fFuelBasic')?.value;
+        const ccBasic = document.getElementById('fEngineCCBasic')?.value;
+        if (fuelBasic) state.fuel = fuelBasic;
+        if (ccBasic) state.engineCc = ccBasic;
         goNext();
     });
 }
@@ -1871,12 +1741,18 @@ function blockWheelOnNumbers() {
 
 // ── Step 3b: Basic data — Navtika (plovila) ───────────────────────────────────
 function renderNavtikaBasicStep() {
+    const cfg = vesselCfg();
     const years = [];
     for (let y = new Date().getFullYear() + 1; y >= 1960; y--) years.push(y);
     const yearOpts = years.map(y => `<option value="${y}" ${Number(state.year) === y ? 'selected' : ''}>${y}</option>`).join('');
 
-    const HULL_MATERIALS = ['GRP (Stekloplastika)', 'Aluminij', 'Les', 'Carbon', 'Jeklo', 'Guma (napihljivo)', 'Drugi'];
+    const HULL_MATERIALS = cfg.hullMaterials === 'inflatable'
+        ? ['Guma (napihljivo)', 'PVC', 'Hypalon', 'Aluminij (RIB)', 'GRP (RIB)', 'Drugi']
+        : ['GRP (Stekloplastika)', 'Aluminij', 'Les', 'Carbon', 'Jeklo', 'Guma (napihljivo)', 'Drugi'];
     const COLORS_BOAT = ['Bela', 'Modra', 'Siva', 'Črna', 'Rdeča', 'Zelena', 'Rumena', 'Oranžna', 'Druga'];
+
+    // Jet-ski engine type list (shown in the Basic step, jet-ski specific).
+    const JETSKI_ENGINE_TYPES = ['Bencin (4-taktni)', 'Bencin (2-taktni)', 'Električni'];
 
     const categorySubs = CATEGORIES.find(c => c.id === state.category)?.subs || [];
     const bodyTypeOpts = categorySubs.map(s => {
@@ -1939,14 +1815,40 @@ function renderNavtikaBasicStep() {
                         <span class="cl-mileage-unit">h</span>
                     </div>
                 </div>
+                ${cfg.hullComfort ? `
                 <div class="cl-field">
                     <label class="cl-label">Material trupa</label>
                     <select class="cl-select" id="fHullMaterial">
                         <option value="">—</option>
                         ${HULL_MATERIALS.map(m => `<option value="${m}" ${state.hullMaterial === m ? 'selected' : ''}>${m}</option>`).join('')}
                     </select>
-                </div>
+                </div>` : ''}
             </div>
+
+            ${cfg.basicEngine ? `
+            <div class="cl-row">
+                <div class="cl-field">
+                    <div class="cl-label-with-toggle">
+                        <label class="cl-label">Moč motorja <span class="req">*</span></label>
+                        <div class="cl-unit-toggle" id="powerUnitToggle">
+                            <button type="button" class="cl-unit-btn active" data-unit="hp">KM</button>
+                            <button type="button" class="cl-unit-btn" data-unit="kw">kW</button>
+                        </div>
+                    </div>
+                    <div class="cl-input-wrap">
+                        <input class="cl-input" id="fPower" type="number" min="0"
+                            value="${state.powerKw ? Math.round(state.powerKw * 1.35962) : ''}" placeholder="npr. 130" />
+                        <span class="cl-input-unit" id="powerUnitLabel">KM</span>
+                    </div>
+                </div>
+                <div class="cl-field">
+                    <label class="cl-label">Tip motorja</label>
+                    <select class="cl-select" id="fJetEngineType">
+                        <option value="">—</option>
+                        ${JETSKI_ENGINE_TYPES.map(et => `<option value="${et}" ${state.fuel === et ? 'selected' : ''}>${et}</option>`).join('')}
+                    </select>
+                </div>
+            </div>` : ''}
 
             <div class="cl-row">
                 <div class="cl-field">
@@ -1965,6 +1867,7 @@ function renderNavtikaBasicStep() {
                 </div>
             </div>
 
+            ${cfg.hullComfort ? `
             <div class="cl-row">
                 <div class="cl-field">
                     <label class="cl-label">Število kabin</label>
@@ -1993,7 +1896,7 @@ function renderNavtikaBasicStep() {
                     <input class="cl-input" id="fDraught" type="text" inputmode="decimal"
                         value="${state.draughtM ? String(state.draughtM).replace('.', ',') : ''}" placeholder="npr. 1,8" />
                 </div>
-            </div>
+            </div>` : ''}
 
             <div class="cl-row">
                 <div class="cl-field">
@@ -2082,6 +1985,9 @@ function renderNavtikaBasicStep() {
     setupDecimalInput(document.getElementById('fDraught'));
     blockWheelOnNumbers();
 
+    // Jet-ski power unit toggle (KM ⇄ kW) — only present when cfg.basicEngine.
+    const basicPowerUnit = wirePowerToggle('fPower', 'powerUnitToggle', 'powerUnitLabel');
+
     document.getElementById('fBodyType')?.addEventListener('change', e => {
         state.bodyType = e.target.value;
         state.subcategory = e.target.value;
@@ -2102,6 +2008,10 @@ function renderNavtikaBasicStep() {
         if (!lengthRaw) { markInvalid('fLength'); valid = false; }
         if (hoursRaw === '') { markInvalid('fEngineHours'); valid = false; }
         if (categorySubs.length > 0 && !bodyType) { markInvalid('fBodyType'); valid = false; }
+        if (cfg.basicEngine) {
+            const pv = parseFloat(document.getElementById('fPower')?.value || '');
+            if (isNaN(pv) || pv <= 0) { markInvalid('fPower'); valid = false; }
+        }
         if (!valid) return;
 
         state.make = make;
@@ -2109,20 +2019,60 @@ function renderNavtikaBasicStep() {
         state.year = Number(year);
         state.lengthM = parseDecimalInput(lengthRaw);
         state.engineHoursUsed = hours;
-        state.hullMaterial = document.getElementById('fHullMaterial').value;
         state.condition = document.getElementById('fCondition').value;
         state.color = document.getElementById('fColor').value;
-        state.cabins = document.getElementById('fCabins').value;
-        state.berths = document.getElementById('fBerths').value;
-        state.beamM = parseDecimalInput(document.getElementById('fBeam').value);
-        state.draughtM = parseDecimalInput(document.getElementById('fDraught').value);
         state.previousOwnersCount = document.getElementById('fPrevOwners').value;
+
+        // Hull / comfort fields exist only when cfg.hullComfort
+        if (cfg.hullComfort) {
+            state.hullMaterial = document.getElementById('fHullMaterial')?.value || '';
+            state.cabins = document.getElementById('fCabins')?.value || '';
+            state.berths = document.getElementById('fBerths')?.value || '';
+            state.beamM = parseDecimalInput(document.getElementById('fBeam')?.value || '');
+            state.draughtM = parseDecimalInput(document.getElementById('fDraught')?.value || '');
+        } else {
+            state.hullMaterial = ''; state.cabins = ''; state.berths = '';
+            state.beamM = ''; state.draughtM = '';
+        }
+
+        // Jet-ski engine fields captured in the Basic step
+        if (cfg.basicEngine) {
+            const pv = parseFloat(document.getElementById('fPower')?.value || '');
+            state.powerKw = basicPowerUnit() === 'kw' ? pv : Math.round(pv / 1.35962);
+            state.fuel = document.getElementById('fJetEngineType')?.value || '';
+        }
+
         const frMonth = document.getElementById('fFirstRegMonth').value;
         const frYear = document.getElementById('fFirstRegYear').value;
         if (frMonth && frYear) state.firstRegistration = `${frYear}-${frMonth}`;
         if (bodyType) { state.bodyType = bodyType; state.subcategory = bodyType; }
         goNext();
     });
+}
+
+// Wire a KM ⇄ kW unit toggle for a power <input>. Returns a getter for the
+// current unit ('hp' | 'kw'). Safe no-op when the toggle isn't in the DOM.
+function wirePowerToggle(inputId, toggleId, labelId) {
+    let unit = 'hp';
+    const input = document.getElementById(inputId);
+    const btns = document.querySelectorAll(`#${toggleId} .cl-unit-btn`);
+    const label = document.getElementById(labelId);
+    if (!input || !btns.length) return () => unit;
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newUnit = btn.dataset.unit;
+            if (newUnit === unit) return;
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) {
+                input.value = newUnit === 'kw' ? Math.round(val / 1.35962) : Math.round(val * 1.35962);
+            }
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            unit = newUnit;
+            if (label) label.textContent = newUnit === 'hp' ? 'KM' : 'kW';
+        });
+    });
+    return () => unit;
 }
 
 // ── Step 4: Technical ─────────────────────────────────────────────────────────
@@ -2150,22 +2100,18 @@ function renderTechnicalStep() {
     ];
     const euros = ['Euro 4', 'Euro 5', 'Euro 6', 'Euro 6d', 'Euro 6d-temp'];
 
-    const isVin = state.vinVerified;
-    const fuelLocked = isVin && !state.vinOverrides?.fuel;
-
     setHtml(`
         <div class="cl-card">
             <h2 class="cl-step-title">${t('cl_tech_title')}</h2>
             <p class="cl-step-sub">${t('cl_tech_sub')}</p>
 
             <div class="cl-row">
-                <div class="cl-field ${fuelLocked ? 'cl-field--locked' : ''}">
+                <div class="cl-field">
                     <label class="cl-label">${t('cl_label_fuel')} <span class="req">*</span></label>
-                    <select class="cl-select" id="fFuel" ${fuelLocked ? 'disabled' : ''}>
+                    <select class="cl-select" id="fFuel">
                         <option value="">${t('cl_select') || 'Select'}</option>
                         ${fuels.map(([v, l]) => `<option value="${v}" ${state.fuel === v ? 'selected' : ''}>${l}</option>`).join('')}
                     </select>
-                    ${fuelLocked ? `<span class="cl-field-badge cl-field-badge--locked"><i data-lucide="lock"></i> ${t('cl_verified_vin')}</span>` : ''}
                 </div>
                 <div class="cl-field">
                     <label class="cl-label">${t('cl_label_transmission')} <span class="req">*</span></label>
@@ -2265,6 +2211,16 @@ function renderTechnicalStep() {
                         <input class="cl-input" id="fRange" type="number" min="0" value="${state.rangeKm || ''}" placeholder="${t('cl_placeholder_range')}" />
                     </div>
                 </div>
+                <div class="cl-row">
+                    <div class="cl-field">
+                        <label class="cl-label">Zdravje baterije (%)</label>
+                        <input class="cl-input" id="fBatteryHealth" type="number" min="0" max="100" value="${state.batteryHealth || ''}" placeholder="npr. 92" />
+                    </div>
+                    <div class="cl-field">
+                        <label class="cl-label">Poraba (kWh/100 km)</label>
+                        <input class="cl-input" id="fConsKwh" type="number" min="0" step="0.1" value="${state.consumptionKwh100 || ''}" placeholder="npr. 18.5" />
+                    </div>
+                </div>
             </div>
 
             <!-- Hybrid sub -->
@@ -2276,6 +2232,26 @@ function renderTechnicalStep() {
                         ${[['PetrolHybrid', t('cl_hybrid_petrol')], ['DizelHibrid', t('cl_hybrid_diesel')], ['PlugIn', t('cl_hybrid_plugin')], ['MildHibrid', t('cl_hybrid_mild')]].map(([v, l]) =>
                             `<option value="${v}" ${state.hybridType === v ? 'selected' : ''}>${l}</option>`).join('')}
                     </select>
+                </div>
+                <div class="cl-row" id="phevExtraFields" style="display:none;">
+                    <div class="cl-field">
+                        <label class="cl-label">${t('cl_label_battery')}</label>
+                        <input class="cl-input" id="fPhevBattery" type="number" min="0" value="${state.batteryKwh || ''}" placeholder="${t('cl_placeholder_battery')}" />
+                    </div>
+                    <div class="cl-field">
+                        <label class="cl-label">${t('cl_label_range')}</label>
+                        <input class="cl-input" id="fPhevRange" type="number" min="0" value="${state.rangeKm || ''}" placeholder="${t('cl_placeholder_range')}" />
+                    </div>
+                </div>
+                <div class="cl-row" id="phevExtraFields2" style="display:none;">
+                    <div class="cl-field">
+                        <label class="cl-label">Zdravje baterije (%)</label>
+                        <input class="cl-input" id="fPhevBatteryHealth" type="number" min="0" max="100" value="${state.batteryHealth || ''}" placeholder="npr. 92" />
+                    </div>
+                    <div class="cl-field">
+                        <label class="cl-label">Poraba (kWh/100 km)</label>
+                        <input class="cl-input" id="fPhevConsKwh" type="number" min="0" step="0.1" value="${state.consumptionKwh100 || ''}" placeholder="npr. 18.5" />
+                    </div>
                 </div>
             </div>
 
@@ -2297,13 +2273,20 @@ function renderTechnicalStep() {
     }
 
     const fuelSel = document.getElementById('fFuel');
+    const hybridTypeSel = document.getElementById('fHybridType');
     const updateConditionals = () => {
         const val = fuelSel.value;
+        const isPhev = val === 'Hibrid' && hybridTypeSel?.value === 'PlugIn';
         document.getElementById('elFields')?.classList.toggle('visible', val === 'Elektrika');
         document.getElementById('hybridFields')?.classList.toggle('visible', val === 'Hibrid');
         document.getElementById('consumptionFields')?.classList.toggle('visible', val !== '' && val !== 'Elektrika');
+        const phev1 = document.getElementById('phevExtraFields');
+        const phev2 = document.getElementById('phevExtraFields2');
+        if (phev1) phev1.style.display = isPhev ? '' : 'none';
+        if (phev2) phev2.style.display = isPhev ? '' : 'none';
     };
     fuelSel.addEventListener('change', updateConditionals);
+    hybridTypeSel?.addEventListener('change', updateConditionals);
     updateConditionals();
 
     // Track manual edits — auto-fill (applyTrimAutoFill) will not overwrite fields the user edited
@@ -2325,6 +2308,27 @@ function renderTechnicalStep() {
             if (icon) icon.remove();
         });
     });
+
+    // Restore visual styling for auto-filled fields
+    if (state._autoFillFields) {
+        techFields.forEach(([domId, stateKey]) => {
+            if (state._autoFillFields.has(stateKey) && (!state._manualFields || !state._manualFields.has(stateKey))) {
+                const el = document.getElementById(domId);
+                if (el) {
+                    el.classList.add('cl-autofilled');
+                    const wrap = el.closest('.cl-field');
+                    if (wrap && !wrap.querySelector('.cl-autofill-icon')) {
+                        wrap.style.position = 'relative';
+                        const icon = document.createElement('div');
+                        icon.className = 'cl-autofill-icon';
+                        icon.innerHTML = '?';
+                        icon.title = t('cl_autofill_tooltip', 'Sistem je samodejno izpolnil ta podatek glede na izbran model. Če se podatek razlikuje, ga lahko spremenite.');
+                        wrap.appendChild(icon);
+                    }
+                }
+            }
+        });
+    }
 
     initCustomSelects();
 
@@ -2388,23 +2392,39 @@ function renderTechnicalStep() {
         state.fuelL100kmCombined = document.getElementById('fConsCombined')?.value || '';
         state.fuelL100kmCity = document.getElementById('fConsCity')?.value || '';
         state.fuelL100kmHighway = document.getElementById('fConsHighway')?.value || '';
-        state.batteryKwh = document.getElementById('fBattery')?.value || '';
-        state.rangeKm = document.getElementById('fRange')?.value || '';
         state.hybridType = document.getElementById('fHybridType')?.value || null;
+        const isPhev = state.fuel === 'Hibrid' && state.hybridType === 'PlugIn';
+        if (state.fuel === 'Elektrika') {
+            state.batteryKwh = document.getElementById('fBattery')?.value || '';
+            state.rangeKm = document.getElementById('fRange')?.value || '';
+            state.batteryHealth = document.getElementById('fBatteryHealth')?.value || '';
+            state.consumptionKwh100 = document.getElementById('fConsKwh')?.value || '';
+        } else if (isPhev) {
+            state.batteryKwh = document.getElementById('fPhevBattery')?.value || '';
+            state.rangeKm = document.getElementById('fPhevRange')?.value || '';
+            state.batteryHealth = document.getElementById('fPhevBatteryHealth')?.value || '';
+            state.consumptionKwh100 = document.getElementById('fPhevConsKwh')?.value || '';
+        } else {
+            state.batteryKwh = '';
+            state.rangeKm = '';
+            state.batteryHealth = '';
+            state.consumptionKwh100 = '';
+        }
         goNext();
     });
 }
 
 // ── Step 4b: Technical — Navtika ──────────────────────────────────────────────
 function renderNavtikaTechnicalStep() {
-    const engineTypes = [
+    const cfg = vesselCfg();
+    let engineTypes = [
         ['Bencin', 'Bencin (bencinec)'],
         ['Dizel', 'Dizel'],
         ['Elektrika', 'Električni pogon'],
         ['Hibrid', 'Hibrid (benzin + električni)'],
         ['Brez motorja', 'Brez motorja (jadra)'],
     ];
-    const driveSystems = [
+    let driveSystems = [
         ['Izvenkrmni', 'Izvenkrmni (outboard)'],
         ['Notranji', 'Notranji (inboard)'],
         ['Stern Drive', 'Stern drive (volvo/mercruiser)'],
@@ -2412,14 +2432,22 @@ function renderNavtikaTechnicalStep() {
         ['Električni', 'Električni motor'],
         ['Jadra', 'Samo jadra (brez motorja)'],
     ];
+    // Drop the sail ("Brez motorja" / "Jadra") options for vessel types that
+    // never sail (motorboats, RIBs).
+    if (cfg.engineTypes === 'noSail') {
+        engineTypes = engineTypes.filter(([v]) => v !== 'Brez motorja');
+        driveSystems = driveSystems.filter(([v]) => v !== 'Jadra');
+    }
     const engineCounts = ['1', '2', '3', '4'];
 
     const noEngine = state.fuel === 'Brez motorja';
+    const showDrive = cfg.driveSystem !== false;
+    const showBrand = !!cfg.engineBrand;
 
     setHtml(`
         <div class="cl-card">
-            <h2 class="cl-step-title">Tehnični podatki motorja</h2>
-            <p class="cl-step-sub">Opišite pogonski sistem plovila.</p>
+            <h2 class="cl-step-title">${cfg.motorProduct ? 'Podatki izvenkrmnega motorja' : 'Tehnični podatki motorja'}</h2>
+            <p class="cl-step-sub">${cfg.motorProduct ? 'Opišite izvenkrmni motor.' : 'Opišite pogonski sistem plovila.'}</p>
 
             <div class="cl-row">
                 <div class="cl-field">
@@ -2429,14 +2457,25 @@ function renderNavtikaTechnicalStep() {
                         ${engineTypes.map(([v, l]) => `<option value="${v}" ${state.fuel === v ? 'selected' : ''}>${l}</option>`).join('')}
                     </select>
                 </div>
+                ${showDrive ? `
                 <div class="cl-field">
                     <label class="cl-label">Pogonski sistem <span class="req">*</span></label>
                     <select class="cl-select" id="fDriveSystem">
                         <option value="">—</option>
                         ${driveSystems.map(([v, l]) => `<option value="${v}" ${state.driveSystem === v ? 'selected' : ''}>${l}</option>`).join('')}
                     </select>
-                </div>
+                </div>` : ''}
             </div>
+
+            ${showBrand ? `
+            <div class="cl-row">
+                <div class="cl-field">
+                    <label class="cl-label">Znamka motorja</label>
+                    <select class="cl-select" id="fEngineBrand">
+                        <option value="">— Izberite znamko motorja —</option>
+                    </select>
+                </div>
+            </div>` : ''}
 
             <div id="navMotorFields" style="${noEngine ? 'display:none;' : ''}">
                 <div class="cl-row">
@@ -2499,31 +2538,33 @@ function renderNavtikaTechnicalStep() {
     if (window.lucide) window.lucide.createIcons();
     initCustomSelects();
 
+    // Populate the engine-brand dropdown from the outboard-motor brand list.
+    if (showBrand) {
+        fetch('json/brands_models_izvenkrmni.json')
+            .then(r => r.json())
+            .then(data => {
+                const sel = document.getElementById('fEngineBrand');
+                if (!sel) return;
+                Object.keys(data).sort((a, b) => a.localeCompare(b, 'en')).forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b; opt.textContent = b;
+                    if (state.engineBrand === b) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+                createCustomSelect(sel);
+            })
+            .catch(() => { /* leave the empty select if the list is unavailable */ });
+    }
+
     const fuelSel = document.getElementById('fFuel');
+    const motorFields = document.getElementById('navMotorFields');
     fuelSel.addEventListener('change', () => {
         const noMot = fuelSel.value === 'Brez motorja';
-        document.getElementById('navMotorFields').style.display = noMot ? 'none' : '';
+        if (motorFields) motorFields.style.display = noMot ? 'none' : '';
     });
 
-    // Power unit toggle
-    let currentPowerUnit = 'hp';
-    const powerInput = document.getElementById('fPower');
-    const unitBtns = document.querySelectorAll('#powerUnitToggle .cl-unit-btn');
-    const unitLabel = document.getElementById('powerUnitLabel');
-    unitBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const newUnit = btn.dataset.unit;
-            if (newUnit === currentPowerUnit) return;
-            const val = parseFloat(powerInput.value);
-            if (!isNaN(val)) {
-                powerInput.value = newUnit === 'kw' ? Math.round(val / 1.35962) : Math.round(val * 1.35962);
-            }
-            unitBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentPowerUnit = newUnit;
-            unitLabel.textContent = newUnit === 'hp' ? 'KM' : 'kW';
-        });
-    });
+    // Power unit toggle (KM ⇄ kW)
+    const techPowerUnit = wirePowerToggle('fPower', 'powerUnitToggle', 'powerUnitLabel');
 
     document.getElementById('btnTechBack').addEventListener('click', goPrev);
     document.getElementById('btnTechNext').addEventListener('click', () => {
@@ -2532,7 +2573,7 @@ function renderNavtikaTechnicalStep() {
 
         if (!fuelSel.value) { markInvalid('fFuel'); valid = false; }
         if (!noMot) {
-            if (!document.getElementById('fDriveSystem')?.value) { markInvalid('fDriveSystem'); valid = false; }
+            if (showDrive && !document.getElementById('fDriveSystem')?.value) { markInvalid('fDriveSystem'); valid = false; }
             const powerVal = parseFloat(document.getElementById('fPower')?.value || '');
             if (isNaN(powerVal) || powerVal <= 0) { markInvalid('fPower'); valid = false; }
             if (!document.getElementById('fFuelTank')?.value) { markInvalid('fFuelTank'); valid = false; }
@@ -2540,7 +2581,8 @@ function renderNavtikaTechnicalStep() {
         if (!valid) return;
 
         state.fuel = fuelSel.value;
-        state.driveSystem = document.getElementById('fDriveSystem').value;
+        state.driveSystem = showDrive ? (document.getElementById('fDriveSystem')?.value || '') : 'Izvenkrmni';
+        state.engineBrand = showBrand ? (document.getElementById('fEngineBrand')?.value || '') : '';
         state.engineCount = document.getElementById('fEngineCount')?.value || '1';
         state.fuelTankL = document.getElementById('fFuelTank')?.value || '';
         state.maxSpeedKn = document.getElementById('fMaxSpeed').value;
@@ -2548,7 +2590,7 @@ function renderNavtikaTechnicalStep() {
 
         if (!noMot) {
             const powerVal = parseFloat(document.getElementById('fPower')?.value || '');
-            state.powerKw = currentPowerUnit === 'kw' ? powerVal : Math.round(powerVal / 1.35962);
+            state.powerKw = techPowerUnit() === 'kw' ? powerVal : Math.round(powerVal / 1.35962);
             state.engineCc = document.getElementById('fEngineCC')?.value || '';
         } else {
             state.powerKw = 0;
@@ -3327,6 +3369,7 @@ function renderReviewStep() {
             ${isVehicleItem(state) ? section(t('cl_section_technical'), 'technical', isNavtika() ? [
         ['Gorivo / pogon', state.fuel],
         ['Pogonski sistem', state.driveSystem],
+        ['Znamka motorja', state.engineBrand],
         ['Moč motorja', state.powerKw ? `${Math.round(state.powerKw * 1.34102)} KM (${state.powerKw} kW)` : ''],
         ['Prostornina', state.engineCc ? state.engineCc + ' cc' : ''],
         ['Število motorjev', state.engineCount],
@@ -3385,14 +3428,6 @@ function renderReviewStep() {
             ${section(t('cl_section_promotion'), 'promotion', [
         [t('cl_label_tier'), tierLabels[state.promotionTier] || state.promotionTier],
     ])}
-
-            ${state.vinVerified ? `
-            <div class="cl-review-section">
-                <div class="cl-review-section-header">
-                    <span class="cl-review-section-title">${t('cl_section_vin')}</span>
-                </div>
-                <p style="font-size:0.82rem;color:#1d4ed8;">${state.vin}</p>
-            </div>` : ''}
 
             <div class="cl-nav">
                 <button class="cl-btn cl-btn--ghost" id="btnRevBack">${t('cl_btn_back')}</button>
@@ -3496,7 +3531,7 @@ async function submitListing(user) {
     const container = document.getElementById('clStepContainer');
     container.innerHTML = `
         <div class="cl-card" style="text-align:center;padding:3rem 2rem;">
-            <div class="cl-vin-spinner" style="margin:0 auto 1.5rem;"></div>
+            <div class="cl-submit-spinner" style="margin:0 auto 1.5rem;"></div>
             <h2 class="cl-step-title">${t('cl_submitting_title')}</h2>
             <p class="cl-step-sub">${t('cl_submitting_sub')}</p>
         </div>`;

@@ -2,7 +2,6 @@
 // Renders car listing cards + comparison tray logic
 
 const MAX_COMPARE = 3;
-const MAX_NOTE_CHARS = 110;
 
 import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { PLATFORM } from '../config/platform.js';
@@ -27,30 +26,14 @@ import {
     getYearPill,
     getKmPill,
     getDisplacementPill,
+    getBatteryPill,
     formatDisplacement
 } from '../utils/listingUtils.js';
 
 import { getVehicleRating } from '../utils/valuationScore.js';
+import { renderRatingBadgeCard, ratingFallbackStars } from '../utils/priceRatingUi.js';
 import { getModelVariants } from '../utils/bodyType.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
-
-// ── Render star SVG (sm size, inline) ────────────────────────
-function renderStarBadge(stars) {
-    const dim = 13;
-    const color = 'var(--color-primary-start, #f59e0b)';
-    let svgs = '';
-    for (let i = 1; i <= 5; i++) {
-        const fill = stars >= i ? 'full' : stars >= i - 0.5 ? 'half' : 'empty';
-        const fc = fill === 'empty' ? '#374151' : color;
-        const gradId = `sg-${i}-${Math.random().toString(36).slice(2, 6)}`;
-        if (fill === 'half') {
-            svgs += `<svg width="${dim}" height="${dim}" viewBox="0 0 24 24" fill="none" style="display:block"><defs><linearGradient id="${gradId}"><stop offset="50%" stop-color="${color}"/><stop offset="50%" stop-color="#374151"/></linearGradient></defs><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="url(#${gradId})"/></svg>`;
-        } else {
-            svgs += `<svg width="${dim}" height="${dim}" viewBox="0 0 24 24" style="display:block"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="${fc}"/></svg>`;
-        }
-    }
-    return `<div style="display:inline-flex;align-items:center;gap:1px;">${svgs}</div>`;
-}
 
 // ── Power unit toggle ────────────────────────────────────────
 let currentPowerUnit = 'kw';
@@ -262,13 +245,14 @@ function renderCarCard(car) {
             equipment: c.equipment || [],
         }));
         const vRating = getVehicleRating(listingShape, allListingsShape);
-        const showStars = vRating && vRating.confidence !== 'low';
-
-        const note = car.sellerNote
-            ? (car.sellerNote.length > MAX_NOTE_CHARS
-                ? car.sellerNote.slice(0, MAX_NOTE_CHARS) + '…'
-                : car.sellerNote)
-            : null;
+        // Always show stars + label below — never an English text pill. Use the
+        // comparables-based rating when confident, else fall back to the price ratio.
+        const starRating = (vRating && vRating.confidence !== 'low')
+            ? { stars: vRating.stars, label: vRating.label }
+            : ratingFallbackStars(rating);
+        const ratingTitle = vRating && vRating.confidence !== 'low'
+            ? `${vRating.label} · ${vRating.priceSignal}`
+            : starRating.label;
 
         return `
     <div class="listing-card" data-car-id="${car.id}">
@@ -313,10 +297,7 @@ function renderCarCard(car) {
                             </svg>
                         </span>` : ''}
                     </div>
-                    ${showStars
-                        ? `<span class="price-rating" title="${vRating.label} · ${vRating.priceSignal}">${renderStarBadge(vRating.stars)}</span>`
-                        : `<span class="price-rating rating-${rating.color}">${rating.label}</span>`
-                    }
+                    ${renderRatingBadgeCard(starRating, ratingTitle)}
                 </div>
             </div>
 
@@ -347,6 +328,7 @@ function renderCarCard(car) {
                         ${getFuelPill(car)}
                         ${getTransmissionPill(car)}
                         ${getConsumptionPill(car)}
+                        ${getBatteryPill(car)}
                     </div>
                 </div>
             </div>
@@ -365,10 +347,10 @@ function renderCarCard(car) {
             </div>
 
             <div class="note-contact-row">
-                ${note ? `
+                ${car.location?.city ? `
                 <div class="seller-note-card">
-                    <i data-lucide="bell-ring"></i>
-                    <span>"${note}"</span>
+                    <i data-lucide="map-pin"></i>
+                    <span>${car.location.city}${car.location.region ? ', ' + car.location.region : ''}</span>
                 </div>
                 ` : '<div style="flex: 1;"></div>'}
                 <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
@@ -791,6 +773,26 @@ export function initOglasiPage() {
 
     initLegendPopup();
 
+    // Sort select
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            const val = sortSelect.value;
+            if (!_allActiveListings.length) return;
+            const sorted = [..._allActiveListings];
+            if (val === 'price-asc') sorted.sort((a, b) => (a.priceRaw ?? Infinity) - (b.priceRaw ?? Infinity));
+            else if (val === 'price-desc') sorted.sort((a, b) => (b.priceRaw ?? 0) - (a.priceRaw ?? 0));
+            else if (val === 'year-desc') sorted.sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0));
+            else if (val === 'km-asc') sorted.sort((a, b) => (a.mileageKm ?? Infinity) - (b.mileageKm ?? Infinity));
+            renderListings(sorted);
+        });
+    }
+
+    // When only URL params change (navigating from search/advanced search), re-apply filters.
+    const _onRouteParamsChanged = () => prefillSidebarFromUrl();
+    document.addEventListener('routeParamsChanged', _onRouteParamsChanged);
+    window._oglasiParamsListener = _onRouteParamsChanged;
+
     // Mobile filter panel toggle (collapsed by default on phones)
     const mobileFilterToggle = document.getElementById('mobileFilterToggle');
     const oglasiSidebar = document.querySelector('.oglasi-sidebar');
@@ -851,6 +853,13 @@ function loadSidebarBrands(category, onReady) {
         .then(res => res.json())
         .then(resetMake)
         .catch(err => console.error('[Oglasi] brand file load failed:', file, err));
+
+    if (!window._vehicleLinesData) {
+        fetch('/json/vehicle_lines.json')
+            .then(res => res.json())
+            .then(data => { window._vehicleLinesData = data; })
+            .catch(() => {});
+    }
 }
 
 function updateSidebarHybridGroup() {
@@ -906,6 +915,7 @@ async function initSidebarFiltering() {
     // 3. Bind events
     const modelSelect = document.getElementById("sidebarModel");
     const variantSelect = document.getElementById("sidebarVariant");
+    const lineSelect = document.getElementById("sidebarLine");
     const form = document.getElementById("sidebarFiltersForm");
     const resetBtn = document.getElementById("sidebarResetBtn");
 
@@ -918,10 +928,11 @@ async function initSidebarFiltering() {
         const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
         const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
         const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+        const selectedLines = params.get('line') ? params.get('line').split(',').map(s => s.trim()).filter(Boolean) : [];
 
         if (!selectedMakes.includes(brand)) {
             selectedMakes.push(brand);
-            updateUrlParams(selectedMakes, selectedModels, selectedVariants);
+            updateUrlParams(selectedMakes, selectedModels, selectedVariants, selectedLines);
         }
     });
 
@@ -935,10 +946,11 @@ async function initSidebarFiltering() {
             const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
             const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
             const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedLines = params.get('line') ? params.get('line').split(',').map(s => s.trim()).filter(Boolean) : [];
 
             if (!selectedModels.includes(model)) {
                 selectedModels.push(model);
-                updateUrlParams(selectedMakes, selectedModels, selectedVariants);
+                updateUrlParams(selectedMakes, selectedModels, selectedVariants, selectedLines);
             }
         });
     }
@@ -953,10 +965,30 @@ async function initSidebarFiltering() {
             const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
             const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
             const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedLines = params.get('line') ? params.get('line').split(',').map(s => s.trim()).filter(Boolean) : [];
 
             if (!selectedVariants.includes(variant)) {
                 selectedVariants.push(variant);
-                updateUrlParams(selectedMakes, selectedModels, selectedVariants);
+                updateUrlParams(selectedMakes, selectedModels, selectedVariants, selectedLines);
+            }
+        });
+    }
+
+    if (lineSelect) {
+        lineSelect.addEventListener("change", () => {
+            if (window._isPrefilling) return;
+            const line = lineSelect.value;
+            if (!line) return;
+
+            const params = parseHashParams();
+            const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+            const selectedLines = params.get('line') ? params.get('line').split(',').map(s => s.trim()).filter(Boolean) : [];
+
+            if (!selectedLines.includes(line)) {
+                selectedLines.push(line);
+                updateUrlParams(selectedMakes, selectedModels, selectedVariants, selectedLines);
             }
         });
     }
@@ -1004,6 +1036,7 @@ async function initSidebarFiltering() {
             if (form) {
                 form.reset();
                 form.querySelectorAll("select").forEach(sel => {
+                    sel.value = '';
                     sel.dispatchEvent(new Event('change'));
                 });
                 updateSidebarHybridGroup();
@@ -1016,10 +1049,15 @@ async function initSidebarFiltering() {
                 variantSelect.innerHTML = '<option value="">Vse različice</option>';
                 variantSelect.disabled = true;
             }
-            
+            const lineSelectReset = document.getElementById("sidebarLine");
+            const lineGroupReset = document.getElementById("sidebarLineGroup");
+            if (lineSelectReset) lineSelectReset.innerHTML = '<option value="">Vse linije</option>';
+            if (lineGroupReset) lineGroupReset.style.display = 'none';
+
             const params = parseHashParams();
             const cat = params.get('cat');
-            window.location.hash = `/oglasi${cat ? '?cat=' + cat : ''}`;
+            window.history.replaceState(null, '', `#/oglasi${cat ? '?cat=' + cat : ''}`);
+            applySidebarFilters();
         });
     }
 }
@@ -1061,6 +1099,7 @@ function applySidebarFilters() {
     const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedLines = params.get('line') ? params.get('line').split(',').map(s => s.trim()).filter(Boolean) : [];
 
     const filtered = _allActiveListings.filter(car => {
         const carCat = (car.category === 'motor' || car.category === 'moto') ? 'moto' : car.category;
@@ -1076,6 +1115,17 @@ function applySidebarFilters() {
             const match = selectedVariants.some(v => {
                 const variantLower = v.toLowerCase();
                 return titleStr.includes(variantLower) || subtitleStr.includes(variantLower);
+            });
+            if (!match) return false;
+        }
+
+        if (selectedLines.length > 0) {
+            const titleStr = (car.title || '').toLowerCase();
+            const subtitleStr = (car.subtitle || '').toLowerCase();
+            const equipmentStr = (car.equipment || []).join(' ').toLowerCase();
+            const match = selectedLines.some(l => {
+                const lineLower = l.toLowerCase();
+                return titleStr.includes(lineLower) || subtitleStr.includes(lineLower) || equipmentStr.includes(lineLower);
             });
             if (!match) return false;
         }
@@ -1263,13 +1313,16 @@ function renderActivePills(containerId, values, onRemove) {
     });
 }
 
-function updateUrlParams(makes, models, variants) {
+function updateUrlParams(makes, models, variants, lines) {
     const params = getSidebarFormState();
     if (makes && makes.length > 0) params.set('make', makes.join(',')); else params.delete('make');
     if (models && models.length > 0) params.set('model', models.join(',')); else params.delete('model');
     if (variants && variants.length > 0) params.set('variant', variants.join(',')); else params.delete('variant');
+    if (lines && lines.length > 0) params.set('line', lines.join(',')); else params.delete('line');
     const paramStr = params.toString();
-    window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+    window.history.replaceState(null, '', `#/oglasi${paramStr ? '?' + paramStr : ''}`);
+    updateFiltersUI();
+    applySidebarFilters();
 }
 
 function updateFiltersUI() {
@@ -1277,25 +1330,50 @@ function updateFiltersUI() {
     const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedLines = params.get('line') ? params.get('line').split(',').map(s => s.trim()).filter(Boolean) : [];
 
     renderActivePills('activeMake', selectedMakes, (val) => {
         const updated = selectedMakes.filter(x => x !== val);
         const data = window._sidebarBrandModelData;
         const remainingModels = selectedModels.filter(m => updated.some(mk => data?.[mk]?.[m]));
-        updateUrlParams(updated, remainingModels, selectedVariants);
+        updateUrlParams(updated, remainingModels, selectedVariants, selectedLines);
     });
 
     renderActivePills('activeModel', selectedModels, (val) => {
-        updateUrlParams(selectedMakes, selectedModels.filter(x => x !== val), selectedVariants);
+        updateUrlParams(selectedMakes, selectedModels.filter(x => x !== val), selectedVariants, selectedLines);
     });
 
     renderActivePills('activeVariant', selectedVariants, (val) => {
-        updateUrlParams(selectedMakes, selectedModels, selectedVariants.filter(x => x !== val));
+        updateUrlParams(selectedMakes, selectedModels, selectedVariants.filter(x => x !== val), selectedLines);
+    });
+
+    renderActivePills('activeLine', selectedLines, (val) => {
+        updateUrlParams(selectedMakes, selectedModels, selectedVariants, selectedLines.filter(x => x !== val));
     });
 
     const modelSelect = document.getElementById("sidebarModel");
     const variantSelect = document.getElementById("sidebarVariant");
+    const lineSelect = document.getElementById("sidebarLine");
+    const lineGroup = document.getElementById("sidebarLineGroup");
     const data = window._sidebarBrandModelData;
+
+    if (lineSelect && lineGroup) {
+        const linesData = window._vehicleLinesData || {};
+        const availableLines = new Set();
+        selectedMakes.forEach(mk => {
+            (linesData[mk] || []).forEach(l => availableLines.add(l));
+        });
+        lineSelect.innerHTML = '<option value="">Vse linije</option>';
+        Array.from(availableLines).sort().forEach(l => {
+            if (!selectedLines.includes(l)) {
+                const o = document.createElement("option");
+                o.value = l; o.textContent = l;
+                lineSelect.appendChild(o);
+            }
+        });
+        const hasLines = availableLines.size > 0 || selectedLines.length > 0;
+        lineGroup.style.display = hasLines ? 'flex' : 'none';
+    }
 
     if (modelSelect) {
         modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
@@ -1323,7 +1401,7 @@ function updateFiltersUI() {
             selectedMakes.forEach(mk => {
                 selectedModels.forEach(md => {
                     const v = getModelVariants(data[mk]?.[md]);
-                    v.forEach(x => x && allVariants.add(x));
+                    v.forEach(x => x && allVariants.add(typeof x === 'object' ? x.trim : x));
                 });
             });
             Array.from(allVariants).sort().forEach(v => {
@@ -1380,6 +1458,10 @@ export function destroyOglasiPage() {
     if (window._oglasiUnsubscribe) {
         window._oglasiUnsubscribe();
         delete window._oglasiUnsubscribe;
+    }
+    if (window._oglasiParamsListener) {
+        document.removeEventListener('routeParamsChanged', window._oglasiParamsListener);
+        delete window._oglasiParamsListener;
     }
     unmountSidebarFilters();
 }

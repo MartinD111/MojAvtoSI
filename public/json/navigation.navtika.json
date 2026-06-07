@@ -1,0 +1,55 @@
+{
+  "navItems": [
+    {
+      "id": "home",
+      "label": "Domov",
+      "icon": "home",
+      "href": "#/"
+    },
+    {
+      "id": "oglasi",
+      "label": "Oglasi",
+      "icon": "newspaper",
+      "children": [
+        { "id": "colni",            "label": "Čolni",                "href": "#/iskanje?cat=colni",                "icon": "ship" },
+        { "id": "jadrnice",         "label": "Jadrnice",             "href": "#/iskanje?cat=jadrnice",             "icon": "sailboat" },
+        { "id": "gumenjaki",        "label": "Gumenjaki",            "href": "#/iskanje?cat=gumenjaki",            "icon": "waves" },
+        { "id": "jet-ski",          "label": "Jet-ski",              "href": "#/iskanje?cat=jet-ski",              "icon": "zap" },
+        { "id": "izvenkrmni",       "label": "Izvenkrmni motorji",   "href": "#/iskanje?cat=izvenkrmni-motorji",   "icon": "cog" },
+        { "id": "oprema",           "label": "Oprema za plovila",    "href": "#/iskanje?cat=oprema",               "icon": "anchor" }
+      ]
+    },
+    {
+      "id": "dealers",
+      "label": "Marine / Prodajalci",
+      "icon": "building-2",
+      "href": "#/zemljevid"
+    },
+    {
+      "id": "parts",
+      "label": "Oprema za plovila",
+      "icon": "anchor",
+      "href": "#/gume-in-deli"
+    }
+  ],
+  "userNavItems": [
+    {
+      "id": "dashboard",
+      "label": "Nadzorna plošča",
+      "icon": "layout-dashboard",
+      "href": "#/dashboard"
+    },
+    {
+      "id": "profile",
+      "label": "Moj profil",
+      "icon": "user",
+      "href": "#/profil"
+    },
+    {
+      "id": "garage",
+      "label": "Moja garaža",
+      "icon": "warehouse",
+      "href": "#/garaža"
+    }
+  ]
+}

@@ -1,11 +1,9 @@
 {
   "sidebar_filters_title": "Filtri",
   "page_title_compare": "Primerjava plovil — {brand}",
-
   "footer_tagline": "Spletni oglasnik plovil — kupujte, prodajajte in oddajajte plovila na enem mestu.",
   "header_dealers": "Prodajalci in marine",
   "header_tires_parts": "Oprema za plovila",
-
   "hero_title": "Najdite svoje naslednje plovilo",
   "hero_let_your_next": "Naj vas vaše naslednje",
   "hero_let_your_next_hero_word_car": "Naj vas vaše naslednje",
@@ -42,14 +40,12 @@
   "hero_word_van": "RIB",
   "hero_word_rv": "izvenkrmni motor",
   "hero_word_car_loop": "plovilo",
-
   "cat_boats": "Čolni",
   "cat_sailboats": "Jadrnice",
   "cat_inflatables": "Gumenjaki",
   "cat_jet_ski": "Jet-ski",
   "cat_outboard_engines": "Izvenkrmni motorji",
   "cat_boat_equipment": "Oprema za plovila",
-
   "cat_motorboat": "Motorni čoln",
   "cat_yachts": "Jahte",
   "cat_sailboat": "Jadrnica",
@@ -58,7 +54,6 @@
   "cat_soft_inflatable": "Mehki gumenjak",
   "cat_engine_class": "Po moči motorja",
   "cat_equipment_general": "Splošna oprema",
-
   "vtype_bowrider": "Gliser / Bowrider",
   "vtype_cabin_cruiser": "Kabinski čoln",
   "vtype_center_console": "Konzolni čoln",

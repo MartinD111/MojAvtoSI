@@ -58,8 +58,10 @@ onB2BChange(profile => {
 
 // ── Platform branding ──────────────────────────────────────────────────────────
 // Override the brand color CSS variables and document title from the active
-// PLATFORM. styles.css :root holds the MojAvto defaults; this re-points them so
-// MojaNavtika renders its nautical palette without a separate stylesheet.
+// PLATFORM. styles.css :root holds the MojAvto defaults; this re-points them.
+// On the navtika build it ALSO loads css/styles.navtika.css — the navtika-only
+// stylesheet that MojAvto never fetches. Edits to that file can never affect
+// MojAvto.
 function applyPlatformBranding() {
     const root = document.documentElement;
     const c = PLATFORM.colors;
@@ -67,9 +69,23 @@ function applyPlatformBranding() {
     root.style.setProperty('--color-primary-end', c.primaryEnd);
     root.style.setProperty('--logo-accent', c.logoAccent);
     document.body?.classList.add(`platform-${PLATFORM.id}`);
+    loadPlatformStylesheet();
     // Document title is also localized per-route by pageController; this is the
     // initial/default title before the first route resolves.
     document.title = `${PLATFORM.brandName}${PLATFORM.tld}`;
+}
+
+// Load the active platform's dedicated stylesheet, if it has one. Only navtika
+// ships one today (css/styles.navtika.css); MojAvto's styles live in styles.css.
+// Added to <head> so it overrides styles.css cascade order and loads before paint.
+function loadPlatformStylesheet() {
+    if (PLATFORM.id !== 'navtika') return;
+    const href = 'css/styles.navtika.css';
+    if (document.querySelector(`link[href="${href}"]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
 }
 
 // Fill the brand-specific bits of the footer from the active PLATFORM.

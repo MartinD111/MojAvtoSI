@@ -9,8 +9,13 @@ import { brandsFileFor } from '../data/brandFiles.js';
 import { t } from '../core/i18n.js';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
+import { getModelVariants } from '../utils/bodyType.js';
 
 const ENGINE_CAT = 'izvenkrmni-motorji';
+
+let vehicles = [];
+let excludedVehicles = [];
+const MAX_VEHICLES = 3;
 
 export function initAdvancedSearchPage() {
     initNavtikaSearchPage();
@@ -19,6 +24,9 @@ export function initAdvancedSearchPage() {
 export function initNavtikaSearchPage() {
     console.log('[NavtikaSearch] init');
     initCustomSelects();
+
+    vehicles = [];
+    excludedVehicles = [];
 
     const params = parseHashParams();
     const ctx = {
@@ -39,6 +47,7 @@ export function initNavtikaSearchPage() {
     renderCategoryTabs(ctx);
     applyCategory(ctx);
     bindAccordions();
+    setupMultiVehicleSelector();
     bindForm(ctx);
 
     document.querySelectorAll('.js-format-number').forEach(i => setupNumericFormatter(i));
@@ -113,7 +122,7 @@ function renderCategoryTabs(ctx) {
     // 'oprema' must not appear as a tab alongside boat categories.
     const SEARCH_CATS = Object.values(MAIN_CATEGORIES).filter(c => c.slug !== 'oprema');
     tabs.innerHTML = SEARCH_CATS.map(cat => `
-        <button type="button" class="tab-btn ${cat.slug === ctx.cat ? 'active' : ''}" data-cat="${cat.slug}" title="${t(cat.label)}">
+        <button type="button" class="tab-btn ${cat.slug === ctx.cat ? 'active' : ''}" data-cat="${cat.slug}" title="${t(cat.label)}" style="flex:1; justify-content:center;">
             <i data-lucide="${cat.icon}"></i>
             <span class="hidden-md">${t(cat.label)}</span>
         </button>`).join('');
@@ -170,7 +179,11 @@ function applyCategory(ctx) {
     // Grid type label
     const label = document.getElementById('bodyTypeLabel');
     if (label) {
-        if (isOprema) label.textContent = 'Vrsta opreme';
+        if (ctx.cat === 'colni') label.textContent = 'Vrsta čolnov';
+        else if (ctx.cat === 'jadrnice') label.textContent = 'Vrsta jadrnic';
+        else if (ctx.cat === 'gumenjaki') label.textContent = 'Vrsta gumenjakov';
+        else if (ctx.cat === 'jet-ski') label.textContent = 'Vrsta vodnih skuterjev';
+        else if (isOprema) label.textContent = 'Vrsta opreme';
         else if (isEngine) label.textContent = 'Razred motorja';
         else label.textContent = 'Vrsta plovila';
     }
@@ -204,6 +217,7 @@ function applyCategory(ctx) {
 function loadBrands(catSlug) {
     const makeSel = document.getElementById('make');
     const modelSel = document.getElementById('model');
+    const variantSel = document.getElementById('variant');
     if (!makeSel) return;
     fetch(brandsFileFor(catSlug))
         .then(r => r.ok ? r.json() : {})
@@ -214,20 +228,49 @@ function loadBrands(catSlug) {
                 const o = document.createElement('option'); o.value = b; o.textContent = b; makeSel.appendChild(o);
             });
             if (modelSel) { modelSel.innerHTML = '<option value="">Model</option>'; modelSel.disabled = true; }
+            if (variantSel) { variantSel.innerHTML = '<option value="">Različica</option>'; variantSel.disabled = true; }
             createCustomSelect(makeSel);
             if (modelSel) createCustomSelect(modelSel);
+            if (variantSel) createCustomSelect(variantSel);
         })
         .catch(() => {});
 
     makeSel.addEventListener('change', () => {
         const data = window._boatBrandData || {};
         const models = data[makeSel.value] ? Object.keys(data[makeSel.value]) : [];
-        if (!modelSel) return;
-        modelSel.innerHTML = '<option value="">Model</option>';
-        models.sort().forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modelSel.appendChild(o); });
-        modelSel.disabled = models.length === 0;
-        createCustomSelect(modelSel);
+        if (modelSel) {
+            modelSel.innerHTML = '<option value="">Model</option>';
+            models.sort().forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modelSel.appendChild(o); });
+            modelSel.disabled = models.length === 0;
+            createCustomSelect(modelSel);
+        }
+        if (variantSel) {
+            variantSel.innerHTML = '<option value="">Različica</option>';
+            variantSel.disabled = true;
+            createCustomSelect(variantSel);
+        }
     });
+
+    if (modelSel && variantSel) {
+        modelSel.addEventListener('change', () => {
+            const data = window._boatBrandData || {};
+            const make = makeSel.value;
+            const model = modelSel.value;
+            variantSel.innerHTML = '<option value="">Različica</option>';
+            
+            const rawVariants = (make && model && data[make]?.[model]) ? getModelVariants(data[make][model]) : [];
+            const variants = rawVariants.map(v => typeof v === 'object' ? v.trim : v).filter(Boolean);
+            
+            variants.sort().forEach(v => {
+                const o = document.createElement('option');
+                o.value = v;
+                o.textContent = v;
+                variantSel.appendChild(o);
+            });
+            variantSel.disabled = variants.length === 0;
+            createCustomSelect(variantSel);
+        });
+    }
 }
 
 // ── Accordions (reuse the existing styling) ──────────────────────────────────────
@@ -264,8 +307,22 @@ function bindForm(ctx) {
         if (ctx.cat) params.set('cat', ctx.cat);
         if (ctx.sub) params.set('sub', ctx.sub);
         
-        // Include common fields if they have a value
-        const fieldsToMap = ['make', 'model', 'powerFrom', 'powerTo', 'engineHoursTo', 'berthsFrom', 'cabinsFrom', 'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'najem', 'prodaja', 'engineMake'];
+        if (vehicles.length > 0) {
+            params.set('vehicles', JSON.stringify(vehicles));
+        } else {
+            const make = fd.get('make');
+            const model = fd.get('model');
+            const variant = fd.get('variant');
+            if (make) params.set('make', make);
+            if (model) params.set('model', model);
+            if (variant) params.set('variant', variant);
+        }
+        if (excludedVehicles.length > 0) {
+            params.set('excludedVehicles', JSON.stringify(excludedVehicles));
+        }
+
+        // Include other common fields if they have a value
+        const fieldsToMap = ['powerFrom', 'powerTo', 'engineHoursTo', 'berthsFrom', 'cabinsFrom', 'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'najem', 'prodaja', 'engineMake'];
         for (const field of fieldsToMap) {
             const val = fd.get(field);
             if (val) params.set(field, val);
@@ -311,8 +368,11 @@ function readFilters(ctx) {
         cat: ctx.cat,
         najem: document.getElementById('hiddenNajem')?.value || '',
         prodaja: document.getElementById('hiddenProdaja')?.value || '',
+        vehicles,
+        excludedVehicles,
         make: form.querySelector('[name="make"]')?.value || '',
         model: form.querySelector('[name="model"]')?.value || '',
+        variant: form.querySelector('[name="variant"]')?.value || '',
         bodyTypes,
         priceFrom: num('priceFrom'), priceTo: num('priceTo'),
         yearFrom: num('yearFrom'), yearTo: num('yearTo'),
@@ -351,8 +411,51 @@ function matchesBoat(l, f) {
     }
 
     if (f.bodyTypes.length && !f.bodyTypes.includes(l.bodyType)) return false;
-    if (f.make && l.make !== f.make) return false;
-    if (f.model && l.model !== f.model) return false;
+
+    // Excluded vehicles (AND: listing must not match any excluded entry)
+    if (f.excludedVehicles && f.excludedVehicles.length > 0) {
+        const isExcluded = f.excludedVehicles.some(v => {
+            if (v.make && l.make !== v.make) return false;
+            if (v.model && l.model !== v.model) return false;
+            if (v.variant) {
+                const varLower = v.variant.toLowerCase();
+                const lVar = (l.variant || '').toLowerCase();
+                const lTitle = (l.title || '').toLowerCase();
+                const lSub = (l.subtitle || '').toLowerCase();
+                if (!lVar.includes(varLower) && !lTitle.includes(varLower) && !lSub.includes(varLower)) return false;
+            }
+            return true;
+        });
+        if (isExcluded) return false;
+    }
+
+    // Vehicle multi-match (OR between entries)
+    if (f.vehicles && f.vehicles.length > 0) {
+        const match = f.vehicles.some(v => {
+            if (v.make && l.make !== v.make) return false;
+            if (v.model && l.model !== v.model) return false;
+            if (v.variant) {
+                const varLower = v.variant.toLowerCase();
+                const lVar = (l.variant || '').toLowerCase();
+                const lTitle = (l.title || '').toLowerCase();
+                const lSub = (l.subtitle || '').toLowerCase();
+                if (!lVar.includes(varLower) && !lTitle.includes(varLower) && !lSub.includes(varLower)) return false;
+            }
+            return true;
+        });
+        if (!match) return false;
+    } else {
+        // Single vehicle matching
+        if (f.make && l.make !== f.make) return false;
+        if (f.model && l.model !== f.model) return false;
+        if (f.variant) {
+            const varLower = f.variant.toLowerCase();
+            const lVar = (l.variant || '').toLowerCase();
+            const lTitle = (l.title || '').toLowerCase();
+            const lSub = (l.subtitle || '').toLowerCase();
+            if (!lVar.includes(varLower) && !lTitle.includes(varLower) && !lSub.includes(varLower)) return false;
+        }
+    }
 
     const price = l.priceRaw ?? l.priceEur ?? null;
     if (f.priceFrom && price != null && price < f.priceFrom) return false;
@@ -393,6 +496,294 @@ function matchesBoat(l, f) {
 }
 
 
+
+function setupMultiVehicleSelector() {
+    const makeSelect = document.getElementById("make");
+    const modelSelect = document.getElementById("model");
+    const variantSelect = document.getElementById("variant");
+    const addVehicleBtn = document.getElementById("addVehicleBtn");
+    const excludeVehicleBtn = document.getElementById("excludeVehicleBtn");
+    const vehicleCardsEl = document.getElementById("vehicleCards");
+    const excludedVehicleCardsEl = document.getElementById("excludedVehicleCards");
+    const excludedVehiclesSection = document.getElementById("excludedVehiclesSection");
+    const brandLimitNote = document.getElementById("brandLimitNote");
+
+    function resetSelectors() {
+        if (!makeSelect) return;
+        makeSelect.value = '';
+        if (modelSelect) {
+            modelSelect.innerHTML = '<option value="">Model</option>';
+            modelSelect.disabled = true;
+        }
+        if (variantSelect) {
+            variantSelect.innerHTML = '<option value="">Različica</option>';
+            variantSelect.disabled = true;
+        }
+        makeSelect.dispatchEvent(new Event('change'));
+        if (modelSelect) modelSelect.dispatchEvent(new Event('change'));
+        if (variantSelect) variantSelect.dispatchEvent(new Event('change'));
+    }
+
+    if (addVehicleBtn) {
+        addVehicleBtn.addEventListener('click', () => {
+            const make = makeSelect ? makeSelect.value : '';
+            if (!make) return;
+            if (vehicles.length >= MAX_VEHICLES) return;
+            const model = (modelSelect && modelSelect.value) || '';
+            const variant = (variantSelect && variantSelect.value) || '';
+            vehicles.push({ make, model, variant });
+            resetSelectors();
+            renderVehicleCards();
+        });
+    }
+
+    if (excludeVehicleBtn) {
+        excludeVehicleBtn.addEventListener('click', () => {
+            const make = makeSelect ? makeSelect.value : '';
+            if (!make) return;
+            if (excludedVehicles.length >= MAX_VEHICLES) return;
+            const model = (modelSelect && modelSelect.value) || '';
+            const variant = (variantSelect && variantSelect.value) || '';
+            excludedVehicles.push({ make, model, variant });
+            resetSelectors();
+            renderExcludedCards();
+        });
+    }
+
+    function makeCardHTML(v, i, zone) {
+        const parts = [v.make];
+        if (v.model) parts.push(v.model);
+        if (v.variant) parts.push(v.variant);
+        const cls = zone === 'exclude' ? 'vehicle-entry-card vec-excluded' : 'vehicle-entry-card';
+        return `<div class="${cls}" draggable="true" data-idx="${i}" data-zone="${zone}">
+            <div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div>
+            <button type="button" class="vec-remove" data-idx="${i}" data-zone="${zone}">&times;</button>
+        </div>`;
+    }
+
+    // Touch-dragging variables
+    let touchDragging = false;
+    let touchStartTimeout = null;
+    let touchDraggingCard = null;
+    let touchStartData = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchClone = null;
+    let touchOffsetX = 0;
+    let touchOffsetY = 0;
+
+    function handleTouchStart(e, card) {
+        if (e.target.closest('.vec-remove')) return;
+
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchDraggingCard = card;
+        touchDragging = false;
+
+        const cardRect = card.getBoundingClientRect();
+        touchOffsetX = touch.clientX - cardRect.left;
+        touchOffsetY = touch.clientY - cardRect.top;
+
+        touchStartTimeout = setTimeout(() => {
+            touchDragging = true;
+            if (navigator.vibrate) navigator.vibrate(20);
+
+            touchStartData = {
+                idx: +card.dataset.idx,
+                zone: card.dataset.zone
+            };
+
+            touchClone = card.cloneNode(true);
+            touchClone.classList.add('vec-dragging-clone');
+            Object.assign(touchClone.style, {
+                position: 'fixed',
+                left: `${cardRect.left}px`,
+                top: `${cardRect.top}px`,
+                width: `${cardRect.width}px`,
+                height: `${cardRect.height}px`,
+                opacity: '0.9',
+                pointerEvents: 'none',
+                zIndex: '9999',
+                margin: '0',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                transform: 'scale(1.05)',
+                transition: 'transform 0.1s ease',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.15)'
+            });
+            document.body.appendChild(touchClone);
+            card.classList.add('vec-dragging');
+        }, 250);
+    }
+
+    function handleTouchMove(e) {
+        if (!touchDraggingCard) return;
+        const touch = e.touches[0];
+
+        if (!touchDragging) {
+            const dx = touch.clientX - touchStartX;
+            const dy = touch.clientY - touchStartY;
+            if (Math.sqrt(dx * dx + dy * dy) > 10) {
+                clearTimeout(touchStartTimeout);
+                touchDraggingCard = null;
+            }
+            return;
+        }
+
+        e.preventDefault();
+
+        const x = touch.clientX - touchOffsetX;
+        const y = touch.clientY - touchOffsetY;
+        if (touchClone) {
+            touchClone.style.left = `${x}px`;
+            touchClone.style.top = `${y}px`;
+        }
+
+        const rectInclude = vehicleCardsEl ? vehicleCardsEl.getBoundingClientRect() : null;
+        const rectExclude = excludedVehicleCardsEl ? excludedVehicleCardsEl.getBoundingClientRect() : null;
+        const cx = touch.clientX;
+        const cy = touch.clientY;
+
+        if (rectInclude && cx >= rectInclude.left && cx <= rectInclude.right && cy >= rectInclude.top && cy <= rectInclude.bottom) {
+            vehicleCardsEl.classList.add('vec-drag-over');
+            if (excludedVehicleCardsEl) excludedVehicleCardsEl.classList.remove('vec-drag-over');
+        } else if (rectExclude && cx >= rectExclude.left && cx <= rectExclude.right && cy >= rectExclude.top && cy <= rectExclude.bottom) {
+            excludedVehicleCardsEl.classList.add('vec-drag-over');
+            if (vehicleCardsEl) vehicleCardsEl.classList.remove('vec-drag-over');
+        } else {
+            if (vehicleCardsEl) vehicleCardsEl.classList.remove('vec-drag-over');
+            if (excludedVehicleCardsEl) excludedVehicleCardsEl.classList.remove('vec-drag-over');
+        }
+    }
+
+    function handleTouchEnd(e) {
+        clearTimeout(touchStartTimeout);
+
+        if (!touchDraggingCard) return;
+
+        if (touchDragging) {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const cx = touch.clientX;
+            const cy = touch.clientY;
+
+            const rectInclude = vehicleCardsEl ? vehicleCardsEl.getBoundingClientRect() : null;
+            const rectExclude = excludedVehicleCardsEl ? excludedVehicleCardsEl.getBoundingClientRect() : null;
+
+            let targetZone = null;
+            if (rectInclude && cx >= rectInclude.left && cx <= rectInclude.right && cy >= rectInclude.top && cy <= rectInclude.bottom) {
+                targetZone = 'include';
+            } else if (rectExclude && cx >= rectExclude.left && cx <= rectExclude.right && cy >= rectExclude.top && cy <= rectExclude.bottom) {
+                targetZone = 'exclude';
+            }
+
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+            touchDraggingCard.classList.remove('vec-dragging');
+
+            if (vehicleCardsEl) vehicleCardsEl.classList.remove('vec-drag-over');
+            if (excludedVehicleCardsEl) excludedVehicleCardsEl.classList.remove('vec-drag-over');
+
+            if (targetZone && targetZone !== touchStartData.zone) {
+                const { idx, zone: fromZone } = touchStartData;
+                const srcArr = fromZone === 'include' ? vehicles : excludedVehicles;
+                const dstArr = targetZone === 'include' ? vehicles : excludedVehicles;
+                if (dstArr.length < MAX_VEHICLES) {
+                    const [item] = srcArr.splice(idx, 1);
+                    dstArr.push(item);
+                    renderVehicleCards();
+                    renderExcludedCards();
+                }
+            }
+        }
+
+        touchDraggingCard = null;
+        touchDragging = false;
+        touchStartData = null;
+    }
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+    function bindCardDrag(el) {
+        el.querySelectorAll('[draggable]').forEach(card => {
+            card.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({ idx: +card.dataset.idx, zone: card.dataset.zone }));
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => card.classList.add('vec-dragging'), 0);
+            });
+            card.addEventListener('dragend', () => card.classList.remove('vec-dragging'));
+
+            card.addEventListener('touchstart', (e) => handleTouchStart(e, card), { passive: false });
+        });
+    }
+
+    function setupDropZone(el, zone) {
+        el.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; el.classList.add('vec-drag-over'); });
+        el.addEventListener('dragleave', e => { if (!el.contains(e.relatedTarget)) el.classList.remove('vec-drag-over'); });
+        el.addEventListener('drop', e => {
+            e.preventDefault();
+            el.classList.remove('vec-drag-over');
+            let data;
+            try { data = JSON.parse(e.dataTransfer.getData('text/plain')); } catch { return; }
+            const { idx, zone: fromZone } = data;
+            if (fromZone === zone) return;
+            const srcArr = fromZone === 'include' ? vehicles : excludedVehicles;
+            const dstArr = zone === 'include' ? vehicles : excludedVehicles;
+            if (dstArr.length >= MAX_VEHICLES) return;
+            const [item] = srcArr.splice(idx, 1);
+            dstArr.push(item);
+            renderVehicleCards();
+            renderExcludedCards();
+        });
+    }
+
+    if (vehicleCardsEl) setupDropZone(vehicleCardsEl, 'include');
+    if (excludedVehicleCardsEl) setupDropZone(excludedVehicleCardsEl, 'exclude');
+
+    function renderVehicleCards() {
+        if (!vehicleCardsEl) return;
+        vehicleCardsEl.innerHTML = vehicles.map((v, i) => makeCardHTML(v, i, 'include')).join('');
+        vehicleCardsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => {
+            vehicles.splice(+btn.dataset.idx, 1);
+            renderVehicleCards();
+        }));
+        bindCardDrag(vehicleCardsEl);
+        const atLimit = vehicles.length >= MAX_VEHICLES;
+        if (addVehicleBtn) addVehicleBtn.style.display = atLimit ? 'none' : 'flex';
+        if (brandLimitNote) brandLimitNote.textContent = atLimit ? 'Omejitev dosežena (3).' : vehicles.length > 0 ? `Dodano: ${vehicles.length}/${MAX_VEHICLES}` : '';
+        updateExcludedSectionVisibility();
+    }
+
+    function updateExcludedSectionVisibility() {
+        if (excludedVehiclesSection) {
+            excludedVehiclesSection.style.display = (vehicles.length > 0 || excludedVehicles.length > 0) ? 'block' : 'none';
+        }
+        if (vehicleCardsEl) {
+            vehicleCardsEl.classList.toggle('vec-drop-target-visible', vehicles.length === 0 && excludedVehicles.length > 0);
+        }
+    }
+
+    function renderExcludedCards() {
+        if (!excludedVehicleCardsEl) return;
+        excludedVehicleCardsEl.innerHTML = excludedVehicles.map((v, i) => makeCardHTML(v, i, 'exclude')).join('');
+        excludedVehicleCardsEl.querySelectorAll('.vec-remove').forEach(btn => btn.addEventListener('click', () => {
+            excludedVehicles.splice(+btn.dataset.idx, 1);
+            renderExcludedCards();
+        }));
+        bindCardDrag(excludedVehicleCardsEl);
+        updateExcludedSectionVisibility();
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    renderVehicleCards();
+    renderExcludedCards();
+}
 
 function fmt(n) {
     return new Intl.NumberFormat('sl-SI').format(n);

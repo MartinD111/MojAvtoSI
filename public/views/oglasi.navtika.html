@@ -50,25 +50,13 @@
                 </div>
 
                 <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:1.25rem;">
-                <!-- Vessel Type (Vrsta plovila / Category tabs filled dynamically by JS) -->
+                <!-- Vessel Type — populated from MAIN_CATEGORIES taxonomy by JS -->
                 <div class="form-group">
                     <label>Tip plovila</label>
-                    <div class="pill-select-wrapper">
-                        <select id="sidebarBoatType" name="vtype" class="glass-select">
-                            <option value="">Vsi tipi</option>
-                            <option value="motorna">Motorna plovila</option>
-                            <option value="jadrnice">Jadrnice</option>
-                            <option value="gumenjaki">Gumenjaki</option>
-                            <option value="lesena">Lesena plovila</option>
-                            <option value="rečna">Rečna plovila</option>
-                            <option value="delovna">Delovna plovila</option>
-                            <option value="multi">Katamarani / Trimarni</option>
-                            <option value="jet-ski">Jet-ski</option>
-                            <option value="izvenkrmni-motorji">Izvenkrmni motorji</option>
-                            <option value="oprema">Oprema za plovila</option>
-                        </select>
-                        <div class="sidebar-active-pills" id="activeBoatType"></div>
-                    </div>
+                    <select id="sidebarBoatType" name="vtype" class="glass-select">
+                        <option value="">Vsi tipi</option>
+                    </select>
+                    <div class="sidebar-active-pills" id="activeBoatType"></div>
                 </div>
 
                     <!-- Kategorija plovila -->
@@ -98,12 +86,47 @@
                         <div class="sidebar-active-pills" id="activeModel"></div>
                     </div>
 
+                    <!-- Različica -->
+                    <div class="form-group">
+                        <label>Različica</label>
+                        <select id="sidebarVariant" name="variant" class="glass-select" disabled>
+                            <option value="">Vse različice</option>
+                        </select>
+                        <div class="sidebar-active-pills" id="activeVariant"></div>
+                    </div>
+
                     <!-- Dolžina -->
                     <div class="form-group">
                         <label>Dolžina (m)</label>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
-                            <input type="number" id="sidebarLengthFrom" name="lengthFrom" placeholder="Od (m)" class="pill-input" style="box-sizing:border-box;">
-                            <input type="number" id="sidebarLengthTo" name="lengthTo" placeholder="Do (m)" class="pill-input" style="box-sizing:border-box;">
+                            <select id="sidebarLengthFrom" name="lengthFrom" class="glass-select">
+                                <option value="">Od (m)</option>
+                                <option value="3">3 m</option>
+                                <option value="4">4 m</option>
+                                <option value="5">5 m</option>
+                                <option value="6">6 m</option>
+                                <option value="7">7 m</option>
+                                <option value="8">8 m</option>
+                                <option value="10">10 m</option>
+                                <option value="12">12 m</option>
+                                <option value="15">15 m</option>
+                                <option value="20">20 m</option>
+                                <option value="25">25 m</option>
+                            </select>
+                            <select id="sidebarLengthTo" name="lengthTo" class="glass-select">
+                                <option value="">Do (m)</option>
+                                <option value="4">4 m</option>
+                                <option value="5">5 m</option>
+                                <option value="6">6 m</option>
+                                <option value="7">7 m</option>
+                                <option value="8">8 m</option>
+                                <option value="10">10 m</option>
+                                <option value="12">12 m</option>
+                                <option value="15">15 m</option>
+                                <option value="20">20 m</option>
+                                <option value="25">25 m</option>
+                                <option value="999">25+ m</option>
+                            </select>
                         </div>
                     </div>
 
@@ -124,8 +147,28 @@
                     <div class="form-group">
                         <label>Cena (€)</label>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
-                            <input type="text" id="sidebarPriceFrom" name="priceFrom" placeholder="Od (€)" class="pill-input js-format-number" style="box-sizing:border-box;" inputmode="numeric">
-                            <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="Do (€)" class="pill-input js-format-number" style="box-sizing:border-box;" inputmode="numeric">
+                            <select id="sidebarPriceFrom" name="priceFrom" class="glass-select">
+                                <option value="">Od (€)</option>
+                                <option value="500">500 €</option>
+                                <option value="1000">1.000 €</option>
+                                <option value="2000">2.000 €</option>
+                                <option value="5000">5.000 €</option>
+                                <option value="10000">10.000 €</option>
+                                <option value="20000">20.000 €</option>
+                                <option value="50000">50.000 €</option>
+                                <option value="100000">100.000 €</option>
+                            </select>
+                            <select id="sidebarPriceTo" name="priceTo" class="glass-select">
+                                <option value="">Do (€)</option>
+                                <option value="1000">1.000 €</option>
+                                <option value="2000">2.000 €</option>
+                                <option value="5000">5.000 €</option>
+                                <option value="10000">10.000 €</option>
+                                <option value="20000">20.000 €</option>
+                                <option value="50000">50.000 €</option>
+                                <option value="100000">100.000 €</option>
+                                <option value="999999">Brez omejitve</option>
+                            </select>
                         </div>
                     </div>
 
@@ -133,15 +176,48 @@
                     <div class="form-group">
                         <label>Moč motorja (KM)</label>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
-                            <input type="number" id="sidebarPowerFrom" name="powerFrom" placeholder="Od (KM)" class="glass-select" style="box-sizing:border-box;">
-                            <input type="number" id="sidebarPowerTo" name="powerTo" placeholder="Do (KM)" class="glass-select" style="box-sizing:border-box;">
+                            <select id="sidebarPowerFrom" name="powerFrom" class="glass-select">
+                                <option value="">Od (KM)</option>
+                                <option value="5">5 KM</option>
+                                <option value="10">10 KM</option>
+                                <option value="20">20 KM</option>
+                                <option value="40">40 KM</option>
+                                <option value="60">60 KM</option>
+                                <option value="100">100 KM</option>
+                                <option value="150">150 KM</option>
+                                <option value="200">200 KM</option>
+                                <option value="300">300 KM</option>
+                                <option value="500">500 KM</option>
+                            </select>
+                            <select id="sidebarPowerTo" name="powerTo" class="glass-select">
+                                <option value="">Do (KM)</option>
+                                <option value="10">10 KM</option>
+                                <option value="20">20 KM</option>
+                                <option value="40">40 KM</option>
+                                <option value="60">60 KM</option>
+                                <option value="100">100 KM</option>
+                                <option value="150">150 KM</option>
+                                <option value="200">200 KM</option>
+                                <option value="300">300 KM</option>
+                                <option value="500">500 KM</option>
+                                <option value="9999">500+ KM</option>
+                            </select>
                         </div>
                     </div>
 
                     <!-- Ure motorja -->
                     <div class="form-group">
                         <label>Ure motorja do</label>
-                        <input type="number" id="sidebarEngineHoursTo" name="engineHoursTo" placeholder="npr. 500" class="pill-input" style="box-sizing:border-box;">
+                        <select id="sidebarEngineHoursTo" name="engineHoursTo" class="glass-select">
+                            <option value="">Brez omejitve</option>
+                            <option value="100">do 100 ur</option>
+                            <option value="250">do 250 ur</option>
+                            <option value="500">do 500 ur</option>
+                            <option value="750">do 750 ur</option>
+                            <option value="1000">do 1.000 ur</option>
+                            <option value="2000">do 2.000 ur</option>
+                            <option value="3000">do 3.000 ur</option>
+                        </select>
                     </div>
 
                     <!-- Znamka motorja (Engine manufacturer) -->
@@ -169,11 +245,24 @@
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
                             <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
                                 <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Min. ležišč</label>
-                                <input type="number" id="sidebarBerthsFrom" name="berthsFrom" placeholder="npr. 2" class="pill-input" style="box-sizing:border-box;">
+                                <select id="sidebarBerthsFrom" name="berthsFrom" class="glass-select">
+                                    <option value="">Vsa</option>
+                                    <option value="1">1+</option>
+                                    <option value="2">2+</option>
+                                    <option value="4">4+</option>
+                                    <option value="6">6+</option>
+                                    <option value="8">8+</option>
+                                </select>
                             </div>
                             <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
                                 <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Min. kabin</label>
-                                <input type="number" id="sidebarCabinsFrom" name="cabinsFrom" placeholder="npr. 1" class="pill-input" style="box-sizing:border-box;">
+                                <select id="sidebarCabinsFrom" name="cabinsFrom" class="glass-select">
+                                    <option value="">Vse</option>
+                                    <option value="1">1+</option>
+                                    <option value="2">2+</option>
+                                    <option value="3">3+</option>
+                                    <option value="4">4+</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -214,6 +303,27 @@
                         </select>
                     </div>
 
+                    <!-- Tip ponudbe: Prodaja / Najem -->
+                    <div class="form-group" style="margin-top:0.25rem;">
+                        <label>Tip ponudbe</label>
+                        <div style="display:flex; gap:1.5rem; justify-content:center; width:100%; margin-top:0.25rem;">
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+                                <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Prodaja</span>
+                                <label class="remember-toggle" title="Prodaja" style="padding:0;">
+                                    <input type="checkbox" class="remember-check" id="sidebarProdajaToggle" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+                                <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Najem</span>
+                                <label class="remember-toggle" title="Najem" style="padding:0;">
+                                    <input type="checkbox" class="remember-check" id="sidebarNajemToggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Gumb za ponastavitev -->
                     <div style="display:flex; justify-content:center; margin-top:0.5rem; padding-bottom:1.5rem; width:100%;">
                         <button type="button" id="sidebarResetBtn" class="pill-btn primary" style="background: linear-gradient(135deg, #f97316, #ea580c); border: none; color: white; width: 100%; justify-content: center; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3); gap: 0.5rem;">
@@ -233,11 +343,11 @@
                 <span class="sort-label">Sort by:</span>
                 <div class="pill-select-wrapper">
                     <select class="pill-input" id="sortSelect" data-no-search="true">
-                        <option>Default</option>
-                        <option>Price: Lowest first</option>
-                        <option>Price: Highest first</option>
-                        <option>Year: Newest</option>
-                        <option>Mileage: Lowest</option>
+                        <option value="">Privzeto</option>
+                        <option value="price-asc">Cena: najnižja</option>
+                        <option value="price-desc">Cena: najvišja</option>
+                        <option value="year-desc">Letnik: najnovejši</option>
+                        <option value="length-asc">Dolžina: najkrajša</option>
                     </select>
                 </div>
                 <button class="legend-btn" id="legendBtn" title="Icon legend">

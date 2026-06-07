@@ -7,11 +7,13 @@ import { getListings } from '../services/listingService.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
 import { t } from '../core/i18n.js';
 import { initWordSlider } from './home.js';
+import { initCustomSelects } from '../utils/customSelect.js';
 
 export async function initNavtikaHomePage() {
     console.log('[NavtikaHome] init');
 
     fillCategorySelect();
+    initCustomSelects();
     bindSearch();
     initWordSlider();
 
@@ -35,9 +37,40 @@ function fillCategorySelect() {
     sel.innerHTML = Object.values(MAIN_CATEGORIES)
         .map(c => `<option value="${c.slug}">${t(c.label)}</option>`).join('');
     const advLink = document.getElementById('navHomeAdvLink');
+    fillSubcatSelect(sel.value); // populate "Kategorija" for the initial selection
     sel.addEventListener('change', () => {
         if (advLink) advLink.href = `#/iskanje?cat=${encodeURIComponent(sel.value)}`;
+        fillSubcatSelect(sel.value);
     });
+}
+
+// Returns the flat list of { value, label } vehicle types for a category slug.
+// jet_ski exposes vehicleTypes at the top level; others nest them under subcategories.
+function vehicleTypesForCat(catSlug) {
+    const cat = Object.values(MAIN_CATEGORIES).find(c => c.slug === catSlug);
+    if (!cat) return [];
+    if (Array.isArray(cat.vehicleTypes)) return cat.vehicleTypes;
+    if (cat.subcategories) {
+        return Object.values(cat.subcategories).flatMap(s => s.vehicleTypes || []);
+    }
+    return [];
+}
+
+// "Kategorija" select — depends on the chosen "Vrsta plovila".
+function fillSubcatSelect(catSlug) {
+    const sel = document.getElementById('nav-home-subcat');
+    if (!sel) return;
+    const types = vehicleTypesForCat(catSlug);
+    if (!types.length) {
+        sel.innerHTML = `<option value="">${t('all', 'Vse')}</option>`;
+        sel.disabled = true;
+    } else {
+        sel.innerHTML = `<option value="">${t('all', 'Vse')}</option>` +
+            types.map(vt => `<option value="${vt.value}">${t(vt.label)}</option>`).join('');
+        sel.disabled = false;
+    }
+    // Rebuild the custom pill dropdown to reflect the new options.
+    initCustomSelects();
 }
 
 function bindSearch() {
@@ -117,15 +150,21 @@ function bindSearch() {
     form.addEventListener('submit', e => {
         e.preventDefault();
         const cat = document.getElementById('nav-home-cat')?.value || 'colni';
+        const sc = document.getElementById('nav-home-subcat')?.value || '';
         const lf = sliderFrom?.value || '';
         const lt = sliderTo?.value || '';
         const pt = document.getElementById('nav-home-power-to')?.value || '';
         const ht = document.getElementById('nav-home-hours-to')?.value || '';
+        const prodaja = document.getElementById('homeNavProdajaToggle')?.checked;
+        const najem = document.getElementById('homeNavNajemToggle')?.checked;
         const params = new URLSearchParams({ cat });
+        if (sc) params.set('vtype', sc);
         if (lf && Number(lf) > 3) params.set('lengthFrom', lf);
         if (lt && Number(lt) < 50) params.set('lengthTo', lt);
         if (pt) params.set('powerTo', pt);
         if (ht) params.set('engineHoursTo', ht);
+        if (prodaja) params.set('prodaja', '1');
+        if (najem) params.set('najem', '1');
         window.location.hash = `/iskanje?${params.toString()}`;
     });
 }

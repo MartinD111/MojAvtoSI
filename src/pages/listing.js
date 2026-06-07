@@ -5,6 +5,7 @@
 import { getListingById, recordListingView, getListingViewStats, formatPrice, getListings } from '../services/listingService.js';
 import { kmToMiles, kwToHp, l100kmToMpg, formatDisplacement } from '../utils/listingUtils.js';
 import { getVehicleRating } from '../utils/valuationScore.js';
+import { renderRatingBlockDetail } from '../utils/priceRatingUi.js';
 import { getEquipmentLabel, EQUIPMENT_GROUPS } from '../data/equipment.js';
 import { auth } from '../firebase.js';
 import { showAuthGate } from '../utils/authGate.js';
@@ -108,14 +109,13 @@ function injectRating(listing, allListings) {
 
     const rating = getVehicleRating(listing, allListings);
 
-    // Low confidence or no rating — show a neutral pill
+    // Low confidence or no rating — fall back to a neutral 3-star "fair price"
+    // so we always show the star system (never an English pill).
     if (!rating || rating.confidence === 'low') {
-        slot.innerHTML = `
-            <div style="margin:0.6rem 0 0.1rem;">
-                <span style="display:inline-block; font-size:0.72rem; font-weight:600; padding:0.25rem 0.7rem; border-radius:999px; background:rgba(255,255,255,0.05); color:#64748b; border:1px solid rgba(255,255,255,0.08);">
-                    ${t('price_rating_unavailable')}
-                </span>
-            </div>`;
+        slot.innerHTML = renderRatingBlockDetail(
+            { stars: 3, label: 'Poštena cena' },
+            { rareFeaturesLabel: t('rare_features') }
+        );
         return;
     }
 
@@ -123,50 +123,11 @@ function injectRating(listing, allListings) {
         ? t('high_confidence') + ` (${rating.comparablesCount} ${t('listings').toLowerCase()})`
         : t('medium_confidence') + ` (${rating.comparablesCount} ${t('listings').toLowerCase()})`;
 
-    // Pick badge colour by label
-    const labelColor = {
-        'Great value': '#22c55e',
-        'Good value': '#86efac',
-        'Fair price': '#94a3b8',
-        'Above average': '#fb923c',
-        'Overpriced': '#ef4444',
-    }[rating.label] || 'var(--color-primary-start)';
-
-    const translatedLabel = t(rating.label.toLowerCase().replace(' ', '_'));
-
-    slot.innerHTML = `
-        <div style="margin:0.75rem 0 0.25rem; padding:0.75rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:0.75rem;">
-            <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-                ${renderStarsHtml(rating.stars, 18)}
-                <span style="font-size:0.9rem; font-weight:700; color:${labelColor};">${escHtml(translatedLabel)}</span>
-            </div>
-            <div style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">${escHtml(rating.priceSignal)}</div>
-            ${rating.equipmentSignal ? `<div style="font-size:0.78rem; color:#64748b; margin-top:2px;">${t('rare_features')}: ${escHtml(rating.equipmentSignal)}</div>` : ''}
-            <div style="margin-top:6px;">
-                <span style="font-size:0.72rem; font-weight:600; padding:0.2rem 0.5rem; border-radius:999px; background:rgba(255,255,255,0.05); color:#64748b;">${escHtml(confidenceLabel)}</span>
-            </div>
-            ${rating.warning ? `
-            <div style="margin-top:0.6rem; padding:0.5rem 0.75rem; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; font-size:0.8rem; color:#fca5a5; display:flex; gap:0.4rem; align-items:center;">
-                <span>⚠️</span>${escHtml(rating.warning)}
-            </div>` : ''}
-        </div>`;
-}
-
-function renderStarsHtml(stars, dim) {
-    const color = 'var(--color-primary-start, #f59e0b)';
-    let html = '<div style="display:inline-flex;align-items:center;gap:2px;">';
-    for (let i = 1; i <= 5; i++) {
-        const fill = stars >= i ? 'full' : stars >= i - 0.5 ? 'half' : 'empty';
-        const fc = fill === 'empty' ? '#374151' : color;
-        const gid = `lp-s${i}`;
-        if (fill === 'half') {
-            html += `<svg width="${dim}" height="${dim}" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="${gid}"><stop offset="50%" stop-color="${color}"/><stop offset="50%" stop-color="#374151"/></linearGradient></defs><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="url(#${gid})"/></svg>`;
-        } else {
-            html += `<svg width="${dim}" height="${dim}" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="${fc}"/></svg>`;
-        }
-    }
-    html += '</div>';
-    return html;
+    // rating.label is already Slovenian (from valuationScore.js).
+    slot.innerHTML = renderRatingBlockDetail(rating, {
+        confidenceLabel,
+        rareFeaturesLabel: t('rare_features'),
+    });
 }
 
 // ── View statistics card ──────────────────────────────────────────────────────
@@ -343,7 +304,6 @@ function renderListing(l) {
 
     const exteriorImages = l.images?.exterior || [];
     const interiorImages = l.images?.interior || [];
-    const isVin = l.vinVerified || l.entryType === 'vin';
     const isSponsored = l.promotion?.tier === 'sponsored';
 
     page.innerHTML = `
@@ -373,7 +333,6 @@ function renderListing(l) {
                         </div>
                         ${l.createdAt ? `<span>📅 ${formatDate(l.createdAt)}</span>` : ''}
                         ${l.viewCount ? `<span>👁 ${t('views_count', { count: l.viewCount })}</span>` : ''}
-                        ${isVin ? `<span class="lp-vin-badge-inline"><i data-lucide="shield-check"></i> ${t('vin_verified')}</span>` : ''}
                     </div>
                 </div>
             </header>
@@ -386,9 +345,6 @@ function renderListing(l) {
 
                     <!-- Image gallery -->
                     ${renderGalleryHtml(exteriorImages, interiorImages, l.condition)}
-
-                    <!-- VIN verified block -->
-                    ${isVin ? renderVinBlockHtml(l) : ''}
 
                     <!-- Service history (populated async by injectServiceHistory) -->
                     <div id="service-history-container" style="display:none;"></div>
@@ -712,59 +668,6 @@ function renderKeyStripHtml(l) {
         </div>`;
 }
 
-// ── VIN verified block ────────────────────────────────────────────────────────
-function renderVinBlockHtml(l) {
-    const d = l.vinData;
-    if (!d) return '';
-
-    const hasOverrides = l.vinOverrides && Object.keys(l.vinOverrides).length > 0;
-
-    const accRow = () => {
-        if (d.accidentCount === null || d.accidentCount === undefined) return vinRow('💥', t('accidents'), t('no_data'), '');
-        if (d.accidentCount === 0) return vinRow('💥', t('accidents'), `✓ ${t('none_recorded')}`, 'clean');
-        return vinRow('💥', t('accidents'), `⚠ ${d.accidentCount} ${t('recorded')}${d.accidentSeverity === 'major' ? ` (${t('major')})` : ` (${t('minor')})`}`, d.accidentSeverity === 'major' ? 'danger' : 'warn');
-    };
-
-    const recallRow = () => {
-        if (d.hasOpenRecalls) return vinRow('🔔', t('recalls'), `⚠ ${t('open_recalls_check')}`, 'warn');
-        return vinRow('🔔', t('recalls'), `✓ ${t('no_open_recalls')}`, 'clean');
-    };
-
-    return `
-        <section class="lp-vin-block">
-            <div class="lp-vin-block-header">
-                <div class="lp-vin-badge">
-                    <i data-lucide="shield-check"></i>
-                    ${t('vin_verified')}
-                </div>
-                <span class="lp-vin-code">${escHtml(l.vin || '')}</span>
-            </div>
-            <div class="lp-vin-rows">
-                ${d.make || d.model ? vinRow('🏭', t('make_model'), `${d.make || ''} ${d.model || ''}`.trim(), '') : ''}
-                ${d.year ? vinRow('📅', t('year_of_manufacture'), d.year, '') : ''}
-                ${d.engineType ? vinRow('⚙️', t('engine'), `${d.engineType}${d.engineCc ? ' / ' + formatDisplacement(d.engineCc, localStorage.getItem(lsKey('displacement_unit')) || 'cc', getCurrentLang()) : ''}${d.powerKw ? ' / ' + t('hp_val', { val: Math.round(d.powerKw * 1.34102) }) : ''}`, '') : ''}
-                ${d.countryOfOrigin ? vinRow('🌍', t('country_of_origin'), d.countryOfOrigin, '') : ''}
-                ${d.previousOwners !== null && d.previousOwners !== undefined ? vinRow('👤', t('previous_owners'), d.previousOwners, '') : ''}
-                ${accRow()}
-                ${recallRow()}
-            </div>
-            ${hasOverrides ? `
-            <div class="lp-vin-edit-note">
-                ✎ ${t('vin_edit_note')}
-            </div>` : ''}
-            <div class="lp-vin-source">${t('vin_data_source')}</div>
-        </section>`;
-}
-
-function vinRow(icon, label, value, cls) {
-    return `
-        <div class="lp-vin-row">
-            <span class="lp-vin-icon">${icon}</span>
-            <span class="lp-vin-label">${escHtml(label)}</span>
-            <span class="lp-vin-value ${cls}">${escHtml(String(value))}</span>
-        </div>`;
-}
-
 // ── Technical specs ───────────────────────────────────────────────────────────
 function renderSpecsHtml(l) {
     const km = l.mileageKm || l.mileage;
@@ -811,6 +714,8 @@ function renderSpecsHtml(l) {
         [t('consumption_highway'), l.fuelL100kmHighway ? t('unit_l100km', { val: l.fuelL100kmHighway }) : null],
         [t('battery_capacity'), l.batteryKwh ? t('unit_kwh', { val: l.batteryKwh }) : null],
         [t('range_wltp'), l.rangeKm ? t('unit_km', { val: l.rangeKm }) : null],
+        ['Zdravje baterije', l.batteryHealth ? `${l.batteryHealth} %` : null],
+        ['Poraba', l.consumptionKwh100 ? `${l.consumptionKwh100} kWh/100 km` : null],
         [t('towing_capacity'), l.towingKg ? t('unit_kg', { val: l.towingKg }) : null],
         [t('registered_until'), l.registeredUntil],
     ].filter(([, v]) => v !== null && v !== undefined && v !== '');
@@ -1000,11 +905,6 @@ function renderSellerCardHtml(l) {
             <div class="lp-seller-name">${escHtml(name)}</div>
             ${sellerBadge}
 
-            ${loc.city ? `
-            <div class="lp-seller-location">
-                📍 ${escHtml(loc.city)}${loc.region ? ', ' + escHtml(loc.region) : ''}
-            </div>` : ''}
-
             <div class="lp-seller-actions">
                 ${phone ? `
                 <a href="tel:${escHtml(phone)}" class="lp-btn lp-btn--pill-phone">
@@ -1015,7 +915,10 @@ function renderSellerCardHtml(l) {
                     <i data-lucide="mail"></i> ${escHtml(email)}
                 </a>` : ''}
             </div>
-            ${noteHtml}
+            ${loc.city ? `
+            <div class="lp-seller-location">
+                📍 ${escHtml(loc.city)}${loc.region ? ', ' + escHtml(loc.region) : ''}
+            </div>` : ''}
             ${hoursHtml}
         </div>`;
 }
@@ -1063,7 +966,6 @@ function renderSimilarCard(l) {
             <div class="lp-similar-img-wrap">
                 <img src="${escHtml(img)}" alt="${escHtml(l.make || '')} ${escHtml(l.model || '')}" loading="lazy" />
                 ${isSponsored ? `<span class="listing-sponsored-badge">${t('sponsored_listing')}</span>` : ''}
-                ${l.vinVerified ? `<span class="listing-vin-badge">🛡 ${t('vin_verified')}</span>` : ''}
                 ${l.salePriceEur ? `<span class="discount-tag-icon" title="Znižana cena" style="position:absolute;top:8px;left:8px;">${DISCOUNT_TAG_SVG}</span>` : ''}
             </div>
             <div class="lp-similar-body">

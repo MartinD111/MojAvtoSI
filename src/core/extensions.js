@@ -60,7 +60,6 @@ export function registerDefaultExtensions() {
     // Dealer
     registerExtension({ id: 'b2b-inventory', name: platformName('b2b-inventory', 'Zaloga vozil'), icon: 'warehouse', role: 'dealer', route: '/b2b/zaloga', order: 40 });
     registerExtension({ id: 'b2b-leads', name: 'Povpraševanja (CRM)', icon: 'inbox', role: 'dealer', route: '/b2b/leads', order: 50 });
-    registerExtension({ id: 'b2b-import', name: 'Orodje za uvoz', icon: 'download', role: 'dealer', route: '/b2b/orodja', order: 60 });
 
     // Mechanic
     registerExtension({ id: 'b2b-workshop', name: 'Delavnica', icon: 'wrench', role: 'mechanic', route: '/b2b/delavnica', order: 40 });

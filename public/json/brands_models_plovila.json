@@ -1,22 +1,4313 @@
 {
-  "Bavaria": { "Cruiser 34": ["Cruiser 34"], "Cruiser 46": ["Cruiser 46"], "C42": ["C42"], "R40": ["R40"] },
-  "Beneteau": { "Oceanis 38.1": ["Oceanis 38.1"], "Oceanis 46.1": ["Oceanis 46.1"], "Antares 7": ["Antares 7"], "Flyer 8": ["Flyer 8 SUNdeck", "Flyer 8 SPACEdeck"], "Gran Turismo 32": ["Gran Turismo 32"] },
-  "Jeanneau": { "Sun Odyssey 410": ["Sun Odyssey 410"], "Sun Odyssey 490": ["Sun Odyssey 490"], "Cap Camarat 7.5": ["Cap Camarat 7.5 WA", "Cap Camarat 7.5 CC"], "Merry Fisher 795": ["Merry Fisher 795"], "Leader 33": ["Leader 33"] },
-  "Sea Ray": { "SPX 190": ["SPX 190"], "Sundancer 320": ["Sundancer 320"], "SLX 280": ["SLX 280"] },
-  "Bayliner": { "VR5": ["VR5 Bowrider"], "Element E18": ["Element E18"], "Ciera 8": ["Ciera 8"] },
-  "Quicksilver": { "Activ 605": ["Activ 605 Sundeck", "Activ 605 Cruiser"], "Activ 805": ["Activ 805 Cruiser"], "Captur 555": ["Captur 555 Pilothouse"] },
-  "Azimut": { "Atlantis 45": ["Atlantis 45"], "Magellano 43": ["Magellano 43"], "Flybridge 53": ["Flybridge 53"] },
-  "Princess": { "F45": ["F45"], "V40": ["V40"], "S66": ["S66"] },
-  "Sunseeker": { "Manhattan 55": ["Manhattan 55"], "Predator 55": ["Predator 55"] },
-  "Fairline": { "Targa 43": ["Targa 43"], "Squadron 50": ["Squadron 50"] },
-  "Elan": { "E4": ["E4"], "GT6": ["GT6"], "Impression 43": ["Impression 43"] },
-  "Lagoon": { "40": ["Lagoon 40"], "42": ["Lagoon 42"], "46": ["Lagoon 46"] },
-  "Fountaine Pajot": { "Lucia 40": ["Lucia 40"], "Astrea 42": ["Astrea 42"], "Elba 45": ["Elba 45"] },
-  "Zodiac": { "Medline 7.5": ["Medline 7.5"], "Pro 5.5": ["Pro 5.5"], "Open 5.5": ["Open 5.5"] },
-  "Brig": { "Eagle 6.7": ["Eagle 6.7"], "Navigator 700": ["Navigator 700"], "Falcon 500": ["Falcon 500"] },
-  "Highfield": { "Ocean Master 540": ["Ocean Master 540"], "Sport 660": ["Sport 660"], "Classic 460": ["Classic 460"] },
-  "Sealine": { "C330": ["C330"], "F430": ["F430"], "S330": ["S330"] },
-  "Yamaha": { "WaveRunner FX": ["FX Cruiser HO", "FX SVHO"], "WaveRunner VX": ["VX Cruiser", "VX Deluxe"], "WaveRunner GP": ["GP1800R HO"] },
-  "Sea-Doo": { "GTI": ["GTI 130", "GTI SE 170"], "RXP-X": ["RXP-X 325"], "Spark": ["Spark 2up", "Spark 3up"] },
-  "Kawasaki": { "Jet Ski Ultra": ["Ultra 310LX", "Ultra 160LX"], "Jet Ski SX-R": ["SX-R 160"] }
+  "Axopar": {
+    "22": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "22"
+        }
+      ]
+    },
+    "25": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "25"
+        }
+      ]
+    },
+    "29": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "29"
+        }
+      ]
+    },
+    "37": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "37"
+        }
+      ]
+    },
+    "38": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "38 XC Cross Cabin"
+        },
+        {
+          "trim": "38 Sun Top"
+        },
+        {
+          "trim": "38 Cross Top"
+        }
+      ]
+    },
+    "45": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "45"
+        }
+      ]
+    }
+  },
+  "Azimut": {
+    "Atlantis 45": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Atlantis 45"
+        }
+      ]
+    },
+    "Flybridge 53": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Flybridge 53"
+        }
+      ]
+    },
+    "Grande 26M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Grande 26M"
+        }
+      ]
+    },
+    "Grande 27M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Grande 27M"
+        }
+      ]
+    },
+    "Grande 30M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Grande 30M"
+        }
+      ]
+    },
+    "Grande 32M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Grande 32M"
+        }
+      ]
+    },
+    "Grande 44M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Grande 44M"
+        }
+      ]
+    },
+    "Grande Trideck": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Grande Trideck"
+        }
+      ]
+    },
+    "Magellano 25m": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Magellano 25m"
+        }
+      ]
+    },
+    "Magellano 43": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Magellano 43"
+        }
+      ]
+    },
+    "Magellano 60": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Magellano 60"
+        }
+      ]
+    },
+    "Magellano 66": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Magellano 66"
+        }
+      ]
+    },
+    "S6": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "S6"
+        }
+      ]
+    },
+    "S7": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "S7"
+        }
+      ]
+    },
+    "S8": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "S8"
+        }
+      ]
+    },
+    "Seadeck 6": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Seadeck 6"
+        }
+      ]
+    },
+    "Seadeck 7": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Seadeck 7"
+        }
+      ]
+    },
+    "Seadeck 9": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Seadeck 9"
+        }
+      ]
+    },
+    "Verve 42": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "Verve 42"
+        }
+      ]
+    },
+    "Verve 48": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "Verve 48"
+        }
+      ]
+    }
+  },
+  "Bali": {
+    "4.2": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Bali 4.2"
+        }
+      ]
+    },
+    "4.4": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Bali 4.4"
+        }
+      ]
+    },
+    "4.6": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Bali 4.6"
+        }
+      ]
+    },
+    "5.2": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Bali 5.2"
+        }
+      ]
+    },
+    "5.8": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Bali 5.8"
+        }
+      ]
+    },
+    "7.0": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Bali 7.0"
+        }
+      ]
+    },
+    "CATSMART": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "CATSMART"
+        }
+      ]
+    },
+    "CATSPACE": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "CATSPACE"
+        }
+      ]
+    }
+  },
+  "Bavaria": {
+    "C38": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "C38"
+        }
+      ]
+    },
+    "C38e": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "C38e hibrid"
+        }
+      ]
+    },
+    "C42": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "C42"
+        }
+      ]
+    },
+    "C42e": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "C42e hibrid"
+        }
+      ]
+    },
+    "C46": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "C46"
+        }
+      ]
+    },
+    "C46e": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "C46e hibrid"
+        }
+      ]
+    },
+    "C57": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "C57"
+        }
+      ]
+    },
+    "Cruiser 34": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Cruiser 34"
+        }
+      ]
+    },
+    "Cruiser 46": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Cruiser 46"
+        }
+      ]
+    },
+    "R40": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "R40"
+        }
+      ]
+    },
+    "SR35": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "SR35 Open"
+        }
+      ]
+    },
+    "SR35 HT": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "SR35 Hardtop"
+        }
+      ]
+    },
+    "VIDA": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "VIDA"
+        }
+      ]
+    },
+    "Voyager 45": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Voyager 45"
+        }
+      ]
+    }
+  },
+  "Bayliner": {
+    "C21": {
+      "type": "Čolni",
+      "category": "Ribiški čoln",
+      "variants": [
+        {
+          "trim": "C21"
+        }
+      ]
+    },
+    "Ciera 8": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "Ciera 8"
+        }
+      ]
+    },
+    "D-Series": {
+      "type": "Čolni",
+      "category": "Ponton",
+      "variants": [
+        {
+          "trim": "Deck Boat"
+        }
+      ]
+    },
+    "Element E18": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "Element E18"
+        }
+      ]
+    },
+    "V20": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "V20 Bowrider"
+        }
+      ]
+    },
+    "V20i": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "V20i Bowrider"
+        }
+      ]
+    },
+    "VR4": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "VR4 Wakeboard"
+        }
+      ]
+    },
+    "VR5": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "VR5 Bowrider"
+        }
+      ]
+    },
+    "VR6": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "VR6"
+        }
+      ]
+    },
+    "VR6 Cuddy": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "VR6 Cuddy"
+        }
+      ]
+    }
+  },
+  "Beneteau": {
+    "Antares 7": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "Antares 7"
+        }
+      ]
+    },
+    "First 24": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "First 24"
+        }
+      ]
+    },
+    "First 30": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "First 30"
+        }
+      ]
+    },
+    "Flyer 8": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "Flyer 8 SUNdeck"
+        },
+        {
+          "trim": "Flyer 8 SPACEdeck"
+        }
+      ]
+    },
+    "Gran Turismo 32": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Gran Turismo 32"
+        }
+      ]
+    },
+    "Gran Turismo 35": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Gran Turismo 35"
+        }
+      ]
+    },
+    "Gran Turismo 40": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Gran Turismo 40 Coupé"
+        }
+      ]
+    },
+    "Gran Turismo 50": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Gran Turismo 50"
+        }
+      ]
+    },
+    "Oceanis 30.1": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis 30.1"
+        }
+      ]
+    },
+    "Oceanis 34.1": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis 34.1"
+        }
+      ]
+    },
+    "Oceanis 37.1": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis 37.1"
+        }
+      ]
+    },
+    "Oceanis 38.1": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis 38.1"
+        }
+      ]
+    },
+    "Oceanis 40.1": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis 40.1"
+        }
+      ]
+    },
+    "Oceanis 46.1": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis 46.1"
+        }
+      ]
+    },
+    "Oceanis 47": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis 47"
+        }
+      ]
+    },
+    "Oceanis Yacht 54": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis Yacht 54"
+        }
+      ]
+    },
+    "Oceanis Yacht 60": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Oceanis Yacht 60"
+        }
+      ]
+    }
+  },
+  "Boston Whaler": {
+    "130 Super Sport": {
+      "type": "Čolni",
+      "category": "Ribiški čoln",
+      "variants": [
+        {
+          "trim": "130 Super Sport"
+        }
+      ]
+    },
+    "150 Montauk": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "150 Montauk"
+        }
+      ]
+    },
+    "160 Super Sport": {
+      "type": "Čolni",
+      "category": "Ribiški čoln",
+      "variants": [
+        {
+          "trim": "160 Super Sport"
+        }
+      ]
+    },
+    "170 Montauk": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "170 Montauk"
+        }
+      ]
+    },
+    "190 Montauk": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "190 Montauk"
+        }
+      ]
+    },
+    "210 Montauk": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "210 Montauk"
+        }
+      ]
+    },
+    "210 Vantage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "210 Vantage"
+        }
+      ]
+    },
+    "220 Dauntless": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "220 Dauntless"
+        }
+      ]
+    },
+    "230 Outrage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "230 Outrage"
+        }
+      ]
+    },
+    "240 Vantage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "240 Vantage"
+        }
+      ]
+    },
+    "250 Dauntless": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "250 Dauntless"
+        }
+      ]
+    },
+    "250 Outrage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "250 Outrage"
+        }
+      ]
+    },
+    "280 Dauntless": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "280 Dauntless"
+        }
+      ]
+    },
+    "280 Outrage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "280 Outrage"
+        }
+      ]
+    },
+    "280 Vantage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "280 Vantage"
+        }
+      ]
+    },
+    "285 Conquest": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "285 Conquest"
+        }
+      ]
+    },
+    "320 Vantage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "320 Vantage"
+        }
+      ]
+    },
+    "325 Conquest": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "325 Conquest"
+        }
+      ]
+    },
+    "330 Outrage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "330 Outrage"
+        }
+      ]
+    },
+    "350 REALM": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "350 REALM"
+        }
+      ]
+    },
+    "360 Outrage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "360 Outrage"
+        }
+      ]
+    },
+    "380 Outrage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "380 Outrage"
+        }
+      ]
+    },
+    "405 Conquest": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "405 Conquest"
+        }
+      ]
+    },
+    "420 Outrage": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "420 Outrage"
+        }
+      ]
+    }
+  },
+  "Brig": {
+    "E780": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "E780"
+        }
+      ]
+    },
+    "Eagle 10": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Eagle 10"
+        }
+      ]
+    },
+    "Eagle 4": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Eagle 4 Luxury Tender"
+        }
+      ]
+    },
+    "Eagle 5": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Eagle 5"
+        }
+      ]
+    },
+    "Eagle 6": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Eagle 6"
+        }
+      ]
+    },
+    "Eagle 6.7": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Eagle 6.7"
+        }
+      ]
+    },
+    "Eagle 650": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Eagle 650"
+        }
+      ]
+    },
+    "Eagle 8": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Eagle 8"
+        }
+      ]
+    },
+    "Falcon 500": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Falcon 500"
+        }
+      ]
+    },
+    "Navigator 20": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Navigator 20"
+        }
+      ]
+    },
+    "Navigator 22": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Navigator 22"
+        }
+      ]
+    },
+    "Navigator 24": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Navigator 24"
+        }
+      ]
+    },
+    "Navigator 26": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Navigator 26"
+        }
+      ]
+    },
+    "Navigator 700": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Navigator 700"
+        }
+      ]
+    }
+  },
+  "BSC": {
+    "B Line": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "B Line"
+        }
+      ]
+    },
+    "BSC 65": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "BSC 65"
+        }
+      ]
+    },
+    "BSC 70": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "BSC 70"
+        }
+      ]
+    },
+    "BSC 78": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "BSC 78"
+        }
+      ]
+    },
+    "BSC 80": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "BSC 80 S"
+        }
+      ]
+    }
+  },
+  "Capelli": {
+    "Tempest 1000 Open": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 1000 Open"
+        }
+      ]
+    },
+    "Tempest 40": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 40"
+        }
+      ]
+    },
+    "Tempest 42": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 42"
+        }
+      ]
+    },
+    "Tempest 44": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 44"
+        }
+      ]
+    },
+    "Tempest 50": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 50"
+        }
+      ]
+    },
+    "Tempest 570": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 570"
+        }
+      ]
+    },
+    "Tempest 650": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 650 BR"
+        }
+      ]
+    },
+    "Tempest 700": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 700"
+        }
+      ]
+    },
+    "Tempest 750": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 750"
+        }
+      ]
+    },
+    "Tempest 775": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 775"
+        }
+      ]
+    },
+    "Tempest 850 Open": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 850 Open"
+        }
+      ]
+    },
+    "Tempest 900 WA": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Tempest 900 WA"
+        }
+      ]
+    }
+  },
+  "De Antonio": {
+    "D29": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D29"
+        }
+      ]
+    },
+    "D32": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D32 Open"
+        }
+      ]
+    },
+    "D36": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D36 Open"
+        }
+      ]
+    },
+    "D42": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D42 Open"
+        }
+      ]
+    },
+    "D46": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D46 Open"
+        }
+      ]
+    },
+    "D50": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D50 Hard Top"
+        }
+      ]
+    },
+    "D60": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "D60"
+        }
+      ]
+    },
+    "E23": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "E23 električni"
+        }
+      ]
+    }
+  },
+  "Dromeas": {
+    "D28": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "D28 Center Console"
+        },
+        {
+          "trim": "D28 Walkaround"
+        },
+        {
+          "trim": "D28 SUV"
+        }
+      ]
+    },
+    "D33": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D33 Walkaround"
+        },
+        {
+          "trim": "D33 SUV"
+        }
+      ]
+    },
+    "D38": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "D38 Chaser"
+        },
+        {
+          "trim": "D38 Hardtop"
+        }
+      ]
+    },
+    "D46": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "D46 Walkaround"
+        }
+      ]
+    }
+  },
+  "Dufour": {
+    "37": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Dufour 37"
+        }
+      ]
+    },
+    "41": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Dufour 41"
+        }
+      ]
+    },
+    "44": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Dufour 44"
+        }
+      ]
+    },
+    "48": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Dufour 48"
+        }
+      ]
+    },
+    "54": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Dufour 54"
+        }
+      ]
+    }
+  },
+  "Elan": {
+    "E4": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "E4"
+        }
+      ]
+    },
+    "E5": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "E5"
+        }
+      ]
+    },
+    "E6": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "E6"
+        }
+      ]
+    },
+    "GT5": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "GT5"
+        }
+      ]
+    },
+    "GT6": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "GT6"
+        }
+      ]
+    },
+    "GT6 X": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "GT6 X Explorer"
+        }
+      ]
+    },
+    "Impression 43": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Impression 43"
+        }
+      ]
+    },
+    "Impression 45": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Impression 45"
+        }
+      ]
+    },
+    "Impression 50.1": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Impression 50.1"
+        }
+      ]
+    },
+    "SixtyFive": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "SixtyFive"
+        }
+      ]
+    }
+  },
+  "Fairline": {
+    "F//LINE 33": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "F//LINE 33"
+        }
+      ]
+    },
+    "Phantom 65": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Phantom 65"
+        }
+      ]
+    },
+    "Squadron 50": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Squadron 50"
+        }
+      ]
+    },
+    "Squadron 58": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Squadron 58"
+        }
+      ]
+    },
+    "Squadron 68": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Squadron 68"
+        }
+      ]
+    },
+    "Targa 40": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Targa 40"
+        }
+      ]
+    },
+    "Targa 43": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Targa 43"
+        }
+      ]
+    },
+    "Targa 45 GT": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Targa 45 GT"
+        }
+      ]
+    },
+    "Targa 45 Open": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Targa 45 Open"
+        }
+      ]
+    },
+    "Targa 47 GT": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Targa 47 GT"
+        }
+      ]
+    },
+    "Targa 47 Open": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Targa 47 Open"
+        }
+      ]
+    },
+    "Targa 50 GT": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Targa 50 GT"
+        }
+      ]
+    }
+  },
+  "Fjord": {
+    "39 XL": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "39 XL"
+        }
+      ]
+    },
+    "41 XL": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "41 XL"
+        }
+      ]
+    },
+    "44 Open": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "44 Open"
+        }
+      ]
+    },
+    "490 Open": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "490 Open"
+        }
+      ]
+    },
+    "490 Sport": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "490 Sport"
+        }
+      ]
+    },
+    "53 XL": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "53 XL"
+        }
+      ]
+    }
+  },
+  "Fountaine Pajot": {
+    "Astrea 42": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Astrea 42"
+        }
+      ]
+    },
+    "Aura 51": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Aura 51"
+        }
+      ]
+    },
+    "Elba 45": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Elba 45"
+        }
+      ]
+    },
+    "FP41": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "New FP41"
+        }
+      ]
+    },
+    "FP44": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "New FP44"
+        }
+      ]
+    },
+    "FP48": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "FP48"
+        }
+      ]
+    },
+    "FP55": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "FP55"
+        }
+      ]
+    },
+    "Lucia 40": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lucia 40"
+        }
+      ]
+    },
+    "MY4.S": {
+      "type": "Jadrnice",
+      "category": "Motorni katamaran",
+      "variants": [
+        {
+          "trim": "MY4.S"
+        }
+      ]
+    },
+    "MY5": {
+      "type": "Jadrnice",
+      "category": "Motorni katamaran",
+      "variants": [
+        {
+          "trim": "MY5"
+        }
+      ]
+    },
+    "MY6": {
+      "type": "Jadrnice",
+      "category": "Motorni katamaran",
+      "variants": [
+        {
+          "trim": "MY6"
+        }
+      ]
+    },
+    "Power 80": {
+      "type": "Jadrnice",
+      "category": "Motorni katamaran",
+      "variants": [
+        {
+          "trim": "Power 80"
+        }
+      ]
+    }
+  },
+  "Galeon": {
+    "335 GTO": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "335 GTO"
+        }
+      ]
+    },
+    "360 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "360 FLY"
+        }
+      ]
+    },
+    "375 GTO": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "375 GTO"
+        }
+      ]
+    },
+    "400 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "400 FLY"
+        }
+      ]
+    },
+    "430 EXPLORER": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "430 EXPLORER"
+        }
+      ]
+    },
+    "435 GTO": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "435 GTO"
+        }
+      ]
+    },
+    "440 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "440 FLY"
+        }
+      ]
+    },
+    "450 HTC": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "450 HTC"
+        }
+      ]
+    },
+    "480 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "480 FLY"
+        }
+      ]
+    },
+    "500 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "500 FLY"
+        }
+      ]
+    },
+    "510 SKY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "510 SKY"
+        }
+      ]
+    },
+    "560 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "560 FLY"
+        }
+      ]
+    },
+    "620 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "620 FLY"
+        }
+      ]
+    },
+    "680 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "680 FLY"
+        }
+      ]
+    },
+    "800 FLY": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "800 FLY"
+        }
+      ]
+    }
+  },
+  "Grand": {
+    "Drive Line D950": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Drive Line D950"
+        }
+      ]
+    },
+    "G500": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Golden Line G500"
+        }
+      ]
+    },
+    "G580": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Golden Line G580"
+        }
+      ]
+    },
+    "G680": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Golden Line G680"
+        }
+      ]
+    },
+    "G950": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Golden Line G950"
+        }
+      ]
+    },
+    "G980": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Golden Line G980"
+        }
+      ]
+    },
+    "Silver Line S470N": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Silver Line S470N"
+        }
+      ]
+    }
+  },
+  "Grand Soleil": {
+    "44": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Grand Soleil 44"
+        }
+      ]
+    },
+    "52 Performance": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "Grand Soleil 52 Performance"
+        }
+      ]
+    },
+    "65 Performance": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "Grand Soleil 65 Performance"
+        }
+      ]
+    },
+    "Blue 33": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "Blue 33 Daysailer"
+        }
+      ]
+    },
+    "PLUS 80 Performance": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "Grand Soleil PLUS 80 Performance"
+        }
+      ]
+    }
+  },
+  "Greenline": {
+    "39": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "39 Coupe"
+        }
+      ]
+    },
+    "40": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "40 Flybridge"
+        }
+      ]
+    },
+    "42": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "42 Coupe"
+        }
+      ]
+    },
+    "45": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "45 Coupe"
+        }
+      ]
+    },
+    "48": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "48 Flybridge"
+        }
+      ]
+    },
+    "58": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "58 Flybridge"
+        }
+      ]
+    }
+  },
+  "Highfield": {
+    "ADV7": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ADV7"
+        }
+      ]
+    },
+    "Classic 460": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Classic 460"
+        }
+      ]
+    },
+    "Escape 650": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "Escape 650 CC"
+        }
+      ]
+    },
+    "Escape 750": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "Escape 750 CC"
+        }
+      ]
+    },
+    "Ocean Master 540": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Ocean Master 540"
+        }
+      ]
+    },
+    "Patrol 660": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Patrol 660"
+        }
+      ]
+    },
+    "Sport 300": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Sport 300 Tender"
+        }
+      ]
+    },
+    "Sport 460": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Sport 460"
+        }
+      ]
+    },
+    "Sport 660": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Sport 660"
+        }
+      ]
+    },
+    "Sport 700": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Sport 700"
+        }
+      ]
+    },
+    "Sport 760": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Sport 760"
+        }
+      ]
+    }
+  },
+  "Jeanneau": {
+    "Cap Camarat 7.5": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Cap Camarat 7.5 WA"
+        },
+        {
+          "trim": "Cap Camarat 7.5 CC"
+        }
+      ]
+    },
+    "Leader 33": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Leader 33"
+        }
+      ]
+    },
+    "Merry Fisher 795": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "Merry Fisher 795"
+        }
+      ]
+    },
+    "Sun Odyssey 410": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Sun Odyssey 410"
+        }
+      ]
+    },
+    "Sun Odyssey 490": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "Sun Odyssey 490"
+        }
+      ]
+    }
+  },
+  "Kawasaki": {
+    "Jet Ski STX": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "STX 160"
+        },
+        {
+          "trim": "STX 160X"
+        }
+      ]
+    },
+    "Jet Ski SX-R": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "SX-R 160"
+        }
+      ]
+    },
+    "Jet Ski Ultra": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "Ultra 310LX"
+        },
+        {
+          "trim": "Ultra 160LX"
+        },
+        {
+          "trim": "Ultra 310X"
+        },
+        {
+          "trim": "Ultra 160LX-S"
+        },
+        {
+          "trim": "Ultra 160LX-S Angler"
+        }
+      ]
+    }
+  },
+  "Lagoon": {
+    "38": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 38"
+        }
+      ]
+    },
+    "40": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 40"
+        }
+      ]
+    },
+    "42": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 42"
+        }
+      ]
+    },
+    "43": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 43"
+        }
+      ]
+    },
+    "46": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 46"
+        }
+      ]
+    },
+    "46 Iconic": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 46 Iconic"
+        }
+      ]
+    },
+    "47": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 47"
+        }
+      ]
+    },
+    "51": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 51"
+        }
+      ]
+    },
+    "55": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 55"
+        }
+      ]
+    },
+    "60": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 60"
+        }
+      ]
+    },
+    "EIGHTY 2": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "EIGHTY 2"
+        }
+      ]
+    },
+    "EIGHTY 3": {
+      "type": "Jadrnice",
+      "category": "Motorni katamaran",
+      "variants": [
+        {
+          "trim": "EIGHTY 3"
+        }
+      ]
+    },
+    "SEVENTY 7": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "SEVENTY 7"
+        }
+      ]
+    },
+    "SIXTY 5": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "SIXTY 5"
+        }
+      ]
+    }
+  },
+  "Nimbus": {
+    "305": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "305"
+        }
+      ]
+    },
+    "365": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "365"
+        }
+      ]
+    },
+    "405": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "405"
+        }
+      ]
+    },
+    "495 Coupé": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "495 Coupé"
+        }
+      ]
+    },
+    "495 Flybridge": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "495 Flybridge"
+        }
+      ]
+    },
+    "Aquador 400 HT": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Aquador 400 HT"
+        }
+      ]
+    },
+    "C11": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "C11 Commuter"
+        }
+      ]
+    },
+    "Commuter 12": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Commuter 12"
+        }
+      ]
+    },
+    "Tender 12": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "Tender 12"
+        }
+      ]
+    },
+    "Weekender 12": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Weekender 12"
+        }
+      ]
+    }
+  },
+  "Numarine": {
+    "22XP": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "22XP"
+        }
+      ]
+    },
+    "26XP": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "26XP"
+        }
+      ]
+    },
+    "27XP": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "27XP"
+        }
+      ]
+    },
+    "30XP": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "30XP hibrid"
+        }
+      ]
+    },
+    "32XP": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "32XP"
+        }
+      ]
+    },
+    "37XP": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "37XP"
+        }
+      ]
+    },
+    "40MXP": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "40MXP"
+        }
+      ]
+    }
+  },
+  "Pardo": {
+    "38": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "P38 Walkaround"
+        }
+      ]
+    },
+    "38 Outboard": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "P38 Outboard"
+        }
+      ]
+    },
+    "43": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "P43 Walkaround"
+        }
+      ]
+    },
+    "43R": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "P43R Walkaround"
+        }
+      ]
+    },
+    "50": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "P50 Walkaround"
+        }
+      ]
+    },
+    "E60": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Endurance 60"
+        }
+      ]
+    },
+    "E72": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Endurance 72"
+        }
+      ]
+    },
+    "GT52": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "GT52"
+        }
+      ]
+    },
+    "GT65": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "GT65"
+        }
+      ]
+    },
+    "GT75": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "GT75"
+        }
+      ]
+    }
+  },
+  "Prestige": {
+    "420": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "420 Flybridge"
+        }
+      ]
+    },
+    "460": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "460 Flybridge"
+        }
+      ]
+    },
+    "520": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "520 Flybridge"
+        }
+      ]
+    },
+    "590": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "590 Flybridge"
+        }
+      ]
+    },
+    "690": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "690 Flybridge"
+        }
+      ]
+    },
+    "F4.3": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F4.3 Flybridge"
+        }
+      ]
+    },
+    "F4.9": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F4.9 Flybridge"
+        }
+      ]
+    },
+    "F5.7": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F5.7 Flybridge"
+        }
+      ]
+    },
+    "F6.7": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F6.7 Flybridge"
+        }
+      ]
+    },
+    "M7": {
+      "type": "Jadrnice",
+      "category": "Motorni katamaran",
+      "variants": [
+        {
+          "trim": "M7 Power Catamaran"
+        }
+      ]
+    }
+  },
+  "Princess": {
+    "C48": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "C48"
+        }
+      ]
+    },
+    "F45": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F45"
+        }
+      ]
+    },
+    "F50": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F50"
+        }
+      ]
+    },
+    "F55": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F55"
+        }
+      ]
+    },
+    "F62": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F62"
+        }
+      ]
+    },
+    "S66": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "S66"
+        }
+      ]
+    },
+    "S72": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "S72"
+        }
+      ]
+    },
+    "S78": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "S78"
+        }
+      ]
+    },
+    "S82": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "S82"
+        }
+      ]
+    },
+    "V40": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "V40"
+        }
+      ]
+    },
+    "X80": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "X80 Super Flybridge"
+        }
+      ]
+    },
+    "X95": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "X95 Super Flybridge"
+        }
+      ]
+    },
+    "Y72": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Y72"
+        }
+      ]
+    },
+    "Y80": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Y80"
+        }
+      ]
+    },
+    "Y85": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Y85"
+        }
+      ]
+    }
+  },
+  "Quicksilver": {
+    "Activ 525 aXess": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "Activ 525 aXess"
+        }
+      ]
+    },
+    "Activ 555 Open": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "Activ 555 Open"
+        }
+      ]
+    },
+    "Activ 605": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "Activ 605 Sundeck"
+        },
+        {
+          "trim": "Activ 605 Cruiser"
+        }
+      ]
+    },
+    "Activ 755 Sundeck": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "Activ 755 Sundeck"
+        }
+      ]
+    },
+    "Activ 805": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "Activ 805 Cruiser"
+        }
+      ]
+    },
+    "Activ 875 Sundeck": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "875 Sundeck"
+        }
+      ]
+    },
+    "Activ 905 Weekend": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "Activ 905 Weekend"
+        }
+      ]
+    },
+    "Captur 555": {
+      "type": "Čolni",
+      "category": "Kabinski čoln",
+      "variants": [
+        {
+          "trim": "Captur 555 Pilothouse"
+        }
+      ]
+    }
+  },
+  "Ranieri": {
+    "Cayman 19": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 19 Sport"
+        }
+      ]
+    },
+    "Cayman 21.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 21.0 Sport"
+        }
+      ]
+    },
+    "Cayman 23.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 23.0 Sport"
+        }
+      ]
+    },
+    "Cayman 26.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 26.0 Sport Touring"
+        }
+      ]
+    },
+    "Cayman 27.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 27.0 Sport Touring"
+        }
+      ]
+    },
+    "Cayman 28.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 28.0 Executive"
+        }
+      ]
+    },
+    "Cayman 33.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 33.0 Executive"
+        }
+      ]
+    },
+    "Cayman 35.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 35.0 Executive"
+        }
+      ]
+    },
+    "Cayman 38.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 38.0 Executive"
+        }
+      ]
+    },
+    "Cayman 45.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 45.0 Executive"
+        }
+      ]
+    },
+    "Cayman 50.0": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman 50.0 Hard Top"
+        }
+      ]
+    },
+    "Cayman One": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Cayman One Tender"
+        }
+      ]
+    },
+    "NEXT 220 SH": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "NEXT 220 SH"
+        }
+      ]
+    },
+    "NEXT 240": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "NEXT 240"
+        }
+      ]
+    },
+    "NEXT 255 LX": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "NEXT 255 LX"
+        }
+      ]
+    },
+    "NEXT 255 SL": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "NEXT 255 SL"
+        }
+      ]
+    },
+    "NEXT 285": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "NEXT 285"
+        }
+      ]
+    },
+    "NEXT 330": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "NEXT 330"
+        }
+      ]
+    },
+    "NEXT 370": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "NEXT 370"
+        }
+      ]
+    },
+    "Quarantatre TT": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Quarantatre TT"
+        }
+      ]
+    },
+    "Quarantatre Z": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Quarantatre Z"
+        }
+      ]
+    }
+  },
+  "Sacs": {
+    "Rebel 40": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Rebel 40"
+        }
+      ]
+    },
+    "Rebel 47": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Rebel 47"
+        }
+      ]
+    },
+    "Rebel 50G": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Rebel 50G"
+        }
+      ]
+    },
+    "Rebel 55": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Rebel 55"
+        }
+      ]
+    },
+    "Strider 10": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Strider 10"
+        }
+      ]
+    },
+    "Strider 11": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Strider 11 Open Back"
+        }
+      ]
+    },
+    "Strider 13": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Strider 13 KNT"
+        }
+      ]
+    },
+    "Strider 15": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Strider 15"
+        }
+      ]
+    },
+    "Strider 19": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Strider 19"
+        }
+      ]
+    },
+    "Strider 900": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Strider 900"
+        }
+      ]
+    }
+  },
+  "Sargo": {
+    "28": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "28OB"
+        }
+      ]
+    },
+    "31": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "31OB Cruiser"
+        }
+      ]
+    },
+    "33": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "33 Explorer"
+        }
+      ]
+    },
+    "36": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "36 Explorer"
+        }
+      ]
+    },
+    "45": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "45 Explorer"
+        }
+      ]
+    },
+    "45 Fly": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "45 Flybridge"
+        }
+      ]
+    }
+  },
+  "Saxdor": {
+    "200": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "200"
+        }
+      ]
+    },
+    "205": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "205"
+        }
+      ]
+    },
+    "270 GTO": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "270 GTO"
+        }
+      ]
+    },
+    "320 GTC": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "320 GTC"
+        }
+      ]
+    },
+    "320 GTO": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "320 GTO"
+        }
+      ]
+    },
+    "340 GTWA": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "340 GTWA"
+        }
+      ]
+    },
+    "400 GTC": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "400 GTC"
+        }
+      ]
+    },
+    "400 GTO": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "400 GTO"
+        }
+      ]
+    },
+    "460 GTC": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "460 GTC"
+        }
+      ]
+    }
+  },
+  "Sea Ray": {
+    "SDX 230": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SDX 230"
+        }
+      ]
+    },
+    "SDX 230 Outboard": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SDX 230 Outboard"
+        }
+      ]
+    },
+    "SDX 230 Surf": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SDX 230 Surf"
+        }
+      ]
+    },
+    "SDX 250 Outboard": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SDX 250 Outboard"
+        }
+      ]
+    },
+    "SDX 270 Outboard": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SDX 270 Outboard"
+        }
+      ]
+    },
+    "SDX 270 Surf": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SDX 270 Surf"
+        }
+      ]
+    },
+    "SLX 280": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SLX 280"
+        }
+      ]
+    },
+    "SLX 310": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SLX 310"
+        }
+      ]
+    },
+    "SPX 190": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SPX 190"
+        }
+      ]
+    },
+    "SPX 210": {
+      "type": "Čolni",
+      "category": "Gliser / Bowrider",
+      "variants": [
+        {
+          "trim": "SPX 210"
+        }
+      ]
+    },
+    "Sundancer 260": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Sundancer 260"
+        }
+      ]
+    },
+    "Sundancer 320": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Sundancer 320"
+        }
+      ]
+    },
+    "Sundancer 370": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Sundancer 370"
+        }
+      ]
+    }
+  },
+  "Sea-Doo": {
+    "FishPro Sport": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "FishPro Sport"
+        }
+      ]
+    },
+    "FishPro Trophy": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "FishPro Trophy"
+        }
+      ]
+    },
+    "GTI": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "GTI 130"
+        },
+        {
+          "trim": "GTI SE 170"
+        }
+      ]
+    },
+    "GTX Limited": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "GTX Limited 325"
+        }
+      ]
+    },
+    "RXP-X": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "RXP-X 325"
+        }
+      ]
+    },
+    "RXT-X RS": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "RXT-X RS"
+        }
+      ]
+    },
+    "Spark": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "Spark 2up"
+        },
+        {
+          "trim": "Spark 3up"
+        }
+      ]
+    },
+    "Switch Cruise": {
+      "type": "Čolni",
+      "category": "Ponton",
+      "variants": [
+        {
+          "trim": "Switch Cruise"
+        }
+      ]
+    },
+    "Wake Pro": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "Wake Pro"
+        }
+      ]
+    }
+  },
+  "Sealine": {
+    "C330": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "C330"
+        }
+      ]
+    },
+    "C335": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "C335"
+        }
+      ]
+    },
+    "C335v": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "C335v outboard"
+        }
+      ]
+    },
+    "C390": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "C390"
+        }
+      ]
+    },
+    "C430": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "C430"
+        }
+      ]
+    },
+    "F430": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "F430"
+        }
+      ]
+    },
+    "S330": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "S330"
+        }
+      ]
+    },
+    "S335": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "S335"
+        }
+      ]
+    },
+    "S335v": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "S335v outboard"
+        }
+      ]
+    },
+    "S390": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "S390"
+        }
+      ]
+    },
+    "S430": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "S430"
+        }
+      ]
+    }
+  },
+  "Sirena": {
+    "118": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Sirena 118"
+        }
+      ]
+    },
+    "42M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Sirena 42M"
+        }
+      ]
+    },
+    "48": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Sirena 48"
+        }
+      ]
+    },
+    "58": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Sirena 58 Coupe"
+        }
+      ]
+    },
+    "60": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Sirena 60"
+        }
+      ]
+    },
+    "68": {
+      "type": "Čolni",
+      "category": "Trawler",
+      "variants": [
+        {
+          "trim": "Sirena 68"
+        }
+      ]
+    },
+    "78": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Sirena 78"
+        }
+      ]
+    },
+    "88": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Sirena 88"
+        }
+      ]
+    }
+  },
+  "Sunseeker": {
+    "100 Yacht": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "100 Yacht"
+        }
+      ]
+    },
+    "88 Yacht": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "88 Yacht"
+        }
+      ]
+    },
+    "95 Yacht": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "95 Yacht"
+        }
+      ]
+    },
+    "Manhattan 55": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Manhattan 55"
+        }
+      ]
+    },
+    "Manhattan 56": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Manhattan 56"
+        }
+      ]
+    },
+    "Manhattan 68": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "Manhattan 68"
+        }
+      ]
+    },
+    "Ocean 82": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Ocean 82"
+        }
+      ]
+    },
+    "Ocean 90": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Ocean 90 Enclosed"
+        }
+      ]
+    },
+    "Predator 55": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Predator 55"
+        }
+      ]
+    },
+    "Predator 65": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Predator 65"
+        }
+      ]
+    },
+    "Predator 75": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Predator 75"
+        }
+      ]
+    },
+    "Sport Yacht 55": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Sport Yacht 55"
+        }
+      ]
+    },
+    "Sport Yacht 65": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Sport Yacht 65"
+        }
+      ]
+    },
+    "Sport Yacht 75": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "Sport Yacht 75"
+        }
+      ]
+    },
+    "Superhawk 55": {
+      "type": "Čolni",
+      "category": "Športna jahta",
+      "variants": [
+        {
+          "trim": "Superhawk 55"
+        }
+      ]
+    }
+  },
+  "Vicem": {
+    "50 Classic": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "50 Classic"
+        }
+      ]
+    },
+    "55 Classic": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "55 Classic Downeast"
+        }
+      ]
+    },
+    "58 Classic": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "58 Classic Downeast"
+        }
+      ]
+    },
+    "65 Classic": {
+      "type": "Čolni",
+      "category": "Flybridge",
+      "variants": [
+        {
+          "trim": "65 Classic Flybridge"
+        }
+      ]
+    },
+    "67 Cruiser": {
+      "type": "Čolni",
+      "category": "Motorna jahta",
+      "variants": [
+        {
+          "trim": "67 Cruiser"
+        }
+      ]
+    },
+    "Tuna Masters 37": {
+      "type": "Čolni",
+      "category": "Konzolni čoln",
+      "variants": [
+        {
+          "trim": "Tuna Masters 37 CC"
+        }
+      ]
+    },
+    "Vulcan 46M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Vulcan 46M"
+        }
+      ]
+    }
+  },
+  "Williams": {
+    "DieselJet 445": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "DieselJet 445"
+        }
+      ]
+    },
+    "DieselJet 505": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "DieselJet 505"
+        }
+      ]
+    },
+    "DieselJet 565": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "DieselJet 565"
+        }
+      ]
+    },
+    "DieselJet 625": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "DieselJet 625"
+        }
+      ]
+    },
+    "EvoJet 70": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "EvoJet 70"
+        }
+      ]
+    },
+    "MiniJet 280": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "MiniJet 280"
+        }
+      ]
+    },
+    "Origin 57": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "Origin 57"
+        }
+      ]
+    },
+    "Origin 71": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "Origin 71"
+        }
+      ]
+    },
+    "SportJet 345": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "SportJet 345"
+        }
+      ]
+    },
+    "SportJet 395": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "SportJet 395"
+        }
+      ]
+    },
+    "SportJet 435": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "SportJet 435"
+        }
+      ]
+    },
+    "SportJet 460": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "SportJet 460"
+        }
+      ]
+    },
+    "SportJet 520": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "SportJet 520"
+        }
+      ]
+    },
+    "TurboJet 285": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "TurboJet 285"
+        }
+      ]
+    },
+    "TurboJet 325": {
+      "type": "Čolni",
+      "category": "Tender",
+      "variants": [
+        {
+          "trim": "TurboJet 325"
+        }
+      ]
+    }
+  },
+  "Yamaha": {
+    "WaveRunner FX": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "FX Cruiser HO"
+        },
+        {
+          "trim": "FX SVHO"
+        },
+        {
+          "trim": "FX Limited SVHO"
+        },
+        {
+          "trim": "FX HO"
+        }
+      ]
+    },
+    "WaveRunner GP": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "GP1800R HO"
+        },
+        {
+          "trim": "GP1800R SVHO"
+        }
+      ]
+    },
+    "WaveRunner JetBlaster": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "JetBlaster"
+        }
+      ]
+    },
+    "WaveRunner JetBlaster PRO": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "JetBlaster PRO 3-Up"
+        }
+      ]
+    },
+    "WaveRunner SuperJet": {
+      "type": "Jet-ski",
+      "category": "Stoječi (stand-up)",
+      "variants": [
+        {
+          "trim": "SuperJet"
+        }
+      ]
+    },
+    "WaveRunner VX": {
+      "type": "Jet-ski",
+      "category": "Sedeči (runabout)",
+      "variants": [
+        {
+          "trim": "VX Cruiser"
+        },
+        {
+          "trim": "VX Deluxe"
+        }
+      ]
+    }
+  },
+  "Zar Formenti": {
+    "Imagine 115": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Imagine 115"
+        }
+      ]
+    },
+    "Naxos 19": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Naxos 19"
+        }
+      ]
+    },
+    "Naxos 23": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Naxos 23"
+        }
+      ]
+    },
+    "ZAR 43": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 43"
+        }
+      ]
+    },
+    "ZAR 47 Classic": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 47 Classic"
+        }
+      ]
+    },
+    "ZAR 49 SL": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 49 SL"
+        }
+      ]
+    },
+    "ZAR 53 Classic": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 53 Classic"
+        }
+      ]
+    },
+    "ZAR 59 SL": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 59 SL"
+        }
+      ]
+    },
+    "ZAR 65": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 65"
+        }
+      ]
+    },
+    "ZAR 79": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 79"
+        }
+      ]
+    },
+    "ZAR 85 SL": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 85 SL"
+        }
+      ]
+    },
+    "ZAR 95 SL": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "ZAR 95 SL"
+        }
+      ]
+    }
+  },
+  "Zodiac": {
+    "Cadet Aero": {
+      "type": "Gumenjaki",
+      "category": "Zložljiv",
+      "variants": [
+        {
+          "trim": "Cadet Aero"
+        }
+      ]
+    },
+    "Medline 6.8": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Medline 6.8 električni"
+        }
+      ]
+    },
+    "Medline 7.5": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Medline 7.5"
+        }
+      ]
+    },
+    "Open 5.5": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Open 5.5"
+        }
+      ]
+    },
+    "Pro 5.5": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "Pro 5.5"
+        }
+      ]
+    },
+    "X10CC": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "X10CC"
+        }
+      ]
+    },
+    "X9CC": {
+      "type": "Gumenjaki",
+      "category": "RIB s konzolo",
+      "variants": [
+        {
+          "trim": "X9CC"
+        }
+      ]
+    }
+  }
 }

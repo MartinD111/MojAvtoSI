@@ -234,6 +234,8 @@ function bindSearchLogic(catContext) {
     const makeSelect = document.getElementById("make");
     const modelSelect = document.getElementById("model");
     const variantSelect = document.getElementById("variant");
+    const linijaSelect = document.getElementById("linija");
+    const linijaGroup = document.getElementById("linijaGroup");
     const addVehicleBtn = document.getElementById("addVehicleBtn");
     const excludeVehicleBtn = document.getElementById("excludeVehicleBtn");
     const vehicleCardsEl = document.getElementById("vehicleCards");
@@ -403,6 +405,40 @@ function bindSearchLogic(catContext) {
         }
     }
 
+    // ── Vehicle Lines Data ──
+    let _vehicleLinesData = null;
+    function loadVehicleLines() {
+        if (_vehicleLinesData) return Promise.resolve(_vehicleLinesData);
+        return fetch('json/vehicle_lines.json')
+            .then(r => r.ok ? r.json() : {})
+            .then(d => { _vehicleLinesData = d; return d; })
+            .catch(() => { _vehicleLinesData = {}; return {}; });
+    }
+
+    function updateLinijaDropdown(make) {
+        if (!linijaSelect || !linijaGroup) return;
+        linijaSelect.innerHTML = '<option value="">Linija</option>';
+        linijaSelect.value = '';
+        const lines = (_vehicleLinesData || {})[make] || [];
+        if (lines.length) {
+            lines.forEach(l => {
+                const o = document.createElement('option'); o.value = l; o.textContent = l;
+                linijaSelect.appendChild(o);
+            });
+            linijaGroup.style.display = '';
+        } else {
+            linijaGroup.style.display = 'none';
+        }
+    }
+
+    loadVehicleLines();
+
+    // ── Popular brands per category ──
+    const POPULAR_BRANDS = {
+        avto: ['Audi','Dacia','Ford','Hyundai','Kia','Peugeot','Renault','Škoda','Toyota','Volkswagen'],
+        moto: ['BMW','CF Moto','Ducati','Honda','Husqvarna','Kawasaki','KTM','Piaggio','Suzuki','Yamaha'],
+    };
+
     // ── Dynamic Brand Data Loading ──
     function fetchBrandData(category) {
         const jsonFile = brandsFileFor(category);
@@ -414,6 +450,26 @@ function bindSearchLogic(catContext) {
                 const prevMake = makeSelect.value;
                 makeSelect.innerHTML = '<option value="">Znamka</option>';
                 const sorted = Object.keys(data).sort();
+
+                const popular = (POPULAR_BRANDS[category] || []).filter(b => data[b]);
+                if (popular.length) {
+                    const lbl = document.createElement('option');
+                    lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+                    lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+                    makeSelect.appendChild(lbl);
+                    popular.forEach(brand => {
+                        const o = document.createElement('option');
+                        o.value = brand; o.textContent = brand;
+                        o.dataset.popular = 'true';
+                        if (brand === prevMake) o.selected = true;
+                        makeSelect.appendChild(o);
+                    });
+                    const sep = document.createElement('option');
+                    sep.value = ''; sep.textContent = '──────────────';
+                    sep.disabled = true; sep.dataset.popularLabel = 'true';
+                    makeSelect.appendChild(sep);
+                }
+
                 sorted.forEach(brand => {
                     const o1 = document.createElement("option"); o1.value = brand; o1.textContent = brand;
                     if (brand === prevMake) o1.selected = true;
@@ -608,6 +664,7 @@ function bindSearchLogic(catContext) {
             keys.forEach(m => { const o = document.createElement("option"); o.value = m; o.textContent = m; modelSelect.appendChild(o); });
             if (keys.length) modelSelect.disabled = false;
         }
+        loadVehicleLines().then(() => updateLinijaDropdown(val));
         applyRelevance();
     });
 
@@ -637,11 +694,24 @@ function bindSearchLogic(catContext) {
         const model = modelSelect.value;
         const variant = variantSelect.value;
         if (make && model && variant) {
-            if (addVehicleBtn) {
+            const lines = (_vehicleLinesData || {})[make] || [];
+            if (!lines.length && addVehicleBtn) {
                 addVehicleBtn.click();
             }
         }
     });
+
+    if (linijaSelect) {
+        linijaSelect.addEventListener("change", () => {
+            const make = makeSelect.value;
+            const model = modelSelect.value;
+            const variant = variantSelect.value;
+            const linija = linijaSelect.value;
+            if (make && linija && addVehicleBtn) {
+                addVehicleBtn.click();
+            }
+        });
+    }
 
     // ── Auto-select the matching VRSTA VOZILA card when a known model is chosen ──
     function autoSelectBodyType(mk, md) {
@@ -660,6 +730,8 @@ function bindSearchLogic(catContext) {
         makeSelect.value = '';
         modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
         variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
+        if (linijaSelect) linijaSelect.innerHTML = '<option value="">Linija</option>';
+        if (linijaGroup) linijaGroup.style.display = 'none';
         makeSelect.dispatchEvent(new Event('change'));
         modelSelect.dispatchEvent(new Event('change'));
         variantSelect.dispatchEvent(new Event('change'));
@@ -672,7 +744,8 @@ function bindSearchLogic(catContext) {
             if (vehicles.length >= MAX_VEHICLES) return;
             const model = modelSelect.value || '';
             const variant = variantSelect.value || '';
-            vehicles.push({ make, model, variant });
+            const linija = (linijaSelect && linijaSelect.value) || '';
+            vehicles.push({ make, model, variant, linija });
             resetSelectors();
             renderVehicleCards();
             applyRelevance();
@@ -687,7 +760,8 @@ function bindSearchLogic(catContext) {
             if (excludedVehicles.length >= MAX_VEHICLES) return;
             const model = modelSelect.value || '';
             const variant = variantSelect.value || '';
-            excludedVehicles.push({ make, model, variant });
+            const linija = (linijaSelect && linijaSelect.value) || '';
+            excludedVehicles.push({ make, model, variant, linija });
             resetSelectors();
             renderExcludedCards();
             updateLiveCount();
@@ -695,7 +769,10 @@ function bindSearchLogic(catContext) {
     }
 
     function makeCardHTML(v, i, zone) {
-        const parts = [v.make]; if (v.model) parts.push(v.model); if (v.variant) parts.push(v.variant);
+        const parts = [v.make];
+        if (v.model) parts.push(v.model);
+        if (v.variant) parts.push(v.variant);
+        if (v.linija) parts.push(v.linija);
         const cls = zone === 'exclude' ? 'vehicle-entry-card vec-excluded' : 'vehicle-entry-card';
         return `<div class="${cls}" draggable="true" data-idx="${i}" data-zone="${zone}">
             <div class="vec-info">${parts.map(p => `<span>${p}</span>`).join('<span class="vec-sep">›</span>')}</div>
@@ -909,6 +986,9 @@ function bindSearchLogic(catContext) {
         if (excludedVehiclesSection) {
             excludedVehiclesSection.style.display = (vehicles.length > 0 || excludedVehicles.length > 0) ? 'block' : 'none';
         }
+        if (vehicleCardsEl) {
+            vehicleCardsEl.classList.toggle('vec-drop-target-visible', vehicles.length === 0 && excludedVehicles.length > 0);
+        }
     }
 
     function renderExcludedCards() {
@@ -919,7 +999,7 @@ function bindSearchLogic(catContext) {
             renderExcludedCards();
             updateLiveCount();
         }));
-        bindCardDrag(excludedVehicleCardsEl);
+bindCardDrag(excludedVehicleCardsEl);
         updateExcludedSectionVisibility();
         if (window.lucide) window.lucide.createIcons();
     }
@@ -1035,6 +1115,7 @@ function bindSearchLogic(catContext) {
                 make: fd.get('make') || '',
                 model: fd.get('model') || '',
                 variant: fd.get('variant') || '',
+                linija: fd.get('linija') || '',
                 bodyTypes: selectedBodyTypes,
                 conditions: fd.getAll('condition'), damaged: fd.get('damaged'),
                 fuels: fd.getAll('fuel').filter(Boolean), gears: fd.getAll('transmission').filter(Boolean), drivetrain: fd.getAll('drivetrain'),
@@ -1074,6 +1155,8 @@ function bindSearchLogic(catContext) {
             makeSelect.value = '';
             modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
             variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
+            if (linijaSelect) linijaSelect.innerHTML = '<option value="">Linija</option>';
+            if (linijaGroup) linijaGroup.style.display = 'none';
 
             makeSelect.dispatchEvent(new Event('change'));
             modelSelect.dispatchEvent(new Event('change'));
@@ -1186,6 +1269,7 @@ function matchesFilters(l, filters) {
             if (v.make && l.make !== v.make) return false;
             if (v.model && l.model !== v.model) return false;
             if (v.variant && l.title && !l.title.includes(v.variant)) return false;
+            if (v.linija && l.linija !== v.linija) return false;
             return true;
         });
         if (isExcluded) return false;
@@ -1197,6 +1281,7 @@ function matchesFilters(l, filters) {
             if (v.make && l.make !== v.make) return false;
             if (v.model && l.model !== v.model) return false;
             if (v.variant && l.title && !l.title.includes(v.variant)) return false;
+            if (v.linija && l.linija !== v.linija) return false;
             return true;
         });
         if (!match) return false;
@@ -1205,6 +1290,7 @@ function matchesFilters(l, filters) {
         if (filters.make && l.make !== filters.make) return false;
         if (filters.model && l.model !== filters.model) return false;
         if (filters.variant && l.title && !l.title.includes(filters.variant)) return false;
+        if (filters.linija && l.linija !== filters.linija) return false;
     }
 
     // Body Types (OR between tiles)
@@ -1333,7 +1419,7 @@ function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
 
     function showSub() {
         mainGrid.style.display = 'none';
-        subGrid.style.display = 'grid';
+        subGrid.style.display = 'flex';
         if (header) header.style.display = 'flex';
         if (title) title.textContent = '4 in 3 Kolesna motorna vozila';
         if (window.lucide) window.lucide.createIcons();
@@ -1341,7 +1427,7 @@ function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
 
     function showMain() {
         subGrid.style.display = 'none';
-        mainGrid.style.display = 'grid';
+        mainGrid.style.display = 'flex';
         if (header) header.style.display = 'none';
         selected.clear();
         writeFilter();

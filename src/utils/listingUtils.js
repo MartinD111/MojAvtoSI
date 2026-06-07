@@ -208,6 +208,18 @@ export function getYearPill(year) {
     </div>`;
 }
 
+export function getBatteryPill(car) {
+    const fuelKey = (car.fuel || '').toLowerCase().trim();
+    const isElectric = fuelKey === 'elektrika' || fuelKey === 'električno' || fuelKey === 'electric' || fuelKey === 'e';
+    const isPhev = fuelKey === 'hibrid' && car.hybridType === 'PlugIn';
+    if (!isElectric && !isPhev) return '';
+    if (!car.batteryKwh) return '';
+    return `<div class="spec-pill battery-pill" title="Kapaciteta baterije">
+        <i data-lucide="battery"></i>
+        <span>${car.batteryKwh} kWh</span>
+    </div>`;
+}
+
 export function getKmPill(km) {
     if (km === undefined || km === null) return '';
     const formatted = typeof km === 'number'

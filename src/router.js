@@ -32,7 +32,6 @@ const routes = {
     '/poslovni-profil': { view: 'business-profile', protected: false },
     '/booking': { view: 'booking', protected: false },
     '/servis/vnos': { view: 'service-entry', protected: true },
-    '/b2b/oceni': { view: 'b2b-evaluate', protected: false },
     '/nastavitve-tco': { view: 'tco-settings', protected: true },
 
     // ── B2B Operating System ──
@@ -42,7 +41,6 @@ const routes = {
     '/b2b/profil': { view: 'b2b-profile-editor', protected: true, b2bOnly: true },
     '/b2b/zaloga': { view: 'b2b-inventory', protected: true, b2bOnly: true },
     '/b2b/leads': { view: 'b2b-leads', protected: true, b2bOnly: true },
-    '/b2b/orodja': { view: 'b2b-tools', protected: true, b2bOnly: true },
     '/b2b/delavnica': { view: 'b2b-workshop', protected: true, b2bOnly: true },
     '/b2b/servis-vnos': { view: 'service-entry', protected: true, b2bOnly: true },
     '/b2b/hotel-gum': { view: 'b2b-tire-hotel', protected: true, b2bOnly: true },
@@ -54,7 +52,7 @@ const APP = document.getElementById('app-container');
 // Views that render entirely in JS (no matching /views/*.html file)
 const JS_ONLY_VIEWS = new Set([
     'b2b-dashboard', 'b2b-reservations', 'b2b-services', 'b2b-profile-editor',
-    'b2b-inventory', 'b2b-leads', 'b2b-tools', 'b2b-workshop', 'b2b-tire-hotel',
+    'b2b-inventory', 'b2b-leads', 'b2b-workshop', 'b2b-tire-hotel',
     'tco-settings',
 ]);
 
@@ -84,12 +82,18 @@ async function loadView(viewName) {
         // Translate the newly loaded content
         translatePage(APP);
 
+        // Track the loaded path so filter-only hash changes skip a full reload.
+        _lastLoadedPath = decodeURIComponent((window.location.hash.slice(1) || '/').split('?')[0]);
+
         // Dispatch so page-specific scripts can init
         document.dispatchEvent(new CustomEvent('routeChanged', { detail: { view: viewName } }));
     } catch {
         APP.innerHTML = `<div class="error-page"><h1>404</h1><p>${t('error_404_msg', 'Page not found.')}</p><a href="#/">← ${t('nav_home')}</a></div>`;
     }
 }
+
+// Track the last loaded path so same-path hash changes (filter params) don't reload the view.
+let _lastLoadedPath = null;
 
 // ── Main router function ──────────────────────────────────────────────────────
 async function router() {
@@ -100,6 +104,14 @@ async function router() {
     const hash = window.location.hash.slice(1) || '/';
     // Strip query params and decode special characters (e.g. č, š, ž)
     const path = decodeURIComponent(hash.split('?')[0]);
+
+    // If only the query params changed (same path already loaded), let the page
+    // handle the update itself (e.g. sidebar filter reapplication) rather than
+    // reloading the whole view.
+    if (path === _lastLoadedPath) {
+        document.dispatchEvent(new CustomEvent('routeParamsChanged', { detail: { path, hash } }));
+        return;
+    }
 
     // Restore site navbar if leaving admin
     document.getElementById('adm-hide-sitenav')?.remove();

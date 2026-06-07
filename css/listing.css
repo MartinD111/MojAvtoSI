@@ -88,27 +88,6 @@ body.dark-mode .lp-title { color: #f1f5f9; }
     color: #64748b;
 }
 
-.lp-vin-badge-inline {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: rgba(37,99,235,0.08);
-    color: #1d4ed8;
-    border: 1px solid rgba(37,99,235,0.18);
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.15rem 0.6rem;
-}
-
-body.dark-mode .lp-vin-badge-inline {
-    background: rgba(37,99,235,0.15);
-    color: #93c5fd;
-    border-color: rgba(96,165,250,0.25);
-}
-
-.lp-vin-badge-inline svg { width: 11px; height: 11px; }
-
 .lp-price-pill-container {
     display: inline-flex;
     justify-content: center;
@@ -430,95 +409,6 @@ body.dark-mode .lp-key-item { color: #cbd5e1; }
 
 .lp-key-item svg { width: 14px; height: 14px; color: var(--color-primary-start); }
 
-/* ── VIN verified block ──────────────────────────────────────────────────────*/
-.lp-vin-block {
-    background: rgba(37,99,235,0.04);
-    border: 1.5px solid rgba(37,99,235,0.15);
-    border-radius: 1.1rem;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-}
-
-body.dark-mode .lp-vin-block {
-    background: rgba(37,99,235,0.08);
-    border-color: rgba(96,165,250,0.2);
-}
-
-.lp-vin-block-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.9rem 1.25rem;
-    border-bottom: 1px solid rgba(37,99,235,0.1);
-}
-
-.lp-vin-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--color-primary-start);
-    color: #fff;
-    font-size: 0.78rem;
-    font-weight: 700;
-    padding: 0.3rem 0.85rem;
-    border-radius: 999px;
-}
-
-.lp-vin-badge svg { width: 13px; height: 13px; }
-
-.lp-vin-code {
-    font-size: 0.72rem;
-    color: #64748b;
-    font-family: 'SF Mono', 'Fira Code', monospace;
-    letter-spacing: 0.04em;
-}
-
-.lp-vin-rows { display: flex; flex-direction: column; }
-
-.lp-vin-row {
-    display: grid;
-    grid-template-columns: 1.75rem 1fr 1fr;
-    gap: 0.5rem;
-    align-items: center;
-    padding: 0.65rem 1.25rem;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-    font-size: 0.84rem;
-}
-
-body.dark-mode .lp-vin-row { border-bottom-color: rgba(255,255,255,0.04); }
-.lp-vin-row:last-child { border-bottom: none; }
-
-.lp-vin-icon { font-size: 1rem; text-align: center; }
-.lp-vin-label { color: #64748b; }
-.lp-vin-value { font-weight: 600; color: #1e293b; }
-body.dark-mode .lp-vin-value { color: #f1f5f9; }
-.lp-vin-value.clean { color: #16a34a; }
-.lp-vin-value.warn  { color: #d97706; }
-.lp-vin-value.danger{ color: #dc2626; }
-body.dark-mode .lp-vin-value.clean { color: #4ade80; }
-
-.lp-vin-edit-note {
-    margin: 0.75rem 1.25rem;
-    padding: 0.6rem 0.9rem;
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.2);
-    border-radius: 0.5rem;
-    font-size: 0.78rem;
-    color: #92400e;
-}
-
-body.dark-mode .lp-vin-edit-note {
-    background: rgba(245,158,11,0.1);
-    color: #fbbf24;
-}
-
-.lp-vin-source {
-    padding: 0.6rem 1.25rem 0.9rem;
-    font-size: 0.72rem;
-    color: #94a3b8;
-}
-
 /* ── Sections ───────────────────────────────────────────────────────────────*/
 .lp-section {
     margin-bottom: 1.75rem;
@@ -589,6 +479,7 @@ body.dark-mode .lp-description { color: #cbd5e1; }
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background: rgba(255,255,255,0.04);
@@ -1078,20 +969,6 @@ body.dark-mode .listing-card.sponsored {
     z-index: 2;
 }
 
-.listing-vin-badge {
-    position: absolute;
-    top: 0.55rem;
-    left: 0.55rem;
-    background: rgba(37,99,235,0.85);
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    pointer-events: none;
-    z-index: 2;
-}
-
 .lp-similar-img-wrap {
     position: relative;
     aspect-ratio: 4/3;
@@ -1146,17 +1023,17 @@ body.dark-mode .lp-similar-title { color: #f1f5f9; }
     .lp-header-price { text-align: left; }
 }
 
-/* ── .cl-vin-spinner reuse on loading state ──────────────────────────────── */
-.cl-vin-spinner {
+/* ── Submit loading spinner ──────────────────────────────────────────────── */
+.cl-submit-spinner {
     width: 36px;
     height: 36px;
     border: 3px solid rgba(37,99,235,0.2);
     border-top-color: var(--color-primary-start);
     border-radius: 50%;
-    animation: vinSpin 0.8s linear infinite;
+    animation: clSubmitSpin 0.8s linear infinite;
 }
 
-@keyframes vinSpin { to { transform: rotate(360deg); } }
+@keyframes clSubmitSpin { to { transform: rotate(360deg); } }
 
 .listing-container {
     max-width: 1200px;

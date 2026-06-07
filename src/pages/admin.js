@@ -15,6 +15,7 @@ import {
     getTopBrands, getListingsByDay, getAuditLogs, addAuditLog,
     getScrapingSources, createScrapingSource, updateScrapingSource, deleteScrapingSource,
     getCatalogProductsAdmin, createCatalogProduct, updateCatalogProduct, deleteCatalogProduct,
+    clearCarTaxonomy,
 } from '../services/adminService.js';
 import { PLATFORM } from '../config/platform.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
@@ -603,8 +604,9 @@ function parseTaxData(rawData, cat) {
                 return { name: modelName, type: null, variants: val.map(normalizeTrimEntry) };
             }
             return {
-                name: modelName,
-                type: val.type || null,
+                name:     modelName,
+                type:     val.type     || null,
+                category: val.category || null,
                 variants: Array.isArray(val.variants) ? val.variants.map(normalizeTrimEntry) : [],
             };
         }).sort((a, b) => a.name.localeCompare(b.name, 'en'));
@@ -627,12 +629,17 @@ async function renderTaxonomy() {
               ${PLATFORM.id === 'navtika'
                 ? `<button class="adm-tab" data-tax-cat="oprema">🛟 Oprema za plovila</button>`
                 : `<button class="adm-tab" data-tax-cat="izpuhi">🏍 Izpuhi</button>
-                   <button class="adm-tab" data-tax-cat="oprema">🛡 Moto oprema</button>`}
+                   <button class="adm-tab" data-tax-cat="oprema">🛡 Moto oprema</button>
+                   <button class="adm-tab" data-tax-cat="linije">🏎 Linije</button>`}
             </div>
             <select id="tax-type-filter" class="adm-select adm-input-sm" style="width:140px;display:none">
               <option value="">Vse vrste</option>
             </select>
+            <select id="tax-category-filter" class="adm-select adm-input-sm" style="width:160px;display:none">
+              <option value="">Vse kategorije</option>
+            </select>
             <input id="tax-search" class="adm-input adm-input-sm" type="search" placeholder="Išči…" style="width:170px">
+            <button class="adm-btn adm-btn-sm adm-btn-green" id="tax-download-json-btn">⬇ Shrani JSON</button>
             <button class="adm-btn adm-btn-sm adm-btn-green" id="tax-export-btn">⬇ Izvozi Excel</button>
             <button class="adm-btn adm-btn-sm adm-btn-primary" id="tax-add-brand-btn">+ Znamka</button>
           </div>
@@ -650,31 +657,52 @@ async function renderTaxonomy() {
         activeCat = btn.dataset.taxCat;
         document.getElementById('tax-search').value = '';
         document.getElementById('tax-type-filter').value = '';
+        document.getElementById('tax-category-filter').value = '';
         _taxPage = 1;
+        // Hide the table-only controls for brand-list tabs (izpuhi/oprema/linije).
+        // Use visibility (not display) so the tab bar keeps its layout and does not
+        // shift when switching tabs.
+        const taxControlIds = ['tax-search', 'tax-type-filter', 'tax-category-filter', 'tax-export-btn', 'tax-download-json-btn', 'tax-add-brand-btn'];
+        const setTaxControls = vis => taxControlIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.style.visibility = vis ? 'visible' : 'hidden'; el.style.pointerEvents = vis ? '' : 'none'; }
+        });
+
         if (activeCat === 'izpuhi') {
-            document.getElementById('tax-search').style.display = 'none';
-            document.getElementById('tax-type-filter').style.display = 'none';
-            document.getElementById('tax-export-btn').style.display = 'none';
-            document.getElementById('tax-add-brand-btn').style.display = 'none';
+            setTaxControls(false);
             renderExhaustTab();
         } else if (activeCat === 'oprema') {
-            document.getElementById('tax-search').style.display = 'none';
-            document.getElementById('tax-type-filter').style.display = 'none';
-            document.getElementById('tax-export-btn').style.display = 'none';
-            document.getElementById('tax-add-brand-btn').style.display = 'none';
+            setTaxControls(false);
             renderEquipmentBrandsTab();
+        } else if (activeCat === 'linije') {
+            setTaxControls(false);
+            renderVehicleLinesTab();
         } else {
-            document.getElementById('tax-search').style.display = '';
-            document.getElementById('tax-export-btn').style.display = '';
-            document.getElementById('tax-add-brand-btn').style.display = '';
+            setTaxControls(true);
+            // type filter visibility is managed per-category inside renderTaxTable
             renderTaxTable(activeCat);
         }
     }));
 
     document.getElementById('tax-search').addEventListener('input', debounce(() => { _taxPage = 1; renderTaxTable(activeCat); }, 200));
     document.getElementById('tax-type-filter').addEventListener('change', () => { _taxPage = 1; renderTaxTable(activeCat); });
+    document.getElementById('tax-category-filter').addEventListener('change', () => { _taxPage = 1; renderTaxTable(activeCat); });
     document.getElementById('tax-export-btn').addEventListener('click', () => exportTaxExcel(activeCat));
     document.getElementById('tax-add-brand-btn').addEventListener('click', () => openTaxAddBrandModal(activeCat));
+
+    document.getElementById('tax-download-json-btn').addEventListener('click', () => {
+        const raw = _taxCache[activeCat];
+        if (!raw) { showToast('Podatki niso naloženi.', 'error'); return; }
+        const json = JSON.stringify(raw, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = TAX_SOURCES[activeCat].file.split('/').pop();
+        a.click();
+        _taxUnsaved = false;
+        updateUnsavedBadge();
+        showToast(`${a.download} prenesen. Kopirajte v public/json/.`, 'success');
+    });
 
     renderTaxTable(TAX_FIRST_CAT);
 }
@@ -901,6 +929,154 @@ async function renderEquipmentBrandsTab() {
     } catch (e) { wrap.innerHTML = errBox(e); }
 }
 
+// ── Vehicle Lines management ──────────────────────────────────────────────────
+let _vehicleLinesCache = null;
+
+async function loadVehicleLinesAdmin() {
+    if (_vehicleLinesCache) return _vehicleLinesCache;
+    const res = await fetch('json/vehicle_lines.json');
+    if (!res.ok) throw new Error('Napaka pri nalaganju vehicle_lines.json');
+    _vehicleLinesCache = await res.json();
+    return _vehicleLinesCache;
+}
+
+async function renderVehicleLinesTab() {
+    const wrap = document.getElementById('tax-tree');
+    const stats = document.getElementById('tax-stats');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam…</div>';
+    try {
+        const data = await loadVehicleLinesAdmin();
+        const makes = Object.keys(data).sort();
+        if (stats) stats.textContent = `${makes.length} znamk z linijami`;
+
+        wrap.innerHTML = `
+          <div style="padding:1rem">
+            <p style="font-size:.82rem;color:#6b7280;margin:0 0 1rem">
+              Linije so specifični paketi opreme za vsako znamko (npr. S line, GT-Line, M-Line). Prikazane so v iskanju kot četrti filter za vozila, ki imajo vsaj eno linijo.
+            </p>
+            <div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:flex-end;flex-wrap:wrap">
+              <div>
+                <label style="font-size:.78rem;color:#6b7280;display:block;margin-bottom:.25rem">Znamka</label>
+                <select id="lines-make-sel" class="adm-select adm-input-sm" style="width:200px">
+                  <option value="">— izberi znamko —</option>
+                  ${makes.map(m => `<option value="${escHtml(m)}">${escHtml(m)}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label style="font-size:.78rem;color:#6b7280;display:block;margin-bottom:.25rem">Nova znamka</label>
+                <input id="lines-new-make" class="adm-input adm-input-sm" style="width:160px" placeholder="npr. Dacia">
+              </div>
+              <button class="adm-btn adm-btn-sm adm-btn-primary" id="lines-add-make-btn">+ Dodaj znamko</button>
+              <button class="adm-btn adm-btn-sm adm-btn-green" id="lines-download-btn" style="margin-left:auto">⬇ Shrani JSON</button>
+            </div>
+            <div id="lines-editor" style="display:none;border:1px solid #e5e7eb;border-radius:.5rem;padding:1rem;background:#fafafa">
+              <h4 id="lines-editor-title" style="margin:0 0 .75rem;font-size:.9rem;font-weight:700"></h4>
+              <div style="display:flex;gap:.5rem;margin-bottom:.75rem;align-items:center;flex-wrap:wrap">
+                <input id="lines-new-line" class="adm-input adm-input-sm" style="width:220px" placeholder="Nova linija (npr. GT-Line)">
+                <button class="adm-btn adm-btn-sm adm-btn-primary" id="lines-add-line-btn">+ Dodaj linijo</button>
+              </div>
+              <div id="lines-chips" style="display:flex;flex-wrap:wrap;gap:.5rem"></div>
+              <button class="adm-btn adm-btn-sm adm-btn-red" id="lines-del-make-btn" style="margin-top:.75rem">🗑 Odstrani znamko iz seznama</button>
+            </div>
+          </div>`;
+
+        let selectedMake = null;
+
+        function renderChips() {
+            const chips = document.getElementById('lines-chips');
+            if (!chips || !selectedMake) return;
+            const lines = data[selectedMake] || [];
+            chips.innerHTML = lines.map((l, i) => `
+              <span class="adm-badge adm-badge-gray" style="font-size:.82rem;padding:.35rem .75rem;display:inline-flex;align-items:center;gap:.4rem">
+                ${escHtml(l)}
+                <button class="lines-del-line-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;line-height:1;padding:0 0 0 .25rem" title="Izbriši">×</button>
+              </span>`).join('') || '<span style="color:#9ca3af;font-size:.82rem">Ni linij.</span>';
+
+            chips.querySelectorAll('.lines-del-line-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = Number(btn.dataset.idx);
+                    data[selectedMake].splice(idx, 1);
+                    if (data[selectedMake].length === 0) delete data[selectedMake];
+                    _taxUnsaved = true;
+                    updateUnsavedBadge();
+                    if (!data[selectedMake]) {
+                        selectedMake = null;
+                        document.getElementById('lines-editor').style.display = 'none';
+                        renderVehicleLinesTab();
+                    } else {
+                        renderChips();
+                    }
+                    showToast('Linija izbrisana.', 'info');
+                });
+            });
+        }
+
+        document.getElementById('lines-make-sel').addEventListener('change', e => {
+            selectedMake = e.target.value || null;
+            const editor = document.getElementById('lines-editor');
+            if (selectedMake) {
+                document.getElementById('lines-editor-title').textContent = selectedMake;
+                editor.style.display = '';
+                renderChips();
+            } else {
+                editor.style.display = 'none';
+            }
+        });
+
+        document.getElementById('lines-add-make-btn').addEventListener('click', () => {
+            const name = document.getElementById('lines-new-make').value.trim();
+            if (!name) { showToast('Vnesite ime znamke.', 'error'); return; }
+            if (data[name]) { showToast('Znamka že obstaja.', 'warn'); return; }
+            data[name] = [];
+            _vehicleLinesCache = data;
+            _taxUnsaved = true;
+            updateUnsavedBadge();
+            showToast(`Znamka "${name}" dodana.`, 'success');
+            renderVehicleLinesTab();
+        });
+
+        document.getElementById('lines-add-line-btn').addEventListener('click', () => {
+            if (!selectedMake) return;
+            const val = document.getElementById('lines-new-line').value.trim();
+            if (!val) { showToast('Vnesite ime linije.', 'error'); return; }
+            if (!data[selectedMake]) data[selectedMake] = [];
+            if (data[selectedMake].includes(val)) { showToast('Linija že obstaja.', 'warn'); return; }
+            data[selectedMake].push(val);
+            _taxUnsaved = true;
+            updateUnsavedBadge();
+            document.getElementById('lines-new-line').value = '';
+            renderChips();
+            showToast(`Linija "${val}" dodana.`, 'success');
+        });
+
+        document.getElementById('lines-del-make-btn').addEventListener('click', () => {
+            if (!selectedMake) return;
+            if (!confirm(`Odstraniti znamko "${selectedMake}" in vse njene linije?`)) return;
+            delete data[selectedMake];
+            _vehicleLinesCache = data;
+            selectedMake = null;
+            _taxUnsaved = true;
+            updateUnsavedBadge();
+            showToast('Znamka odstranjena.', 'info');
+            renderVehicleLinesTab();
+        });
+
+        document.getElementById('lines-download-btn').addEventListener('click', () => {
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'vehicle_lines.json';
+            a.click();
+            _taxUnsaved = false;
+            updateUnsavedBadge();
+            showToast('vehicle_lines.json prenesen. Kopirajte v public/json/.', 'success');
+        });
+
+    } catch (e) { wrap.innerHTML = errBox(e); }
+}
+
 async function loadTaxTree(cat) {
     const wrap = document.getElementById('tax-tree');
     if (!wrap) return;
@@ -1025,8 +1201,9 @@ async function renderTaxTable(cat) {
     const wrap = document.getElementById('tax-tree');
     if (!wrap) return;
 
-    const search     = (document.getElementById('tax-search')?.value   || '').toLowerCase().trim();
-    const typeFilter = document.getElementById('tax-type-filter')?.value || '';
+    const search         = (document.getElementById('tax-search')?.value          || '').toLowerCase().trim();
+    const typeFilter     = document.getElementById('tax-type-filter')?.value     || '';
+    const categoryFilter = document.getElementById('tax-category-filter')?.value || '';
 
     wrap.innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam…</div>';
 
@@ -1034,9 +1211,16 @@ async function renderTaxTable(cat) {
         const raw    = await loadTaxJson(cat);
         let brands   = parseTaxData(raw, cat);
 
-        // Populate type filter for moto/gospodarska
+        // Per-category column layout. izvenkrmni = outboard motors (KM column, no
+        // Vrsta/type filter); plovila/moto/gospodarska = typed (Vrsta + type filter);
+        // avto = fuel + cc columns.
+        const isIzvenkrmni = cat === 'izvenkrmni';
+        const showType = cat !== 'avto' && !isIzvenkrmni;
+
+        // Populate type filter only for categories that carry a meaningful Vrsta
         const typeFilterEl = document.getElementById('tax-type-filter');
-        if (cat !== 'avto') {
+        const catFilterEl  = document.getElementById('tax-category-filter');
+        if (showType) {
             const allTypes = [...new Set(brands.flatMap(b => b.models.map(m => m.type)).filter(Boolean))].sort();
             typeFilterEl.style.display = '';
             const curVal = typeFilterEl.value;
@@ -1046,35 +1230,58 @@ async function renderTaxTable(cat) {
             typeFilterEl.style.display = 'none';
         }
 
+        // Populate category filter (plovila only)
+        if (cat === 'plovila' && catFilterEl) {
+            const allCats = [...new Set(brands.flatMap(b => b.models.map(m => m.category)).filter(Boolean))].sort();
+            catFilterEl.style.display = '';
+            const curCatVal = catFilterEl.value;
+            catFilterEl.innerHTML = '<option value="">Vse kategorije</option>' +
+                allCats.map(c => `<option value="${c}"${c === curCatVal ? ' selected' : ''}>${escHtml(c)}</option>`).join('');
+        } else if (catFilterEl) {
+            catFilterEl.style.display = 'none';
+        }
+
         // Flatten to rows
         let rows = [];
         for (const b of brands) {
             for (const m of b.models) {
                 if (typeFilter && m.type !== typeFilter) continue;
+                if (categoryFilter && m.category !== categoryFilter) continue;
                 if (m.variants.length === 0) {
-                    rows.push({ brand: b.brand, model: m.name, type: m.type, trim: '—', specs: {} });
+                    rows.push({ brand: b.brand, model: m.name, type: m.type, category: m.category, trim: '—', specs: {} });
                 } else {
                     for (const v of m.variants) {
                         const norm = normalizeTrimEntry(v);
-                        rows.push({ brand: b.brand, model: m.name, type: m.type, trim: norm.trim, specs: norm });
+                        rows.push({ brand: b.brand, model: m.name, type: m.type, category: m.category, trim: norm.trim, specs: norm });
                     }
                 }
             }
         }
 
-        // Apply search
+        // Apply search (brand, model, trim, vrsta, kategorija)
         if (search) {
             rows = rows.filter(r =>
                 r.brand.toLowerCase().includes(search) ||
                 r.model.toLowerCase().includes(search) ||
-                r.trim.toLowerCase().includes(search)
+                r.trim.toLowerCase().includes(search) ||
+                (r.type     || '').toLowerCase().includes(search) ||
+                (r.category || '').toLowerCase().includes(search)
             );
         }
 
         // Apply sort
         rows.sort((a, b) => {
-            const aVal = (a[_taxSortCol] || '').toLowerCase();
-            const bVal = (b[_taxSortCol] || '').toLowerCase();
+            let aVal = a[_taxSortCol] !== undefined ? a[_taxSortCol] : a.specs?.[_taxSortCol];
+            let bVal = b[_taxSortCol] !== undefined ? b[_taxSortCol] : b.specs?.[_taxSortCol];
+
+            if (typeof aVal === 'number' || typeof bVal === 'number') {
+                const aNum = aVal != null ? Number(aVal) : 0;
+                const bNum = bVal != null ? Number(bVal) : 0;
+                return _taxSortDir === 'asc' ? aNum - bNum : bNum - aNum;
+            }
+
+            aVal = String(aVal || '').toLowerCase();
+            bVal = String(bVal || '').toLowerCase();
             return _taxSortDir === 'asc'
                 ? aVal.localeCompare(bVal, 'en')
                 : bVal.localeCompare(aVal, 'en');
@@ -1095,7 +1302,7 @@ async function renderTaxTable(cat) {
         const pageRows = rows.slice((_taxPage - 1) * TAX_PAGE_SIZE, _taxPage * TAX_PAGE_SIZE);
 
         // Build table
-        const hasMotoType = cat !== 'avto';
+        const hasMotoType = showType;
         const sortArrow   = dir => dir === 'asc' ? ' ▲' : ' ▼';
         const thSort      = col => `style="cursor:pointer" data-sort="${col}"`;
 
@@ -1114,8 +1321,15 @@ async function renderTaxTable(cat) {
                   <th ${thSort('brand')}>Znamka${_taxSortCol === 'brand' ? sortArrow(_taxSortDir) : ''}</th>
                   <th ${thSort('model')}>Model${_taxSortCol === 'model' ? sortArrow(_taxSortDir) : ''}</th>
                   ${hasMotoType ? '<th>Vrsta</th>' : ''}
+                  ${cat === 'plovila' ? '<th>Kategorija</th>' : ''}
                   <th ${thSort('trim')}>Različica${_taxSortCol === 'trim' ? sortArrow(_taxSortDir) : ''}</th>
-                  <th>Specifikacije</th>
+                  ${cat === 'avto'
+                      ? `<th ${thSort('fuel_type')}>Gorivo${_taxSortCol === 'fuel_type' ? sortArrow(_taxSortDir) : ''}</th>
+                         <th ${thSort('engine_capacity_cc')}>Prostornina (cc)${_taxSortCol === 'engine_capacity_cc' ? sortArrow(_taxSortDir) : ''}</th>`
+                      : isIzvenkrmni
+                          ? `<th ${thSort('horsepower_km')}>KM${_taxSortCol === 'horsepower_km' ? sortArrow(_taxSortDir) : ''}</th>`
+                          : cat === 'plovila' ? '' : '<th>Specifikacije</th>'
+                  }
                   <th style="width:6rem">Akcije</th>
                 </tr>
               </thead>
@@ -1128,8 +1342,15 @@ async function renderTaxTable(cat) {
                         <td>${escHtml(r.brand)}</td>
                         <td>${escHtml(r.model)}</td>
                         ${hasMotoType ? `<td>${r.type ? `<span class="adm-badge adm-badge-blue" style="font-size:.65rem">${escHtml(r.type)}</span>` : '—'}</td>` : ''}
+                        ${cat === 'plovila' ? `<td class="adm-sub">${escHtml(r.category || '—')}</td>` : ''}
                         <td>${escHtml(r.trim)}</td>
-                        <td class="tax-spec-cell">${specText}</td>
+                        ${cat === 'avto'
+                            ? `<td>${escHtml(r.specs.fuel_type || '—')}</td>
+                               <td>${r.specs.engine_capacity_cc ? `${r.specs.engine_capacity_cc} cc` : '—'}</td>`
+                            : isIzvenkrmni
+                                ? `<td>${r.specs.horsepower_km ? `${r.specs.horsepower_km} KM` : '—'}</td>`
+                                : cat === 'plovila' ? '' : `<td class="tax-spec-cell">${specText}</td>`
+                        }
                         <td>
                           <span style="display:flex;gap:.35rem">
                             <button class="adm-btn adm-btn-xs adm-btn-primary tax-edit-btn"
@@ -1628,7 +1849,11 @@ async function exportTaxExcel(cat) {
     const search = (document.getElementById('tax-search')?.value || '').toLowerCase().trim();
     const typeFilter = document.getElementById('tax-type-filter')?.value || '';
 
-    const rows = [['Znamka', 'Model', 'Vrsta', 'Različica']];
+    const rows = cat === 'avto'
+        ? [['Make', 'Model', 'Trim', 'Fuel Type', 'Engine Capacity (cc)']]
+        : cat === 'plovila'
+            ? [['Znamka', 'Model', 'Različica', 'Vrsta', 'Kategorija']]
+            : [['Znamka', 'Model', 'Vrsta', 'Različica']];
     for (const b of brands) {
         for (const m of b.models) {
             if (typeFilter && m.type !== typeFilter) continue;
@@ -1637,10 +1862,20 @@ async function exportTaxExcel(cat) {
                 for (const v of m.variants) {
                     const vNorm = normalizeTrimEntry(v);
                     if (search && !b.brand.toLowerCase().includes(search) && !m.name.toLowerCase().includes(search) && !vNorm.trim.toLowerCase().includes(search)) continue;
-                    rows.push([b.brand, m.name, m.type || '', vNorm.trim]);
+                    if (cat === 'avto') {
+                        rows.push([b.brand, m.name, vNorm.trim, vNorm.fuel_type || '', vNorm.engine_capacity_cc || '']);
+                    } else if (cat === 'plovila') {
+                        rows.push([b.brand, m.name, vNorm.trim, m.type || '', m.category || '']);
+                    } else {
+                        rows.push([b.brand, m.name, m.type || '', vNorm.trim]);
+                    }
                 }
             } else {
-                rows.push([b.brand, m.name, m.type || '', '']);
+                if (cat === 'avto') {
+                    rows.push([b.brand, m.name, '', '', '']);
+                } else {
+                    rows.push([b.brand, m.name, m.type || '', '']);
+                }
             }
         }
     }
@@ -1659,22 +1894,33 @@ function catColor(cat) {
 
 async function renderVozilaUvoz() {
     const c = document.getElementById('adm-content');
+    const isNavtika = PLATFORM.id === 'navtika';
+    const tplButtons = isNavtika
+        ? `<button class="adm-btn adm-btn-sm adm-btn-blue"   id="voz-tpl-plovila">⬇ Predloga Plovila</button>
+           <button class="adm-btn adm-btn-sm adm-btn-orange" id="voz-tpl-izvenkrmni">⬇ Predloga Izvenkrmni motorji</button>`
+        : `<button class="adm-btn adm-btn-sm adm-btn-blue"   id="voz-tpl-avto">⬇ Predloga Avto</button>
+           <button class="adm-btn adm-btn-sm adm-btn-orange" id="voz-tpl-moto">⬇ Predloga Motorji</button>
+           <button class="adm-btn adm-btn-sm adm-btn-teal"   id="voz-tpl-gosp">⬇ Predloga Gospodarska</button>`;
+    const helpText = isNavtika
+        ? `<strong>Plovila:</strong> <code>Znamka · Model · Različica · Vrsta · Kategorija</code><br>
+           <strong>Izvenkrmni motorji:</strong> <code>Znamka · Model · KM · Različica</code> (KM = konjska moč).<br>
+           Podvojen vnos = ista znamka + model + različica → <strong>preskočen, ne podvojen</strong>.`
+        : `<strong>Avto / Gospodarska:</strong> <code>category · brand · model · variant</code><br>
+           <strong>Motorji:</strong> <code>Znamka · Model · Različica · Kategorija · Takt · Konfiguracija</code>
+           — Kategorija z <code>/</code> loči več tipov (npr. <em>Športni / Naked</em>).<br>
+           Podvojen vnos = ista znamka + model + različica → <strong>preskočen, ne podvojen</strong>.`;
     c.innerHTML = `
       <div class="adm-card">
-        <div class="adm-card-header">
-          <h3>Vnos vozil — Excel uvoz</h3>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-            <button class="adm-btn adm-btn-sm adm-btn-blue"   id="voz-tpl-avto">⬇ Predloga Avto</button>
-            <button class="adm-btn adm-btn-sm adm-btn-orange" id="voz-tpl-moto">⬇ Predloga Motorji</button>
-            <button class="adm-btn adm-btn-sm adm-btn-teal"   id="voz-tpl-gosp">⬇ Predloga Gospodarska</button>
+        <div class="adm-card-header" style="flex-wrap:wrap;gap:.75rem">
+          <h3>${isNavtika ? 'Vnos plovil — Excel uvoz' : 'Vnos vozil — Excel uvoz'}</h3>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;width:100%">
+            ${tplButtons}
+            ${isNavtika ? '' : '<button class="adm-btn adm-btn-sm adm-btn-red" id="voz-clear-avto-btn" style="margin-left:auto">🗑 Pobriši avto taksonomijo (Firestore)</button>'}
           </div>
         </div>
         <div style="padding:1.25rem">
           <p style="color:#6b7280;font-size:.875rem;margin:0 0 1rem">
-            <strong>Avto / Gospodarska:</strong> <code>category · brand · model · variant</code><br>
-            <strong>Motorji:</strong> <code>Znamka · Model · Različica · Kategorija · Takt · Konfiguracija</code>
-            — Kategorija z <code>/</code> loči več tipov (npr. <em>Športni / Naked</em>).<br>
-            Podvojen vnos = ista znamka + model + različica → <strong>preskočen, ne podvojen</strong>.
+            ${helpText}
           </p>
           <div class="adm-dropzone" id="voz-dropzone">
             <div style="font-size:2rem;margin-bottom:.4rem">📂</div>
@@ -1696,9 +1942,23 @@ async function renderVozilaUvoz() {
         </div>
       </div>`;
 
-    document.getElementById('voz-tpl-avto').addEventListener('click', () => downloadVozilaTemplate('avto'));
-    document.getElementById('voz-tpl-moto').addEventListener('click', () => downloadVozilaTemplate('moto'));
-    document.getElementById('voz-tpl-gosp').addEventListener('click', () => downloadVozilaTemplate('gospodarska'));
+    document.getElementById('voz-tpl-avto')?.addEventListener('click', () => downloadVozilaTemplate('avto'));
+    document.getElementById('voz-tpl-moto')?.addEventListener('click', () => downloadVozilaTemplate('moto'));
+    document.getElementById('voz-tpl-gosp')?.addEventListener('click', () => downloadVozilaTemplate('gospodarska'));
+    document.getElementById('voz-tpl-plovila')?.addEventListener('click', () => downloadVozilaTemplate('plovila'));
+    document.getElementById('voz-tpl-izvenkrmni')?.addEventListener('click', () => downloadVozilaTemplate('izvenkrmni'));
+    document.getElementById('voz-clear-avto-btn')?.addEventListener('click', async () => {
+        if (!confirm('Ali ste prepričani, da želite pobrisati CELOTNO avtomobilsko taksonomijo iz Firestore (znamke, modeli in zapisi)? Te akcije ni mogoče razveljaviti.')) return;
+        const btn = document.getElementById('voz-clear-avto-btn');
+        btn.disabled = true; btn.textContent = '⏳ Brišem…';
+        try {
+            await clearCarTaxonomy(_adminUser.uid, _adminUser.displayName);
+            showToast('Avtomobilska taksonomija je bila uspešno pobrisana iz Firestore.', 'success');
+        } catch (e) {
+            showToast('Napaka pri brisanju: ' + e.message, 'error');
+        }
+        btn.disabled = false; btn.textContent = '🗑 Pobriši avto taksonomijo (Firestore)';
+    });
 
     let parsedRows = [];
     let existingBrands = [], existingModels = [];
@@ -1751,6 +2011,12 @@ async function renderVozilaUvoz() {
                'vrsta' in row || 'kategorija' in row || 'takt' in row || 'konfiguracija' in row;
     }
 
+    // Outboard-motor template has a KM (horsepower) column; everything else on the
+    // navtika platform is treated as a plovila (vessel) import.
+    function detectIzvenkrmniFormat(row) {
+        return 'km' in row;
+    }
+
     function handleVozFile(file) {
         if (!file) return;
         if (typeof XLSX === 'undefined') { showToast('SheetJS ni naložen.', 'error'); return; }
@@ -1767,9 +2033,34 @@ async function renderVozilaUvoz() {
                     return row;
                 });
 
-                const isMoto = normalised.length > 0 && detectMotoFormat(normalised[0]);
+                const navtikaImport = PLATFORM.id === 'navtika';
+                const isIzvenkrmni = navtikaImport && normalised.length > 0 && detectIzvenkrmniFormat(normalised[0]);
+                const isPlovila = navtikaImport && !isIzvenkrmni;
+                const isMoto = !navtikaImport && normalised.length > 0 && detectMotoFormat(normalised[0]);
 
                 parsedRows = normalised.map(row => {
+                    if (isIzvenkrmni) {
+                        // Izvenkrmni motorji: Znamka · Model · KM · Različica
+                        const kmNum = parseInt(row['km'] || '', 10);
+                        return {
+                            category:      'izvenkrmni',
+                            brand:         row['znamka'] || row['brand'] || '',
+                            model:         row['model'] || '',
+                            variant:       row['različica'] || row['razlicica'] || row['variant'] || row['trim'] || '',
+                            horsepower_km: (kmNum > 0) ? kmNum : '',
+                        };
+                    }
+                    if (isPlovila) {
+                        // Plovila: Znamka · Model · Različica · Vrsta · Kategorija
+                        return {
+                            category:   'plovila',
+                            brand:      row['znamka'] || row['brand'] || '',
+                            model:      row['model'] || '',
+                            variant:    row['različica'] || row['razlicica'] || row['variant'] || row['trim'] || '',
+                            vrsta:      row['vrsta'] || '',
+                            kategorija: row['kategorija'] || '',
+                        };
+                    }
                     if (isMoto) {
                         // v2 moto: Znamka·Model·Vrsta·Različica·Prostornina·Takt·Tip motorja·Prenos moči
                         const codeRaw   = row['tip motorja'] || row['konfiguracija'] || '';
@@ -1839,17 +2130,27 @@ async function renderVozilaUvoz() {
 
         document.getElementById('voz-dedup-summary').innerHTML = `
           <div class="voz-dedup-grid">
-            <div class="voz-dedup-cell voz-new"><span>${newBrands}</span><small>novih znamk</small></div>
-            <div class="voz-dedup-cell voz-dup"><span>${dupBrands}</span><small>obstoječih znamk</small></div>
-            <div class="voz-dedup-cell voz-new"><span>${newModels}</span><small>novih modelov</small></div>
-            <div class="voz-dedup-cell voz-dup"><span>${dupModels}</span><small>obstoječih modelov</small></div>
+            <div class="voz-dedup-cell voz-new"><div class="voz-count">${newBrands}</div><div class="voz-label">novih znamk</div></div>
+            <div class="voz-dedup-cell voz-dup"><div class="voz-count">${dupBrands}</div><div class="voz-label">obstoječih znamk</div></div>
+            <div class="voz-dedup-cell voz-new"><div class="voz-count">${newModels}</div><div class="voz-label">novih modelov</div></div>
+            <div class="voz-dedup-cell voz-dup"><div class="voz-count">${dupModels}</div><div class="voz-label">obstoječih modelov</div></div>
           </div>`;
 
         const show = rows.slice(0, 20);
+        const cat0 = rows.length > 0 ? rows[0].category : '';
+        const isAvtoFile = cat0 === 'avto';
+        const isPlovilaFile = cat0 === 'plovila';
+        const isIzvenkrmniFile = cat0 === 'izvenkrmni';
         const headers = isMoto
             ? `<tr><th>Znamka</th><th>Model</th><th>Vrsta</th><th>Različica</th><th>Prostornina</th><th>Takt</th><th>Tip motorja</th><th>Prenos moči</th><th>Status</th></tr>`
+            : isPlovilaFile
+            ? `<tr><th>Znamka</th><th>Model</th><th>Vrsta</th><th>Kategorija</th><th>Različica</th><th>Status</th></tr>`
+            : isIzvenkrmniFile
+            ? `<tr><th>Znamka</th><th>Model</th><th>KM</th><th>Različica</th><th>Status</th></tr>`
+            : isAvtoFile
+            ? `<tr><th>Znamka</th><th>Model</th><th>Trim</th><th>Gorivo</th><th>Prostornina</th><th>Status</th></tr>`
             : `<tr><th>Kat.</th><th>Znamka</th><th>Model</th><th>Različica</th><th>Status</th></tr>`;
-        const colSpan = isMoto ? 9 : 5;
+        const colSpan = isMoto ? 9 : isPlovilaFile ? 6 : (isAvtoFile ? 6 : 5);
 
         document.getElementById('voz-preview-table').innerHTML = `
           <table class="adm-table">
@@ -1874,6 +2175,35 @@ async function renderVozilaUvoz() {
                         <td class="adm-sub">${escHtml(r.stroke || '—')}</td>
                         <td class="adm-sub">${escHtml(tipLabel || '—')}</td>
                         <td class="adm-sub">${escHtml(r.drivetrain || '—')}</td>
+                        <td>${statusBadge}</td>
+                      </tr>`;
+                  }
+                  if (r.category === 'avto') {
+                      return `<tr class="${isDup ? 'voz-row-dup' : 'voz-row-new'}">
+                        <td><strong>${escHtml(r.brand)}</strong></td>
+                        <td>${escHtml(r.model)}</td>
+                        <td class="adm-sub">${escHtml(r.variant)}</td>
+                        <td class="adm-sub">${escHtml(r.fuel_type || '—')}</td>
+                        <td class="adm-sub">${r.engine_capacity_cc ? escHtml(String(r.engine_capacity_cc)) + ' cc' : '—'}</td>
+                        <td>${statusBadge}</td>
+                      </tr>`;
+                  }
+                  if (r.category === 'plovila') {
+                      return `<tr class="${isDup ? 'voz-row-dup' : 'voz-row-new'}">
+                        <td><strong>${escHtml(r.brand)}</strong></td>
+                        <td>${escHtml(r.model)}</td>
+                        <td class="adm-sub">${escHtml(r.vrsta || '—')}</td>
+                        <td class="adm-sub">${escHtml(r.kategorija || '—')}</td>
+                        <td class="adm-sub">${escHtml(r.variant)}</td>
+                        <td>${statusBadge}</td>
+                      </tr>`;
+                  }
+                  if (r.category === 'izvenkrmni') {
+                      return `<tr class="${isDup ? 'voz-row-dup' : 'voz-row-new'}">
+                        <td><strong>${escHtml(r.brand)}</strong></td>
+                        <td>${escHtml(r.model)}</td>
+                        <td class="adm-sub">${r.horsepower_km ? escHtml(String(r.horsepower_km)) + ' KM' : '—'}</td>
+                        <td class="adm-sub">${escHtml(r.variant)}</td>
                         <td>${statusBadge}</td>
                       </tr>`;
                   }
@@ -1969,22 +2299,18 @@ function downloadVozilaTemplate(cat) {
         avto: {
             sheetName: 'Avtomobili',
             fileName: 'predloga_avto.xlsx',
-            notes: 'OPOMBA: Obvezni stolpci so Make, Model, Trim, Fuel Type, Engine Capacity (cc). Fuel Type: Petrol|Diesel|Electric|Hybrid|Plug-in Hybrid (PHEV)|LPG|CNG|Hydrogen|Steam. Za Electric vozila pustite Engine Capacity prazno. Stolpci porabe in Electric Range so opcijski.',
+            notes: 'OPOMBA: Stolpci so Make, Model, Trim, Fuel Type, Engine Capacity (cc). Fuel Type: Petrol|Diesel|Electric|Hybrid|Plug-in Hybrid|LPG|CNG|Hydrogen|Steam. Za Electric vozila pustite Engine Capacity prazno.',
             headers: [
                 'Make',
                 'Model',
                 'Trim',
                 'Fuel Type',
                 'Engine Capacity (cc)',
-                'Consumption City (opcijsko)',
-                'Consumption Highway (opcijsko)',
-                'Consumption Combined (opcijsko)',
-                'Electric Range (km) (opcijsko)',
             ],
             examples: [
-                ['BMW', '3 Series', '320d', 'Diesel', 1995, 6.8, 4.8, 5.6, ''],
-                ['BMW', '3 Series', '330e', 'Plug-in Hybrid', 1998, 2.1, 5.4, 1.8, ''],
-                ['Tesla', 'Model 3', 'Long Range', 'Electric', '', '', '', '', 629],
+                ['BMW', '3 Series', '320d', 'Diesel', 1995],
+                ['BMW', '3 Series', '330e', 'Plug-in Hybrid', 1998],
+                ['Tesla', 'Model 3', 'Long Range', 'Electric', ''],
             ],
         },
         moto: {
@@ -2024,6 +2350,39 @@ function downloadVozilaTemplate(cat) {
             examples: [
                 ['Mercedes-Benz', 'Sprinter', 'Dostavna', '314 CDI', 'Diesel', 8.4, '3500kg'],
                 ['Volkswagen', 'e-Crafter', 'Dostavna', 'e-Crafter 35', 'Electric', '', '3500kg'],
+            ],
+        },
+        plovila: {
+            sheetName: 'Plovila',
+            fileName: 'predloga_plovila.xlsx',
+            notes: 'OPOMBA: Stolpci so Znamka, Model, Različica, Vrsta, Kategorija. Vrsta = tip plovila (Čolni, Jadrnice …). Kategorija = podkategorija (Walkaround, Flybridge, Enotrupna …). Različica = ime variante (privzeto enako modelu).',
+            headers: [
+                'Znamka',
+                'Model',
+                'Različica',
+                'Vrsta',
+                'Kategorija',
+            ],
+            examples: [
+                ['Azimut', 'Atlantis 45', 'Atlantis 45', 'Čolni', 'Športna jahta'],
+                ['Bavaria', 'C38', 'C38', 'Jadrnice', 'Enotrupna'],
+                ['Bali', '4.2', 'Bali 4.2', 'Jadrnice', 'Jadralni katamaran'],
+            ],
+        },
+        izvenkrmni: {
+            sheetName: 'Izvenkrmni motorji',
+            fileName: 'predloga_izvenkrmni.xlsx',
+            notes: 'OPOMBA: Stolpci so Znamka, Model, KM, Različica. KM = konjska moč (število). Za električne motorje pustite KM prazno ali vnesite nazivno moč v KM.',
+            headers: [
+                'Znamka',
+                'Model',
+                'KM',
+                'Različica',
+            ],
+            examples: [
+                ['Yamaha', 'F40', 40, 'F40'],
+                ['Mercury', 'F150', 150, 'F150'],
+                ['ePropulsion', 'Spirit 1.0', '', 'Spirit 1.0 Plus'],
             ],
         },
     };

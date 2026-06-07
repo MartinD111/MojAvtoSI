@@ -13,6 +13,9 @@ import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes } from '../data/partTyp
 import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, EQUIPMENT_SIZES } from '../data/equipmentTypes.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
+import { PLATFORM } from '../config/platform.js';
+
+const isNavtika = () => PLATFORM.id === 'navtika';
 
 // ── Module state ──────────────────────────────────────────────────────────────
 let state = {
@@ -26,26 +29,229 @@ let catalogProducts = [];
 let tireBrands = [];
 let equipmentBrands = [];
 
+// ── Navtika equipment categories (for landing search UI) ──────────────────────
+const NAV_EQUIPMENT_CATS = [
+    { value: 'navigacija_elektronika', label: 'Navigacija', icon: 'navigation' },
+    { value: 'varnost_resevanje',      label: 'Varnostna oprema', icon: 'life-buoy' },
+    { value: 'sidrna_oprema',          label: 'Sidra in vrvi', icon: 'anchor' },
+    { value: 'jadra_opalov',           label: 'Jadra', icon: 'wind' },
+    { value: 'elektrika_akumulator',   label: 'Elektronika', icon: 'zap' },
+    { value: 'privez_transport',       label: 'Prikolice za plovila', icon: 'truck' },
+];
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 export async function initGumeInDeliPage() {
     const root = document.getElementById('gd-root');
     if (!root) return;
+    window.scrollTo({ top: 0, behavior: 'instant' });
 
-    // Reset state on every entry
+    if (isNavtika()) {
+        state = { itemType: 'part', vehicleCategory: 'colni', source: 'all', filters: {} };
+        renderNavtikaLanding(root);
+        return;
+    }
+
     state = { itemType: 'tire', vehicleCategory: 'avto', source: 'all', filters: {} };
-
     renderShell(root);
     initCustomSelects();
     bindChrome();
 
-    // Load tire brand list (best-effort)
     fetch('json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; renderFilters(); }).catch(() => { });
-    // Load moto equipment brand list (best-effort)
     fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => { });
 
     await loadData();
     renderFilters();
     applyAndRender();
+}
+
+// ── Navtika: landing search UI ────────────────────────────────────────────────
+function renderNavtikaLanding(root) {
+    let selectedCat = '';
+    let navBrands = {};
+
+    const curYear = new Date().getFullYear();
+    const yearOpts = (placeholder) => `<option value="">${placeholder}</option>` +
+        Array.from({length: curYear - 1979}, (_, i) => curYear - i)
+            .map(y => `<option value="${y}">${y}</option>`).join('');
+
+    const brandOpts = () =>
+        `<option value="">Vse znamke</option>` +
+        Object.keys(navBrands).sort().map(b => `<option value="${b}">${b}</option>`).join('');
+
+    const modelOpts = (brand) => {
+        if (!brand || !navBrands[brand]) return `<option value="">Vsi modeli</option>`;
+        const models = Array.isArray(navBrands[brand]) ? navBrands[brand] : Object.keys(navBrands[brand]);
+        return `<option value="">Vsi modeli</option>` + models.map(m => `<option value="${m}">${m}</option>`).join('');
+    };
+
+    root.innerHTML = `
+        <div class="search-box-container" style="margin-top:2rem;margin-bottom:4rem;">
+            <form id="navOpremaForm" class="search-box compact glass-card main-search-card card-squircle">
+                <style>
+                    #navOpremaForm .nh-row { display:flex; gap:1rem; align-items:flex-end; margin-bottom:1.25rem; flex-wrap:wrap; }
+                    #navOpremaForm .nh-field { display:flex; flex-direction:column; gap:0.35rem; flex:1; min-width:140px; }
+                    #navOpremaForm .nh-field label { font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em; text-align:center; width:100%; }
+                    #navOpremaForm .nh-section-label { font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em; text-align:center; margin-bottom:0.6rem; }
+                    #navOpremaForm .nh-actions { display:flex; gap:1rem; align-items:center; justify-content:center; margin-top:0.75rem; flex-wrap:wrap; }
+                    #navOpremaForm .nav-oprema-cat-grid { justify-content:center; }
+                    @media (max-width:600px) {
+                        #navOpremaForm .nh-row { flex-direction:column; align-items:stretch; }
+                        #navOpremaForm .pill-select-wrapper,
+                        #navOpremaForm .pill-input-wrapper { width: 100% !important; }
+                    }
+                </style>
+
+                <!-- Header: title only -->
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1.25rem;">
+                    <i data-lucide="anchor" style="width:20px;height:20px;color:var(--color-primary,#2563eb);flex-shrink:0;"></i>
+                    <span style="font-size:1rem;font-weight:700;">Oprema za plovila</span>
+                </div>
+
+                <!-- Category tiles -->
+                <div style="margin-bottom:1.25rem;">
+                    <div class="nh-section-label">VRSTA OPREME</div>
+                    <div class="nav-oprema-cat-grid" id="navCatGrid">
+                        ${NAV_EQUIPMENT_CATS.map(c => `
+                            <button type="button" class="nav-oprema-cat-btn" data-cat="${c.value}">
+                                <i data-lucide="${c.icon}" style="width:26px;height:26px;margin-bottom:0.3rem;"></i>
+                                <span>${c.label}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Row: Znamka + Model -->
+                <div class="nh-row">
+                    <div class="nh-field">
+                        <label>Znamka</label>
+                        <div class="pill-select-wrapper">
+                            <select id="navBrand" class="pill-input">
+                                <option value="">Vse znamke</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="nh-field">
+                        <label>Model</label>
+                        <div class="pill-select-wrapper">
+                            <select id="navModel" class="pill-input" disabled>
+                                <option value="">Vsi modeli</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row: Cena od + Cena do (pill number inputs) -->
+                <div class="nh-row">
+                    <div class="nh-field">
+                        <label>Cena od (€)</label>
+                        <input type="number" id="navPriceFrom" class="pill-input" placeholder="0 €" min="0" inputmode="numeric">
+                    </div>
+                    <div class="nh-field">
+                        <label>Cena do (€)</label>
+                        <input type="number" id="navPriceTo" class="pill-input" placeholder="Brez omejitve" min="0" inputmode="numeric">
+                    </div>
+                </div>
+
+                <!-- Row: Letnik od + Letnik do -->
+                <div class="nh-row">
+                    <div class="nh-field">
+                        <label>Letnik od</label>
+                        <div class="pill-select-wrapper">
+                            <select id="navYearFrom" class="pill-input">
+                                ${yearOpts('npr. 2010')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="nh-field">
+                        <label>Letnik do</label>
+                        <div class="pill-select-wrapper">
+                            <select id="navYearTo" class="pill-input">
+                                ${yearOpts('Vse')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="nh-actions">
+                    <button type="reset" class="pill-btn secondary" style="flex:1;min-width:140px;max-width:220px;justify-content:center;gap:0.4rem;">
+                        <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Ponastavi
+                    </button>
+                    <button type="button" class="pill-btn primary search-submit-btn" id="navOpremaSearch" style="flex:1;min-width:140px;max-width:340px;justify-content:center;gap:0.5rem;">
+                        <i data-lucide="search" style="width:16px;height:16px;"></i> Išči opremo
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons({ scope: root });
+    initCustomSelects();
+
+    // Category tiles
+    root.querySelectorAll('.nav-oprema-cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const wasActive = btn.classList.contains('active');
+            root.querySelectorAll('.nav-oprema-cat-btn').forEach(b => b.classList.remove('active'));
+            if (!wasActive) btn.classList.add('active');
+            selectedCat = btn.classList.contains('active') ? btn.dataset.cat : '';
+        });
+    });
+
+    // Brand / model cascade
+    fetch('json/brands_models_plovila.json').then(r => r.json()).then(d => {
+        navBrands = d || {};
+        const brandSel = document.getElementById('navBrand');
+        if (brandSel) brandSel.innerHTML = brandOpts();
+    }).catch(() => {});
+
+    document.getElementById('navBrand')?.addEventListener('change', e => {
+        const modelSel = document.getElementById('navModel');
+        if (!modelSel) return;
+        modelSel.innerHTML = modelOpts(e.target.value);
+        modelSel.disabled = !e.target.value;
+    });
+
+    // Reset clears category tiles too
+    root.querySelector('form')?.addEventListener('reset', () => {
+        setTimeout(() => {
+            root.querySelectorAll('.nav-oprema-cat-btn').forEach(b => b.classList.remove('active'));
+            selectedCat = '';
+            const modelSel = document.getElementById('navModel');
+            if (modelSel) { modelSel.innerHTML = '<option value="">Vsi modeli</option>'; modelSel.disabled = true; }
+        }, 0);
+    });
+
+    // Search → results view
+    document.getElementById('navOpremaSearch')?.addEventListener('click', async () => {
+        const brand = document.getElementById('navBrand')?.value || '';
+        const model = document.getElementById('navModel')?.value || '';
+        const priceFrom = parseInt(document.getElementById('navPriceFrom')?.value) || 0;
+        const priceTo = parseInt(document.getElementById('navPriceTo')?.value) || 0;
+        const yearFrom = document.getElementById('navYearFrom')?.value || '';
+        const yearTo = document.getElementById('navYearTo')?.value || '';
+        const prodaja = document.getElementById('navProdajaToggle')?.checked;
+        const najem = document.getElementById('navNajemToggle')?.checked;
+
+        state.filters = {
+            partGroup: selectedCat,
+            brand,
+            priceFrom: priceFrom > 0 ? priceFrom : '',
+            priceTo: priceTo > 0 ? priceTo : '',
+            yearFrom,
+            yearTo,
+            prodaja,
+            najem,
+        };
+
+        renderShell(root);
+        initCustomSelects();
+        bindChrome();
+        fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => {});
+        await loadData();
+        renderFilters();
+        applyAndRender();
+    });
 }
 
 // ── Data loading ──────────────────────────────────────────────────────────────
@@ -82,19 +288,24 @@ function renderShell(root) {
             <span class="hidden-md">${vc.label}</span>
         </button>`;
 
-    root.innerHTML = `
-        <div class="gd-hero-container">
-
+    const heroHtml = isNavtika()
+        ? `<div class="gd-hero-container">
+            <h1 style="text-align:center;font-size:1.75rem;font-weight:700;margin-bottom:0.5rem;">Oprema za plovila</h1>
+            <p style="text-align:center;color:var(--text-secondary);margin-bottom:1.5rem;">Motorji, navigacija, varnostna oprema in dodatki za plovila.</p>
+           </div>`
+        : `<div class="gd-hero-container">
             <div class="glass-card rounded-pill tabs-glass" id="gdVehCat" style="width:fit-content; margin-inline:auto; margin-bottom:1.5rem;">
                 ${VEHICLE_CATEGORIES.map(vehCard).join('')}
             </div>
-
             <div class="gd-itemtype-toggle" id="gdItemType">
                 ${itemBtn('tire', 'disc-3', t('gd_item_tires', 'Gume'))}
                 ${itemBtn('part', 'wrench', t('gd_item_parts', 'Deli'))}
                 ${state.vehicleCategory === 'moto' ? itemBtn('oprema', 'shield', t('cl_sub_oprema', 'Moto oprema')) : ''}
             </div>
-        </div>
+           </div>`;
+
+    root.innerHTML = `
+        ${heroHtml}
 
         <div class="oglasi-layout">
             <aside class="oglasi-sidebar">

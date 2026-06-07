@@ -65,10 +65,6 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
 
         // Entry type
         entryType: draft.entryType || 'classic',
-        vin: draft.vin || null,
-        vinVerified: draft.vinVerified || false,
-        vinDetails: draft.vinData ? { ...draft.vinData } : null,
-        vinOverrides: draft.vinOverrides || {},
 
         // Item kind: 'vehicle' (default) | 'part' | 'tire' | 'oprema' | 'plovilo' | 'motor'
         itemType,
@@ -130,6 +126,7 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         make: draft.make || '',
         model: draft.model || '',
         variant: draft.variant || '',
+        linija: draft.linija || '',
         year: Number(draft.year) || new Date().getFullYear(),
         mileageKm: Number(draft.mileageKm) || 0,
         color: draft.color || '',
@@ -148,6 +145,7 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         hullMaterial: draft.hullMaterial || '',
         engineCount: draft.engineCount ? Number(draft.engineCount) : null,
         driveSystem: draft.driveSystem || '',
+        engineBrand: draft.engineBrand || '',
         maxSpeedKn: draft.maxSpeedKn ? Number(draft.maxSpeedKn) : null,
         fuelTankL: draft.fuelTankL ? Number(draft.fuelTankL) : null,
         waterTankL: draft.waterTankL ? Number(draft.waterTankL) : null,

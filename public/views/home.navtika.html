@@ -62,7 +62,11 @@
                 #navtikaHomeSearch .nh-slider-labels { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted,#94a3b8); margin-top:0.4rem; }
                 #navtikaHomeSearch .nh-slider-val { font-size:0.78rem; font-weight:700; color:var(--color-primary-start); }
                 #navtikaHomeSearch .nh-actions { display:flex; gap:1rem; align-items:center; justify-content:center; margin-top:0.75rem; flex-wrap:wrap; }
-                @media (max-width:600px) { #navtikaHomeSearch .nh-row { flex-direction:column; } }
+                @media (max-width:600px) {
+                    #navtikaHomeSearch .nh-row { flex-direction:column; align-items:stretch; }
+                    #navtikaHomeSearch .pill-select-wrapper,
+                    #navtikaHomeSearch .pill-input-wrapper { width: 100% !important; }
+                }
             </style>
 
             <!-- Vrstica 1: Vrsta plovila · Moč motorja · Ure motorja -->
@@ -71,6 +75,12 @@
                     <label for="nav-home-cat">Vrsta plovila</label>
                     <div class="pill-select-wrapper">
                         <select id="nav-home-cat" name="cat" class="pill-input"></select>
+                    </div>
+                </div>
+                <div class="nh-field">
+                    <label for="nav-home-subcat">Kategorija</label>
+                    <div class="pill-select-wrapper">
+                        <select id="nav-home-subcat" name="subcat" class="pill-input" disabled></select>
                     </div>
                 </div>
                 <div class="nh-field">
@@ -106,7 +116,25 @@
                 </div>
             </div>
 
-            <!-- Vrstica 3: 3 gumbi -->
+            <!-- Vrstica 3: Prodaja / Najem toggles -->
+            <div style="display:flex; gap:1.5rem; justify-content:center; margin-bottom:1rem;">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+                    <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Prodaja</span>
+                    <label class="remember-toggle" title="Prodaja">
+                        <input type="checkbox" class="remember-check" id="homeNavProdajaToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+                    <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Najem</span>
+                    <label class="remember-toggle" title="Najem">
+                        <input type="checkbox" class="remember-check" id="homeNavNajemToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Vrstica 4: 3 gumbi -->
             <div class="nh-actions">
                 <button type="reset" class="pill-btn secondary" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem;" title="Ponastavi">
                     <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Ponastavi

@@ -133,7 +133,9 @@ export function createCustomSelect(select) {
             const optionElem = document.createElement('div');
             optionElem.className = 'custom-select-option';
             if (index === select.selectedIndex) optionElem.classList.add('selected');
-            
+            if (opt.dataset.popularLabel) optionElem.classList.add('popular-label');
+            if (opt.dataset.popular) optionElem.dataset.popular = 'true';
+
             if (isColorSelect && opt.value) {
                 optionElem.innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(opt.value)}<span>${opt.text}</span></div>`;
             } else {
@@ -249,6 +251,11 @@ export function createCustomSelect(select) {
             let hasResults = false;
 
             options.forEach(opt => {
+                // When searching, always hide the popular group (labels + duplicates)
+                if (term && (opt.classList.contains('popular-label') || opt.dataset.popular === 'true')) {
+                    opt.classList.add('hidden');
+                    return;
+                }
                 const text = opt.textContent.toLowerCase();
                 if (text.includes(term)) {
                     opt.classList.remove('hidden');

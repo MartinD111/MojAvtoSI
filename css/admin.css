@@ -14,7 +14,7 @@
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 .adm-sidebar {
     width: 232px;
-    min-height: 100vh;
+    height: 100vh;
     background: #0d1117;
     display: flex;
     flex-direction: column;
@@ -56,9 +56,11 @@
 
 /* Nav */
 .adm-nav {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     padding: .5rem 0 .75rem;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
 }
 .adm-nav::-webkit-scrollbar { display: none; }
@@ -116,6 +118,7 @@
 
 /* Footer */
 .adm-sidebar-footer {
+    flex-shrink: 0;
     padding: .85rem 1rem;
     border-top: 1px solid rgba(255,255,255,.06);
 }

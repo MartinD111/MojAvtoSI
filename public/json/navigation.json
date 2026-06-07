@@ -1,0 +1,53 @@
+{
+  "navItems": [
+    {
+      "id": "home",
+      "label": "Domov",
+      "icon": "home",
+      "href": "#/"
+    },
+    {
+      "id": "oglasi",
+      "label": "Oglasi",
+      "icon": "newspaper",
+      "children": [
+        { "id": "avto", "label": "Avtomobili", "href": "#/iskanje?cat=avto", "icon": "car" },
+        { "id": "moto", "label": "Motorji", "href": "#/iskanje?cat=moto", "icon": "bike" },
+        { "id": "gospodarska", "label": "Gospodarska", "href": "#/iskanje?cat=gospodarska", "icon": "truck" },
+        { "id": "kmetijska", "label": "Kmetijska", "href": "#/iskanje?cat=kmetijska", "icon": "tractor" }
+      ]
+    },
+    {
+      "id": "dealers",
+      "label": "Avtohiše",
+      "icon": "building-2",
+      "href": "#/zemljevid"
+    },
+    {
+      "id": "parts",
+      "label": "Gume in deli",
+      "icon": "disc-3",
+      "href": "#/gume-in-deli"
+    }
+  ],
+  "userNavItems": [
+    {
+      "id": "dashboard",
+      "label": "Nadzorna plošča",
+      "icon": "layout-dashboard",
+      "href": "#/dashboard"
+    },
+    {
+      "id": "profile",
+      "label": "Moj profil",
+      "icon": "user",
+      "href": "#/profil"
+    },
+    {
+      "id": "garage",
+      "label": "Moja garaža",
+      "icon": "warehouse",
+      "href": "#/garaža"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import { brandsFileFor } from '../data/brandFiles.js';
 
 export function initEvaluatePage() {
     console.log('[EvaluatePage] init');
+    window.scrollTo({ top: 0, behavior: 'instant' });
     bindEvaluationLogic();
     if (window.lucide) {
         window.lucide.createIcons();

@@ -13,15 +13,51 @@ body {
 
 /* Reset in osnovne nastavitve */
 :root {
-  --color-primary-start: #2563eb;
-  /* blue-600 */
-  --color-primary-end: #4f46e5;
-  /* indigo-600 */
-  --color-bg-base: #f1f5f9;
-  /* subtle slate for better contrast with white cards */
-  --shadow-glass: 0 10px 40px -10px rgba(0, 0, 0, 0.12);
-  --border-glass: 1.5px solid rgba(0, 0, 0, 0.1);
-  --bg-glass: rgba(255, 255, 255, 1);
+  /* Material 3 Expressive Tokens */
+  --md-sys-color-primary: #2563eb;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #dbeafe;
+  --md-sys-color-on-primary-container: #1e3a8a;
+
+  --md-sys-color-secondary: #4f46e5;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #e0e7ff;
+  --md-sys-color-on-secondary-container: #312e81;
+
+  --md-sys-color-surface: #fdfbff;
+  --md-sys-color-on-surface: #1a1c1e;
+  --md-sys-color-surface-variant: #e1e2e8;
+  --md-sys-color-on-surface-variant: #44474e;
+  
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #f7f9fd;
+  --md-sys-color-surface-container: #f1f4f9;
+  --md-sys-color-surface-container-high: #eceef4;
+  --md-sys-color-surface-container-highest: #e6e8ee;
+
+  --md-sys-color-outline: #74777f;
+  --md-sys-color-outline-variant: #c4c6d0;
+
+  /* Expressive border radius */
+  --md-sys-shape-corner-extra-large: 32px;
+  --md-sys-shape-corner-large: 24px;
+  --md-sys-shape-corner-medium: 16px;
+  --md-sys-shape-corner-small: 8px;
+
+  /* Elevations */
+  --md-sys-elevation-1: 0 1px 3px 1px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --md-sys-elevation-2: 0 2px 6px 2px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --md-sys-elevation-3: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15);
+
+  /* Legacy aliases for existing code */
+  --color-primary-start: var(--md-sys-color-primary);
+  --color-primary-end: var(--md-sys-color-secondary);
+  --color-bg-base: var(--md-sys-color-surface-container);
+  
+  /* Replace glassmorphism with M3 surfaces */
+  --shadow-glass: var(--md-sys-elevation-2);
+  --border-glass: 1px solid var(--md-sys-color-outline-variant);
+  --bg-glass: var(--md-sys-color-surface);
 }
 
 * {
@@ -29,133 +65,42 @@ body {
 }
 
 body.dark-mode {
-  --color-bg-base: #020617;
-  /* Deep black-slate for true solid dark mode */
-  --bg-glass: rgba(15, 23, 42, 1);
+  --md-sys-color-primary: #a8c7fa;
+  --md-sys-color-on-primary: #062e6f;
+  --md-sys-color-primary-container: #0842a0;
+  --md-sys-color-on-primary-container: #d3e3fd;
+
+  --md-sys-color-surface: #1a1c1e;
+  --md-sys-color-on-surface: #e2e2e6;
+  --md-sys-color-surface-variant: #44474e;
+  --md-sys-color-on-surface-variant: #c4c6d0;
+
+  --md-sys-color-surface-container-lowest: #0f1011;
+  --md-sys-color-surface-container-low: #1a1c1e;
+  --md-sys-color-surface-container: #202224;
+  --md-sys-color-surface-container-high: #2b2d2f;
+  --md-sys-color-surface-container-highest: #36383a;
+
+  --md-sys-color-outline: #8e9099;
+  --md-sys-color-outline-variant: #44474e;
+
+  /* Elevations */
+  --md-sys-elevation-1: 0 1px 3px 1px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --md-sys-elevation-2: 0 2px 6px 2px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --md-sys-elevation-3: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15);
+
+  --color-bg-base: #0a1628;
+  --bg-glass: rgba(18, 32, 58, 1);
   --border-glass: 1.5px solid rgba(255, 255, 255, 0.12);
   --shadow-glass: 0 20px 60px rgba(0, 0, 0, 0.6);
+  --md-sys-color-surface-container: #12203a;
   color: #f1f5f9;
-  /* slate-100 */
 }
 
-/* ── MojaNavtika Platform Marine Vibes overrides ── */
-body.platform-navtika {
-  --color-bg-base: #e0f2fe; /* Light sky blue (ocean tint) */
-  --bg-glass: rgba(240, 249, 255, 0.94); /* soft sky-50 glass */
-  --border-glass: 1.5px solid rgba(2, 132, 199, 0.26); /* visible ocean blue borders */
-  --shadow-glass: 0 10px 40px -10px rgba(2, 132, 199, 0.16);
-}
-
-/* Light mode card and input color overrides for navtika */
-body.platform-navtika .adv-accordion {
-  background: rgba(240, 249, 255, 0.75) !important;
-  border: 1px solid rgba(2, 132, 199, 0.22) !important;
-}
-
-body.platform-navtika .adv-input,
-body.platform-navtika .glass-select,
-body.platform-navtika .custom-select-trigger {
-  background: #ffffff !important;
-  border: 1.5px solid rgba(2, 132, 199, 0.3) !important;
-  color: #0369a1 !important;
-}
-
-body.platform-navtika .adv-input:focus,
-body.platform-navtika .glass-select:focus,
-body.platform-navtika .custom-select-trigger:focus {
-  border-color: var(--color-primary-start) !important;
-  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15) !important;
-}
-
-body.platform-navtika .custom-select-menu {
-  background: #ffffff !important;
-  border-color: rgba(2, 132, 199, 0.3) !important;
-}
-
-body.platform-navtika .custom-select-option:hover {
-  background: rgba(2, 132, 199, 0.1) !important;
-}
-
-body.platform-navtika .pill-input {
-  background: #ffffff !important;
-  border-color: rgba(2, 132, 199, 0.3) !important;
-  color: #0369a1 !important;
-}
-
-body.platform-navtika .pill-input:focus {
-  border-color: var(--color-primary-start) !important;
-  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15) !important;
-}
-
-body.platform-navtika .adv-chip {
-  background: rgba(240, 249, 255, 0.85);
-  border-color: rgba(2, 132, 199, 0.22);
-  color: #0369a1;
-}
-
-body.platform-navtika .adv-chip:hover {
-  background: #ffffff;
-  border-color: var(--color-primary-start);
-}
-
-body.platform-navtika.dark-mode {
-  --color-bg-base: #021b33; /* rich deep navy/ocean blue base */
-  --bg-glass: rgba(3, 27, 51, 0.96); /* rich deep ocean card bg */
-  --border-glass: 1.5px solid rgba(14, 165, 233, 0.32); /* sea blue borders */
-  --shadow-glass: 0 20px 60px rgba(1, 15, 33, 0.6);
-  color: #e2f1fc; /* soft sky/sea blue text tint */
-}
-
-/* Deep ocean card and input color overrides for dark mode */
-body.platform-navtika.dark-mode .adv-accordion {
-  background: rgba(6, 32, 59, 0.9) !important;
-  border: 1px solid rgba(14, 165, 233, 0.3) !important;
-}
-
-body.platform-navtika.dark-mode .adv-input,
-body.platform-navtika.dark-mode .glass-select,
-body.platform-navtika.dark-mode .custom-select-trigger {
-  background: rgba(4, 21, 38, 0.8) !important;
-  border: 1.5px solid rgba(14, 165, 233, 0.35) !important;
-  color: #e2f1fc !important;
-}
-
-body.platform-navtika.dark-mode .custom-select-menu {
-  background: #052038 !important;
-  border-color: rgba(14, 165, 233, 0.35) !important;
-}
-
-body.platform-navtika.dark-mode .custom-select-option:hover {
-  background: rgba(14, 165, 233, 0.25) !important;
-}
-
-body.platform-navtika.dark-mode .pill-input {
-  background: rgba(4, 21, 38, 0.85) !important;
-  border-color: rgba(14, 165, 233, 0.38) !important;
-  color: #e2f1fc !important;
-}
-
-body.platform-navtika.dark-mode .pill-input:focus {
-  background: rgba(4, 21, 38, 0.95) !important;
-  border-color: var(--color-primary-start) !important;
-}
-
-body.platform-navtika.dark-mode .body-type-card {
-  background: rgba(14, 165, 233, 0.08) !important;
-  border-color: rgba(14, 165, 233, 0.25) !important;
-}
-
-body.platform-navtika.dark-mode .body-type-card:hover,
-body.platform-navtika.dark-mode .body-type-card.active {
-  background: rgba(14, 165, 233, 0.25) !important;
-  border-color: var(--color-primary-start) !important;
-}
-
-body.platform-navtika.dark-mode .nav-pill.active-pill {
-  background: rgba(14, 165, 233, 0.3) !important;
-  border-color: rgba(14, 165, 233, 0.5) !important;
-  color: #ffffff;
-}
+/* ── MojaNavtika platform styles moved to css/styles.navtika.css ──
+   All `body.platform-navtika` rules now live in styles.navtika.css, which is
+   loaded ONLY on the navtika build (injected by main.js). Do not add
+   navtika-specific rules here — they would ship to MojAvto too. */
 
 body.dark-mode .glass-card {
   background: var(--bg-glass);
@@ -309,16 +254,14 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Glassmorphism Utilities */
+/* Material 3 Cards (Replacing Glassmorphism) */
 .glass-card {
   background: var(--bg-glass);
-  backdrop-filter: blur(24px);
-  /* blur-2xl */
-  -webkit-backdrop-filter: blur(24px);
   border: var(--border-glass);
   box-shadow: var(--shadow-glass);
-  border-radius: 2.5rem;
-  /* rounded-pill like for cards */
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  color: var(--md-sys-color-on-surface);
+  transition: box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* Rounded-full variation for headers/pills */
@@ -1331,25 +1274,21 @@ body.dark-mode .news-card-content p {
   top: 0 !important;
 }
 
-/* ── 13-inch laptop: compact list-layout cards ───────────────── */
-@media (min-width: 769px) and (max-width: 1380px) {
-  /* Hide seller note and note-contact-row */
-  .seller-note-card,
-  .note-contact-row {
-    display: none !important;
+/* ── Compact listing cards: 14-inch laptops with sidebar ── */
+@media (min-width: 769px) and (max-width: 1600px) {
+  /* Shrink image so content area gets more horizontal space */
+  .listing-card-img {
+    width: 300px !important;
+    height: 220px !important;
   }
 
-  /* Hide inline action buttons from the action-bar */
-  .listing-card-actions {
-    display: none !important;
+  .listing-card-content {
+    min-height: 220px !important;
   }
 
-  /* Show bottom actions row below secondary specs */
-  .listing-card-bottom-actions {
-    display: flex !important;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
+  /* Hide seller note but keep note-contact-row for location */
+  .seller-note-card {
+    display: none !important;
   }
 
   /* Price: prevent clipping */
@@ -1359,19 +1298,59 @@ body.dark-mode .news-card-content p {
   }
 
   .price-value {
-    font-size: 1rem !important;
+    font-size: 1.6rem !important;
     white-space: nowrap !important;
   }
 
   /* Tighten spec pills */
   .spec-pill {
-    font-size: 0.7rem !important;
-    padding: 0.25rem 0.5rem !important;
+    font-size: 0.68rem !important;
+    padding: 0.22rem 0.45rem !important;
   }
 
-  /* Tighten title */
+  .spec-pill i {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .primary-specs {
+    gap: 0.4rem !important;
+  }
+
+  .spec-group-left {
+    gap: 0.35rem !important;
+  }
+
+  /* Title */
   .listing-card-title {
-    font-size: 0.95rem !important;
+    font-size: 1.3rem !important;
+  }
+}
+
+/* ── 13-inch and smaller: also hide inline actions, show bottom row ── */
+@media (min-width: 769px) and (max-width: 1380px) {
+  .listing-card-actions {
+    display: none !important;
+  }
+
+  .listing-card-bottom-actions {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .listing-card-img {
+    width: 240px !important;
+    height: 190px !important;
+  }
+
+  .listing-card-content {
+    min-height: 190px !important;
+  }
+
+  .listing-card-title {
+    font-size: 1.15rem !important;
   }
 }
 
@@ -1518,6 +1497,7 @@ main {
   width: 100%;
   margin: 0 auto;
 }
+
 
 /* Filter panel */
 .filter-panel {
@@ -2694,6 +2674,29 @@ select:focus {
   padding: 32px !important;
 }
 
+@media (max-width: 768px) {
+  .search-box-container {
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+
+  .main-search-card {
+    padding: 20px !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+
+  .search-box.glass-card {
+    box-sizing: border-box;
+  }
+
+  .home-container {
+    padding: 0;
+    box-sizing: border-box;
+  }
+}
+
 .search-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -3099,6 +3102,26 @@ body.dark-mode .custom-select-container.disabled .custom-select-trigger {
 .custom-select-option.highlighted {
   background: rgba(0, 0, 0, 0.1) !important;
   color: var(--color-primary-start) !important;
+}
+
+.custom-select-option.popular-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  cursor: default;
+  padding: 6px 16px 4px;
+  pointer-events: none;
+}
+
+.custom-select-option.popular-label:hover {
+  background: none;
+  color: #9ca3af;
+}
+
+body.dark-mode .custom-select-option.popular-label {
+  color: rgba(255,255,255,0.35);
 }
 
 body.dark-mode .custom-select-option.highlighted {
@@ -3972,6 +3995,27 @@ body.dark-mode .sponsored-specs span {
   text-align: center;
 }
 
+/* Stacked star rating: stars on top, label beneath (replaces the old text pill). */
+.price-rating.price-rating--stacked {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  text-transform: none;
+  border-radius: 0;
+  align-self: flex-end;
+}
+.price-rating.price-rating--stacked .price-rating-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--text-muted, #64748b);
+  white-space: nowrap;
+}
+
 .price-rating.rating-green {
   background: rgba(16, 185, 129, 0.1);
   color: #059669;
@@ -4210,14 +4254,11 @@ body.dark-mode .spec-pill.type-pill {
 }
 
 .seller-note-card {
-  flex: 1;
-  min-width: 0;
-  max-width: 100%;
+  width: fit-content;
   background: rgba(99, 102, 241, 0.06);
   border: 1px solid rgba(99, 102, 241, 0.12);
   padding: 0.7rem 1.5rem;
   border-radius: 99px;
-  /* Pill shaped */
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -4227,8 +4268,6 @@ body.dark-mode .spec-pill.type-pill {
   font-style: italic;
   font-weight: 600;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .seller-note-card span {
@@ -4256,7 +4295,6 @@ body.dark-mode .spec-pill.type-pill {
   align-items: center;
   justify-content: center;
   transform: translateY(-2px);
-  /* Slight nudge up for perfect alignment */
   margin: 0 !important;
   box-shadow: none !important;
 }
@@ -4265,6 +4303,8 @@ body.dark-mode .spec-pill.type-pill {
   box-shadow: none !important;
   transform: translateY(-2px) !important;
 }
+
+/* Navtika card footer styles (.navtika-card-*) moved to css/styles.navtika.css */
 
 .grid-contact-btn {
   display: none !important;
@@ -4592,9 +4632,35 @@ body.dark-mode .spec-pill:hover {
   z-index: 10;
 }
 
-/* Condition badge on image — desktop hidden, mobile-only via media query */
+/* Condition + rental badge shared base — top-left of image, solid color */
+.condition-overlay-badge,
+.rental-overlay-badge {
+  display: inline-flex;
+  align-items: center;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+/* Condition (Rabljeno / Novo) — dark solid */
 .condition-overlay-badge {
-  display: none;
+  background: #1e293b;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.35);
+}
+
+/* Rental badge — yellow solid */
+.rental-overlay-badge {
+  background: #f59e0b;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
 .condition-pill {
@@ -5065,8 +5131,10 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
 @media (max-width: 768px) {
   .oglasi-layout {
     flex-direction: column;
-    margin: 1rem;
+    margin: 1rem auto;
+    padding: 0 1rem;
     gap: 1rem;
+    width: calc(100% - 2rem);
   }
 
   /* ── Sidebar: unified pill → squircle container ── */
@@ -5350,6 +5418,57 @@ body.dark-mode .view-toggle-btn:hover {
     grid-template-columns: unset;
   }
 
+  /* Shrink listing card image and pills so nothing overflows */
+  .listing-card-img {
+    width: 160px !important;
+    height: 160px !important;
+  }
+
+  .listing-card-content {
+    min-height: unset;
+    padding: 0.85rem 1rem 0.85rem 0.4rem;
+  }
+
+  .listing-card-title {
+    font-size: 1rem !important;
+  }
+
+  .spec-pill {
+    font-size: 0.65rem !important;
+    padding: 0.2rem 0.45rem !important;
+    gap: 0.25rem !important;
+  }
+
+  .spec-pill i {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .primary-specs {
+    gap: 0.4rem !important;
+    flex-wrap: wrap;
+  }
+
+  .spec-group-left {
+    gap: 0.35rem !important;
+    flex-wrap: wrap;
+  }
+
+  .listing-card-action-bar {
+    gap: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .listing-card-img {
+    width: 130px !important;
+    height: 130px !important;
+  }
+
+  .spec-pill {
+    font-size: 0.6rem !important;
+    padding: 0.18rem 0.38rem !important;
+  }
 }
 
 .legend-overlay {
@@ -5676,21 +5795,84 @@ body.dark-mode .icon-only-circle {
   color: #94a3b8;
 }
 
-body.dark-mode .icon-only-circle:hover {
+body.dark-mode .icon-only-mode .icon-only-circle:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.search-action-pill {
+  flex: 1;
+  height: 44px !important;
+  width: auto !important;
+  padding: 0 1rem !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  border-radius: 999px !important;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-action-pill i {
+  width: 15px !important;
+  height: 15px !important;
+  flex-shrink: 0;
+}
+
+.reset-pill {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #4b5563;
+}
+
+.reset-pill:hover {
+  background: #ffffff;
+  border-color: var(--color-primary-start);
+  color: var(--color-primary-start);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.12);
+}
+
+.filters-pill {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #4b5563;
+}
+
+.filters-pill:hover {
+  background: #ffffff;
+  border-color: var(--color-primary-start);
+  color: var(--color-primary-start);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.12);
+}
+
+body.dark-mode .reset-pill,
+body.dark-mode .filters-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+body.dark-mode .reset-pill:hover,
+body.dark-mode .filters-pill:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
 }
 
 .compact-search {
-  flex: 0.85;
-  /* Skrajšan pill za iskanje */
+  flex: 1;
   width: auto !important;
-  /* Overriding width: 100% from .search-submit-btn */
   height: 44px !important;
-  padding: 0 1.2rem !important;
-  /* Slightly more padding for better look while shortened */
-  font-size: 0.85rem !important;
-  /* Slightly larger font for readability */
+  padding: 0 1rem !important;
+  font-size: 0.82rem !important;
   font-weight: 700 !important;
   border-radius: 999px !important;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
@@ -6329,36 +6511,6 @@ body.dark-mode .se-field textarea {
   flex-shrink: 0;
 }
 
-.bbe-ai-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1rem;
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  border-radius: 0.75rem;
-  font-size: 0.83rem;
-  font-weight: 600;
-  color: #92400e;
-  margin-bottom: 1rem;
-}
-
-.ai-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  border-top-color: #f59e0b;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .bbe-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -6647,120 +6799,6 @@ body.dark-mode .bbe-equip-item {
   background: rgba(255, 255, 255, 0.04);
 }
 
-/* ── Smart Import (create-listing entry step) ────────────────────────────── */
-
-.cl-smart-import {
-  background: rgba(37, 99, 235, 0.05);
-  border: 1.5px solid rgba(37, 99, 235, 0.18);
-  border-radius: 1rem;
-  padding: 1.1rem 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.cl-smart-import-header {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #1e40af;
-  margin-bottom: 0.35rem;
-}
-
-.cl-smart-import-header i {
-  width: 17px;
-  height: 17px;
-  flex-shrink: 0;
-}
-
-.cl-smart-import-badge {
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 0.15rem 0.45rem;
-  background: var(--color-primary-start);
-  color: #fff;
-  border-radius: 9999px;
-  letter-spacing: 0.05em;
-  margin-left: 0.15rem;
-}
-
-.cl-smart-import-hint {
-  font-size: 0.78rem;
-  color: #64748b;
-  margin-bottom: 0.75rem;
-  line-height: 1.5;
-}
-
-.cl-smart-import-row {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.cl-smart-import-row .cl-input {
-  flex: 1;
-  min-width: 0;
-}
-
-.cl-smart-import-loader {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.65rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #2563eb;
-}
-
-.cl-spin {
-  animation: spin 0.8s linear infinite;
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-}
-
-.cl-smart-import-warning {
-  margin-top: 0.65rem;
-  padding: 0.55rem 0.85rem;
-  background: rgba(22, 163, 74, 0.08);
-  border: 1px solid rgba(22, 163, 74, 0.25);
-  border-radius: 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #15803d;
-}
-
-.cl-smart-import-error {
-  margin-top: 0.65rem;
-  padding: 0.55rem 0.85rem;
-  background: rgba(239, 68, 68, 0.07);
-  border: 1px solid rgba(239, 68, 68, 0.22);
-  border-radius: 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #dc2626;
-}
-
-/* Highlight imported fields in subsequent steps */
-.cl-input.imported-field,
-.cl-select.imported-field {
-  border-color: #2563eb !important;
-  background: rgba(37, 99, 235, 0.04) !important;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
-}
-
-body.dark-mode .cl-smart-import {
-  background: rgba(37, 99, 235, 0.08);
-  border-color: rgba(37, 99, 235, 0.25);
-}
-
-body.dark-mode .cl-smart-import-header {
-  color: #93c5fd;
-}
-
-body.dark-mode .cl-smart-import-hint {
-  color: #94a3b8;
-}
-
 .results-header {
   display: flex;
   justify-content: space-between;
@@ -6867,6 +6905,13 @@ body.dark-mode .results-header h1 span {
   text-align: center !important;
   width: 100% !important;
   margin: 0 !important;
+}
+
+#carListingsContainer.grid-layout .price-rating--stacked {
+  align-items: center !important;
+  align-self: center !important;
+  text-align: center !important;
+  width: 100% !important;
 }
 
 #carListingsContainer.grid-layout .listing-card-title {
@@ -8656,3 +8701,78 @@ body.dark-mode .custom-v-icon {
     height: 32px;
     margin-bottom: 0.5rem;
 }
+
+/* ── Navtika: Oprema za plovila landing search UI ──────────────────────────── */
+.nav-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+}
+.nav-toggle-switch input { opacity: 0; width: 0; height: 0; }
+.nav-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: #cbd5e1;
+    border-radius: 999px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.nav-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+.nav-toggle-switch input:checked + .nav-toggle-slider { background: #22c55e; }
+.nav-toggle-switch input:checked + .nav-toggle-slider::before { transform: translateX(18px); }
+
+.nav-oprema-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.6rem;
+}
+
+.nav-oprema-cat-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.9rem 0.5rem;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 0.875rem;
+    background: var(--bg-surface, #fff);
+    color: var(--text-dark, #111);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    gap: 0.25rem;
+}
+.nav-oprema-cat-btn:hover {
+    border-color: var(--color-primary, #2563eb);
+    background: rgba(37,99,235,0.05);
+}
+.nav-oprema-cat-btn.active {
+    border-color: var(--color-primary, #2563eb);
+    background: rgba(37,99,235,0.1);
+    color: var(--color-primary, #2563eb);
+    font-weight: 700;
+}
+body.dark-mode .nav-oprema-cat-btn {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    color: #e2e8f0;
+}
+body.dark-mode .nav-oprema-cat-btn.active {
+    background: rgba(37,99,235,0.2);
+    border-color: #3b82f6;
+    color: #93c5fd;
+}
+

@@ -294,6 +294,98 @@ export const PART_TAXONOMY = {
         { value: 'ostalo', label: 'Ostalo', icon: 'more-horizontal', types: [{ value: 'ostalo', label: 'Ostalo' }] },
     ],
 
+    colni: [
+        {
+            value: 'motorji', label: 'Izvenkrmni in vkrmni motorji', icon: 'cog', types: [
+                { value: 'izvenkrmni', label: 'Izvenkrmni motor (outboard)' },
+                { value: 'vkrmni', label: 'Vkrmni motor (inboard)' },
+                { value: 'srednjeosni', label: 'Srednjeosni motor (sterndrive)' },
+                { value: 'rezervni_deli_motorja', label: 'Rezervni deli motorja' },
+                { value: 'propelerji', label: 'Propelerji' },
+            ],
+        },
+        {
+            value: 'navigacija_elektronika', label: 'Navigacija in elektronika', icon: 'navigation', types: [
+                { value: 'gps_ploter', label: 'GPS ploter / chartplotter' },
+                { value: 'vhf_radio', label: 'VHF radio' },
+                { value: 'sonar_globinomer', label: 'Sonar / globinomer' },
+                { value: 'autopilot', label: 'Avtopilot' },
+                { value: 'radar', label: 'Radar' },
+                { value: 'ais', label: 'AIS sprejemnik/oddajnik' },
+                { value: 'instrumenti', label: 'Navigacijski instrumenti' },
+            ],
+        },
+        {
+            value: 'varnost_resevanje', label: 'Varnostna in reševalna oprema', icon: 'life-buoy', types: [
+                { value: 'resevalni_pasovi', label: 'Reševalni pasovi / jopiči' },
+                { value: 'resevalni_splav', label: 'Reševalni splav' },
+                { value: 'sos_rakete', label: 'SOS rakete / signalna oprema' },
+                { value: 'epirb', label: 'EPIRB / PLB' },
+                { value: 'gasilniki', label: 'Gasilniki' },
+                { value: 'trup_vrat', label: 'Neopren obleke / suhe obleke' },
+            ],
+        },
+        {
+            value: 'sidrna_oprema', label: 'Sidrna in privezna oprema', icon: 'anchor', types: [
+                { value: 'sidra', label: 'Sidra' },
+                { value: 'sidrisca_vijuge', label: 'Sidrišča in vijuge' },
+                { value: 'privezne_vrvi', label: 'Privezne vrvi' },
+                { value: 'vitlo_sidra', label: 'Vitlo sidra (ankerwinde)' },
+                { value: 'verige', label: 'Sidrne verige' },
+            ],
+        },
+        {
+            value: 'jadra_opalov', label: 'Jadra in opalov', icon: 'wind', types: [
+                { value: 'glavno_jadro', label: 'Glavno jadro' },
+                { value: 'gennaker_spi', label: 'Gennaker / spi' },
+                { value: 'flok', label: 'Flok / genua' },
+                { value: 'opalov', label: 'Opalov / blok' },
+                { value: 'jarbol', label: 'Jarboli in giki' },
+            ],
+        },
+        {
+            value: 'elektrika_akumulator', label: 'Elektrika in akumulatorji', icon: 'zap', types: [
+                { value: 'akumulatorji', label: 'Akumulatorji' },
+                { value: 'solarni_paneli', label: 'Solarni paneli' },
+                { value: 'polnilci', label: 'Polnilci / inverterji' },
+                { value: 'razsvetljava', label: 'Ladijska razsvetljava (LED)' },
+                { value: 'generator', label: 'Generator' },
+            ],
+        },
+        {
+            value: 'hidravlika_krmilje', label: 'Hidravlika in krmilje', icon: 'move', types: [
+                { value: 'krmilo_hidravlicno', label: 'Hidravlično krmilo' },
+                { value: 'krmilo_kabelsko', label: 'Kabelsko krmilo' },
+                { value: 'trimni_tab', label: 'Trimni tab / stabilizatorji' },
+            ],
+        },
+        {
+            value: 'trup_paluba', label: 'Trup in paluba', icon: 'square', types: [
+                { value: 'luknje_ventili', label: 'Podvodni ventili in luknje' },
+                { value: 'vesla_obese', label: 'Vesla in obese' },
+                { value: 'lestve', label: 'Lestve za vstop v vodo' },
+                { value: 'pokrovi_luke', label: 'Pokrovi in luke' },
+                { value: 'tende_bimini', label: 'Tende / bimini' },
+            ],
+        },
+        {
+            value: 'bivalna_oprema', label: 'Bivalna oprema plovila', icon: 'home', types: [
+                { value: 'stedilnik_kuhalnik', label: 'Štedilnik / kuhalnik' },
+                { value: 'toaleta_wc', label: 'Ladijsko stranišče (WC)' },
+                { value: 'hladilnik', label: 'Hladilnik / zamrzovalnik' },
+                { value: 'plin_sistem', label: 'Plinska napeljava' },
+            ],
+        },
+        {
+            value: 'privez_transport', label: 'Privez in transport', icon: 'truck', types: [
+                { value: 'priklopnik', label: 'Čolnarski priklopnik' },
+                { value: 'pokrov_cerade', label: 'Pokrov / čerada za plovilo' },
+                { value: 'vhodni_sistem', label: 'Pasarela / stopnice' },
+            ],
+        },
+        { value: 'ostalo', label: 'Ostalo', icon: 'more-horizontal', types: [{ value: 'ostalo', label: 'Ostalo' }] },
+    ],
+
     'prosti-cas': [
         {
             value: 'podvozje_obesa', label: 'Podvozje in obesa', icon: 'move', types: [

@@ -224,6 +224,29 @@
         margin-bottom: 0 !important;
     }
 
+    /* When excluded section is visible, keep vehicleCards as a droppable target */
+    #excludedVehiclesSection:not([style*="display:none"]) ~ * #vehicleCards:empty,
+    #vehicleCards.vec-drop-target-visible {
+        min-height: 36px;
+        border: 1px dashed rgba(255,255,255,0.2);
+        border-radius: 8px;
+        padding: 0.25rem;
+    }
+
+    #vehicleCards.vec-drop-target-visible::after {
+        content: 'Povleci sem';
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.35);
+        align-self: center;
+        padding: 0 0.5rem;
+    }
+
+    #vehicleCards.vec-drag-over,
+    #excludedVehicleCards.vec-drag-over {
+        background: rgba(99, 102, 241, 0.12);
+        border-color: rgba(99, 102, 241, 0.5) !important;
+    }
+
     .adv-chip.adv-chip-sm {
         border-radius: 9999px !important;
     }
@@ -395,6 +418,14 @@
                             <div class="pill-select-wrapper">
                                 <select id="variant" name="variant" disabled class="pill-input">
                                     <option value="" data-i18n-key="cl_trim_variant">Različica</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="linijaGroup" style="flex:1; max-width:240px; min-width:180px; display:none;">
+                            <label for="linija" class="adv-label" style="text-align:center;" data-i18n-key="cl_label_line">Linija</label>
+                            <div class="pill-select-wrapper">
+                                <select id="linija" name="linija" class="pill-input">
+                                    <option value="" data-i18n-key="cl_label_line">Linija</option>
                                 </select>
                             </div>
                         </div>

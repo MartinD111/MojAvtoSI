@@ -4,6 +4,7 @@ import { getVehicles, addVehicle, updateVehicle, deleteVehicle } from '../servic
 import { getBrands, getModels } from '../services/adminService.js';
 import { t } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
+import { scrollIntoViewOnMobile } from '../utils/viewport.js';
 
 export async function initProfilePage() {
     const container = document.getElementById('app-container');
@@ -239,7 +240,7 @@ export async function initProfilePage() {
         document.getElementById('vehicle-form-title').textContent = t('profile_new_vehicle_title');
         document.getElementById('vf-submit').textContent = t('profile_save_vehicle');
         formWrap.style.display = 'block';
-        formWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        scrollIntoViewOnMobile(formWrap, { behavior: 'smooth', block: 'nearest' });
     });
 
     document.getElementById('vf-cancel').addEventListener('click', () => {
@@ -375,7 +376,7 @@ export async function initProfilePage() {
                     document.getElementById('vf-winter-brand').value = v.tires?.winter?.brand || '';
 
                     formWrap.style.display = 'block';
-                    formWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    scrollIntoViewOnMobile(formWrap, { behavior: 'smooth', block: 'nearest' });
                 });
             });
 

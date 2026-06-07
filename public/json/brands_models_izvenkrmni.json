@@ -1,12 +1,1975 @@
 {
-  "Yamaha": { "F4": ["F4"], "F9.9": ["F9.9"], "F40": ["F40"], "F70": ["F70"], "F115": ["F115"], "F200": ["F200"], "F300": ["F300"], "F425 XTO": ["F425 XTO"] },
-  "Mercury": { "F5": ["F5"], "F15": ["F15"], "F50": ["F50"], "F100": ["F100"], "F150": ["F150"], "Verado 250": ["Verado 250"], "Verado 350": ["Verado 350"], "Verado 600": ["Verado 600"] },
-  "Suzuki": { "DF6": ["DF6"], "DF20": ["DF20"], "DF60": ["DF60"], "DF115": ["DF115"], "DF175": ["DF175"], "DF300": ["DF300"], "DF350A": ["DF350A"] },
-  "Honda": { "BF5": ["BF5"], "BF20": ["BF20"], "BF50": ["BF50"], "BF100": ["BF100"], "BF150": ["BF150"], "BF250": ["BF250"] },
-  "Tohatsu": { "MFS6": ["MFS6"], "MFS20": ["MFS20"], "MFS60": ["MFS60"], "MFS115": ["MFS115"], "MFS140": ["MFS140"] },
-  "Selva": { "Guppy 5": ["Guppy 5"], "Dorado 40": ["Dorado 40"], "Murena 115": ["Murena 115"], "Swordfish 200": ["Swordfish 200"] },
-  "Mariner": { "F8": ["F8"], "F60": ["F60"], "F150": ["F150"] },
-  "Evinrude": { "E-TEC 30": ["E-TEC 30"], "E-TEC G2 150": ["E-TEC G2 150"], "E-TEC G2 300": ["E-TEC G2 300"] },
-  "Torqeedo": { "Travel 1103": ["Travel 1103 C"], "Cruise 3.0": ["Cruise 3.0 T", "Cruise 3.0 R"], "Cruise 12.0": ["Cruise 12.0"], "Deep Blue 50": ["Deep Blue 50"] },
-  "ePropulsion": { "Spirit 1.0": ["Spirit 1.0 Plus", "Spirit 1.0 Evo"], "Navy 3.0": ["Navy 3.0"], "Navy 6.0": ["Navy 6.0"] }
+  "AquaWatt": {
+    "AW 10.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "AW 10.0",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "AW 2.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "AW 2.0",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "AW 5.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "AW 5.0",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "Elco": {
+    "EP-10": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "EP-10",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "EP-20": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "EP-20",
+          "horsepower_km": 20
+        }
+      ]
+    },
+    "EP-30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "EP-30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "EP-5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "EP-5",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "ePropulsion": {
+    "Navy 3.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Navy 3.0",
+          "horsepower_km": 3
+        }
+      ]
+    },
+    "Navy 6.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Navy 6.0",
+          "horsepower_km": 6
+        }
+      ]
+    },
+    "Spirit 1.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Spirit 1.0 Plus",
+          "horsepower_km": 1
+        },
+        {
+          "trim": "Spirit 1.0 Evo",
+          "horsepower_km": 1
+        }
+      ]
+    }
+  },
+  "Evinrude": {
+    "E-TEC 30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "E-TEC 30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "E-TEC G2 150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "E-TEC G2 150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "E-TEC G2 300": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "E-TEC G2 300",
+          "horsepower_km": 300
+        }
+      ]
+    }
+  },
+  "Flux Marine": {
+    "FX 15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "FX 15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "FX 30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "FX 30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "FX 60": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "FX 60",
+          "horsepower_km": 60
+        }
+      ]
+    }
+  },
+  "Golden Motor": {
+    "HPM-3000": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "HPM-3000",
+          "horsepower_km": 2
+        }
+      ]
+    }
+  },
+  "Hangkai": {
+    "2-stroke 3.6": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2-stroke 3.6",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "4-stroke 5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "4-stroke 5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "4-stroke 8": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "4-stroke 8",
+          "horsepower_km": 8
+        }
+      ]
+    }
+  },
+  "Hidea": {
+    "HD15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "HD15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "HD30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "HD30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "HD5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "HD5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "HD9.9": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "HD9.9",
+          "horsepower_km": 10
+        }
+      ]
+    }
+  },
+  "Honda": {
+    "100": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "100",
+          "horsepower_km": 100
+        }
+      ]
+    },
+    "115": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "115",
+          "horsepower_km": 115
+        }
+      ]
+    },
+    "135": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "135",
+          "horsepower_km": 135
+        }
+      ]
+    },
+    "15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "2.3": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2.3",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "20": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "20",
+          "horsepower_km": 20
+        }
+      ]
+    },
+    "200": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "200",
+          "horsepower_km": 200
+        }
+      ]
+    },
+    "225": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "225",
+          "horsepower_km": 225
+        }
+      ]
+    },
+    "25": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "25",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "50",
+          "horsepower_km": 50
+        }
+      ]
+    },
+    "60": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "60",
+          "horsepower_km": 60
+        }
+      ]
+    },
+    "75": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "75",
+          "horsepower_km": 75
+        }
+      ]
+    },
+    "8": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "8",
+          "horsepower_km": 8
+        }
+      ]
+    },
+    "9.9": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "9.9",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "90": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "90",
+          "horsepower_km": 90
+        }
+      ]
+    },
+    "BF100": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "BF100",
+          "horsepower_km": 100
+        }
+      ]
+    },
+    "BF150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "BF150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "BF20": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "BF20",
+          "horsepower_km": 20
+        }
+      ]
+    },
+    "BF250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "BF250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "BF5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "BF5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "BF50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "BF50",
+          "horsepower_km": 50
+        }
+      ]
+    }
+  },
+  "Kohler": {
+    "SDMO": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "SDMO",
+          "horsepower_km": 10
+        }
+      ]
+    }
+  },
+  "Krautler": {
+    "E-Drive 1.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "E-Drive 1.0",
+          "horsepower_km": 1
+        }
+      ]
+    },
+    "E-Drive 2.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "E-Drive 2.0",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "E-Drive 5.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "E-Drive 5.0",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "Laverda": {
+    "L10": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "L10",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "L5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "L5",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "Lehr": {
+    "15.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "15.0",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "2.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2.5",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "25.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "25.0",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "3.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "3.5",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "5.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "5.0",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "9.9": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "9.9",
+          "horsepower_km": 10
+        }
+      ]
+    }
+  },
+  "Lian": {
+    "2-stroke 2.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2-stroke 2.5",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "2-stroke 4.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2-stroke 4.0",
+          "horsepower_km": 4
+        }
+      ]
+    }
+  },
+  "Mariner": {
+    "F150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "F60": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F60",
+          "horsepower_km": 60
+        }
+      ]
+    },
+    "F8": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F8",
+          "horsepower_km": 8
+        }
+      ]
+    }
+  },
+  "Mercury": {
+    "115": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "115",
+          "horsepower_km": 115
+        }
+      ]
+    },
+    "15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "2.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2.5",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "20": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "20",
+          "horsepower_km": 20
+        }
+      ]
+    },
+    "200": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "200",
+          "horsepower_km": 200
+        }
+      ]
+    },
+    "225": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "225",
+          "horsepower_km": 225
+        }
+      ]
+    },
+    "25": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "25",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "3.3": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "3.3",
+          "horsepower_km": 3
+        }
+      ]
+    },
+    "30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "300": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "300",
+          "horsepower_km": 300
+        }
+      ]
+    },
+    "350": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "350",
+          "horsepower_km": 350
+        }
+      ]
+    },
+    "4": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "4",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "400": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "400",
+          "horsepower_km": 400
+        }
+      ]
+    },
+    "450": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "450",
+          "horsepower_km": 450
+        }
+      ]
+    },
+    "5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "50",
+          "horsepower_km": 50
+        }
+      ]
+    },
+    "6": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "6",
+          "horsepower_km": 6
+        }
+      ]
+    },
+    "60": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "60",
+          "horsepower_km": 60
+        }
+      ]
+    },
+    "75": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "75",
+          "horsepower_km": 75
+        }
+      ]
+    },
+    "8": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "8",
+          "horsepower_km": 8
+        }
+      ]
+    },
+    "9.9": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "9.9",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "90": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "90",
+          "horsepower_km": 90
+        }
+      ]
+    },
+    "F100": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F100",
+          "horsepower_km": 100
+        }
+      ]
+    },
+    "F15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "F150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "F5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "F50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F50",
+          "horsepower_km": 50
+        }
+      ]
+    },
+    "Verado 250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Verado 250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "Verado 350": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Verado 350",
+          "horsepower_km": 350
+        }
+      ]
+    },
+    "Verado 600": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Verado 600",
+          "horsepower_km": 600
+        }
+      ]
+    }
+  },
+  "Neu Propulsion": {
+    "NP 10": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "NP 10",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "NP 5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "NP 5",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "Parsun": {
+    "F15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "F30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "F6": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F6",
+          "horsepower_km": 6
+        }
+      ]
+    }
+  },
+  "Pure Watercraft": {
+    "Pure Outboard": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Pure Outboard",
+          "horsepower_km": 10
+        },
+        {
+          "trim": "Pure Outboard",
+          "horsepower_km": 20
+        }
+      ]
+    }
+  },
+  "Ray Electric Outboards": {
+    "Ray 15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Ray 15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "Ray 25": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Ray 25",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "Ray 5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Ray 5",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "Razor": {
+    "Razor 10": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Razor 10",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "Razor 15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Razor 15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "Razor 5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Razor 5",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "Regen": {
+    "E-Outboard": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "E-Outboard",
+          "horsepower_km": 3
+        }
+      ]
+    }
+  },
+  "Selva": {
+    "Biscay 250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Biscay 250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "Dorado 40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Dorado 40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "Guppy 5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Guppy 5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "Marlin 350": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Marlin 350",
+          "horsepower_km": 350
+        }
+      ]
+    },
+    "Murena 115": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Murena 115",
+          "horsepower_km": 115
+        }
+      ]
+    },
+    "Swordfish 200": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Swordfish 200",
+          "horsepower_km": 200
+        }
+      ]
+    }
+  },
+  "Suzuki": {
+    "DF115": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF115",
+          "horsepower_km": 115
+        }
+      ]
+    },
+    "DF140": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF140",
+          "horsepower_km": 140
+        }
+      ]
+    },
+    "DF15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "DF150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "DF175": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF175",
+          "horsepower_km": 175
+        }
+      ]
+    },
+    "DF2.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF2.5",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "DF20": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF20",
+          "horsepower_km": 20
+        }
+      ]
+    },
+    "DF200": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF200",
+          "horsepower_km": 200
+        }
+      ]
+    },
+    "DF25": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF25",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "DF250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "DF30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "DF300": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF300",
+          "horsepower_km": 300
+        }
+      ]
+    },
+    "DF350A": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF350A",
+          "horsepower_km": 350
+        }
+      ]
+    },
+    "DF40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "DF50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF50",
+          "horsepower_km": 50
+        }
+      ]
+    },
+    "DF6": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF6",
+          "horsepower_km": 6
+        }
+      ]
+    },
+    "DF60": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF60",
+          "horsepower_km": 60
+        }
+      ]
+    },
+    "DF70": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF70",
+          "horsepower_km": 70
+        }
+      ]
+    },
+    "DF9.9": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF9.9",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "DF90": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "DF90",
+          "horsepower_km": 90
+        }
+      ]
+    }
+  },
+  "Temo": {
+    "450": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "450",
+          "horsepower_km": 0
+        }
+      ]
+    },
+    "600": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "600",
+          "horsepower_km": 1
+        }
+      ]
+    }
+  },
+  "ThrustMe": {
+    "Kicker": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Kicker",
+          "horsepower_km": 1
+        }
+      ]
+    },
+    "PowerDrive": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "PowerDrive",
+          "horsepower_km": 2
+        }
+      ]
+    }
+  },
+  "Tohatsu": {
+    "MFS115": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS115",
+          "horsepower_km": 115
+        }
+      ]
+    },
+    "MFS140": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS140",
+          "horsepower_km": 140
+        }
+      ]
+    },
+    "MFS15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "MFS2.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS2.5",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "MFS20": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS20",
+          "horsepower_km": 20
+        }
+      ]
+    },
+    "MFS200": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS200",
+          "horsepower_km": 200
+        }
+      ]
+    },
+    "MFS25": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS25",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "MFS250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "MFS3.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS3.5",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "MFS30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "MFS40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "MFS5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS5",
+          "horsepower_km": 5
+        }
+      ]
+    },
+    "MFS50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS50",
+          "horsepower_km": 50
+        }
+      ]
+    },
+    "MFS6": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS6",
+          "horsepower_km": 6
+        }
+      ]
+    },
+    "MFS60": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS60",
+          "horsepower_km": 60
+        }
+      ]
+    },
+    "MFS75": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS75",
+          "horsepower_km": 75
+        }
+      ]
+    },
+    "MFS8": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS8",
+          "horsepower_km": 8
+        }
+      ]
+    },
+    "MFS9.8": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS9.8",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "MFS90": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "MFS90",
+          "horsepower_km": 90
+        }
+      ]
+    }
+  },
+  "Torqeedo": {
+    "Cruise 12.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Cruise 12.0",
+          "horsepower_km": 12
+        }
+      ]
+    },
+    "Cruise 2.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Cruise 2.0",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "Cruise 3.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Cruise 3.0 T",
+          "horsepower_km": 3
+        },
+        {
+          "trim": "Cruise 3.0 R",
+          "horsepower_km": 3
+        }
+      ]
+    },
+    "Cruise 4.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Cruise 4.0",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "Deep Blue 25": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Deep Blue 25",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "Deep Blue 40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Deep Blue 40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "Deep Blue 50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Deep Blue 50",
+          "horsepower_km": 50
+        }
+      ]
+    },
+    "Deep Blue 80": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Deep Blue 80",
+          "horsepower_km": 80
+        }
+      ]
+    },
+    "Travel 1003": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Travel 1003 C",
+          "horsepower_km": 1
+        }
+      ]
+    },
+    "Travel 1103": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Travel 1103 C",
+          "horsepower_km": 1
+        }
+      ]
+    },
+    "Travel 503": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Travel 503",
+          "horsepower_km": 0
+        }
+      ]
+    },
+    "Travel 603": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "Travel 603",
+          "horsepower_km": 1
+        }
+      ]
+    }
+  },
+  "Volvo Penta": {
+    "D1": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "D1",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "D2": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "D2",
+          "horsepower_km": 20
+        }
+      ]
+    }
+  },
+  "Weimin": {
+    "2-stroke 2.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2-stroke 2.0",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "2-stroke 3.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2-stroke 3.5",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "2-stroke 5.0": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2-stroke 5.0",
+          "horsepower_km": 5
+        }
+      ]
+    }
+  },
+  "Yamaha": {
+    "115": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "115",
+          "horsepower_km": 115
+        }
+      ]
+    },
+    "15": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "15",
+          "horsepower_km": 15
+        }
+      ]
+    },
+    "150": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "150",
+          "horsepower_km": 150
+        }
+      ]
+    },
+    "175": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "175",
+          "horsepower_km": 175
+        }
+      ]
+    },
+    "2.5": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "2.5",
+          "horsepower_km": 2
+        }
+      ]
+    },
+    "20": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "20",
+          "horsepower_km": 20
+        }
+      ]
+    },
+    "200": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "200",
+          "horsepower_km": 200
+        }
+      ]
+    },
+    "225": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "225",
+          "horsepower_km": 225
+        }
+      ]
+    },
+    "25": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "25",
+          "horsepower_km": 25
+        }
+      ]
+    },
+    "250": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "250",
+          "horsepower_km": 250
+        }
+      ]
+    },
+    "30": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "30",
+          "horsepower_km": 30
+        }
+      ]
+    },
+    "300": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "300",
+          "horsepower_km": 300
+        }
+      ]
+    },
+    "350": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "350",
+          "horsepower_km": 350
+        }
+      ]
+    },
+    "4": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "4",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "425": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "425 XTO",
+          "horsepower_km": 425
+        }
+      ]
+    },
+    "50": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "50",
+          "horsepower_km": 50
+        }
+      ]
+    },
+    "6": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "6",
+          "horsepower_km": 6
+        }
+      ]
+    },
+    "60": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "60",
+          "horsepower_km": 60
+        }
+      ]
+    },
+    "70": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "70",
+          "horsepower_km": 70
+        }
+      ]
+    },
+    "75": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "75",
+          "horsepower_km": 75
+        }
+      ]
+    },
+    "8": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "8",
+          "horsepower_km": 8
+        }
+      ]
+    },
+    "9.9": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "9.9",
+          "horsepower_km": 10
+        }
+      ]
+    },
+    "90": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "90",
+          "horsepower_km": 90
+        }
+      ]
+    },
+    "F115": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F115",
+          "horsepower_km": 115
+        }
+      ]
+    },
+    "F200": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F200",
+          "horsepower_km": 200
+        }
+      ]
+    },
+    "F300": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F300",
+          "horsepower_km": 300
+        }
+      ]
+    },
+    "F4": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F4",
+          "horsepower_km": 4
+        }
+      ]
+    },
+    "F40": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F40",
+          "horsepower_km": 40
+        }
+      ]
+    },
+    "F425 XTO": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F425 XTO",
+          "horsepower_km": 425
+        }
+      ]
+    },
+    "F70": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F70",
+          "horsepower_km": 70
+        }
+      ]
+    },
+    "F9.9": {
+      "type": null,
+      "variants": [
+        {
+          "trim": "F9.9",
+          "horsepower_km": 10
+        }
+      ]
+    }
+  }
 }

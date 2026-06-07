@@ -38,23 +38,52 @@ for _, r in df.iterrows():
     trim = r['trim'].strip() or model
     if not brand or not model:
         continue
+    
     brand_d = data.setdefault(brand, OrderedDict())
+    seen_trims = brand_d.setdefault(model + '_seen', set())
     trims = brand_d.setdefault(model, [])
-    if trim in trims:
+    
+    if trim in seen_trims:
         dropped_trims += 1
         continue
-    trims.append(trim)
+    
+    seen_trims.add(trim)
+    
+    variant = { 'trim': trim }
+    fuel = r['fuel'].strip()
+    if fuel:
+        fuel_lower = fuel.lower()
+        fuel_map = {
+            'phev': 'Plug-in Hybrid', 'plug-in hybrid': 'Plug-in Hybrid', 'plugin hybrid': 'Plug-in Hybrid',
+            'petrol/oil': 'Petrol', 'petrol': 'Petrol', 'bencin': 'Petrol', 'gasoline': 'Petrol',
+            'diesel': 'Diesel', 'dizel': 'Diesel',
+            'electric': 'Electric', 'električni': 'Electric', 'elektricni': 'Electric', 'ev': 'Electric',
+            'hybrid': 'Hybrid', 'hibrid': 'Hybrid',
+            'lpg': 'LPG', 'cng': 'CNG', 'hydrogen': 'Hydrogen', 'vodik': 'Hydrogen', 'steam': 'Steam'
+        }
+        variant['fuel_type'] = fuel_map.get(fuel_lower, fuel)
+        
+    cc = r['cc'].strip()
+    if cc:
+        try:
+            variant['engine_capacity_cc'] = int(float(cc))
+        except ValueError:
+            pass
+            
+    trims.append(variant)
 
 out = OrderedDict()
 for brand in sorted(data, key=str.lower):
     out[brand] = OrderedDict()
     for model in sorted(data[brand], key=str.lower):
+        if model.endswith('_seen'):
+            continue
         out[brand][model] = data[brand][model]
 
 with open(OUT, 'w', encoding='utf-8') as f:
     json.dump(out, f, ensure_ascii=False, indent=2)
 
-n_models = sum(len(v) for v in out.values())
+n_models = sum(1 for b in out.values() for m in b.keys())
 n_trims = sum(len(t) for b in out.values() for t in b.values())
 print('Raw rows           :', raw)
 print('After exact dedupe :', deduped, '(removed %d)' % (raw - deduped))
