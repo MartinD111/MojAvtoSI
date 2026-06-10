@@ -509,10 +509,13 @@ export async function deleteListing(listingId) {
 
 import { sampleCars } from '../data/sampleListings.js';
 import { sampleBoats } from '../data/sampleBoats.js';
+import { sampleAuctionCars, sampleAuctionBoats } from '../data/sampleAuctions.js';
 import { PLATFORM } from '../config/platform.js';
 
-// Active platform's demo/fallback listings.
-const SAMPLE_LISTINGS = PLATFORM.id === 'navtika' ? sampleBoats : sampleCars;
+// Active platform's demo/fallback listings (regular + auction).
+const SAMPLE_LISTINGS = PLATFORM.id === 'navtika'
+    ? [...sampleBoats, ...sampleAuctionBoats]
+    : [...sampleCars, ...sampleAuctionCars];
 
 // ── Get single listing ────────────────────────────────────────────────────────
 export async function getListingById(listingId) {

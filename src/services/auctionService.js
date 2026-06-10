@@ -16,6 +16,14 @@ import {
     query, orderBy, onSnapshot, serverTimestamp, runTransaction, Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase.js';
+import { sampleAuctionState } from '../data/sampleAuctions.js';
+
+// Demo auctions (entryType:'auction' sample listings) have no Firestore doc.
+// We serve their state from sampleAuctionState so the board + detail page render
+// and the live box (current bid, history, chart) is populated without a backend.
+function sampleAuction(listingId) {
+    return sampleAuctionState[listingId] || null;
+}
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -97,12 +105,20 @@ export async function createAuction(listingId, opts) {
 
 // ── Read ────────────────────────────────────────────────────────────────────
 export async function getAuction(listingId) {
+    const demo = sampleAuction(listingId);
+    if (demo) return demo.auction;
     const snap = await getDoc(doc(db, 'auctions', listingId));
     return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
 /** Live-subscribe to the auction doc. Returns an unsubscribe fn. */
 export function subscribeAuction(listingId, cb) {
+    const demo = sampleAuction(listingId);
+    if (demo) {
+        // No live updates for demo auctions — emit the static snapshot once.
+        Promise.resolve().then(() => cb(demo.auction));
+        return () => {};
+    }
     return onSnapshot(doc(db, 'auctions', listingId), snap => {
         cb(snap.exists() ? { id: snap.id, ...snap.data() } : null);
     });
@@ -110,6 +126,11 @@ export function subscribeAuction(listingId, cb) {
 
 /** Live-subscribe to the bid history (newest first). Returns an unsubscribe fn. */
 export function subscribeBids(listingId, cb) {
+    const demo = sampleAuction(listingId);
+    if (demo) {
+        Promise.resolve().then(() => cb(demo.bids));
+        return () => {};
+    }
     const q = query(collection(db, 'auctions', listingId, 'bids'), orderBy('createdAt', 'desc'));
     return onSnapshot(q, snap => {
         cb(snap.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -117,6 +138,8 @@ export function subscribeBids(listingId, cb) {
 }
 
 export async function getBids(listingId) {
+    const demo = sampleAuction(listingId);
+    if (demo) return demo.bids;
     const q = query(collection(db, 'auctions', listingId, 'bids'), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -134,6 +157,7 @@ export async function getBids(listingId) {
  */
 export async function placeBid(listingId, amountEur, user, contract = {}, notifyPref = {}) {
     if (!user) throw new Error('Za oddajo ponudbe se morate prijaviti.');
+    if (sampleAuction(listingId)) throw new Error('To je predstavitvena dražba — ponudb ni mogoče oddati.');
     const amount = Number(amountEur);
     if (!Number.isFinite(amount) || amount <= 0) throw new Error('Neveljaven znesek ponudbe.');
 

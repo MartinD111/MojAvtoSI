@@ -6,7 +6,9 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\marti\\\\AMS d.o.o\\\\MojAvto.si\" -Force)",
       "Bash(Select-Object Name, FullName)",
       "PowerShell(npm install signature_pad jspdf --save)",
-      "PowerShell(npm run build:avto 2>&1)"
+      "PowerShell(npm run build:avto 2>&1)",
+      "Bash(node --check src/data/sampleAuctions.js)",
+      "Bash(echo \"EXIT:$?\")"
     ]
   }
 }
