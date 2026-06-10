@@ -16,6 +16,9 @@ import {
     getScrapingSources, createScrapingSource, updateScrapingSource, deleteScrapingSource,
     getCatalogProductsAdmin, createCatalogProduct, updateCatalogProduct, deleteCatalogProduct,
     clearCarTaxonomy,
+    getTaxonomyProposals, approveTaxonomyProposal, rejectTaxonomyProposal,
+    getAdminAuctions, getAdminAuctionBids, adminSetAuctionStatus,
+    adminForceCloseAuction, getAuctionAlertsAdmin,
 } from '../services/adminService.js';
 import { PLATFORM } from '../config/platform.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
@@ -103,6 +106,7 @@ function renderShell() {
 
           <div class="adm-nav-group-label">Vsebina</div>
           ${navItem('listings',     'listings',  'Oglasi')}
+          ${navItem('drazbe',       'featured',  'Dražbe')}
           ${navItem('users',        'users',     'Uporabniki')}
           ${navItem('featured',     'featured',  'Sponzorirani')}
           ${navItem('reports',      'reports',   'Poročila')}
@@ -189,6 +193,7 @@ function navigateTo(section) {
 const sections = {
     dashboard:    renderDashboard,
     listings:     renderListings,
+    drazbe:       renderDrazbe,
     users:        renderUsers,
     taxonomy:     renderTaxonomy,
     'vozila-uvoz': renderVozilaUvoz,
@@ -631,6 +636,7 @@ async function renderTaxonomy() {
                 : `<button class="adm-tab" data-tax-cat="izpuhi">🏍 Izpuhi</button>
                    <button class="adm-tab" data-tax-cat="oprema">🛡 Moto oprema</button>
                    <button class="adm-tab" data-tax-cat="linije">🏎 Linije</button>`}
+              <button class="adm-tab" data-tax-cat="predlogi" id="tax-tab-predlogi">💡 Predlogi</button>
             </div>
             <select id="tax-type-filter" class="adm-select adm-input-sm" style="width:140px;display:none">
               <option value="">Vse vrste</option>
@@ -677,6 +683,9 @@ async function renderTaxonomy() {
         } else if (activeCat === 'linije') {
             setTaxControls(false);
             renderVehicleLinesTab();
+        } else if (activeCat === 'predlogi') {
+            setTaxControls(false);
+            renderTaxonomyProposalsTab();
         } else {
             setTaxControls(true);
             // type filter visibility is managed per-category inside renderTaxTable
@@ -1072,6 +1081,87 @@ async function renderVehicleLinesTab() {
             _taxUnsaved = false;
             updateUnsavedBadge();
             showToast('vehicle_lines.json prenesen. Kopirajte v public/json/.', 'success');
+        });
+
+    } catch (e) { wrap.innerHTML = errBox(e); }
+}
+
+// ── Taxonomy Proposals review ─────────────────────────────────────────────────
+async function renderTaxonomyProposalsTab() {
+    const wrap = document.getElementById('tax-tree');
+    const stats = document.getElementById('tax-stats');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam predloge…</div>';
+
+    try {
+        const all = await getTaxonomyProposals({ status: 'pending' });
+        if (stats) stats.textContent = `${all.length} predlogov čaka na pregled`;
+
+        if (!all.length) {
+            wrap.innerHTML = '<div class="adm-empty" style="padding:2rem">Ni novih predlogov.</div>';
+            return;
+        }
+
+        const typeLabel = { linija: 'Linija', equipment: 'Oprema', make: '⛵ Znamka', model: '⛵ Model', vrsta: '⛵ Vrsta' };
+        const typeBadge = { linija: 'adm-badge-blue', equipment: 'adm-badge-green', make: 'adm-badge-orange', model: 'adm-badge-orange', vrsta: 'adm-badge-orange' };
+        const rows = all.map(p => `
+          <tr data-proposal-id="${escHtml(p.id)}">
+            <td><span class="adm-badge ${typeBadge[p.type] || 'adm-badge-gray'}">${typeLabel[p.type] || p.type}</span></td>
+            <td>${escHtml(p.brand || '—')}</td>
+            <td>${escHtml(p.category || p.model || '—')}</td>
+            <td>
+              <input class="adm-input adm-input-sm proposal-value-input" style="width:220px"
+                value="${escHtml(p.value)}" data-original="${escHtml(p.value)}" />
+            </td>
+            <td style="white-space:nowrap">
+              <button class="adm-btn adm-btn-sm adm-btn-green proposal-approve-btn">✓ Odobri</button>
+              <button class="adm-btn adm-btn-sm adm-btn-red proposal-reject-btn" style="margin-left:.25rem">✕ Zavrni</button>
+            </td>
+          </tr>`).join('');
+
+        wrap.innerHTML = `
+          <div style="padding:1rem">
+            <p style="font-size:.82rem;color:#6b7280;margin:0 0 1rem">
+              Predlogi so linije in oprema, ki so jih uporabniki dodali med objavo oglasa.
+              Odobreni predlogi se prikažejo v iskanju za tisto znamko. Vrednost lahko uredite pred odobritvijo.
+            </p>
+            <div class="adm-table-wrap">
+              <table class="adm-table">
+                <thead><tr>
+                  <th>Vrsta</th><th>Znamka</th><th>Kategorija</th><th>Vrednost</th><th>Akcija</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>`;
+
+        wrap.querySelectorAll('tr[data-proposal-id]').forEach(row => {
+            const id = row.dataset.proposalId;
+            const input = row.querySelector('.proposal-value-input');
+
+            row.querySelector('.proposal-approve-btn').addEventListener('click', async () => {
+                const edited = input.value.trim();
+                if (!edited) { showToast('Vrednost ne sme biti prazna.', 'error'); return; }
+                try {
+                    await approveTaxonomyProposal(id, edited !== input.dataset.original ? edited : null);
+                    row.remove();
+                    const remaining = wrap.querySelectorAll('tr[data-proposal-id]').length;
+                    if (stats) stats.textContent = `${remaining} predlogov čaka na pregled`;
+                    if (!remaining) wrap.querySelector('tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:1.5rem">Vsi predlogi so obdelani.</td></tr>';
+                    showToast('Predlog odobren.', 'success');
+                } catch (e) { showToast('Napaka: ' + e.message, 'error'); }
+            });
+
+            row.querySelector('.proposal-reject-btn').addEventListener('click', async () => {
+                try {
+                    await rejectTaxonomyProposal(id);
+                    row.remove();
+                    const remaining = wrap.querySelectorAll('tr[data-proposal-id]').length;
+                    if (stats) stats.textContent = `${remaining} predlogov čaka na pregled`;
+                    if (!remaining) wrap.querySelector('tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:1.5rem">Vsi predlogi so obdelani.</td></tr>';
+                    showToast('Predlog zavrnjen.', 'info');
+                } catch (e) { showToast('Napaka: ' + e.message, 'error'); }
+            });
         });
 
     } catch (e) { wrap.innerHTML = errBox(e); }
@@ -2520,6 +2610,111 @@ async function loadReportsTable(status) {
             showToast(action === 'dismiss' ? 'Poročilo zavrnjeno.' : 'Oglas odstranjen.', 'success');
             loadReportsTable(status);
         };
+    } catch (e) { wrap.innerHTML = errBox(e); }
+}
+
+// ── Dražbe (auctions) ──────────────────────────────────────────────────────────
+async function renderDrazbe() {
+    const c = document.getElementById('adm-content');
+    c.innerHTML = `
+      <div class="adm-card">
+        <div class="adm-card-header">
+          <h3>Dražbe</h3>
+          <span class="adm-sub">Backend (samodejno zaprtje, e-pošta, plačila) je še v pripravi — glej docs/AUCTIONS_HANDOFF.md</span>
+        </div>
+        <div class="adm-table-wrap" id="drazbe-table"><div class="adm-loading"><div class="adm-spinner"></div></div></div>
+      </div>
+      <div class="adm-card" style="margin-top:1.25rem;">
+        <div class="adm-card-header"><h3>Prijave na obvestila (newsletter)</h3></div>
+        <div class="adm-table-wrap" id="drazbe-alerts"><div class="adm-loading"><div class="adm-spinner"></div></div></div>
+      </div>`;
+    loadDrazbeTable();
+    loadAlertsTable();
+}
+
+function auctionStatusBadge(s) {
+    const map = {
+        active:   ['Aktivna', 'adm-badge-green'],
+        paused:   ['Pavza',   'adm-badge-yellow'],
+        ended:    ['Zaključena', 'adm-badge'],
+        cancelled:['Preklicana', 'adm-badge-red'],
+    };
+    const [label, cls] = map[s] || [s || '—', 'adm-badge'];
+    return `<span class="adm-badge ${cls}">${label}</span>`;
+}
+
+async function loadDrazbeTable() {
+    const wrap = document.getElementById('drazbe-table');
+    if (!wrap) return;
+    try {
+        const auctions = await getAdminAuctions();
+        if (!auctions.length) { wrap.innerHTML = '<div class="adm-empty">Ni dražb.</div>'; return; }
+        const eur = n => (Number(n) || 0).toLocaleString('sl-SI') + ' €';
+        wrap.innerHTML = `
+          <table class="adm-table">
+            <thead><tr><th>Oglas ID</th><th>Izklicna</th><th>Trenutna</th><th>Ponudb</th><th>Konec</th><th>Status</th><th>Akcije</th></tr></thead>
+            <tbody>
+              ${auctions.map(a => `
+                <tr>
+                  <td class="adm-sub"><a href="#/drazba?id=${a.listingId}" target="_blank">${escHtml(a.listingId)}</a></td>
+                  <td class="adm-sub">${eur(a.startPriceEur)}</td>
+                  <td><strong>${eur(a.currentBidEur)}</strong></td>
+                  <td class="adm-sub">🔨 ${a.bidCount || 0} · 👤 ${a.bidderCount || 0}</td>
+                  <td class="adm-sub">${fmtDate(a.endsAt)}</td>
+                  <td>${auctionStatusBadge(a.status)}</td>
+                  <td class="adm-actions">
+                    <button class="adm-btn adm-btn-xs" onclick="window.__aucBids('${a.listingId}')">Ponudbe</button>
+                    ${a.status === 'active'
+                        ? `<button class="adm-btn adm-btn-xs adm-btn-yellow" onclick="window.__aucStatus('${a.listingId}','paused')">Pavza</button>
+                           <button class="adm-btn adm-btn-xs adm-btn-red" onclick="window.__aucClose('${a.listingId}')">Zaključi</button>`
+                        : a.status === 'paused'
+                            ? `<button class="adm-btn adm-btn-xs adm-btn-green" onclick="window.__aucStatus('${a.listingId}','active')">Aktiviraj</button>`
+                            : '<span class="adm-sub">—</span>'}
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
+
+        window.__aucStatus = async (id, status) => {
+            await adminSetAuctionStatus(id, status);
+            await addAuditLog(_adminUser.uid, _adminUser.displayName || _adminUser.email, 'auction_status', id, { status });
+            showToast('Status dražbe posodobljen.', 'success');
+            loadDrazbeTable();
+        };
+        window.__aucClose = async (id) => {
+            if (!confirm('Zaključim to dražbo in določim zmagovalca po najvišji ponudbi?')) return;
+            await adminForceCloseAuction(id);
+            await addAuditLog(_adminUser.uid, _adminUser.displayName || _adminUser.email, 'auction_close', id, {});
+            showToast('Dražba zaključena.', 'success');
+            loadDrazbeTable();
+        };
+        window.__aucBids = async (id) => {
+            const bids = await getAdminAuctionBids(id);
+            alert(bids.length
+                ? bids.map(b => `${b.bidderName || b.bidderId?.slice(0,6)} — ${(Number(b.amountEur)||0).toLocaleString('sl-SI')} €`).join('\n')
+                : 'Ni ponudb.');
+        };
+    } catch (e) { wrap.innerHTML = errBox(e); }
+}
+
+async function loadAlertsTable() {
+    const wrap = document.getElementById('drazbe-alerts');
+    if (!wrap) return;
+    try {
+        const alerts = await getAuctionAlertsAdmin();
+        if (!alerts.length) { wrap.innerHTML = '<div class="adm-empty">Ni prijav.</div>'; return; }
+        wrap.innerHTML = `
+          <table class="adm-table">
+            <thead><tr><th>E-pošta</th><th>Zanima</th><th>Datum</th></tr></thead>
+            <tbody>
+              ${alerts.map(a => `
+                <tr>
+                  <td>${escHtml(a.email || '—')}</td>
+                  <td class="adm-sub">${escHtml(a.criteria?.interest || '—')}</td>
+                  <td class="adm-sub">${fmtDate(a.createdAt)}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
     } catch (e) { wrap.innerHTML = errBox(e); }
 }
 

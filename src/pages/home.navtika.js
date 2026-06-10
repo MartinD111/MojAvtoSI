@@ -111,6 +111,19 @@ function bindSearch() {
     const form = document.getElementById('navtikaHomeSearch');
     if (!form) return;
 
+    // Search-mode pills (Išči oglase / Išči dražbe).
+    let homeSearchMode = 'oglasi';
+    const modePills = document.getElementById('homeSearchMode');
+    if (modePills) {
+        modePills.querySelectorAll('.home-search-mode-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                homeSearchMode = pill.dataset.searchMode;
+                modePills.querySelectorAll('.home-search-mode-pill')
+                    .forEach(p => p.classList.toggle('active', p === pill));
+            });
+        });
+    }
+
     // Length slider live display (Dual range)
     const sliderFrom = document.getElementById('nav-home-length-from');
     const sliderTo = document.getElementById('nav-home-length-to');
@@ -200,7 +213,8 @@ function bindSearch() {
         if (ht) params.set('engineHoursTo', ht);
         if (prodaja) params.set('prodaja', '1');
         if (najem) params.set('najem', '1');
-        window.location.hash = `/oglasi?${params.toString()}`;
+        const dest = homeSearchMode === 'drazbe' ? '/drazbe' : '/oglasi';
+        window.location.hash = `${dest}?${params.toString()}`;
     });
 }
 

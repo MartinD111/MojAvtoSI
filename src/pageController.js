@@ -26,6 +26,8 @@ const pageModules = {
         }
         return import('./pages/listing.js').then(m => m.initListingPage());
     },
+    drazbe: () => import('./pages/drazbe.js').then(m => m.initDrazbePage()),
+    'auction-listing': () => import('./pages/auction-listing.js').then(m => m.initAuctionListingPage()),
     'gume-in-deli': () => import('./pages/gume-in-deli.js').then(m => m.initGumeInDeliPage()),
     'catalog-product': () => import('./pages/catalog-product.js').then(m => m.initCatalogProductPage()),
     'create-listing': () => import('./pages/create-listing.js').then(m => m.initCreateListingPage()),

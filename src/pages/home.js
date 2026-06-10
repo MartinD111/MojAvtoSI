@@ -372,6 +372,19 @@ function setupSearchForm() {
     const priceInput = document.getElementById("home-price-to");
     if (priceInput) setupNumericFormatter(priceInput);
 
+    // Search-mode pills (Išči oglase / Išči dražbe) — drive the submit target.
+    let homeSearchMode = 'oglasi';
+    const modePills = document.getElementById('homeSearchMode');
+    if (modePills) {
+        modePills.querySelectorAll('.home-search-mode-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                homeSearchMode = pill.dataset.searchMode;
+                modePills.querySelectorAll('.home-search-mode-pill')
+                    .forEach(p => p.classList.toggle('active', p === pill));
+            });
+        });
+    }
+
     // Simple search redirect
     const form = document.getElementById('homeSearchForm');
     if (form) {
@@ -399,7 +412,8 @@ function setupSearchForm() {
             if (price) query += `&priceTo=${price}`;
             if (location) query += `&loc=${encodeURIComponent(location)}`;
 
-            window.location.hash = `/oglasi${query}`;
+            const target = homeSearchMode === 'drazbe' ? '/drazbe' : '/oglasi';
+            window.location.hash = `${target}${query}`;
         });
     }
 

@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase.js';
 import { ALL_EQUIPMENT_VALUES } from '../data/equipment.js';
 import { key as lsKey } from '../config/storageKeys.js';
+import { createAuction, AUCTION_PACKAGES } from './auctionService.js';
 
 // ── Image upload ──────────────────────────────────────────────────────────────
 export async function uploadImages(files, userId) {
@@ -63,8 +64,14 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         favoriteCount: 0,
         contactCount: 0,
 
-        // Entry type
+        // Entry type — 'classic' | 'bulk-import' | 'auction'
         entryType: draft.entryType || 'classic',
+        // Auction (dražba) — denormalized onto the listing so cards/boards can read
+        // the deadline without a second fetch. Full auction state lives in
+        // auctions/{listingId} (see auctionService). Null for non-auction listings.
+        auctionDurationWeeks: draft.entryType === 'auction' ? (Number(draft.auctionDurationWeeks) || 3) : null,
+        startPriceEur: draft.entryType === 'auction' ? (Number(draft.startPriceEur) || Number(draft.priceEur) || 0) : null,
+        endsAt: null, // set below once we know the timestamp (mirrors auctions doc)
 
         // Item kind: 'vehicle' (default) | 'part' | 'tire' | 'oprema' | 'plovilo' | 'motor'
         itemType,
@@ -137,6 +144,11 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         firstRegistration: draft.firstRegistration || '',
         registeredUntil: draft.registeredUntil || '',
 
+        // Navtika custom taxonomy (user-entered when not found in plovila JSON)
+        customMake: draft._customMake ? draft._customMake.trim() : null,
+        customModel: draft._customModel ? draft._customModel.trim() : null,
+        customVrsta: draft._customVrsta ? draft._customVrsta.trim() : null,
+
         // Navtika / vessel fields
         engineHoursUsed: draft.engineHoursUsed !== '' ? (Number(draft.engineHoursUsed) || 0) : null,
         lengthM: draft.lengthM ? Number(draft.lengthM) : null,
@@ -158,6 +170,7 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         transmission: draft.transmission || '',
         driveType: draft.driveType || '',
         engineCc: Number(draft.engineCc) || 0,
+        engineConfig: draft.engineConfig || '',
         powerKw: Number(draft.powerKw) || 0,
         co2: Number(draft.co2) || 0,
         emissionClass: draft.emissionClass || '',
@@ -173,6 +186,14 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
             ? draft.equipment.filter(v => v && ALL_EQUIPMENT_VALUES.includes(v))
             : [],
 
+        // User-submitted custom equipment — stored as-is; not filtered against whitelist
+        customEquipment: Array.isArray(draft.customEquipment)
+            ? draft.customEquipment.filter(ce => ce && ce.value && ce.category)
+            : [],
+
+        // Custom linija (user-entered, pending admin approval for taxonomy)
+        customLinija: draft._customLinija ? draft._customLinija.trim() : null,
+
         // Exhaust details (moto only)
         exhaustBrand: draft.exhaustBrand || null,
         exhaustType: draft.exhaustType || null,
@@ -187,8 +208,11 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         // Description
         description: draft.description || '',
 
-        // Price
-        priceEur: Number(draft.priceEur) || 0,
+        // Price — for auctions this holds the starting price so existing price
+        // display/sort code keeps working; the live bid lives in the auctions doc.
+        priceEur: draft.entryType === 'auction'
+            ? (Number(draft.startPriceEur) || Number(draft.priceEur) || 0)
+            : (Number(draft.priceEur) || 0),
         salePriceEur: draft.salePriceEur ? Number(draft.salePriceEur) : null,
         callForPrice: draft.callForPrice || false,
         priceNegotiable: draft.priceNegotiable || false,
@@ -239,6 +263,104 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
     };
 
     const newDoc = await addDoc(collection(db, 'listings'), listing);
+
+    // ── Auction (dražba) ──────────────────────────────────────────────────────
+    // Create the sibling auctions/{listingId} doc and mirror endsAt back onto the
+    // listing so boards can sort/filter by deadline. Payment for the package
+    // (4,99 € / 9,99 €) is a stub here — TODO(backend): confirm via Stripe webhook.
+    if (draft.entryType === 'auction') {
+        const pkg = AUCTION_PACKAGES[draft.auctionPackageId] || AUCTION_PACKAGES.auction3w;
+        const weeks = Number(draft.auctionDurationWeeks) || pkg.weeks;
+        try {
+            await createAuction(newDoc.id, {
+                sellerId: user.uid,
+                startPriceEur: listing.startPriceEur,
+                durationWeeks: weeks,
+                reservePriceEur: draft.reservePriceEur ? Number(draft.reservePriceEur) : null,
+                sellerContract: draft.sellerContract || null,
+                packageId: pkg.id,
+                paidAmount: pkg.price,
+            });
+            const endsAtMs = Date.now() + weeks * 7 * 24 * 60 * 60 * 1000;
+            await updateDoc(newDoc, { endsAt: new Date(endsAtMs) });
+        } catch (err) {
+            console.error('[listingService] auction creation failed', err);
+        }
+    }
+
+    // Submit taxonomy proposals (fire-and-forget — don't block listing creation)
+    const proposalBase = { submittedBy: user.uid, brand: draft.make || null };
+    const proposals = [];
+    if (listing.customLinija && listing.make) {
+        proposals.push(addDoc(collection(db, 'taxonomy_proposals'), {
+            type: 'linija',
+            brand: listing.make,
+            model: null,
+            category: null,
+            value: listing.customLinija,
+            submittedBy: user.uid,
+            listingId: newDoc.id,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+        }));
+    }
+    (listing.customEquipment || []).forEach(ce => {
+        if (!ce.value || !listing.make) return;
+        proposals.push(addDoc(collection(db, 'taxonomy_proposals'), {
+            type: 'equipment',
+            brand: listing.make,
+            model: null,
+            category: ce.category,
+            value: ce.value,
+            submittedBy: user.uid,
+            listingId: newDoc.id,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+        }));
+    });
+
+    // Navtika custom taxonomy proposals
+    if (listing.customMake) {
+        proposals.push(addDoc(collection(db, 'taxonomy_proposals'), {
+            type: 'make',
+            brand: listing.customMake,
+            model: null,
+            category: listing.category || null,
+            value: listing.customMake,
+            submittedBy: user.uid,
+            listingId: newDoc.id,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+        }));
+    }
+    if (listing.customModel) {
+        proposals.push(addDoc(collection(db, 'taxonomy_proposals'), {
+            type: 'model',
+            brand: listing.customMake || listing.make || null,
+            model: listing.customModel,
+            category: listing.category || null,
+            value: listing.customModel,
+            submittedBy: user.uid,
+            listingId: newDoc.id,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+        }));
+    }
+    if (listing.customVrsta) {
+        proposals.push(addDoc(collection(db, 'taxonomy_proposals'), {
+            type: 'vrsta',
+            brand: listing.customMake || listing.make || null,
+            model: null,
+            category: listing.category || null,
+            value: listing.customVrsta,
+            submittedBy: user.uid,
+            listingId: newDoc.id,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+        }));
+    }
+    if (proposals.length) Promise.allSettled(proposals);
+
     return newDoc.id;
 }
 

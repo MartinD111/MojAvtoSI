@@ -298,6 +298,10 @@ function initCompareBtn(l) {
 }
 
 // ── Main render ───────────────────────────────────────────────────────────────
+// Exported so the auction detail page (auction-listing.js) can render an
+// identical listing layout and then inject auction-specific UI on top.
+export { renderListing, injectRating, injectServiceHistory };
+
 function renderListing(l) {
     const page = document.getElementById('listingPage');
     if (!page) return;

@@ -12,6 +12,8 @@ const routes = {
     '/oglasi': { view: 'oglasi', protected: false },
     '/iskanje': { view: 'advanced-search', protected: false },
     '/oglas': { view: 'listing', protected: false },
+    '/drazbe': { view: 'drazbe', protected: false },
+    '/drazba': { view: 'auction-listing', protected: false },
     '/gume-in-deli': { view: 'gume-in-deli', protected: false },
     '/katalog': { view: 'catalog-product', protected: false },
     '/prijava': { view: 'login', protected: false },
@@ -61,7 +63,7 @@ const JS_ONLY_VIEWS = new Set([
 // An explicit allowlist is required because the SPA host returns index.html (HTTP
 // 200) for missing files, so a probe fetch can't reliably detect a missing variant.
 const PLATFORM_VIEW_VARIANTS = {
-    navtika: new Set(['home', 'advanced-search', 'oglasi']),
+    navtika: new Set(['home', 'advanced-search', 'oglasi', 'drazbe', 'auction-listing']),
 };
 
 // ── Load a view HTML into the main container ──────────────────────────────────

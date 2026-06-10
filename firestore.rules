@@ -153,6 +153,57 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // ── Auctions (dražbe) ─────────────────────────────────────────────────────
+    // The auction state doc lives at auctions/{listingId} (1:1 with the listing).
+    // Bidding integrity is enforced best-effort here; the authoritative close and
+    // winner selection happen in a Cloud Function — see docs/AUCTIONS_HANDOFF.md.
+    match /auctions/{listingId} {
+      allow read: if true;
+      // Only the listing's author (the seller) creates the auction doc.
+      allow create: if isSignedIn() && request.resource.data.sellerId == uid();
+
+      // Seller (or moderator) may change status / contract / payment fields.
+      // Any signed-in non-seller may push a higher bid: the new currentBid must
+      // strictly exceed the old one and bidCount must increase by exactly 1.
+      allow update: if isModerator()
+        || (isSignedIn() && resource.data.sellerId == uid())
+        || (
+            isSignedIn()
+            && resource.data.sellerId != uid()
+            && resource.data.status == 'active'
+            && request.resource.data.currentBidEur > resource.data.currentBidEur
+            && request.resource.data.currentBidderId == uid()
+            && request.resource.data.bidCount == resource.data.bidCount + 1
+            // immutable fields the bidder must not touch
+            && request.resource.data.sellerId == resource.data.sellerId
+            && request.resource.data.startPriceEur == resource.data.startPriceEur
+            && request.resource.data.status == resource.data.status
+        );
+      allow delete: if isModerator()
+                    || (isSignedIn() && resource.data.sellerId == uid());
+
+      // ── Bids ────────────────────────────────────────────────────────────────
+      match /bids/{bidId} {
+        allow read: if true;
+        // A signed-in user may create their own bid; cannot bid on own auction.
+        allow create: if isSignedIn()
+          && request.resource.data.bidderId == uid()
+          && get(/databases/$(database)/documents/auctions/$(listingId)).data.sellerId != uid();
+        // Bids are immutable once placed. Cleanup (signature pruning) is backend-only.
+        allow update, delete: if isModerator();
+      }
+    }
+
+    // ── Auction alerts (newsletter opt-in) ────────────────────────────────────
+    // Anyone (incl. guests) can subscribe an email. Owners/admins read & remove.
+    match /auctionAlerts/{alertId} {
+      allow create: if true;
+      allow read: if isModerator()
+        || (isSignedIn() && resource.data.userId == uid());
+      allow update, delete: if isAdmin()
+        || (isSignedIn() && resource.data.userId == uid());
+    }
+
     // ── Deny everything else ──────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;

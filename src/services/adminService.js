@@ -837,3 +837,92 @@ function slugify(str) {
 function normalize(str) {
     return str.toLowerCase().trim();
 }
+
+// ── Taxonomy Proposals ────────────────────────────────────────────────────────
+// User-submitted custom linija and equipment entries that feed into taxonomy
+// after admin review. Listings show them immediately; search only after approval.
+
+export async function submitTaxonomyProposal({ type, brand, model = null, category = null, value, submittedBy }) {
+    const trimmed = value.trim();
+    if (!trimmed || !brand) throw new Error('Manjka vrednost ali znamka.');
+    const docRef = await addDoc(collection(db, 'taxonomy_proposals'), {
+        type,          // 'linija' | 'equipment'
+        brand,
+        model: model || null,
+        category: category || null,
+        value: trimmed,
+        submittedBy: submittedBy || null,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+    });
+    return docRef.id;
+}
+
+export async function getTaxonomyProposals({ status = null, type = null } = {}) {
+    const constraints = [orderBy('createdAt', 'desc'), limit(200)];
+    if (status) constraints.unshift(where('status', '==', status));
+    if (type) constraints.unshift(where('type', '==', type));
+    const q = query(collection(db, 'taxonomy_proposals'), ...constraints);
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function approveTaxonomyProposal(id, editedValue = null) {
+    const ref = doc(db, 'taxonomy_proposals', id);
+    const update = { status: 'approved' };
+    if (editedValue) update.value = editedValue.trim();
+    await updateDoc(ref, update);
+}
+
+export async function rejectTaxonomyProposal(id) {
+    await updateDoc(doc(db, 'taxonomy_proposals', id), { status: 'rejected' });
+}
+
+export async function getApprovedProposalsForBrand(brand) {
+    if (!brand) return [];
+    const q = query(
+        collection(db, 'taxonomy_proposals'),
+        where('status', '==', 'approved'),
+        where('brand', '==', brand)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+// ── Auctions (dražbe) ─────────────────────────────────────────────────────────
+
+export async function getAdminAuctions() {
+    const q = query(collection(db, 'auctions'), orderBy('createdAt', 'desc'), limit(200));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function getAdminAuctionBids(listingId) {
+    const q = query(collection(db, 'auctions', listingId, 'bids'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function adminSetAuctionStatus(listingId, status) {
+    await updateDoc(doc(db, 'auctions', listingId), { status, updatedAt: serverTimestamp() });
+}
+
+/** Manual close (no backend yet): pick the highest bidder as winner. */
+export async function adminForceCloseAuction(listingId) {
+    const ref = doc(db, 'auctions', listingId);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) throw new Error('Dražba ne obstaja.');
+    const a = snap.data();
+    await updateDoc(ref, {
+        status: 'ended',
+        winnerId: a.currentBidderId || null,
+        endedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+    });
+}
+
+export async function getAuctionAlertsAdmin() {
+    const q = query(collection(db, 'auctionAlerts'), orderBy('createdAt', 'desc'), limit(500));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}

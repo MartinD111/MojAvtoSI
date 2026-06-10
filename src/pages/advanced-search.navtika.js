@@ -10,6 +10,7 @@ import { t } from '../core/i18n.js';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { getModelVariants } from '../utils/bodyType.js';
+import { getApprovedProposalsForBrand } from '../services/adminService.js';
 
 const ENGINE_CAT = 'izvenkrmni-motorji';
 
@@ -24,6 +25,28 @@ export function initAdvancedSearchPage() {
     initNavtikaSearchPage();
 }
 
+// Search target: 'oglasi' (normal listings) | 'drazbe' (auctions).
+let searchMode = 'oglasi';
+
+function renderSearchModePills() {
+    const el = document.getElementById('searchTypePills');
+    if (!el) return;
+    el.style.display = 'flex';
+    el.innerHTML = `
+        <button type="button" class="search-type-pill ${searchMode === 'oglasi' ? 'active' : ''}" data-search-mode="oglasi">
+            ⛵ ${t('search_mode_listings', 'Išči oglase')}
+        </button>
+        <button type="button" class="search-type-pill ${searchMode === 'drazbe' ? 'active' : ''}" data-search-mode="drazbe">
+            🔨 ${t('search_mode_auctions', 'Išči dražbe')}
+        </button>`;
+    el.querySelectorAll('.search-type-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            searchMode = pill.dataset.searchMode;
+            el.querySelectorAll('.search-type-pill').forEach(p => p.classList.toggle('active', p === pill));
+        });
+    });
+}
+
 export function initNavtikaSearchPage() {
     console.log('[NavtikaSearch] init');
     initCustomSelects();
@@ -32,6 +55,8 @@ export function initNavtikaSearchPage() {
     excludedVehicles = [];
 
     const params = parseHashParams();
+    searchMode = params.get('mode') === 'drazbe' ? 'drazbe' : 'oglasi';
+    renderSearchModePills();
     const ctx = {
         cat: params.get('cat') || Object.values(MAIN_CATEGORIES)[0].slug,
         sub: params.get('sub') || '',
@@ -273,12 +298,33 @@ function loadBrands(catSlug) {
     if (!makeSel) return;
     fetch(brandsFileFor(catSlug))
         .then(r => r.ok ? r.json() : {})
-        .then(data => {
+        .then(async data => {
             window._boatBrandData = data;
             makeSel.innerHTML = '<option value="">Znamka</option>';
             Object.keys(data).sort().forEach(b => {
                 const o = document.createElement('option'); o.value = b; o.textContent = b; makeSel.appendChild(o);
             });
+
+            // Inject approved custom makes (proposals of type 'make' for this platform)
+            try {
+                const { getDocs, collection, query, where } = await import('firebase/firestore');
+                const { db } = await import('../firebase.js');
+                const snap = await getDocs(query(
+                    collection(db, 'taxonomy_proposals'),
+                    where('status', '==', 'approved'),
+                    where('type', '==', 'make')
+                ));
+                snap.docs.forEach(d => {
+                    const brand = d.data().value;
+                    if (brand && !data[brand]) {
+                        const o = document.createElement('option');
+                        o.value = brand; o.textContent = `${brand} ✦`;
+                        o.dataset.customBrand = '1';
+                        makeSel.appendChild(o);
+                    }
+                });
+            } catch { /* non-fatal */ }
+
             if (modelSel) { modelSel.innerHTML = '<option value="">Model</option>'; modelSel.disabled = true; }
             if (variantSel) { variantSel.innerHTML = '<option value="">Različica</option>'; variantSel.disabled = true; }
             createCustomSelect(makeSel);
@@ -287,13 +333,29 @@ function loadBrands(catSlug) {
         })
         .catch(() => {});
 
-    makeSel.addEventListener('change', () => {
+    makeSel.addEventListener('change', async () => {
         const data = window._boatBrandData || {};
-        const models = data[makeSel.value] ? Object.keys(data[makeSel.value]) : [];
+        const brand = makeSel.value;
+        const models = data[brand] ? Object.keys(data[brand]) : [];
         if (modelSel) {
             modelSel.innerHTML = '<option value="">Model</option>';
             models.sort().forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modelSel.appendChild(o); });
-            modelSel.disabled = models.length === 0;
+
+            // Inject approved custom models for this brand
+            if (brand) {
+                try {
+                    const proposals = await getApprovedProposalsForBrand(brand);
+                    proposals.filter(p => p.type === 'model').forEach(p => {
+                        if (!models.includes(p.value)) {
+                            const o = document.createElement('option');
+                            o.value = p.value; o.textContent = `${p.value} ✦`;
+                            modelSel.appendChild(o);
+                        }
+                    });
+                } catch { /* non-fatal */ }
+            }
+
+            modelSel.disabled = modelSel.options.length <= 1;
             createCustomSelect(modelSel);
         }
         if (variantSel) {
@@ -415,7 +477,8 @@ function bindForm(ctx) {
         if (ces.length > 0) params.set('ce', ces.join(','));
 
         const paramStr = params.toString();
-        window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+        const target = searchMode === 'drazbe' ? '/drazbe' : '/oglasi';
+        window.location.hash = `${target}${paramStr ? '?' + paramStr : ''}`;
     });
 }
 

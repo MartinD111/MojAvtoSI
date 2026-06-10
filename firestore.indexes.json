@@ -8,6 +8,15 @@
         { "fieldPath": "status",       "order": "ASCENDING" },
         { "fieldPath": "submittedAt",  "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "entryType", "order": "ASCENDING" },
+        { "fieldPath": "status",    "order": "ASCENDING" },
+        { "fieldPath": "endsAt",    "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

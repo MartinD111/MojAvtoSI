@@ -1,6 +1,8 @@
 // Advanced Search page — platform-aware (vehicles / vessels)
 // Category-aware: reads ?cat=, ?sub=, ?searchType=, ?vtype=, ?najem= from URL
 import { getListings } from '../services/listingService.js';
+import { getApprovedProposalsForBrand } from '../services/adminService.js';
+import { t } from '../core/i18n.js';
 import { resolveCategory, SEARCH_TYPE_OPTIONS } from '../data/categories.js';
 import { PLATFORM } from '../config/platform.js';
 import { brandsFileFor } from '../data/brandFiles.js';
@@ -18,8 +20,15 @@ import {
     codeMatchesLayout,
 } from '../data/searchRelevance.js';
 
+// Search target: 'oglasi' (normal listings) | 'drazbe' (auctions). Set by the
+// search-mode pills; drives whether submit routes to /oglasi or /drazbe.
+let searchMode = 'oglasi';
+
 export function initAdvancedSearchPage() {
     console.log('[AdvancedSearchPage] init');
+    // Honor an incoming ?mode=drazbe so deep links land on the right pill.
+    const modeParam = parseHashParams().get('mode');
+    searchMode = modeParam === 'drazbe' ? 'drazbe' : 'oglasi';
 
     // MojaNavtika uses a dedicated vessel/engine search controller + view.
     if (PLATFORM.id === 'navtika') {
@@ -147,8 +156,24 @@ function applyCategoryContext(ctx) {
         showGridForTab(tabMap[ctx.cat]);
     }
 
-    // ── Search type pills removed (parts & tires sections no longer exist) ──
-    if (searchTypePills) searchTypePills.style.display = 'none';
+    // ── Search-mode pills: Išči oglase / Išči dražbe ──
+    if (searchTypePills) {
+        searchTypePills.style.display = 'flex';
+        searchTypePills.innerHTML = `
+            <button type="button" class="search-type-pill ${searchMode === 'oglasi' ? 'active' : ''}" data-search-mode="oglasi">
+                🚗 ${t('search_mode_listings', 'Išči oglase')}
+            </button>
+            <button type="button" class="search-type-pill ${searchMode === 'drazbe' ? 'active' : ''}" data-search-mode="drazbe">
+                🔨 ${t('search_mode_auctions', 'Išči dražbe')}
+            </button>`;
+        searchTypePills.querySelectorAll('.search-type-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                searchMode = pill.dataset.searchMode;
+                searchTypePills.querySelectorAll('.search-type-pill')
+                    .forEach(p => p.classList.toggle('active', p === pill));
+            });
+        });
+    }
 
     // ── Pre-select vehicle type if specified ──
     if (ctx.vtype) {
@@ -433,6 +458,42 @@ function bindSearchLogic(catContext) {
 
     loadVehicleLines();
 
+    // ── Approved custom equipment per brand ──
+    let _customEquipCache = {};
+    async function loadCustomEquipmentForBrand(brand) {
+        if (!brand) { injectCustomEquipChips([]); return; }
+        if (_customEquipCache[brand] !== undefined) { injectCustomEquipChips(_customEquipCache[brand]); return; }
+        try {
+            const proposals = await getApprovedProposalsForBrand(brand);
+            const equipment = proposals.filter(p => p.type === 'equipment');
+            _customEquipCache[brand] = equipment;
+            injectCustomEquipChips(equipment);
+        } catch { injectCustomEquipChips([]); }
+    }
+
+    function injectCustomEquipChips(proposals) {
+        // Remove any previously injected custom chips
+        document.querySelectorAll('.adv-chip--custom').forEach(el => el.remove());
+        if (!proposals.length) return;
+        // Group by category and append to matching adv-chip-group sections
+        const byCat = {};
+        proposals.forEach(p => { (byCat[p.category] = byCat[p.category] || []).push(p); });
+        Object.entries(byCat).forEach(([cat, items]) => {
+            // Find the section header whose text contains the category group id
+            // Sections use data-eq-group attribute set during render, or we match by id
+            const groupEl = document.querySelector(`.adv-chip-group[data-eq-group="${cat}"]`);
+            if (!groupEl) return;
+            items.forEach(item => {
+                const escaped = item.value.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                const label = document.createElement('label');
+                label.className = 'adv-chip adv-chip--custom';
+                label.title = 'Lastna oprema za to znamko';
+                label.innerHTML = `<input type="checkbox" name="customEquipment" value="${escaped}" data-cat="${cat}"> ${escaped}`;
+                groupEl.appendChild(label);
+            });
+        });
+    }
+
     // ── Popular brands per category ──
     const POPULAR_BRANDS = {
         avto: ['Audi','Dacia','Ford','Hyundai','Kia','Peugeot','Renault','Škoda','Toyota','Volkswagen'],
@@ -665,6 +726,7 @@ function bindSearchLogic(catContext) {
             if (keys.length) modelSelect.disabled = false;
         }
         loadVehicleLines().then(() => updateLinijaDropdown(val));
+        loadCustomEquipmentForBrand(val);
         applyRelevance();
     });
 
@@ -1133,6 +1195,7 @@ bindCardDrag(excludedVehicleCardsEl);
                 motoDrivetrain: fd.getAll('motoDrivetrain'),
                 a2Eligible: fd.get('a2Eligible') || '',
                 features: fd.getAll('features'),
+                customEquipment: fd.getAll('customEquipment'),
                 exhaustBrands: fd.getAll('exhaustBrand'),
                 exhaustTypes: fd.getAll('exhaustType'),
                 priceFrom: parseFormattedNumber(fd.get('priceFrom')), priceTo: parseFormattedNumber(fd.get('priceTo')) || Infinity,
@@ -1250,7 +1313,8 @@ bindCardDrag(excludedVehicleCardsEl);
         if (motoDrivetrains.length > 0) params.set('motoDrivetrain', motoDrivetrains.join(','));
 
         const paramStr = params.toString();
-        window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+        const target = searchMode === 'drazbe' ? '/drazbe' : '/oglasi';
+        window.location.hash = `${target}${paramStr ? '?' + paramStr : ''}`;
     });
 }
 
@@ -1389,6 +1453,13 @@ function matchesFilters(l, filters) {
         if (!l.features || !Array.isArray(l.features)) return false;
         // Listing must have ALL selected features
         const hasAll = filters.features.every(f => l.features.includes(f));
+        if (!hasAll) return false;
+    }
+
+    // Custom equipment (brand-specific, approved proposals)
+    if (filters.customEquipment && filters.customEquipment.length > 0) {
+        const listingCustom = Array.isArray(l.customEquipment) ? l.customEquipment.map(ce => ce.value) : [];
+        const hasAll = filters.customEquipment.every(v => listingCustom.includes(v));
         if (!hasAll) return false;
     }
 

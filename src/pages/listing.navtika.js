@@ -298,6 +298,9 @@ function initCompareBtn(l) {
 }
 
 // ── Main render ───────────────────────────────────────────────────────────────
+// Exported so the auction detail page can reuse the vessel listing layout.
+export { renderListing, injectRating, injectServiceHistory };
+
 function renderListing(l) {
     const page = document.getElementById('listingPage');
     if (!page) return;

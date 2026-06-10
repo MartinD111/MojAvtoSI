@@ -15,6 +15,8 @@ import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes, getPartTypeLabel } fro
 import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, getEquipmentGroupLabel, EQUIPMENT_SIZES } from '../data/equipmentTypes.js';
 import { PLATFORM } from '../config/platform.js';
 import { scrollToTopOnMobile } from '../utils/viewport.js';
+import { AUCTION_PACKAGES } from '../services/auctionService.js';
+import { contractWidgetHtml, mountContractWidget, isContractComplete } from '../utils/auctionContract.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -65,9 +67,12 @@ const STEPS = [
     { id: 'opremaDetails', title: 'cl_step_oprema_details', number: true, condition: isOpremaItem },
     { id: 'media', title: 'cl_step_photos', number: true },
     { id: 'description', title: 'cl_step_description', number: true },
-    { id: 'price', title: 'cl_step_price', number: true },
+    // Auction setup — only for dražba. Package, starting price, seller contract.
+    { id: 'auctionSetup', title: 'cl_step_auction', number: true, condition: s => s.entryType === 'auction' },
+    { id: 'price', title: 'cl_step_price', number: true, condition: s => s.entryType !== 'auction' },
     { id: 'location', title: 'cl_step_location', number: true },
-    { id: 'promotion', title: 'cl_step_visibility', number: true },
+    // Promotion (visibility) tiers don't apply to auctions — package is chosen above.
+    { id: 'promotion', title: 'cl_step_visibility', number: true, condition: s => s.entryType !== 'auction' },
     { id: 'review', title: 'cl_step_review', number: true },
     { id: 'auth', title: 'cl_step_signin', condition: () => !auth.currentUser },
 ];
@@ -75,7 +80,13 @@ const STEPS = [
 // ── State ─────────────────────────────────────────────────────────────────────
 let state = {
     currentStep: 0,
-    entryType: null,
+    entryType: 'classic',           // 'classic' | 'auction' (dražba)
+    // Auction (dražba) setup
+    auctionPackageId: 'auction3w',  // 'auction3w' (3 tedne/4,99€) | 'auction6w' (6 tednov/9,99€)
+    auctionDurationWeeks: 3,
+    startPriceEur: '',
+    reservePriceEur: '',
+    sellerContract: null,           // { type:'sign'|'print', signatureData:string|null }
     category: 'avto',
     subcategory: '',
     bodyType: '',
@@ -94,7 +105,7 @@ let state = {
     color: '', colorType: 'solid', doorsCount: '', seatsCount: '',
     condition: 'Rabljeno', firstRegistration: '', previousOwnersCount: '',
     fuel: '', hybridType: null, transmission: '', driveType: '',
-    engineCc: '', powerKw: '', co2: '', emissionClass: '',
+    engineCc: '', engineConfig: '', powerKw: '', co2: '', emissionClass: '',
     fuelL100kmCombined: '', fuelL100kmCity: '', fuelL100kmHighway: '',
     batteryKwh: '', rangeKm: '', batteryHealth: '', consumptionKwh100: '', towingKg: '', a2Eligible: false,
     // Navtika-specific fields
@@ -102,6 +113,12 @@ let state = {
     hullMaterial: '', engineCount: '1', driveSystem: '', maxSpeedKn: '',
     fuelTankL: '', waterTankL: '', cabins: '', berths: '',
     equipment: [],
+    customEquipment: [],  // [{category, value}] — user-submitted, brand-specific
+    _customLinija: '',    // raw text when user picks "+ Dodaj lastno linijo"
+    // Navtika custom taxonomy (when not found in plovila JSON)
+    _customMake: '',      // free-text brand for navtika
+    _customModel: '',     // free-text model for navtika
+    _customVrsta: '',     // free-text vessel type when not in category list
     exhaustBrand: '',
     exhaustType: '',
     _exteriorFiles: [],
@@ -263,12 +280,13 @@ function applyTrimAutoFill(selectedTrim, make, model) {
             el.classList.add('cl-autofilled');
             const wrap = el.closest('.cl-field');
             if (wrap && !wrap.querySelector('.cl-autofill-icon')) {
-                wrap.style.position = 'relative';
-                const icon = document.createElement('div');
+                const label = wrap.querySelector('.cl-label');
+                const icon = document.createElement('span');
                 icon.className = 'cl-autofill-icon';
                 icon.innerHTML = '?';
                 icon.title = t('cl_autofill_tooltip', 'Sistem je samodejno izpolnil ta podatek glede na izbran model. Če se podatek razlikuje, ga lahko spremenite.');
-                wrap.appendChild(icon);
+                if (label) label.appendChild(icon);
+                else wrap.appendChild(icon);
             }
         }
     };
@@ -427,6 +445,7 @@ function renderCurrentStep() {
         opremaDetails: renderOpremaDetailsStep,
         media: renderMediaStep,
         description: renderDescriptionStep,
+        auctionSetup: renderAuctionSetupStep,
         price: renderPriceStep,
         location: renderLocationStep,
         promotion: renderPromotionStep,
@@ -468,19 +487,48 @@ function jumpToStep(id) {
 }
 
 // ── Step 0: Type selection (vehicle vs parts/tires) ───────────────────────────
+// Listing-mode pills (navaden oglas / dražba). Auctions apply to vehicles &
+// vessels only — choosing parts/tires forces entryType back to 'classic'.
+function listingModePillsHtml() {
+    const vLabel = isNavtika() ? t('cl_mode_listing_navtika', 'Navaden oglas') : t('cl_mode_listing', 'Navaden oglas');
+    return `
+        <div class="cl-mode-pills" role="tablist" aria-label="${t('cl_mode_label', 'Vrsta objave')}">
+            <button type="button" class="cl-mode-pill ${state.entryType !== 'auction' ? 'active' : ''}" data-mode="classic">
+                📄 ${vLabel}
+            </button>
+            <button type="button" class="cl-mode-pill ${state.entryType === 'auction' ? 'active' : ''}" data-mode="auction">
+                🔨 ${t('cl_mode_auction', 'Dražba')}
+            </button>
+        </div>
+        <p class="cl-mode-hint">${state.entryType === 'auction'
+            ? t('cl_mode_auction_hint', 'Dražba: 3 tedne 4,99 € ali 6 tednov 9,99 €. Na voljo le za vozila.')
+            : t('cl_mode_listing_hint', 'Standardni oglas s fiksno ali pogajalno ceno.')}</p>`;
+}
+
+function bindModePills() {
+    document.querySelectorAll('.cl-mode-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            state.entryType = pill.dataset.mode === 'auction' ? 'auction' : 'classic';
+            saveDraft(state);
+            renderTypeSelectStep(); // re-render to refresh active pill + hint
+        });
+    });
+}
+
 function renderTypeSelectStep() {
     if (isNavtika()) {
         setHtml(`
             <div class="cl-card">
                 <h1 class="cl-step-title">${t('cl_type_select_title', 'Kaj želite objaviti?')}</h1>
                 <p class="cl-step-sub">${t('cl_type_select_sub', 'Izberite vrsto oglasa.')}</p>
+                ${listingModePillsHtml()}
                 <div class="cl-entry-cards">
                     <div class="cl-entry-card" id="typeVehicle">
                         <span class="cl-entry-card-icon">⛵</span>
                         <p class="cl-entry-card-title">Plovilo</p>
                         <p class="cl-entry-card-desc">Čoln, jadrnica, jahta, gumenjak, jet-ski ipd.</p>
                     </div>
-                    <div class="cl-entry-card" id="typeParts">
+                    <div class="cl-entry-card ${state.entryType === 'auction' ? 'cl-entry-card--disabled' : ''}" id="typeParts">
                         <span class="cl-entry-card-icon">⚓</span>
                         <p class="cl-entry-card-title">Oprema / Motor</p>
                         <p class="cl-entry-card-desc">Izvenkrmni motorji, navigacija, varnostna oprema.</p>
@@ -489,6 +537,8 @@ function renderTypeSelectStep() {
             </div>
         `);
 
+        bindModePills();
+
         document.getElementById('typeVehicle').addEventListener('click', () => {
             state.itemType = 'vehicle';
             state.category = 'colni';
@@ -496,6 +546,7 @@ function renderTypeSelectStep() {
         });
 
         document.getElementById('typeParts').addEventListener('click', () => {
+            if (state.entryType === 'auction') return; // parts can't be auctioned
             state.itemType = 'part';
             state.category = 'deli';
             state.vehicleCategory = 'colni';
@@ -508,13 +559,14 @@ function renderTypeSelectStep() {
         <div class="cl-card">
             <h1 class="cl-step-title">${t('cl_type_select_title', 'Kaj želite objaviti?')}</h1>
             <p class="cl-step-sub">${t('cl_type_select_sub', 'Izberite vrsto oglasa.')}</p>
+            ${listingModePillsHtml()}
             <div class="cl-entry-cards">
                 <div class="cl-entry-card" id="typeVehicle">
                     <span class="cl-entry-card-icon">🚗</span>
                     <p class="cl-entry-card-title">${t('cl_type_vehicle', 'Vozilo')}</p>
                     <p class="cl-entry-card-desc">${t('cl_type_vehicle_desc', 'Avto, motor, kombi, prikolica, ipd.')}</p>
                 </div>
-                <div class="cl-entry-card" id="typeParts">
+                <div class="cl-entry-card ${state.entryType === 'auction' ? 'cl-entry-card--disabled' : ''}" id="typeParts">
                     <span class="cl-entry-card-icon">🔧</span>
                     <p class="cl-entry-card-title">${t('cl_type_parts', 'Deli in gume')}</p>
                     <p class="cl-entry-card-desc">${t('cl_type_parts_desc', 'Nadomestni deli, pnevmatike, oprema.')}</p>
@@ -523,6 +575,8 @@ function renderTypeSelectStep() {
         </div>
     `);
 
+    bindModePills();
+
     document.getElementById('typeVehicle').addEventListener('click', () => {
         state.itemType = 'vehicle';
         state.category = 'avto';
@@ -530,6 +584,7 @@ function renderTypeSelectStep() {
     });
 
     document.getElementById('typeParts').addEventListener('click', () => {
+        if (state.entryType === 'auction') return; // parts can't be auctioned
         state.itemType = 'part';
         state.category = 'deli';
         goNext();
@@ -1330,13 +1385,23 @@ function renderBasicStep() {
             </div>
 
             <div class="cl-row" id="fLinijaRow" style="display:none">
-                <div class="cl-field">
+                <div class="cl-field" style="flex:1">
                     <label class="cl-label">${t('cl_label_line', 'Linija')}</label>
                     <select class="cl-select" id="fLinija">
                         <option value="">${t('cl_sel_line', '— Izberite linijo —')}</option>
                     </select>
                 </div>
-                <div class="cl-field"></div>
+                <div class="cl-field" style="flex:1"></div>
+            </div>
+            <div id="fLinijaCustomRow" style="display:none">
+                <div class="cl-field">
+                    <label class="cl-label">${t('cl_label_line_custom', 'Ime lastne linije')}</label>
+                    <input class="cl-input" id="fLinijaCustom" type="text" maxlength="60"
+                        placeholder="${t('cl_placeholder_line_custom', 'npr. S Line, GT-Line, Black Edition')}" autocomplete="off" />
+                    <p class="cl-hint cl-hint--warn" style="margin-top:.4rem">
+                        <strong>Pozor:</strong> Vnesite <em>samo ime linije</em> (npr. <em>Audi A6 S Tronic</em> je sprejemljivo, <em>Audi A6 Avant 2.0 TDI S tronic quattro panorama</em> ni). Oglasi z napačno vnesenimi linijami bodo odstranjeni.
+                    </p>
+                </div>
             </div>
 
             <div class="cl-row cl-autofill-row" id="fuelCcRow">
@@ -1491,6 +1556,10 @@ function renderBasicStep() {
     const linijaSel = document.getElementById('fLinija');
     const linijaRow = document.getElementById('fLinijaRow');
 
+    const linijaCustomRow = document.getElementById('fLinijaCustomRow');
+    const linijaCustomInput = document.getElementById('fLinijaCustom');
+    const LINIJA_CUSTOM_SENTINEL = '__custom__';
+
     let _clVehicleLines = null;
     function loadClVehicleLines() {
         if (_clVehicleLines) return Promise.resolve(_clVehicleLines);
@@ -1504,17 +1573,25 @@ function renderBasicStep() {
         if (!linijaSel || !linijaRow) return;
         linijaSel.innerHTML = `<option value="">${t('cl_sel_line', '— Izberite linijo —')}</option>`;
         linijaSel.value = '';
+        if (linijaCustomRow) linijaCustomRow.style.display = 'none';
         const lines = (_clVehicleLines || {})[make] || [];
-        if (lines.length) {
-            lines.forEach(l => {
-                const opt = document.createElement('option');
-                opt.value = l; opt.textContent = l;
-                if (state.linija === l) opt.selected = true;
-                linijaSel.appendChild(opt);
-            });
-            linijaRow.style.display = '';
-        } else {
-            linijaRow.style.display = 'none';
+        // Always show the row — either with known lines or just the custom option
+        lines.forEach(l => {
+            const opt = document.createElement('option');
+            opt.value = l; opt.textContent = l;
+            if (state.linija === l) opt.selected = true;
+            linijaSel.appendChild(opt);
+        });
+        const customOpt = document.createElement('option');
+        customOpt.value = LINIJA_CUSTOM_SENTINEL;
+        customOpt.textContent = t('cl_line_add_custom', '+ Dodaj lastno linijo');
+        linijaSel.appendChild(customOpt);
+        linijaRow.style.display = '';
+        // Restore custom value from state if set
+        if (state._customLinija) {
+            linijaSel.value = LINIJA_CUSTOM_SENTINEL;
+            if (linijaCustomRow) linijaCustomRow.style.display = '';
+            if (linijaCustomInput) linijaCustomInput.value = state._customLinija;
         }
     }
 
@@ -1617,7 +1694,24 @@ function renderBasicStep() {
     });
 
     if (linijaSel) {
-        linijaSel.addEventListener('change', () => { state.linija = linijaSel.value; });
+        linijaSel.addEventListener('change', () => {
+            if (linijaSel.value === LINIJA_CUSTOM_SENTINEL) {
+                state.linija = '';
+                state._customLinija = linijaCustomInput ? linijaCustomInput.value.trim() : '';
+                if (linijaCustomRow) linijaCustomRow.style.display = '';
+                if (linijaCustomInput) linijaCustomInput.focus();
+            } else {
+                state.linija = linijaSel.value;
+                state._customLinija = '';
+                if (linijaCustomRow) linijaCustomRow.style.display = 'none';
+            }
+        });
+    }
+    if (linijaCustomInput) {
+        linijaCustomInput.addEventListener('input', () => {
+            state._customLinija = linijaCustomInput.value.trim();
+            state.linija = '';
+        });
     }
 
     variantSel.addEventListener('change', () => {
@@ -1771,12 +1865,24 @@ function renderNavtikaBasicStep() {
                     <select class="cl-select" id="fMake">
                         <option value="">— Izberite znamko —</option>
                     </select>
+                    <div id="fMakeCustomWrap" style="display:none;margin-top:.4rem">
+                        <input class="cl-input" id="fMakeCustom" type="text" maxlength="60"
+                            placeholder="Vnesite ime znamke" autocomplete="off"
+                            value="${escHtml(state._customMake || '')}" />
+                        <p class="cl-hint" style="margin-top:.25rem">Znamka bo predlagana za dodajanje v taksonomijo.</p>
+                    </div>
                 </div>
                 <div class="cl-field">
                     <label class="cl-label">Model</label>
                     <select class="cl-select" id="fModel" disabled>
                         <option value="">— Najprej izberite znamko —</option>
                     </select>
+                    <div id="fModelCustomWrap" style="display:none;margin-top:.4rem">
+                        <input class="cl-input" id="fModelCustom" type="text" maxlength="80"
+                            placeholder="Vnesite ime modela" autocomplete="off"
+                            value="${escHtml(state._customModel || '')}" />
+                        <p class="cl-hint" style="margin-top:.25rem">Model bo predlagan za dodajanje v taksonomijo.</p>
+                    </div>
                 </div>
             </div>
 
@@ -1801,8 +1907,16 @@ function renderNavtikaBasicStep() {
                     <select class="cl-select" id="fBodyType">
                         <option value="">— Izberite vrsto —</option>
                         ${bodyTypeOpts}
+                        <option value="__custom__">+ Vrsta ni na seznamu</option>
                     </select>
+                    <div id="fBodyTypeCustomWrap" style="display:none;margin-top:.4rem">
+                        <input class="cl-input" id="fBodyTypeCustom" type="text" maxlength="60"
+                            placeholder="npr. Elektična jadrnica, Tender, Hišna ladja"
+                            value="${escHtml(state._customVrsta || '')}" />
+                        <p class="cl-hint" style="margin-top:.25rem">Vrsta bo predlagana za dodajanje v taksonomijo.</p>
+                    </div>
                 </div>
+                <div class="cl-field"></div>
             </div>` : ''}
 
             <div class="cl-row">
@@ -1936,6 +2050,35 @@ function renderNavtikaBasicStep() {
     initCustomSelects();
 
     // Populate brands from plovila JSON
+    const NAV_CUSTOM_SENTINEL = '__custom__';
+
+    function showNavCustomMake(show) {
+        const wrap = document.getElementById('fMakeCustomWrap');
+        if (wrap) wrap.style.display = show ? '' : 'none';
+        const modelSel = document.getElementById('fModel');
+        const modelWrap = document.getElementById('fModelCustomWrap');
+        if (show) {
+            // When brand is custom, model must also be free-text
+            if (modelSel) { modelSel.style.display = 'none'; modelSel.disabled = true; }
+            if (modelWrap) modelWrap.style.display = '';
+        } else {
+            if (modelSel) modelSel.style.display = '';
+            if (modelWrap) modelWrap.style.display = 'none';
+        }
+    }
+
+    function showNavCustomModel(show) {
+        const modelSel = document.getElementById('fModel');
+        const wrap = document.getElementById('fModelCustomWrap');
+        if (show) {
+            if (modelSel) modelSel.style.display = 'none';
+            if (wrap) wrap.style.display = '';
+        } else {
+            if (modelSel) modelSel.style.display = '';
+            if (wrap) wrap.style.display = 'none';
+        }
+    }
+
     fetch('json/brands_models_plovila.json')
         .then(r => r.json())
         .then(data => {
@@ -1943,39 +2086,124 @@ function renderNavtikaBasicStep() {
             const makeSel = document.getElementById('fMake');
             const modelSel = document.getElementById('fModel');
             if (!makeSel) return;
+
+            // Append known brands
             Object.keys(data).sort().forEach(b => {
                 const opt = document.createElement('option');
                 opt.value = b; opt.textContent = b;
                 if (state.make === b) opt.selected = true;
                 makeSel.appendChild(opt);
             });
-            if (state.make && data[state.make]) {
-                const models = Object.keys(data[state.make]);
-                modelSel.innerHTML = `<option value="">— Izberite model —</option>` +
-                    models.map(m => `<option value="${m}" ${state.model === m ? 'selected' : ''}>${m}</option>`).join('');
-                modelSel.disabled = false;
-            }
-            makeSel.addEventListener('change', () => {
-                state.make = makeSel.value;
-                state.model = '';
-                if (state.make && data[state.make]) {
-                    const models = Object.keys(data[state.make]);
-                    modelSel.innerHTML = `<option value="">— Izberite model —</option>` +
-                        models.map(m => `<option value="${m}">${m}</option>`).join('');
+            // "Not in list" option
+            const notListedOpt = document.createElement('option');
+            notListedOpt.value = NAV_CUSTOM_SENTINEL;
+            notListedOpt.textContent = '+ Znamka ni na seznamu';
+            makeSel.appendChild(notListedOpt);
+
+            function populateModels(make) {
+                if (!modelSel) return;
+                modelSel.innerHTML = `<option value="">— Izberite model —</option>`;
+                if (make && data[make]) {
+                    Object.keys(data[make]).sort().forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m; opt.textContent = m;
+                        if (state.model === m) opt.selected = true;
+                        modelSel.appendChild(opt);
+                    });
+                    // "Not in list" for model too
+                    const notM = document.createElement('option');
+                    notM.value = NAV_CUSTOM_SENTINEL;
+                    notM.textContent = '+ Model ni na seznamu';
+                    modelSel.appendChild(notM);
                     modelSel.disabled = false;
                 } else {
-                    modelSel.innerHTML = `<option value="">— Najprej izberite znamko —</option>`;
                     modelSel.disabled = true;
                 }
+            }
+
+            // Restore state on initial render
+            if (state._customMake) {
+                makeSel.value = NAV_CUSTOM_SENTINEL;
+                showNavCustomMake(true);
+            } else if (state.make && data[state.make]) {
+                populateModels(state.make);
+                if (state._customModel) {
+                    if (modelSel) modelSel.value = NAV_CUSTOM_SENTINEL;
+                    showNavCustomModel(true);
+                }
+            }
+
+            makeSel.addEventListener('change', () => {
+                const val = makeSel.value;
+                state._customMake = '';
+                state._customModel = '';
+                state.make = val === NAV_CUSTOM_SENTINEL ? '' : val;
+                state.model = '';
+                if (val === NAV_CUSTOM_SENTINEL) {
+                    showNavCustomMake(true);
+                } else {
+                    showNavCustomMake(false);
+                    populateModels(val);
+                }
             });
-            modelSel.addEventListener('change', () => { state.model = modelSel.value; });
+
+            if (modelSel) {
+                modelSel.addEventListener('change', () => {
+                    const val = modelSel.value;
+                    state._customModel = '';
+                    if (val === NAV_CUSTOM_SENTINEL) {
+                        state.model = '';
+                        showNavCustomModel(true);
+                    } else {
+                        state.model = val;
+                        showNavCustomModel(false);
+                    }
+                });
+            }
+
+            const makeCustomInput = document.getElementById('fMakeCustom');
+            const modelCustomInput = document.getElementById('fModelCustom');
+            if (makeCustomInput) makeCustomInput.addEventListener('input', () => { state._customMake = makeCustomInput.value.trim(); state.make = ''; });
+            if (modelCustomInput) modelCustomInput.addEventListener('input', () => { state._customModel = modelCustomInput.value.trim(); state.model = ''; });
         })
         .catch(() => {
-            // allow free text if JSON unavailable
-            const makeSel = document.getElementById('fMake');
-            if (!makeSel) return;
-            makeSel.outerHTML = `<input class="cl-input" id="fMake" type="text" value="${escHtml(state.make || '')}" placeholder="npr. Beneteau" />`;
+            // JSON unavailable — show free-text inputs directly
+            showNavCustomMake(true);
         });
+
+    // Vessel type custom entry
+    const bodyTypeSel = document.getElementById('fBodyType');
+    const bodyTypeCustomWrap = document.getElementById('fBodyTypeCustomWrap');
+    const bodyTypeCustomInput = document.getElementById('fBodyTypeCustom');
+
+    if (bodyTypeSel) {
+        // Restore state
+        if (state._customVrsta) {
+            bodyTypeSel.value = NAV_CUSTOM_SENTINEL;
+            if (bodyTypeCustomWrap) bodyTypeCustomWrap.style.display = '';
+        }
+        bodyTypeSel.addEventListener('change', () => {
+            if (bodyTypeSel.value === NAV_CUSTOM_SENTINEL) {
+                state.bodyType = '';
+                state.subcategory = '';
+                state._customVrsta = bodyTypeCustomInput ? bodyTypeCustomInput.value.trim() : '';
+                if (bodyTypeCustomWrap) bodyTypeCustomWrap.style.display = '';
+                if (bodyTypeCustomInput) bodyTypeCustomInput.focus();
+            } else {
+                state.bodyType = bodyTypeSel.value;
+                state.subcategory = bodyTypeSel.value;
+                state._customVrsta = '';
+                if (bodyTypeCustomWrap) bodyTypeCustomWrap.style.display = 'none';
+            }
+        });
+    }
+    if (bodyTypeCustomInput) {
+        bodyTypeCustomInput.addEventListener('input', () => {
+            state._customVrsta = bodyTypeCustomInput.value.trim();
+            state.bodyType = '';
+            state.subcategory = '';
+        });
+    }
 
     const hoursInput = document.getElementById('fEngineHours');
     if (hoursInput) setupNumericFormatter(hoursInput);
@@ -1988,34 +2216,48 @@ function renderNavtikaBasicStep() {
     // Jet-ski power unit toggle (KM ⇄ kW) — only present when cfg.basicEngine.
     const basicPowerUnit = wirePowerToggle('fPower', 'powerUnitToggle', 'powerUnitLabel');
 
-    document.getElementById('fBodyType')?.addEventListener('change', e => {
-        state.bodyType = e.target.value;
-        state.subcategory = e.target.value;
-    });
-
     document.getElementById('btnBasicBack').addEventListener('click', goPrev);
     document.getElementById('btnBasicNext').addEventListener('click', () => {
-        const make = document.getElementById('fMake')?.value || state.make;
+        // Resolve effective make — either from dropdown or custom input
+        const makeSel = document.getElementById('fMake');
+        const makeCustom = (document.getElementById('fMakeCustom')?.value || '').trim();
+        const modelCustom = (document.getElementById('fModelCustom')?.value || '').trim();
+        const effectiveMake = makeCustom || (makeSel?.value !== '__custom__' ? (makeSel?.value || '') : '');
+        const effectiveModel = modelCustom || state.model || '';
+
         const year = document.getElementById('fYear').value;
         const lengthRaw = document.getElementById('fLength').value;
         const hoursRaw = document.getElementById('fEngineHours').value;
         const hours = parseFormattedNumber(hoursRaw);
-        const bodyType = document.getElementById('fBodyType')?.value || '';
+
+        const bodyTypeSel = document.getElementById('fBodyType');
+        const bodyTypeCustom = (document.getElementById('fBodyTypeCustom')?.value || '').trim();
+        const effectiveBodyType = bodyTypeCustom || (bodyTypeSel?.value !== '__custom__' ? (bodyTypeSel?.value || '') : '');
 
         let valid = true;
-        if (!make) { markInvalid('fMake'); valid = false; }
+        if (!effectiveMake) {
+            markInvalid(makeCustom !== undefined && document.getElementById('fMakeCustomWrap')?.style.display !== 'none' ? 'fMakeCustom' : 'fMake');
+            valid = false;
+        }
         if (!year) { markInvalid('fYear'); valid = false; }
         if (!lengthRaw) { markInvalid('fLength'); valid = false; }
         if (hoursRaw === '') { markInvalid('fEngineHours'); valid = false; }
-        if (categorySubs.length > 0 && !bodyType) { markInvalid('fBodyType'); valid = false; }
+        if (categorySubs.length > 0 && !effectiveBodyType) {
+            markInvalid(bodyTypeCustom !== undefined && document.getElementById('fBodyTypeCustomWrap')?.style.display !== 'none' ? 'fBodyTypeCustom' : 'fBodyType');
+            valid = false;
+        }
         if (cfg.basicEngine) {
             const pv = parseFloat(document.getElementById('fPower')?.value || '');
             if (isNaN(pv) || pv <= 0) { markInvalid('fPower'); valid = false; }
         }
         if (!valid) return;
 
-        state.make = make;
-        state.model = document.getElementById('fModel')?.value || state.model;
+        // Persist custom taxonomy entries
+        state._customMake = makeCustom;
+        state._customModel = modelCustom;
+        state._customVrsta = bodyTypeCustom;
+        state.make = effectiveMake;
+        state.model = effectiveModel;
         state.year = Number(year);
         state.lengthM = parseDecimalInput(lengthRaw);
         state.engineHoursUsed = hours;
@@ -2023,7 +2265,6 @@ function renderNavtikaBasicStep() {
         state.color = document.getElementById('fColor').value;
         state.previousOwnersCount = document.getElementById('fPrevOwners').value;
 
-        // Hull / comfort fields exist only when cfg.hullComfort
         if (cfg.hullComfort) {
             state.hullMaterial = document.getElementById('fHullMaterial')?.value || '';
             state.cabins = document.getElementById('fCabins')?.value || '';
@@ -2035,7 +2276,6 @@ function renderNavtikaBasicStep() {
             state.beamM = ''; state.draughtM = '';
         }
 
-        // Jet-ski engine fields captured in the Basic step
         if (cfg.basicEngine) {
             const pv = parseFloat(document.getElementById('fPower')?.value || '');
             state.powerKw = basicPowerUnit() === 'kw' ? pv : Math.round(pv / 1.35962);
@@ -2045,7 +2285,8 @@ function renderNavtikaBasicStep() {
         const frMonth = document.getElementById('fFirstRegMonth').value;
         const frYear = document.getElementById('fFirstRegYear').value;
         if (frMonth && frYear) state.firstRegistration = `${frYear}-${frMonth}`;
-        if (bodyType) { state.bodyType = bodyType; state.subcategory = bodyType; }
+
+        if (effectiveBodyType) { state.bodyType = effectiveBodyType; state.subcategory = effectiveBodyType; }
         goNext();
     });
 }
@@ -2138,6 +2379,27 @@ function renderTechnicalStep() {
 
             <div class="cl-row">
                 <div class="cl-field">
+                    <label class="cl-label">${t('cl_label_engine_config', 'Konfiguracija motorja')}</label>
+                    <select class="cl-select" id="fEngineConfig">
+                        <option value="">—</option>
+                        ${[
+                            ['I3', 'I3 Trivaljnik'],
+                            ['I4', 'I4 Štirivaljnik'],
+                            ['V6', 'V6 Šestvaljnik'],
+                            ['V8', 'V8 Osemvaljnik'],
+                            ['V10', 'V10 Desetvaljnik'],
+                            ['V12', 'V12 Dvanajstvaljnik'],
+                            ['W12', 'W12 Dvanajstvaljnik'],
+                            ['W16', 'W16 Šestnajstvaljnik'],
+                            ['Electric', 'Električni motor'],
+                        ].map(([v, l]) => `<option value="${v}" ${state.engineConfig === v ? 'selected' : ''}>${l}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="cl-field"></div>
+            </div>
+
+            <div class="cl-row">
+                <div class="cl-field">
                     <div class="cl-label-with-toggle">
                         <label class="cl-label">${t('cl_label_power')} <span class="req">*</span></label>
                         <div class="cl-unit-toggle" id="powerUnitToggle">
@@ -2185,7 +2447,7 @@ function renderTechnicalStep() {
                 <p class="cl-label" style="font-weight:600;margin-bottom:0.75rem;">${t('cl_label_consumption')} (l/100km)</p>
                 <div class="cl-row">
                     <div class="cl-field">
-                        <label class="cl-label">${t('cl_label_combined')}</label>
+                        <label class="cl-label">${t('cl_label_combined')} <span class="req">*</span></label>
                         <input class="cl-input" id="fConsCombined" type="number" step="0.1" min="0" value="${state.fuelL100kmCombined || ''}" placeholder="${t('cl_placeholder_cons')}" />
                     </div>
                     <div class="cl-field">
@@ -2318,12 +2580,13 @@ function renderTechnicalStep() {
                     el.classList.add('cl-autofilled');
                     const wrap = el.closest('.cl-field');
                     if (wrap && !wrap.querySelector('.cl-autofill-icon')) {
-                        wrap.style.position = 'relative';
-                        const icon = document.createElement('div');
+                        const label = wrap.querySelector('.cl-label');
+                        const icon = document.createElement('span');
                         icon.className = 'cl-autofill-icon';
                         icon.innerHTML = '?';
                         icon.title = t('cl_autofill_tooltip', 'Sistem je samodejno izpolnil ta podatek glede na izbran model. Če se podatek razlikuje, ga lahko spremenite.');
-                        wrap.appendChild(icon);
+                        if (label) label.appendChild(icon);
+                        else wrap.appendChild(icon);
                     }
                 }
             }
@@ -2371,6 +2634,65 @@ function renderTechnicalStep() {
         });
     }
 
+    // EV consumption auto-calc: battery / range * 100, shown as autofill icon
+    const evConsTooltip = 'Izračunano iz kapacitete baterije in dosega. Vrednost lahko spremenite.';
+    function recalcEvConsumption() {
+        const batteryEl = document.getElementById('fBattery');
+        const rangeEl   = document.getElementById('fRange');
+        const consEl    = document.getElementById('fConsKwh');
+        if (!batteryEl || !rangeEl || !consEl) return;
+        const battery = parseFloat(batteryEl.value);
+        const range   = parseFloat(rangeEl.value);
+        if (!battery || !range || range === 0) return;
+        if (consEl._manualKwh) return;
+        const calc = Math.round((battery / range * 100) * 10) / 10;
+        consEl.value = calc;
+        const wrap = consEl.closest('.cl-field');
+        if (wrap && !wrap.querySelector('.cl-autofill-icon')) {
+            const label = wrap.querySelector('.cl-label');
+            const icon = document.createElement('span');
+            icon.className = 'cl-autofill-icon';
+            icon.innerHTML = '?';
+            icon.title = evConsTooltip;
+            if (label) label.appendChild(icon);
+        }
+    }
+    document.getElementById('fBattery')?.addEventListener('input', recalcEvConsumption);
+    document.getElementById('fRange')?.addEventListener('input', recalcEvConsumption);
+    document.getElementById('fConsKwh')?.addEventListener('input', function() {
+        this._manualKwh = true;
+        this.closest('.cl-field')?.querySelector('.cl-autofill-icon')?.remove();
+    });
+
+    // Combined l/100km auto-calc: average of city + highway
+    function recalcCombinedConsumption() {
+        const cityEl     = document.getElementById('fConsCity');
+        const highwayEl  = document.getElementById('fConsHighway');
+        const combinedEl = document.getElementById('fConsCombined');
+        if (!cityEl || !highwayEl || !combinedEl) return;
+        const city    = parseFloat(cityEl.value);
+        const highway = parseFloat(highwayEl.value);
+        if (!city || !highway) return;
+        if (combinedEl._manualCombined) return;
+        const calc = Math.round(((city + highway) / 2) * 10) / 10;
+        combinedEl.value = calc;
+        const wrap = combinedEl.closest('.cl-field');
+        if (wrap && !wrap.querySelector('.cl-autofill-icon')) {
+            const label = wrap.querySelector('.cl-label');
+            const icon = document.createElement('span');
+            icon.className = 'cl-autofill-icon';
+            icon.innerHTML = '?';
+            icon.title = 'Izračunano kot povprečje mestne in izvenmestne porabe. Vrednost lahko spremenite.';
+            if (label) label.appendChild(icon);
+        }
+    }
+    document.getElementById('fConsCity')?.addEventListener('input', recalcCombinedConsumption);
+    document.getElementById('fConsHighway')?.addEventListener('input', recalcCombinedConsumption);
+    document.getElementById('fConsCombined')?.addEventListener('input', function() {
+        this._manualCombined = true;
+        this.closest('.cl-field')?.querySelector('.cl-autofill-icon')?.remove();
+    });
+
     document.getElementById('btnTechBack').addEventListener('click', goPrev);
     document.getElementById('btnTechNext').addEventListener('click', () => {
         const engineCc = document.getElementById('fEngineCC').value;
@@ -2380,11 +2702,14 @@ function renderTechnicalStep() {
         if (!document.getElementById('fTransmission').value) return alert(t('cl_err_trans'));
         if (!engineCc) return alert(t('cl_err_displacement'));
         if (isNaN(powerVal)) return alert(t('cl_err_power'));
+        const isEV = fuelSel.value === 'Elektrika';
+        if (!isEV && !document.getElementById('fConsCombined')?.value) return alert(t('cl_err_consumption', 'Prosimo vnesite porabo goriva (kombinirana).'));
 
         state.fuel = fuelSel.value;
         state.transmission = document.getElementById('fTransmission').value;
         state.driveType = document.getElementById('fDrive').value;
         state.engineCc = engineCc;
+        state.engineConfig = document.getElementById('fEngineConfig')?.value || '';
         state.powerKw = currentPowerUnit === 'kw' ? powerVal : Math.round(powerVal / 1.35962);
         state.co2 = document.getElementById('fCo2').value;
         state.emissionClass = document.getElementById('fEuro').value;
@@ -2607,15 +2932,37 @@ function renderEquipmentStep() {
     const isMoto = state.category === 'moto';
     const showExhaustSub = isMoto && state.equipment.includes('SportExhaust');
 
-    const groupHtml = groups.map(g => `
-        <div class="cl-equipment-group">
+    const groupHtml = groups.map(g => {
+        const customInGroup = (state.customEquipment || []).filter(ce => ce.category === g.id);
+        const customChips = customInGroup.map((ce, idx) => `
+            <button type="button" class="cl-chip cl-chip--custom active"
+                data-custom-idx="${idx}" data-custom-cat="${g.id}">${escHtmlEq(ce.value)} <span class="cl-chip-remove" data-remove-custom="${idx}" data-remove-cat="${g.id}">×</span></button>`).join('');
+        return `
+        <div class="cl-equipment-group" data-group-id="${g.id}">
             <p class="cl-equipment-group-title"><i data-lucide="${g.icon}"></i> ${t(g.label)}</p>
             <div class="cl-chips">
                 ${g.items.map(item => `
                     <button type="button" class="cl-chip ${state.equipment.includes(item.value) ? 'active' : ''}"
                         data-val="${item.value}">${t(item.label)}</button>`).join('')}
+                ${customChips}
             </div>
-        </div>`).join('');
+            <div class="cl-custom-eq-add" data-group="${g.id}" style="margin-top:.5rem">
+                <button type="button" class="cl-btn-inline cl-btn-inline--add" data-open-custom="${g.id}">
+                    + ${t('cl_eq_add_custom', 'Dodaj lastno opremo')}
+                </button>
+                <div class="cl-custom-eq-input" id="cl-custom-eq-${g.id}" style="display:none;margin-top:.5rem;display:none">
+                    <input class="cl-input cl-input--sm" type="text" maxlength="80"
+                        id="cl-custom-eq-val-${g.id}"
+                        placeholder="${t('cl_eq_custom_placeholder', 'npr. Porsche Active Ride')}" />
+                    <p class="cl-hint" style="margin:.25rem 0 .4rem">${t('cl_eq_custom_hint', 'Vnesite samo ime funkcije/opreme — bo shranjeno v taksonomijo za to znamko.')}</p>
+                    <button type="button" class="cl-btn cl-btn--sm cl-btn--primary" data-confirm-custom="${g.id}">${t('cl_eq_custom_add', 'Dodaj')}</button>
+                    <button type="button" class="cl-btn cl-btn--sm cl-btn--ghost" data-cancel-custom="${g.id}">${t('cl_cancel', 'Prekliči')}</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+
+    function escHtmlEq(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
     const exhaustSubHtml = isMoto ? `
         <div id="cl-exhaust-sub" style="${showExhaustSub ? '' : 'display:none;'}background:rgba(0,0,0,0.03);border-radius:1rem;padding:1rem 1.25rem;margin-bottom:1rem;">
@@ -2695,6 +3042,51 @@ function renderEquipmentStep() {
             })
             .catch(() => {});
     }
+
+    // Custom equipment — per-group open/confirm/cancel/remove
+    document.querySelectorAll('[data-open-custom]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const gid = btn.dataset.openCustom;
+            const box = document.getElementById(`cl-custom-eq-${gid}`);
+            if (box) { box.style.display = box.style.display === 'none' ? '' : 'none'; }
+        });
+    });
+
+    document.querySelectorAll('[data-confirm-custom]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const gid = btn.dataset.confirmCustom;
+            const input = document.getElementById(`cl-custom-eq-val-${gid}`);
+            const val = input ? input.value.trim() : '';
+            if (!val) return;
+            if (!state.customEquipment) state.customEquipment = [];
+            if (!state.customEquipment.some(ce => ce.category === gid && ce.value.toLowerCase() === val.toLowerCase())) {
+                state.customEquipment = [...state.customEquipment, { category: gid, value: val }];
+            }
+            renderEquipmentStep();
+        });
+    });
+
+    document.querySelectorAll('[data-cancel-custom]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const gid = btn.dataset.cancelCustom;
+            const box = document.getElementById(`cl-custom-eq-${gid}`);
+            if (box) box.style.display = 'none';
+        });
+    });
+
+    document.querySelectorAll('[data-remove-cat]').forEach(span => {
+        span.addEventListener('click', e => {
+            e.stopPropagation();
+            const cat = span.dataset.removeCat;
+            const idx = Number(span.dataset.removeCustom);
+            const inCat = (state.customEquipment || []).filter(ce => ce.category === cat);
+            const toRemove = inCat[idx];
+            if (toRemove) {
+                state.customEquipment = state.customEquipment.filter(ce => ce !== toRemove);
+            }
+            renderEquipmentStep();
+        });
+    });
 
     document.getElementById('btnEqBack').addEventListener('click', goPrev);
     document.getElementById('btnEqNext').addEventListener('click', goNext);
@@ -2873,6 +3265,130 @@ function renderDescriptionStep() {
     document.getElementById('btnDescBack').addEventListener('click', goPrev);
     document.getElementById('btnDescNext').addEventListener('click', () => {
         state.description = ta.value.trim();
+        goNext();
+    });
+}
+
+// ── Step: Auction setup (dražba only) ─────────────────────────────────────────
+let _sellerContractGetter = null;
+
+function renderAuctionSetupStep() {
+    const packages = [
+        { ...AUCTION_PACKAGES.auction3w, label: t('cl_auction_pkg_3w', '3 tedne'), desc: t('cl_auction_pkg_3w_desc', 'Dražba traja 3 tedne') },
+        { ...AUCTION_PACKAGES.auction6w, label: t('cl_auction_pkg_6w', '6 tednov'), desc: t('cl_auction_pkg_6w_desc', 'Dražba traja 6 tednov') },
+    ];
+
+    const cards = packages.map(p => `
+        <div class="cl-promo-card ${state.auctionPackageId === p.id ? 'selected' : ''}" data-pkg="${p.id}" data-weeks="${p.weeks}">
+            <span class="cl-promo-icon">🔨</span>
+            <p class="cl-promo-name">${p.label}</p>
+            <p class="cl-promo-price">${p.price.toLocaleString('sl-SI', { minimumFractionDigits: 2 })} €</p>
+            <p class="cl-promo-desc">${p.desc}</p>
+        </div>`).join('');
+
+    setHtml(`
+        <div class="cl-card">
+            <h2 class="cl-step-title">${t('cl_auction_title', 'Dražba')}</h2>
+            <p class="cl-step-sub">${t('cl_auction_sub', 'Izberite trajanje, začetno ceno in podpišite zavezo k prodaji.')}</p>
+
+            <label class="cl-label">${t('cl_auction_package', 'Trajanje dražbe')} <span class="req">*</span></label>
+            <div class="cl-promo-grid">${cards}</div>
+
+            <div class="cl-field">
+                <label class="cl-label">${t('cl_auction_start_price', 'Začetna cena')} <span class="req">*</span></label>
+                <div class="cl-price-wrap">
+                    <input class="cl-input" id="fStartPrice" type="text" inputmode="numeric"
+                        value="${formatNumberWithCommas(state.startPriceEur)}" placeholder="0" autocomplete="off" />
+                    <span class="cl-price-currency">€</span>
+                </div>
+                <span style="font-size:0.75rem;color:#94a3b8;">${t('cl_auction_start_price_hint', 'Izhodiščna cena, od katere se začne licitiranje.')}</span>
+            </div>
+
+            <div class="cl-field">
+                <label class="cl-checkbox-label" style="margin-bottom:0.5rem;">
+                    <input type="checkbox" id="fHasReserve" ${state.reservePriceEur ? 'checked' : ''} />
+                    ${t('cl_auction_reserve_toggle', 'Dodaj minimalno ceno (reserve)')}
+                </label>
+                <div id="reserveWrap" style="display:${state.reservePriceEur ? 'flex' : 'none'};">
+                    <div class="cl-price-wrap">
+                        <input class="cl-input" id="fReserve" type="text" inputmode="numeric"
+                            value="${formatNumberWithCommas(state.reservePriceEur || '')}" placeholder="0" autocomplete="off" />
+                        <span class="cl-price-currency">€</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border:none;border-top:1px solid rgba(0,0,0,0.07);margin:1.25rem 0;" />
+
+            ${contractWidgetHtml({
+                party: 'seller',
+                title: t('cl_auction_seller_contract_title', 'Zaveza k prodaji'),
+                body: t('cl_auction_seller_contract_body', 'S podpisom se zavezujete, da boste vozilo prodali kupcu po končni (zadnji) ponujeni ceni ob zaključku dražbe.'),
+            })}
+
+            <p class="cl-promo-note" style="margin-top:1rem;">${t('cl_auction_note', 'Plačilo paketa se izvede po objavi. Trenutno je beleženo kot namera (test).')}</p>
+
+            <div class="cl-nav">
+                <button class="cl-btn cl-btn--ghost" id="btnAucBack">${t('cl_btn_back')}</button>
+                <button class="cl-btn cl-btn--primary" id="btnAucNext">${t('cl_btn_continue')}</button>
+            </div>
+        </div>
+    `);
+
+    // Package selection
+    document.querySelectorAll('.cl-promo-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.cl-promo-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            state.auctionPackageId = card.dataset.pkg;
+            state.auctionDurationWeeks = Number(card.dataset.weeks);
+        });
+    });
+
+    const startInput = document.getElementById('fStartPrice');
+    setupNumericFormatter(startInput);
+    const reserveInput = document.getElementById('fReserve');
+    setupNumericFormatter(reserveInput);
+
+    document.getElementById('fHasReserve').addEventListener('change', (e) => {
+        document.getElementById('reserveWrap').style.display = e.target.checked ? 'flex' : 'none';
+        if (!e.target.checked) { state.reservePriceEur = ''; reserveInput.value = ''; }
+    });
+
+    // Seller contract widget
+    const contractRoot = document.querySelector('.ac-contract');
+    mountContractWidget(contractRoot, {
+        title: 'Zaveza k prodaji na dražbi — MojAvto.si',
+        fileName: 'zaveza-prodaja-drazba',
+        lines: [
+            'Prodajalec se s tem dokumentom zavezuje, da bo predmet dražbe (vozilo) prodal',
+            'kupcu, ki ob zaključku dražbe odda najvišjo veljavno ponudbo, in sicer po tej',
+            'končni ceni.',
+            '',
+            'Prodajalec potrjuje, da je navedena začetna cena resnična in zavezujoča.',
+            '',
+            'Ta dokument se hrani le do zaključka dražbe.',
+        ],
+    }).then(getter => { _sellerContractGetter = getter; });
+
+    document.getElementById('btnAucBack').addEventListener('click', goPrev);
+    document.getElementById('btnAucNext').addEventListener('click', () => {
+        state.startPriceEur = parseFormattedNumber(startInput.value) || '';
+        state.reservePriceEur = document.getElementById('fHasReserve').checked
+            ? (parseFormattedNumber(reserveInput.value) || '') : '';
+
+        if (!state.startPriceEur || Number(state.startPriceEur) <= 0) {
+            alert(t('cl_auction_err_start_price', 'Vnesite veljavno začetno ceno.'));
+            return;
+        }
+        const contract = _sellerContractGetter && _sellerContractGetter();
+        if (!isContractComplete(contract)) {
+            alert(t('cl_auction_err_contract', 'Podpišite zavezo k prodaji ali prenesite in potrdite PDF pogodbo.'));
+            return;
+        }
+        state.sellerContract = { type: contract.type, signatureData: contract.signatureData || null };
+        // Mirror starting price into priceEur so downstream review/cards work.
+        state.priceEur = state.startPriceEur;
         goNext();
     });
 }
@@ -3414,7 +3930,12 @@ function renderReviewStep() {
         [t('cl_condition', 'Stanje'), state.condition],
     ]) : ''}
 
-            ${section(t('cl_section_price'), 'price', [
+            ${state.entryType === 'auction' ? section(t('cl_auction_title', 'Dražba'), 'auctionSetup', [
+        [t('cl_auction_start_price', 'Začetna cena'), state.startPriceEur ? fmt(state.startPriceEur) + ' €' : ''],
+        [t('cl_auction_package', 'Trajanje dražbe'), `${state.auctionDurationWeeks} ${state.auctionDurationWeeks === 1 ? 'teden' : (state.auctionDurationWeeks < 5 ? 'tedne' : 'tednov')} (${(AUCTION_PACKAGES[state.auctionPackageId]?.price || 0).toLocaleString('sl-SI', { minimumFractionDigits: 2 })} €)`],
+        [t('cl_auction_reserve_toggle', 'Minimalna cena'), state.reservePriceEur ? fmt(state.reservePriceEur) + ' €' : ''],
+        [t('cl_auction_seller_contract_title', 'Zaveza k prodaji'), state.sellerContract ? (state.sellerContract.type === 'sign' ? '✓ Podpisano' : '✓ PDF potrjen') : ''],
+    ]) : section(t('cl_section_price'), 'price', [
         [t('cl_section_price'), state.callForPrice ? t('cl_label_call_for_price') : (state.priceEur ? (getCurrentLang() === 'sl' ? fmt(state.priceEur) + ' €' : '$' + fmt(state.priceEur)) : '')],
         [t('cl_label_negotiable'), state.priceNegotiable ? t('cl_val_yes') : t('cl_val_no')],
     ])}
@@ -3425,7 +3946,7 @@ function renderReviewStep() {
         [t('cl_label_contact'), state.contact?.name],
     ])}
 
-            ${section(t('cl_section_promotion'), 'promotion', [
+            ${state.entryType === 'auction' ? '' : section(t('cl_section_promotion'), 'promotion', [
         [t('cl_label_tier'), tierLabels[state.promotionTier] || state.promotionTier],
     ])}
 
@@ -3554,7 +4075,7 @@ async function submitListing(user) {
                 <h2 class="cl-step-title">${t('cl_success_title')}</h2>
                 <p class="cl-step-sub">${t('cl_success_sub')}</p>
                 <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.5rem;">
-                    <a href="#/oglas?id=${id}" class="cl-btn cl-btn--primary">${t('cl_btn_view_listing')}</a>
+                    <a href="#/${state.entryType === 'auction' ? 'drazba' : 'oglas'}?id=${id}" class="cl-btn cl-btn--primary">${t('cl_btn_view_listing')}</a>
                     <a href="#/dashboard" class="cl-btn cl-btn--secondary">${t('cl_btn_my_listings')}</a>
                 </div>
             </div>`;
