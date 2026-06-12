@@ -97,10 +97,16 @@ function applyPlatformFooter(footerEl) {
     set('footerRegNo', el => { el.textContent = PLATFORM.company.regNo; });
     set('footerEmail', el => { el.textContent = PLATFORM.company.email; el.href = `mailto:${PLATFORM.company.email}`; });
     set('footerCopyrightBrand', el => { el.textContent = `${PLATFORM.brandName}${PLATFORM.tld}`; });
-    // Cross-promo link to the sibling portal (MojAvto ⇄ MojaNavtika).
+    // Cross-promo link to the sibling portal (MojAvto ⇄ MojaNavtika) — rendered as logo emblem.
     set('footerSibling', el => {
         el.href = PLATFORM.siblingUrl;
-        el.textContent = `↗ ${PLATFORM.siblingName}`;
+        const [name, tld] = PLATFORM.siblingName.split('.');
+        el.innerHTML = `
+            <span class="footer-sibling-logo" aria-label="${PLATFORM.siblingName}">
+                <span class="footer-sibling-wordmark">${name}</span><span class="footer-sibling-tld">.${tld}</span>
+            </span>`;
         el.style.display = '';
+        el.setAttribute('title', PLATFORM.siblingName);
+        el.setAttribute('aria-label', `Obiščite ${PLATFORM.siblingName}`);
     });
 }

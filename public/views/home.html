@@ -151,7 +151,7 @@
                         </div>
                     </div>
                     <!-- Action buttons to the right -->
-                    <div style="flex: 2.5; display: flex; gap: 0.4rem; align-items: center;">
+                    <div class="home-action-btns" style="flex: 2.5; display: flex; gap: 0.4rem; align-items: center;">
                         <button type="reset" class="pill-btn search-action-pill reset-pill" title="Reset filters">
                             <i data-lucide="refresh-cw"></i>
                             <span>Reset</span>
@@ -191,15 +191,13 @@
 
 
 <div class="page-container" style="margin-top: 2rem; flex-direction: column;">
-    <section id="featured-section" class="carousel-section" style="display: none;">
-        <h2 data-i18n-key="featured_title">Featured Listings</h2>
-        <div class="carousel-wrapper">
-            <button class="carousel-btn prev" id="featured-prev-btn" aria-label="Previous listing">&#10094;</button>
-            <div class="carousel-track-container">
-                <div class="carousel-track" id="featured-container">
+    <section id="featured-section" class="carousel-section auction-carousel-section" style="display: none;">
+        <h2 data-i18n-key="auction_listings_title">Oglasi iz dražbe</h2>
+        <div class="ad-banner-container rotating-ads-carousel featured-auto-carousel">
+            <div class="rotating-ads-track-container">
+                <div class="rotating-ads-track" id="featured-container">
                 </div>
             </div>
-            <button class="carousel-btn next" id="featured-next-btn" aria-label="Next listing">&#10095;</button>
         </div>
     </section>
 </div>

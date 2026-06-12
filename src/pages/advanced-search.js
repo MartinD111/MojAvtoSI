@@ -242,6 +242,16 @@ function bindAccordions() {
             const ns = !isOpen;
             trigger.setAttribute('aria-expanded', String(ns));
             if (body) body.style.display = ns ? 'flex' : 'none';
+            // Auto-scroll: lock the accordion header to top of viewport on open
+            if (ns) {
+                requestAnimationFrame(() => {
+                    const header = trigger.closest('.adv-accordion').querySelector('.adv-acc-header');
+                    if (header) {
+                        const top = header.getBoundingClientRect().top + window.scrollY - 12;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                });
+            }
         });
     });
     document.querySelectorAll('.remember-check').forEach(chk => {

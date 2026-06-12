@@ -323,7 +323,6 @@
                         <button type="button" class="body-type-card" data-value="Coupe"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-coupe"></use></svg><span>Coupe</span></button>
                         <button type="button" class="body-type-card" data-value="Sportni"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-sports"></use></svg><span>Športni avto</span></button>
                         <button type="button" class="body-type-card" data-value="Pick-up"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-pickup"></use></svg><span>Pick-up</span></button>
-                        <button type="button" class="body-type-card" data-value="Damaged"><svg class="custom-v-icon"><use href="/icons/vehicles.svg#v-damaged"></use></svg><span>Poškodovano / Zalito</span></button>
                     </div>
 
                     <!-- Moto vehicle types — two-level drill-down for 4/3-wheel group -->
@@ -451,26 +450,19 @@
                     </div>
                 </div>
 
-                <!-- Condition checkboxes -->
+                <!-- Condition checkboxes + damaged — unified Stanje vozila block -->
                 <div class="adv-field-group adv-left-align" style="margin-bottom: 1.5rem;">
                     <label class="adv-label">Stanje vozila</label>
                     <div class="adv-chip-group">
                         <label class="adv-chip"><input type="checkbox" name="condition" value="Novo"> Novo</label>
-                        <label class="adv-chip"><input type="checkbox" name="condition" value="Rabljeno">
-                            Rabljeno</label>
+                        <label class="adv-chip"><input type="checkbox" name="condition" value="Rabljeno"> Rabljeno</label>
                         <label class="adv-chip"><input type="checkbox" name="condition" value="Razstavno"> Razstavno/Testno</label>
-                        <label class="adv-chip"><input type="checkbox" name="condition" value="DnevnaRegistracija">
-                            Dnevna registracija</label>
-                        <label class="adv-chip"><input type="checkbox" name="condition" value="Starodobnik">
-                            Starodobnik</label>
+                        <label class="adv-chip"><input type="checkbox" name="condition" value="DnevnaRegistracija"> Dnevna registracija</label>
+                        <label class="adv-chip"><input type="checkbox" name="condition" value="Starodobnik"> Starodobnik</label>
                     </div>
-                </div>
-
-                <!-- Damaged vehicle toggle -->
-                <div class="adv-field-group adv-left-align" style="margin-bottom: 2rem;">
-                    <label class="adv-label">Poškodovana vozila</label>
+                    <label class="adv-label" style="margin-top:0.75rem;">Poškodovana in zalita vozila</label>
                     <div class="adv-chip-group">
-                        <label class="adv-chip"><input type="radio" name="damaged" value=""> Vsa</label>
+                        <label class="adv-chip"><input type="radio" name="damaged" value=""> Vsa vozila</label>
                         <label class="adv-chip"><input type="radio" name="damaged" value="only"> Samo poškodovana</label>
                         <label class="adv-chip"><input type="radio" name="damaged" value="exclude"> Brez poškodovanih</label>
                     </div>

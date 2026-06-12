@@ -197,69 +197,93 @@ function renderListingsSection(containerId, sectionId, listings, hideIfEmpty = f
 
     section.style.display = 'block';
 
-    let html = '';
-    listings.forEach(listing => {
+    // Render as mini-cards matching the sponsored carousel style
+    const html = listings.map(listing => {
         const imgUrl = listing.images?.exterior?.[0] || 'https://via.placeholder.com/300x200?text=Ni+slike';
-        const price = typeof listing.price === 'number' ? 
-            new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(listing.price) : 
+        const price = typeof listing.price === 'number' ?
+            new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(listing.price) :
             listing.price;
 
-        html += `
-            <div class="carousel-item">
-                <a href="#/oglas?id=${listing.id}" class="listing-card">
-                    <div class="listing-card-img">
-                        <img src="${imgUrl}" alt="${listing.title}">
-                        ${listing.isPremium ? `<span class="premium-badge">${t('featured_badge', 'Featured')}</span>` : ''}
-                    </div>
-                    <div class="listing-card-content">
-                        <h3 class="listing-card-title">${listing.make} ${listing.model}</h3>
-                        <div class="listing-card-specs centered">
-                            <div class="spec-row centered">
-                                ${getYearPill(listing.year)}
-                                ${getKmPill(listing.mileage)}
-                                ${getDisplacementPill(listing.engineCc)}
-                            </div>
-                            <div class="spec-row centered">
-                                ${getFuelPill(listing)}
-                                ${getTransmissionPill(listing)}
-                                ${getConsumptionPill(listing)}
-                            </div>
+        return `
+            <div class="sponsored-mini-card-wrapper">
+                <a href="#/oglas?id=${listing.id}" class="sponsored-mini-card" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+                    <img src="${imgUrl}" alt="${listing.make} ${listing.model}">
+                    <h4 class="sponsored-title">${listing.make} ${listing.model}</h4>
+                    <div class="sponsored-specs centered">
+                        <div class="spec-row centered">
+                            ${getYearPill(listing.year)}
+                            ${getKmPill(listing.mileage)}
                         </div>
-                        <div class="listing-card-price" style="display:flex;align-items:center;gap:0.4rem;">
-                            ${price}
-                            ${listing.salePriceEur ? `<span class="discount-tag-icon" title="Znižana cena"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>` : ''}
+                        <div class="spec-row centered">
+                            ${getFuelPill(listing)}
+                            ${getTransmissionPill(listing)}
                         </div>
                     </div>
+                    <div class="sponsored-price">${price}</div>
                 </a>
             </div>
         `;
-    });
+    }).join('');
 
-    container.innerHTML = html;
+    // Double items for seamless loop
+    container.innerHTML = html + html;
     if (window.lucide) window.lucide.createIcons();
 }
 
 
 function setupCarousels() {
-    const sections = ['featured', 'recently-viewed'];
+    // Auto-scroll the featured (auction) carousel — identical to the sponsored carousel
+    const featuredTrack = document.getElementById('featured-container');
+    if (featuredTrack) {
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            const featuredContainer = featuredTrack.parentElement;
+            let isPaused = false;
+            function featuredAutoScroll() {
+                if (!isPaused) {
+                    featuredContainer.scrollLeft += 0.8;
+                    if (featuredContainer.scrollLeft >= featuredTrack.scrollWidth / 2) {
+                        featuredContainer.scrollLeft = 0;
+                    }
+                }
+                requestAnimationFrame(featuredAutoScroll);
+            }
+            featuredContainer.addEventListener('touchstart', () => { isPaused = true; }, { passive: true });
+            featuredContainer.addEventListener('touchend', () => {
+                setTimeout(() => { isPaused = false; }, 1200);
+            }, { passive: true });
+            featuredAutoScroll();
+        } else {
+            let scrollAmount = 0;
+            let targetScroll = 0;
+            let isPaused = false;
+            function featuredDesktopScroll() {
+                if (!isPaused) {
+                    targetScroll += 0.8;
+                    if (targetScroll >= featuredTrack.scrollWidth / 2) {
+                        targetScroll = 0;
+                        scrollAmount = 0;
+                    }
+                }
+                scrollAmount += (targetScroll - scrollAmount) * 0.1;
+                featuredTrack.style.transform = `translateX(-${scrollAmount}px)`;
+                requestAnimationFrame(featuredDesktopScroll);
+            }
+            featuredTrack.addEventListener('mouseenter', () => { isPaused = true; });
+            featuredTrack.addEventListener('mouseleave', () => { isPaused = false; });
+            featuredDesktopScroll();
+        }
+    }
 
-    sections.forEach(section => {
-        const track = document.getElementById(`${section}-container`);
-        const prevBtn = document.getElementById(`${section}-prev-btn`);
-        const nextBtn = document.getElementById(`${section}-next-btn`);
-
-        if (!track || !prevBtn || !nextBtn) return;
-
-        const scrollAmount = 300; 
-
-        prevBtn.addEventListener('click', () => {
-            track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-        });
-
-        nextBtn.addEventListener('click', () => {
-            track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        });
-    });
+    // Recently-viewed still uses click-scroll arrows
+    const rvTrack = document.getElementById('recently-viewed-container');
+    const rvPrev = document.getElementById('recent-prev-btn');
+    const rvNext = document.getElementById('recent-next-btn');
+    if (rvTrack && rvPrev && rvNext) {
+        const scrollAmount = 300;
+        rvPrev.addEventListener('click', () => rvTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' }));
+        rvNext.addEventListener('click', () => rvTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' }));
+    }
 }
 
 function reloadBrands(category) {

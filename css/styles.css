@@ -2525,6 +2525,51 @@ footer {
   }
 }
 
+/* Sibling portal logo emblem in footer */
+.footer-sibling {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1rem;
+  text-decoration: none;
+}
+
+.footer-sibling-logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.footer-sibling-wordmark {
+  color: #ffffff;
+}
+
+.footer-sibling-tld {
+  color: #0ea5e9;
+}
+
+.footer-sibling:hover .footer-sibling-wordmark {
+  color: #e2e8f0;
+}
+
+/* Increased padding between last content block and footer */
+footer {
+  margin-top: 4rem;
+}
+
+/* Evaluate panel: compact vertical spacing on mobile */
+@media (max-width: 768px) {
+  .evaluate-form .form-group,
+  #evalForm .form-group,
+  .eval-field-group {
+    margin-bottom: 0.5rem !important;
+    gap: 0.25rem !important;
+  }
+}
+
 /* ── Legal pages (Pravno obvestilo / Varstvo osebnih podatkov) ─────── */
 .legal-container {
   max-width: 880px;
@@ -3663,6 +3708,25 @@ body.dark-mode #rot-next-btn {
   .vehicle-drop-zone {
     justify-content: center !important;
   }
+
+  /* Compact vertical spacing between filter field rows on mobile */
+  .adv-field-group {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .adv-grid-2 {
+    gap: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  #vehicleSelectorRow {
+    gap: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .adv-acc-body {
+    gap: 0 !important;
+  }
 }
 
 .adv-input {
@@ -3933,12 +3997,14 @@ body.dark-mode .sponsored-mini-card:hover {
 
 .sponsored-badge {
   position: absolute;
-  right: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 0.65rem;
   font-weight: 900;
   text-transform: uppercase;
   color: #94a3b8;
   letter-spacing: 0.1em;
+  white-space: nowrap;
 }
 
 body.dark-mode .rotating-ads-carousel {
@@ -5289,6 +5355,7 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
   .mobile-filter-toggle {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.6rem;
     width: 100%;
     height: 44px;
@@ -5304,6 +5371,11 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
     box-shadow: none;
     box-sizing: border-box;
     overflow: hidden;
+  }
+
+  .mobile-filter-toggle .mft-chevron {
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
   body.dark-mode .mobile-filter-toggle {
@@ -6045,7 +6117,24 @@ body.dark-mode .filters-pill:hover {
   margin-right: -2px;
 }
 
-
+/* Mobile: 2-row action button layout */
+@media (max-width: 768px) {
+  .home-action-btns {
+    flex-wrap: wrap !important;
+    flex-direction: row !important;
+    gap: 0.4rem !important;
+  }
+  .home-action-btns .reset-pill,
+  .home-action-btns .filters-pill {
+    flex: 1 1 calc(50% - 0.2rem) !important;
+    min-width: 0 !important;
+  }
+  .home-action-btns .search-submit-btn {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    order: 3;
+  }
+}
 
 
 
@@ -8423,17 +8512,26 @@ body.dark-mode .catalog-offers-title {
     position: absolute !important;
     top: 1.25rem !important;
     left: 1.25rem !important;
-    background: rgba(30, 30, 40, 0.72) !important;
+    background: #1e293b !important;
     color: #fff !important;
     font-size: 0.7rem !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     padding: 3px 8px !important;
     border-radius: 999px !important;
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     letter-spacing: 0.02em !important;
     z-index: 3 !important;
+    opacity: 1 !important;
   }
+  /* Per-condition color palette — fully opaque */
+  .condition-overlay-badge[data-condition="Novo"] { background: #16a34a !important; }
+  .condition-overlay-badge[data-condition="Rabljeno"] { background: #1e293b !important; }
+  .condition-overlay-badge[data-condition="Razstavno"],
+  .condition-overlay-badge[data-condition="Testno vozilo"] { background: #ca8a04 !important; color: #fff !important; }
+  .condition-overlay-badge[data-condition="DnevnaRegistracija"] { background: #7c3aed !important; }
+  .condition-overlay-badge[data-condition="Starodobnik"] { background: #b45309 !important; }
+  .condition-overlay-badge[data-condition="Poškodovano"] { background: #dc2626 !important; }
 
   /* Hide the note+phone row */
   .note-contact-row {

@@ -263,7 +263,7 @@ function renderCarCard(car) {
             </div>
             
             ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
-            ${car.condition ? `<span class="condition-overlay-badge">${car.condition}</span>` : ''}
+            ${car.condition ? `<span class="condition-overlay-badge" data-condition="${car.condition}">${car.condition}</span>` : ''}
 
             ${images.length > 1 ? `
                 <div class="listing-carousel-dots">
