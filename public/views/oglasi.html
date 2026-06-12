@@ -19,6 +19,82 @@
             #sidebarFiltersForm .sidebar-active-pill { padding: 0.15rem 0.45rem 0.15rem 0.55rem !important; font-size: 0.7rem !important; gap: 0.2rem !important; }
             #sidebarFiltersForm .sidebar-pill-remove { font-size: 0.8rem !important; }
             
+            /* Sidebar accordion specific overrides */
+            #sidebarFiltersForm {
+                gap: 0.5rem !important;
+            }
+            #sidebarFiltersForm .adv-accordion {
+                margin-bottom: 0.5rem !important;
+                border-radius: 0.75rem !important;
+                background: #f1f5f9 !important; /* Differentiate in light mode */
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+                overflow: hidden;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-accordion {
+                background: rgba(15, 23, 42, 0.6) !important;
+                border-color: rgba(255, 255, 255, 0.08) !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            }
+            #sidebarFiltersForm .adv-acc-trigger {
+                padding: 0.6rem 1rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.5rem !important;
+                text-align: center !important;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-trigger {
+                color: #ffffff !important;
+            }
+            #sidebarFiltersForm .adv-acc-trigger:hover {
+                background: rgba(0, 0, 0, 0.02) !important;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-trigger:hover {
+                background: rgba(255, 255, 255, 0.02) !important;
+            }
+            #sidebarFiltersForm .adv-acc-title {
+                font-size: 0.9rem !important;
+                font-weight: 700 !important;
+                color: #0f172a !important;
+                text-align: center !important;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-title {
+                color: #ffffff !important;
+            }
+            #sidebarFiltersForm .adv-acc-body {
+                padding: 0.75rem 1rem 1rem 1rem !important;
+                padding-top: 0.5rem !important;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem !important; /* Minimal spacing between inputs */
+                border-top: 1px solid rgba(0, 0, 0, 0.04);
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-body {
+                border-top-color: rgba(255, 255, 255, 0.04);
+            }
+            #sidebarFiltersForm .form-group {
+                gap: 0.15rem !important; /* Minimal spacing label-input */
+                margin-bottom: 0px !important;
+            }
+            #sidebarFiltersForm .form-group > label:not(.adv-chip) {
+                font-size: 0.78rem !important;
+                font-weight: 600 !important;
+                color: var(--text-dark) !important;
+                margin-bottom: 1px !important;
+            }
+            #sidebarFiltersForm .sidebar-active-pills:empty {
+                display: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 0 !important;
+            }
+            #sidebarFiltersForm .sidebar-active-pills {
+                margin-top: 0.2rem !important;
+                margin-bottom: 0.1rem !important;
+                gap: 0.2rem !important;
+            }
+            
             /* Year select pills & dropdown optimizations */
             #sidebarFiltersForm .year-selects-wrapper .custom-select-container { width: 75px !important; min-width: 75px !important; flex: none !important; }
             #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger { justify-content: center !important; padding: 0 5px !important; text-align: center !important; }
@@ -46,274 +122,319 @@
 
         <div class="oglasi-sidebar-card glass-card" id="filtersCard">
             <div class="filters-card-inner" style="min-height: 0; overflow: hidden;">
-                <div class="sidebar-filters-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+                <div class="sidebar-filters-header" style="display:flex; justify-content:center; align-items:center; margin-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.4rem;">
                     <h3 style="margin:0; font-size:1.1rem; font-weight:700;" data-i18n-key="sidebar_filters_title">Filtri</h3>
                 </div>
 
-                <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:1.25rem;">
-                <!-- Znamka -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="make">Znamka</label>
-                    <select id="sidebarMake" name="make" class="glass-select">
-                        <option value="">Vse znamke</option>
-                    </select>
-                    <div class="sidebar-active-pills" id="activeMake"></div>
-                </div>
-
-                <!-- Model -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="model">Model</label>
-                    <select id="sidebarModel" name="model" class="glass-select" disabled>
-                        <option value="">Vsi modeli</option>
-                    </select>
-                    <div class="sidebar-active-pills" id="activeModel"></div>
-                </div>
-
-                <!-- Različica -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Različica</label>
-                    <select id="sidebarVariant" name="variant" class="glass-select" disabled>
-                        <option value="">Vse različice</option>
-                    </select>
-                    <div class="sidebar-active-pills" id="activeVariant"></div>
-                </div>
-
-                <!-- Linija -->
-                <div class="form-group" id="sidebarLineGroup" style="display:none; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Linija</label>
-                    <select id="sidebarLine" name="line" class="glass-select">
-                        <option value="">Vse linije</option>
-                    </select>
-                    <div class="sidebar-active-pills" id="activeLine"></div>
-                </div>
-
-                <!-- Dodana vozila (Multi-search chips - hidden in new design) -->
-                <div id="sidebarVehicleCards" style="display:none; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.25rem;"></div>
-
-                <!-- Letnik od / do -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Letnik</label>
-                    <div class="year-selects-wrapper" style="display:flex; gap:0.5rem; justify-content:center; width:100%;">
-                        <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
-                            <option value="">Od</option>
-                        </select>
-                        <select id="sidebarYearTo" name="yearTo" class="glass-select">
-                            <option value="">Do</option>
-                        </select>
+                <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:0.6rem;">
+                
+                <!-- Osnovni podatki Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="true">
+                            <i data-lucide="car" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Osnovni podatki</span>
+                        </button>
                     </div>
-                </div>
+                    <div class="adv-acc-body" style="display:flex;">
+                        <!-- Znamka -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="make">Znamka</label>
+                            <select id="sidebarMake" name="make" class="glass-select">
+                                <option value="">Vse znamke</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeMake"></div>
+                        </div>
 
-                <!-- Cena do -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Cena do (€)</label>
-                    <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20.000 €" class="pill-input js-format-number" style="width:100%; box-sizing:border-box;" inputmode="numeric">
-                </div>
+                        <!-- Model -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="model">Model</label>
+                            <select id="sidebarModel" name="model" class="glass-select" disabled>
+                                <option value="">Vsi modeli</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeModel"></div>
+                        </div>
 
-                <!-- Gorivo -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Gorivo</label>
-                    <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Bencin"> Bencin</label>
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Hibrid" id="sidebarFuelHibrid"> Hibrid</label>
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Elektrika"> Elektrika</label>
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="LPG"> LPG / Plin</label>
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="CNG"> CNG</label>
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Vodik"> Vodik</label>
-                    </div>
+                        <!-- Različica -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Različica</label>
+                            <select id="sidebarVariant" name="variant" class="glass-select" disabled>
+                                <option value="">Vse različice</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeVariant"></div>
+                        </div>
 
-                    <!-- Hybrid subtypes (shown only when Hibrid is checked) -->
-                    <div id="sidebarHybridTypeGroup" style="display:none; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-top:0.25rem; padding:0.5rem; border-left:2px solid var(--color-primary-start); background:rgba(255,255,255,0.02); border-radius:4px;">
-                        <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Blagi hibrid"> Blagi hibrid</label>
-                        <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Plug-in hibrid"> Plug-in hibrid</label>
-                        <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Bencin hibrid"> Bencin hibrid</label>
-                        <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Dizel hibrid"> Dizel hibrid</label>
-                    </div>
-                </div>
+                        <!-- Linija -->
+                        <div class="form-group" id="sidebarLineGroup" style="display:none; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Linija</label>
+                            <select id="sidebarLine" name="line" class="glass-select">
+                                <option value="">Vse linije</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeLine"></div>
+                        </div>
 
-                <!-- Menjalnik -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Menjalnik</label>
-                    <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Ročni"> Ročni</label>
-                        <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Avtomatski"> Avtomatski</label>
-                    </div>
-                </div>
+                        <!-- Dodana vozila (Multi-search chips - hidden in new design) -->
+                        <div id="sidebarVehicleCards" style="display:none; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.25rem;"></div>
 
-                <!-- 🚗 Car Specific Fields -->
-                <div id="carSpecificFields" style="display:flex; flex-direction:column; gap:1.25rem;">
-                    <!-- Tip vozila (Karoserija) -->
-                    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Oblika / Karoserija</label>
-                        <select id="sidebarBodyType" name="bodyType" class="glass-select">
-                            <option value="">Vse oblike</option>
-                            <option value="Limuzina">Limuzina</option>
-                            <option value="Karavan">Karavan</option>
-                            <option value="Enoprostorec">Enoprostorec</option>
-                            <option value="SUV">SUV / Terensko vozilo</option>
-                            <option value="Coupe">Coupe</option>
-                            <option value="Kabriolet">Kabriolet</option>
-                            <option value="Kombi">Kombi</option>
-                            <option value="Dostavnik">Dostavnik</option>
-                            <option value="Drugo">Drugo</option>
-                        </select>
-                    </div>
+                        <!-- Tip vozila (Karoserija) -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Oblika / Karoserija</label>
+                            <select id="sidebarBodyType" name="bodyType" class="glass-select">
+                                <option value="">Vse oblike</option>
+                                <option value="Limuzina">Limuzina</option>
+                                <option value="Karavan">Karavan</option>
+                                <option value="Enoprostorec">Enoprostorec</option>
+                                <option value="SUV">SUV / Terensko vozilo</option>
+                                <option value="Coupe">Coupe</option>
+                                <option value="Kabriolet">Kabriolet</option>
+                                <option value="Kombi">Kombi</option>
+                                <option value="Dostavnik">Dostavnik</option>
+                                <option value="Drugo">Drugo</option>
+                            </select>
+                        </div>
 
-                    <!-- Moč motorja (kW) -->
-                    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Moč motorja (kW)</label>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                            <input type="number" id="sidebarPowerFrom" name="powerFrom" placeholder="Od (kW)" class="glass-select" style="width:100%; box-sizing:border-box;">
-                            <input type="number" id="sidebarPowerTo" name="powerTo" placeholder="Do (kW)" class="glass-select" style="width:100%; box-sizing:border-box;">
+                        <!-- Toggles -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.6rem; margin-top:0.25rem;">
+                            <label class="adv-chip" style="font-size:0.8rem; padding:0.4rem 0.75rem; display:flex; align-items:center; gap:0.5rem; cursor:pointer; width:fit-content; border:1px solid rgba(0,0,0,0.08); border-radius:999px;">
+                                <input type="checkbox" id="sidebarOnlySale" name="onlySale" style="margin:0;"> Samo s popustom (Akcija)
+                            </label>
+                            <label class="adv-chip" style="font-size:0.8rem; padding:0.4rem 0.75rem; display:flex; align-items:center; gap:0.5rem; cursor:pointer; width:fit-content; border:1px solid rgba(0,0,0,0.08); border-radius:999px;">
+                                <input type="checkbox" id="sidebarShowNoPrice" name="showNoPrice" checked style="margin:0;"> Prikaži oglase brez cene
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Pogon (Drive type) -->
-                    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Pogon</label>
-                        <select id="sidebarDriveType" name="driveType" class="glass-select">
-                            <option value="">Vsi pogoni</option>
-                            <option value="FWD">Sprednji pogon (FWD)</option>
-                            <option value="RWD">Zadnji pogon (RWD)</option>
-                            <option value="AWD">Štirikolesni pogon (AWD / 4x4)</option>
-                        </select>
+                <!-- Cena in letnik Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
+                            <i data-lucide="tag" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Cena in letnik</span>
+                        </button>
                     </div>
+                    <div class="adv-acc-body" style="display:none;">
+                        <!-- Letnik od / do -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Letnik</label>
+                            <div class="year-selects-wrapper" style="display:flex; gap:0.5rem; justify-content:center; width:100%;">
+                                <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
+                                    <option value="">Od</option>
+                                </select>
+                                <select id="sidebarYearTo" name="yearTo" class="glass-select">
+                                    <option value="">Do</option>
+                                </select>
+                            </div>
+                        </div>
 
-                    <!-- Konfiguracija motorja -->
-                    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Konfiguracija motorja</label>
-                        <select id="sidebarEngineConfig" name="engineConfig" class="glass-select">
-                            <option value="">Vsa konfiguracije</option>
-                            <optgroup label="Enovaljni">
-                                <option value="I1">I1 – Enovaljnik</option>
-                            </optgroup>
-                            <optgroup label="Dvovaljni">
-                                <option value="I2">I2 – Vrstni 2-valjnik</option>
-                                <option value="V2">V2 – V 2-valjnik</option>
-                                <option value="B2">B2 – Bokser 2-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Trivaljni">
-                                <option value="I3">I3 – Vrstni 3-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Štirivaljni">
-                                <option value="I4">I4 – Vrstni 4-valjnik</option>
-                                <option value="V4">V4 – V 4-valjnik</option>
-                                <option value="B4">B4 – Bokser 4-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Petvaljni">
-                                <option value="I5">I5 – Vrstni 5-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Šestvaljni">
-                                <option value="I6">I6 – Vrstni 6-valjnik</option>
-                                <option value="V6">V6 – V 6-valjnik</option>
-                                <option value="B6">B6 – Bokser 6-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Osemvaljni">
-                                <option value="V8">V8 – V 8-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Desetvaljni">
-                                <option value="V10">V10 – V 10-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Dvanajstvaljni">
-                                <option value="V12">V12 – V 12-valjnik</option>
-                                <option value="W12">W12 – W 12-valjnik</option>
-                            </optgroup>
-                            <optgroup label="16-valjni">
-                                <option value="W16">W16 – W 16-valjnik</option>
-                            </optgroup>
-                            <optgroup label="Posebni">
-                                <option value="Wankel">Wankel – Rotacijski motor</option>
-                                <option value="Electric">Električni motor</option>
-                                <option value="Hybrid">Hibridni pogon</option>
-                            </optgroup>
-                        </select>
+                        <!-- Cena do -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Cena do (€)</label>
+                            <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20.000 €" class="pill-input js-format-number" style="width:100%; box-sizing:border-box;" inputmode="numeric">
+                        </div>
                     </div>
                 </div>
 
-                <!-- 🏍️ Motorcycle Specific Fields -->
-                <div id="motoSpecificFields" style="display:none; flex-direction:column; gap:1.25rem;">
-                    <!-- Tip motorja (Engine type) -->
-                    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Tip motorja</label>
-                        <select id="sidebarEngineType" name="engineType" class="glass-select">
-                            <option value="">Vsi tipi</option>
-                            <option value="Boxer">Boxer</option>
-                            <option value="V-motor">V-motor (V2/V4)</option>
-                            <option value="Vrstni">Vrstni (i3/i4)</option>
-                            <option value="Enovaljni">Enovaljni</option>
-                            <option value="Drugo">Drugo</option>
-                        </select>
+                <!-- Motor in pogon Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
+                            <i data-lucide="cog" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Motor in pogon</span>
+                        </button>
                     </div>
+                    <div class="adv-acc-body" style="display:none;">
+                        <!-- Gorivo -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Gorivo</label>
+                            <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Bencin"> Bencin</label>
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Hibrid" id="sidebarFuelHibrid"> Hibrid</label>
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Elektrika"> Elektrika</label>
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="LPG"> LPG / Plin</label>
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="CNG"> CNG</label>
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Vodik"> Vodik</label>
+                            </div>
 
-                    <!-- Takt motorja (Stroke type) -->
-                    <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                        <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Takt motorja</label>
-                        <select id="sidebarEngineStroke" name="engineStroke" class="glass-select">
-                            <option value="">Vsi takti</option>
-                            <option value="2T">2-taktni (2T)</option>
-                            <option value="4T">4-taktni (4T)</option>
-                        </select>
+                            <!-- Hybrid subtypes (shown only when Hibrid is checked) -->
+                            <div id="sidebarHybridTypeGroup" style="display:none; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-top:0.25rem; padding:0.5rem; border-left:2px solid var(--color-primary-start); background:rgba(255,255,255,0.02); border-radius:4px;">
+                                <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Blagi hibrid"> Blagi hibrid</label>
+                                <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Plug-in hibrid"> Plug-in hibrid</label>
+                                <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Bencin hibrid"> Bencin hibrid</label>
+                                <label class="adv-chip" style="font-size:0.7rem; padding:0.25rem 0.6rem;"><input type="checkbox" name="fuel" value="Dizel hibrid"> Dizel hibrid</label>
+                            </div>
+                        </div>
+
+                        <!-- Menjalnik -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Menjalnik</label>
+                            <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Ročni"> Ročni</label>
+                                <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Avtomatski"> Avtomatski</label>
+                            </div>
+                        </div>
+
+                        <!-- 🚗 Car Specific Fields -->
+                        <div id="carSpecificFields" style="display:flex; flex-direction:column; gap:1.25rem;">
+                            <!-- Moč motorja (kW) -->
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Moč motorja (kW)</label>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                                    <input type="number" id="sidebarPowerFrom" name="powerFrom" placeholder="Od (kW)" class="glass-select" style="width:100%; box-sizing:border-box;">
+                                    <input type="number" id="sidebarPowerTo" name="powerTo" placeholder="Do (kW)" class="glass-select" style="width:100%; box-sizing:border-box;">
+                                </div>
+                            </div>
+
+                            <!-- Pogon (Drive type) -->
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Pogon</label>
+                                <select id="sidebarDriveType" name="driveType" class="glass-select">
+                                    <option value="">Vsi pogoni</option>
+                                    <option value="FWD">Sprednji pogon (FWD)</option>
+                                    <option value="RWD">Zadnji pogon (RWD)</option>
+                                    <option value="AWD">Štirikolesni pogon (AWD / 4x4)</option>
+                                </select>
+                            </div>
+
+                            <!-- Konfiguracija motorja -->
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Konfiguracija motorja</label>
+                                <select id="sidebarEngineConfig" name="engineConfig" class="glass-select">
+                                    <option value="">Vsa konfiguracije</option>
+                                    <optgroup label="Enovaljni">
+                                        <option value="I1">I1 – Enovaljnik</option>
+                                    </optgroup>
+                                    <optgroup label="Dvovaljni">
+                                        <option value="I2">I2 – Vrstni 2-valjnik</option>
+                                        <option value="V2">V2 – V 2-valjnik</option>
+                                        <option value="B2">B2 – Bokser 2-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Trivaljni">
+                                        <option value="I3">I3 – Vrstni 3-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Štirivaljni">
+                                        <option value="I4">I4 – Vrstni 4-valjnik</option>
+                                        <option value="V4">V4 – V 4-valjnik</option>
+                                        <option value="B4">B4 – Bokser 4-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Petvaljni">
+                                        <option value="I5">I5 – Vrstni 5-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Šestvaljni">
+                                        <option value="I6">I6 – Vrstni 6-valjnik</option>
+                                        <option value="V6">V6 – V 6-valjnik</option>
+                                        <option value="B6">B6 – Bokser 6-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Osemvaljni">
+                                        <option value="V8">V8 – V 8-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Desetvaljni">
+                                        <option value="V10">V10 – V 10-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Dvanajstvaljni">
+                                        <option value="V12">V12 – V 12-valjnik</option>
+                                        <option value="W12">W12 – W 12-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="16-valjni">
+                                        <option value="W16">W16 – W 16-valjnik</option>
+                                    </optgroup>
+                                    <optgroup label="Posebni">
+                                        <option value="Wankel">Wankel – Rotacijski motor</option>
+                                        <option value="Electric">Električni motor</option>
+                                        <option value="Hybrid">Hibridni pogon</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 🏍️ Motorcycle Specific Fields -->
+                        <div id="motoSpecificFields" style="display:none; flex-direction:column; gap:1.25rem;">
+                            <!-- Tip motorja (Engine type) -->
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Tip motorja</label>
+                                <select id="sidebarEngineType" name="engineType" class="glass-select">
+                                    <option value="">Vsi tipi</option>
+                                    <option value="Boxer">Boxer</option>
+                                    <option value="V-motor">V-motor (V2/V4)</option>
+                                    <option value="Vrstni">Vrstni (i3/i4)</option>
+                                    <option value="Enovaljni">Enovaljni</option>
+                                    <option value="Drugo">Drugo</option>
+                                </select>
+                            </div>
+
+                            <!-- Takt motorja (Stroke type) -->
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Takt motorja</label>
+                                <select id="sidebarEngineStroke" name="engineStroke" class="glass-select">
+                                    <option value="">Vsi takti</option>
+                                    <option value="2T">2-taktni (2T)</option>
+                                    <option value="4T">4-taktni (4T)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Barva -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Barva</label>
+                            <select id="sidebarColor" name="color" class="glass-select">
+                                <option value="">Vse barve</option>
+                                <option value="Bela">Bela</option>
+                                <option value="Črna">Črna</option>
+                                <option value="Siva">Siva</option>
+                                <option value="Srebrna">Srebrna</option>
+                                <option value="Modra">Modra</option>
+                                <option value="Rdeča">Rdeča</option>
+                                <option value="Zelena">Zelena</option>
+                                <option value="Rumena">Rumena</option>
+                                <option value="Rjava">Rjava</option>
+                                <option value="Zlata">Zlata</option>
+                                <option value="Oranžna">Oranžna</option>
+                                <option value="Drugo">Drugo</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Barva -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Barva</label>
-                    <select id="sidebarColor" name="color" class="glass-select">
-                        <option value="">Vse barve</option>
-                        <option value="Bela">Bela</option>
-                        <option value="Črna">Črna</option>
-                        <option value="Siva">Siva</option>
-                        <option value="Srebrna">Srebrna</option>
-                        <option value="Modra">Modra</option>
-                        <option value="Rdeča">Rdeča</option>
-                        <option value="Zelena">Zelena</option>
-                        <option value="Rumena">Rumena</option>
-                        <option value="Rjava">Rjava</option>
-                        <option value="Zlata">Zlata</option>
-                        <option value="Oranžna">Oranžna</option>
-                        <option value="Drugo">Drugo</option>
-                    </select>
-                </div>
+                <!-- Prodajalec Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
+                            <i data-lucide="user" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Prodajalec</span>
+                        </button>
+                    </div>
+                    <div class="adv-acc-body" style="display:none;">
+                        <!-- Tip prodajalca -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Tip prodajalca</label>
+                            <select id="sidebarSellerType" name="sellerType" class="glass-select">
+                                <option value="">Vsi prodajalci</option>
+                                <option value="private">Fizična oseba (privat)</option>
+                                <option value="dealer">Trgovec (Avtohiša)</option>
+                            </select>
+                        </div>
 
-                <!-- Tip prodajalca -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Tip prodajalca</label>
-                    <select id="sidebarSellerType" name="sellerType" class="glass-select">
-                        <option value="">Vsi prodajalci</option>
-                        <option value="private">Fizična oseba (privat)</option>
-                        <option value="dealer">Trgovec (Avtohiša)</option>
-                    </select>
-                </div>
-
-                <!-- Lokacija (Regija) -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Lokacija / Regija</label>
-                    <select id="sidebarRegion" name="region" class="glass-select">
-                        <option value="">Vse regije</option>
-                        <option value="Osrednjeslovenska">Osrednjeslovenska</option>
-                        <option value="Podravska">Podravska</option>
-                        <option value="Savinjska">Savinjska</option>
-                        <option value="Gorenjska">Gorenjska</option>
-                        <option value="Obalno-kraška">Obalno-kraška</option>
-                        <option value="Pomurska">Pomurska</option>
-                        <option value="Koroška">Koroška</option>
-                        <option value="Zasavska">Zasavska</option>
-                        <option value="Posavska">Posavska</option>
-                        <option value="Primorsko-notranjska">Primorsko-notranjska</option>
-                        <option value="Goriška">Goriška</option>
-                        <option value="Jugovzhodna Slovenija">Jugovzhodna Slovenija</option>
-                    </select>
-                </div>
-
-                <!-- Toggles -->
-                <div class="form-group" style="display:flex; flex-direction:column; gap:0.6rem; margin-top:0.25rem;">
-                    <label class="adv-chip" style="font-size:0.8rem; padding:0.4rem 0.75rem; display:flex; align-items:center; gap:0.5rem; cursor:pointer; width:fit-content; border:1px solid rgba(0,0,0,0.08); border-radius:999px;">
-                        <input type="checkbox" id="sidebarOnlySale" name="onlySale" style="margin:0;"> Samo s popustom (Akcija)
-                    </label>
-                    <label class="adv-chip" style="font-size:0.8rem; padding:0.4rem 0.75rem; display:flex; align-items:center; gap:0.5rem; cursor:pointer; width:fit-content; border:1px solid rgba(0,0,0,0.08); border-radius:999px;">
-                        <input type="checkbox" id="sidebarShowNoPrice" name="showNoPrice" checked style="margin:0;"> Prikaži oglase brez cene
-                    </label>
+                        <!-- Lokacija (Regija) -->
+                        <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Lokacija / Regija</label>
+                            <select id="sidebarRegion" name="region" class="glass-select">
+                                <option value="">Vse regije</option>
+                                <option value="Osrednjeslovenska">Osrednjeslovenska</option>
+                                <option value="Podravska">Podravska</option>
+                                <option value="Savinjska">Savinjska</option>
+                                <option value="Gorenjska">Gorenjska</option>
+                                <option value="Obalno-kraška">Obalno-kraška</option>
+                                <option value="Pomurska">Pomurska</option>
+                                <option value="Koroška">Koroška</option>
+                                <option value="Zasavska">Zasavska</option>
+                                <option value="Posavska">Posavska</option>
+                                <option value="Primorsko-notranjska">Primorsko-notranjska</option>
+                                <option value="Goriška">Goriška</option>
+                                <option value="Jugovzhodna Slovenija">Jugovzhodna Slovenija</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <div style="margin-top: 0.5rem; padding-bottom: 0.25rem; display: flex; justify-content: center;">

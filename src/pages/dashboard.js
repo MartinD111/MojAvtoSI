@@ -120,16 +120,20 @@ export async function initDashboardPage() {
       let html = '<div style="display:flex;flex-direction:column;gap:1rem;">';
       listings.forEach(listing => {
         const imgUrl = listing.images?.exterior?.[0] || 'https://via.placeholder.com/150?text=Ni+slike';
-        const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(listing.price);
+        const priceVal = listing.priceEur ?? listing.price;
+        const price = priceVal
+            ? new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(priceVal)
+            : '—';
+        const km = listing.mileageKm ?? listing.mileage;
 
         html += `
           <div class="dashboard-item-card">
               <img src="${imgUrl}" style="width:120px;height:80px;object-fit:cover;border-radius:6px;" alt="${listing.title}">
               <div style="flex:1;">
-                  <h3>${listing.make} ${listing.model} ${listing.type}</h3>
+                  <h3>${listing.make} ${listing.model} ${listing.variant || listing.type || ''}</h3>
                   <div class="item-specs">
                       <span>${listing.year}</span>
-                      <span>${listing.mileage ? (getCurrentLang() === 'en' ? t('unit_mi', { val: Math.round(listing.mileage * 0.621371).toLocaleString('en-US') }) : t('unit_km', { val: listing.mileage.toLocaleString('sl-SI') })) : ''}</span>
+                      <span>${km ? new Intl.NumberFormat('sl-SI').format(Math.round(km)) + ' km' : ''}</span>
                       <span>${listing.fuel}</span>
                   </div>
               </div>
@@ -179,13 +183,17 @@ export async function initDashboardPage() {
 // ── Print-to-Sell ─────────────────────────────────────────────
 async function printListing(listing) {
   const imgUrl = listing.images?.exterior?.[0] || '';
-  const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(listing.price);
+  const priceVal = listing.priceEur ?? listing.price;
+  const price = priceVal
+      ? new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(priceVal)
+      : '—';
+  const km = listing.mileageKm ?? listing.mileage;
 
-  document.getElementById('print-title').textContent = `${listing.make} ${listing.model} ${listing.type || ''}`.trim();
+  document.getElementById('print-title').textContent = `${listing.make} ${listing.model} ${listing.variant || listing.type || ''}`.trim();
   document.getElementById('print-price').textContent = price;
   document.getElementById('print-image').src = imgUrl;
   document.getElementById('print-year').textContent = listing.year || '—';
-  document.getElementById('print-mileage').textContent = listing.mileage ? (getCurrentLang() === 'en' ? t('unit_mi', { val: Math.round(listing.mileage * 0.621371).toLocaleString('en-US') }) : t('unit_km', { val: listing.mileage.toLocaleString('sl-SI') })) : '—';
+  document.getElementById('print-mileage').textContent = km ? new Intl.NumberFormat('sl-SI').format(Math.round(km)) + ' km' : '—';
   document.getElementById('print-fuel').textContent = listing.fuel || '—';
   document.getElementById('print-transmission').textContent = listing.transmission || '—';
   document.getElementById('print-power').textContent = listing.power ? t('hp_val', { val: Math.round(listing.power * 1.34102) }) : '—';

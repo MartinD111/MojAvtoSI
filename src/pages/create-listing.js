@@ -3877,7 +3877,7 @@ function renderReviewStep() {
         [t('cl_label_make'), state.make],
         [t('cl_label_model'), state.model],
         [t('cl_label_year'), state.year],
-        [t('cl_label_mileage_review'), state.mileageKm ? (getCurrentLang() === 'sl' ? fmt(state.mileageKm) + ' km' : fmt(Math.round(state.mileageKm * 0.621371)) + ' mi') : ''],
+        [t('cl_label_mileage_review'), state.mileageKm ? fmt(state.mileageKm) + ' km' : ''],
         [t('cl_label_condition'), state.condition],
         [t('cl_label_color'), state.color],
     ]) : ''}
@@ -3899,7 +3899,7 @@ function renderReviewStep() {
         [t('cl_label_cons_combined'), state.fuelL100kmCombined ? state.fuelL100kmCombined + ' L/100km' : ''],
         [t('cl_label_cons_city'), state.fuelL100kmCity ? state.fuelL100kmCity + ' L/100km' : ''],
         [t('cl_label_cons_highway'), state.fuelL100kmHighway ? state.fuelL100kmHighway + ' L/100km' : ''],
-        [t('cl_label_range_review'), state.rangeKm ? (getCurrentLang() === 'sl' ? state.rangeKm + ' km' : Math.round(state.rangeKm * 0.621371) + ' mi') : ''],
+        [t('cl_label_range_review'), state.rangeKm ? state.rangeKm + ' km' : ''],
         [t('cl_label_emissions'), state.emissionClass],
     ]) : ''}
 

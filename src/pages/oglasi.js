@@ -282,7 +282,10 @@ function renderCarCard(car) {
         <div class="listing-card-content">
             <div class="listing-card-header">
                 <div class="car-info">
-                    <h2 class="listing-card-title">${car.title}</h2>
+                    <h2 class="listing-card-title vehicle-title">
+                        <span class="vehicle-title-make-model">${car.make || car.title} ${car.make ? (car.model || '') : ''}</span>
+                        ${(car.make && car.variant) ? `<span class="vehicle-title-variant">${car.variant}</span>` : ''}
+                    </h2>
                     <span class="spec-pill condition-pill">${car.condition}</span>
                 </div>
                 
@@ -998,17 +1001,23 @@ async function initSidebarFiltering() {
     const cat = params.get('cat');
     const carFields = document.getElementById("carSpecificFields");
     const motoFields = document.getElementById("motoSpecificFields");
+    const bodyTypeField = document.getElementById("sidebarBodyType");
+    const bodyTypeGroup = bodyTypeField?.closest('.form-group');
     if (carFields && motoFields) {
         if (cat === 'moto' || cat === 'motor') {
             carFields.style.display = 'none';
             carFields.querySelectorAll("input, select").forEach(el => el.disabled = true);
             motoFields.style.display = 'flex';
             motoFields.querySelectorAll("input, select").forEach(el => el.disabled = false);
+            if (bodyTypeField) bodyTypeField.disabled = true;
+            if (bodyTypeGroup) bodyTypeGroup.style.display = 'none';
         } else {
             carFields.style.display = 'flex';
             carFields.querySelectorAll("input, select").forEach(el => el.disabled = false);
             motoFields.style.display = 'none';
             motoFields.querySelectorAll("input, select").forEach(el => el.disabled = true);
+            if (bodyTypeField) bodyTypeField.disabled = false;
+            if (bodyTypeGroup) bodyTypeGroup.style.display = 'flex';
         }
     }
 
@@ -1060,6 +1069,24 @@ async function initSidebarFiltering() {
             applySidebarFilters();
         });
     }
+
+    bindSidebarAccordions();
+}
+
+function bindSidebarAccordions() {
+    const triggers = document.querySelectorAll('#sidebarFiltersForm .adv-acc-trigger');
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const accordion = trigger.closest('.adv-accordion');
+            const body = accordion.querySelector('.adv-acc-body');
+            const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+            const ns = !isOpen;
+            trigger.setAttribute('aria-expanded', String(ns));
+            if (body) {
+                body.style.display = ns ? 'flex' : 'none';
+            }
+        });
+    });
 }
 
 function applySidebarFilters() {

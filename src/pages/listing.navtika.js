@@ -77,7 +77,7 @@ async function injectServiceHistory(listing) {
 
     const items = records.map(r => {
         const dateStr = r.date ? new Date(r.date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
-        const km = r.mileage ? new Intl.NumberFormat(getCurrentLang() === 'sl' ? 'sl-SI' : 'en-US').format(r.mileage) + ' km' : null;
+        const km = r.mileage ? new Intl.NumberFormat('sl-SI').format(r.mileage) + ' km' : null;
         const typeLabel = typeLabels[r.serviceType] || r.serviceType || t('other');
         return `
             <div class="timeline-item">
@@ -641,13 +641,15 @@ function initGallery(exteriorImages, interiorImages) {
 // ── Key info strip ────────────────────────────────────────────────────────────
 function renderKeyStripHtml(l) {
     const km = l.mileageKm || l.mileage;
+    const hours = l.engineHoursUsed != null ? Number(l.engineHoursUsed) : null;
     const kw = l.powerKw || l.power;
     const fuelStr = (l.fuel || '').toLowerCase().trim();
     const isElectric = fuelStr === 'elektrika' || fuelStr === 'električno' || fuelStr === 'electric' || fuelStr === 'e';
     const isMoto = l.category === 'moto' || l.category === 'motor';
 
     const items = [
-        km ? { icon: 'gauge', label: fmtKm(km) } : null,
+        // Vessels show engine hours; fall back to km for non-vessel navtika items
+        (hours != null && hours >= 0) ? { icon: 'clock', label: new Intl.NumberFormat('sl-SI').format(hours) + ' h' } : (km ? { icon: 'gauge', label: fmtKm(km) } : null),
         l.year ? { icon: 'calendar', label: l.year } : null,
         isElectric ? { icon: 'zap', label: 'E' } : null,
         (l.transmission && !isElectric) ? { icon: 'settings-2', label: escHtml(l.transmission) } : null,
@@ -928,6 +930,10 @@ function renderSimilarCard(l) {
     const img = l.images?.exterior?.[0] || `https://placehold.co/300x200?text=${encodeURIComponent(t('no_photos'))}`;
     const price = formatPrice(l.priceEur || l.price || 0, l.callForPrice);
     const km = l.mileageKm || l.mileage;
+    const hours = l.engineHoursUsed != null ? Number(l.engineHoursUsed) : null;
+    const distLabel = (hours != null && hours >= 0)
+        ? new Intl.NumberFormat('sl-SI').format(hours) + ' h'
+        : (km ? fmtKm(km) : null);
     const isSponsored = l.promotion?.tier === 'sponsored';
 
     return `
@@ -939,7 +945,7 @@ function renderSimilarCard(l) {
             </div>
             <div class="lp-similar-body">
                 <div class="lp-similar-title">${escHtml(buildTitle(l))}</div>
-                <div class="lp-similar-meta">${l.year || ''}${km ? ' · ' + fmtKm(km) : ''}${l.fuel ? ' · ' + l.fuel : ''}</div>
+                <div class="lp-similar-meta">${l.year || ''}${distLabel ? ' · ' + distLabel : ''}${l.fuel ? ' · ' + l.fuel : ''}</div>
                 <div class="lp-similar-price">${price}</div>
             </div>
         </a>`;
@@ -966,11 +972,7 @@ function catLabel(cat) {
 }
 
 function fmtKm(n) {
-    const lang = getCurrentLang();
-    if (lang === 'sl') {
-        return new Intl.NumberFormat('sl-SI').format(Math.round(n)) + ' km';
-    }
-    return new Intl.NumberFormat('en-US').format(Math.round(n * 0.621371)) + ' mi';
+    return new Intl.NumberFormat('sl-SI').format(Math.round(n)) + ' km';
 }
 
 function formatDate(ts) {

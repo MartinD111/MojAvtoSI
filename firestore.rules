@@ -104,7 +104,12 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ── Garages ───────────────────────────────────────────────────────────────
+    // ── Favourites (liked listings) ───────────────────────────────────────────
+    match /users/{userId}/favourites/{listingId} {
+      allow read, write: if isSignedIn() && uid() == userId;
+    }
+
+    // ── Garages (personal vehicle tracker) ───────────────────────────────────
     match /garages/{userId}/cars/{carId} {
       allow read: if resource.data.isPublic == true
         || (isSignedIn() && uid() == userId);

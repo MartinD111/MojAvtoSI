@@ -4157,6 +4157,35 @@ body.dark-mode .sponsored-specs span {
   line-height: 1.2;
 }
 
+.vehicle-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05em;
+  line-height: 1.1;
+}
+
+.vehicle-title-make-model {
+  font-size: 1.5rem;
+  font-weight: 850;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+}
+
+.vehicle-title-variant {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #475569;
+  letter-spacing: -0.01em;
+}
+
+body.dark-mode .vehicle-title-make-model {
+  color: #ffffff;
+}
+
+body.dark-mode .vehicle-title-variant {
+  color: #94a3b8;
+}
+
 .car-price-box {
   display: flex;
   flex-direction: column;
@@ -6126,7 +6155,7 @@ body.dark-mode .filters-pill:hover {
   }
   .home-action-btns .reset-pill,
   .home-action-btns .filters-pill {
-    flex: 1 1 calc(50% - 0.2rem) !important;
+    flex: 1 1 calc(50% - 0.3rem) !important;
     min-width: 0 !important;
   }
   .home-action-btns .search-submit-btn {

@@ -1283,6 +1283,24 @@ async function initSidebarFiltering() {
             window.location.hash = `/oglasi${cat ? '?cat=' + cat : ''}`;
         });
     }
+
+    bindSidebarAccordions();
+}
+
+function bindSidebarAccordions() {
+    const triggers = document.querySelectorAll('#sidebarFiltersForm .adv-acc-trigger');
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const accordion = trigger.closest('.adv-accordion');
+            const body = accordion.querySelector('.adv-acc-body');
+            const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+            const ns = !isOpen;
+            trigger.setAttribute('aria-expanded', String(ns));
+            if (body) {
+                body.style.display = ns ? 'flex' : 'none';
+            }
+        });
+    });
 }
 
 // ── Active filter pills ───────────────────────────────────────────────────────
@@ -1343,7 +1361,9 @@ function getSidebarFormState() {
         'CabinsFrom': 'cabinsFrom',
         'EngineMount': 'engineMount',
         'Fuel': 'fuel',
-        'Hull': 'hull'
+        'Hull': 'hull',
+        'SellerType': 'sellerType',
+        'Region': 'region'
     };
 
     Object.keys(mapping).forEach(suffix => {
@@ -1497,6 +1517,12 @@ function updateMftPills() {
     const najemToggle = get('sidebarNajemToggle');
     if (najemToggle?.checked) labels.push('Najem');
 
+    const sellerType = get('sidebarSellerType');
+    if (sellerType?.value) labels.push(sellerType.selectedOptions[0]?.text || sellerType.value);
+
+    const region = get('sidebarRegion');
+    if (region?.value) labels.push(region.selectedOptions[0]?.text || region.value);
+
     container.innerHTML = labels
         .map(l => `<span class="mft-pill">${l}</span>`)
         .join('');
@@ -1529,6 +1555,8 @@ function applySidebarFilters() {
     const engineMountVal = document.getElementById("sidebarEngineMount")?.value || '';
     const fuels = fuelVal ? [fuelVal] : [];
     const engineMounts = engineMountVal ? [engineMountVal] : [];
+    const sellerType = document.getElementById("sidebarSellerType")?.value || '';
+    const region = document.getElementById("sidebarRegion")?.value || '';
 
     const params = parseHashParams();
     const extraEquipment = params.get('extraEquipment');
@@ -1639,10 +1667,14 @@ function applySidebarFilters() {
         }
 
         if (engineType && car.driveSystem !== engineType) return false;
-
         if (hull && car.hullMaterial !== hull) return false;
-
         if (fuels.length > 0 && !fuels.includes(car.fuel)) return false;
+
+        if (sellerType && car.sellerType !== sellerType) return false;
+        if (region) {
+            const carRegion = car.location?.region || '';
+            if (carRegion !== region) return false;
+        }
 
         if (extraEquipment) {
             const selectedEqs = extraEquipment.split(',').filter(Boolean);
@@ -1703,6 +1735,8 @@ function prefillSidebarFromUrl() {
     prefillInput("sidebarEngineMake", "engineMake");
     prefillSelect("sidebarEngineType", "engineType");
     prefillSelect("sidebarHull", "hull");
+    prefillSelect("sidebarSellerType", "sellerType");
+    prefillSelect("sidebarRegion", "region");
 
     const prodajaVal = params.get("prodaja");
     const najemVal = params.get("najem");

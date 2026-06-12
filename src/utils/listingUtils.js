@@ -29,19 +29,16 @@ export function l100kmToMpg(l) {
     return Math.round(L100KM_TO_MPG(v));
 }
 
-// Formats price in USD with US thousands separator. Accepts a number stored
-// in EUR or USD (we treat stored numeric value as already-USD for display).
 export function formatPrice(value) {
     if (value === undefined || value === null || value === '') return '';
     const n = typeof value === 'number' ? value : parseFloat(String(value).replace(/[^\d.-]/g, ''));
     if (isNaN(n)) return '';
-    return '$' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
+    return new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
 }
 
 export function formatMiles(km) {
-    const mi = kmToMiles(km);
-    if (mi === null) return '';
-    return new Intl.NumberFormat('en-US').format(mi) + ' mi';
+    if (km === null || km === undefined) return '';
+    return new Intl.NumberFormat('sl-SI').format(Math.round(Number(km))) + ' km';
 }
 
 export function formatHp(kw) {
@@ -223,7 +220,7 @@ export function getBatteryPill(car) {
 export function getKmPill(km) {
     if (km === undefined || km === null) return '';
     const formatted = typeof km === 'number'
-        ? new Intl.NumberFormat('en-US').format(kmToMiles(km)) + ' mi'
+        ? new Intl.NumberFormat('sl-SI').format(Math.round(km)) + ' km'
         : km;
     return `<div class="spec-pill km-pill">
         <i data-lucide="gauge"></i>

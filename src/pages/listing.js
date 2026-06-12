@@ -998,11 +998,7 @@ function catLabel(cat) {
 }
 
 function fmtKm(n) {
-    const lang = getCurrentLang();
-    if (lang === 'sl') {
-        return new Intl.NumberFormat('sl-SI').format(Math.round(n)) + ' km';
-    }
-    return new Intl.NumberFormat('en-US').format(Math.round(n * 0.621371)) + ' mi';
+    return new Intl.NumberFormat('sl-SI').format(Math.round(n)) + ' km';
 }
 
 function formatDate(ts) {

@@ -548,19 +548,17 @@ export function sortByPromotion(listings) {
 
 // ── Format helpers ────────────────────────────────────────────────────────────
 export function formatPrice(val, callForPrice) {
-    if (callForPrice) return 'Call for price';
+    if (callForPrice) return 'Pokličite za ceno';
 
-    // Handle strings, nulls, etc.
     let num = typeof val === 'number' ? val : parseFloat(String(val).replace(/[^0-9.]/g, ''));
 
-    if (isNaN(num) || num <= 0) return 'Call for price';
+    if (isNaN(num) || num <= 0) return 'Pokličite za ceno';
 
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency', currency: 'USD', maximumFractionDigits: 0,
+    return new Intl.NumberFormat('sl-SI', {
+        style: 'currency', currency: 'EUR', maximumFractionDigits: 0,
     }).format(num);
 }
 
 export function formatMileage(km) {
-    const mi = Math.round(Number(km) * 0.621371);
-    return new Intl.NumberFormat('en-US').format(mi) + ' mi';
+    return new Intl.NumberFormat('sl-SI').format(Math.round(Number(km))) + ' km';
 }

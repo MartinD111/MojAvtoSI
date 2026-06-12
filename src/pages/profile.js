@@ -1,6 +1,6 @@
 // Profile page — MojAvto.si
 // Moja garaža: add/manage vehicles with tire info
-import { getVehicles, addVehicle, updateVehicle, deleteVehicle } from '../services/garageService.js';
+import { getVehicles, addVehicle, updateVehicle, deleteVehicle, getFavourites, removeFromFavourites } from '../services/garageService.js';
 import { getBrands, getModels } from '../services/adminService.js';
 import { t } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
@@ -157,6 +157,19 @@ export async function initProfilePage() {
           <div style="text-align:center;padding:2rem;color:#9ca3af;">
             <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
             <p style="margin:0.5rem 0 0;font-size:0.85rem;">${t('profile_loading_vehicles')}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shranjeni oglasi -->
+      <div class="profile-card" style="margin-top:2rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+          <h2>❤️ ${t('profile_liked_listings') || 'Shranjeni oglasi'}</h2>
+        </div>
+        <div id="liked-listings-container">
+          <div style="text-align:center;padding:2rem;color:#9ca3af;">
+            <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+            <p style="margin:0.5rem 0 0;font-size:0.85rem;">${t('profile_loading_vehicles') || 'Nalagam...'}</p>
           </div>
         </div>
       </div>
@@ -406,6 +419,64 @@ export async function initProfilePage() {
 
     // ── Initial load ─────────────────────────────────────────────────────────
     await renderVehicles();
+    await renderLikedListings();
+
+    async function renderLikedListings() {
+        const container = document.getElementById('liked-listings-container');
+        if (!container) return;
+        try {
+            const favourites = await getFavourites(user.uid);
+            if (favourites.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center;padding:2.5rem 1rem;color:#94a3b8;">
+                        <div style="font-size:2.5rem;margin-bottom:0.5rem;">❤️</div>
+                        <p style="margin:0;font-size:0.9rem;font-weight:500;">${t('profile_no_liked_listings') || 'Ni shranjenih oglasov'}</p>
+                        <p style="margin:0.25rem 0 0;font-size:0.8rem;">${t('profile_no_liked_hint') || 'Kliknite srce na oglasu, da ga shranite sem.'}</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = favourites.map(fav => {
+                const price = fav.priceEur ?? fav.price;
+                const priceStr = price
+                    ? new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(price)
+                    : '';
+                const img = fav.image || '';
+                const title = fav.title || fav.listingId;
+                return `
+                <div class="profile-vehicle-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+                    ${img ? `<img src="${img}" alt="${title}" style="width:90px;height:64px;object-fit:cover;border-radius:0.75rem;flex-shrink:0;">` : `<div style="width:90px;height:64px;border-radius:0.75rem;background:#f1f5f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🚗</div>`}
+                    <div style="flex:1;min-width:0;">
+                        <a href="#/oglas?id=${fav.listingId}" style="font-size:0.95rem;font-weight:700;color:#0f172a;text-decoration:none;display:block;margin-bottom:0.2rem;">${title}</a>
+                        ${priceStr ? `<span style="font-size:0.9rem;font-weight:700;color:#2563eb;">${priceStr}</span>` : ''}
+                    </div>
+                    <button class="remove-liked-btn" data-id="${fav.listingId}" title="${t('profile_remove_liked') || 'Odstrani'}" style="padding:6px 14px;font-size:0.78rem;font-weight:600;border:1.5px solid #fecaca;background:#fef2f2;color:#dc2626;border-radius:0.5rem;cursor:pointer;font-family:inherit;flex-shrink:0;">${t('profile_remove_liked') || 'Odstrani'}</button>
+                </div>`;
+            }).join('');
+
+            container.querySelectorAll('.remove-liked-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    btn.disabled = true;
+                    try {
+                        await removeFromFavourites(user.uid, btn.dataset.id);
+                        // Remove from localStorage cache too
+                        try {
+                            const lsKey2 = 'ma_liked';
+                            const cached = JSON.parse(localStorage.getItem(lsKey2) || '[]');
+                            localStorage.setItem(lsKey2, JSON.stringify(cached.filter(id => id !== btn.dataset.id)));
+                        } catch { /* ignore */ }
+                        await renderLikedListings();
+                    } catch (err) {
+                        console.error('[Profile] Remove liked error:', err);
+                        btn.disabled = false;
+                    }
+                });
+            });
+        } catch (err) {
+            console.error('[Profile] Load liked listings error:', err);
+            container.innerHTML = `<p style="color:#ef4444;text-align:center;font-size:0.85rem;">${t('profile_error_loading') || 'Napaka pri nalaganju.'}</p>`;
+        }
+    }
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

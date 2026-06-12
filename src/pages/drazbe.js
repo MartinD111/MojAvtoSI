@@ -46,18 +46,20 @@ function renderCard(listing, auction) {
     const bidders = auction?.bidderCount || 0;
     const bids = auction?.bidCount || 0;
     const endMs = endsAtMillis(auction?.endsAt || listing.endsAt);
-    const title = [listing.make, listing.model, listing.variant].filter(Boolean).join(' ')
-        || listing.title || 'Vozilo';
+    const altText = [listing.make, listing.model, listing.variant].filter(Boolean).join(' ') || listing.title || 'Vozilo';
 
     return `
     <a class="drazba-card" href="#/drazba?id=${listing.id}">
         <div class="drazba-card-img">
-            <img src="${cardImage(listing)}" alt="${title}" loading="lazy">
+            <img src="${cardImage(listing)}" alt="${altText}" loading="lazy">
             <span class="drazba-card-timer" data-ends="${endMs ?? ''}">—</span>
             ${bids > 0 ? `<span class="drazba-card-live">● V ŽIVO</span>` : ''}
         </div>
         <div class="drazba-card-body">
-            <h3 class="drazba-card-title">${title}</h3>
+            <h3 class="drazba-card-title vehicle-title">
+                <span class="vehicle-title-make-model">${listing.make || listing.title || 'Vozilo'} ${listing.make ? (listing.model || '') : ''}</span>
+                ${(listing.make && listing.variant) ? `<span class="vehicle-title-variant">${listing.variant}</span>` : ''}
+            </h3>
             <div class="drazba-card-meta">
                 ${listing.year ? `<span>${listing.year}</span>` : ''}
                 ${listing.mileageKm ? `<span>${(Number(listing.mileageKm)||0).toLocaleString('sl-SI')} km</span>` : ''}
