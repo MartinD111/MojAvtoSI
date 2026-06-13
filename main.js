@@ -1,6 +1,6 @@
 // Main entry point — platform-aware (MojAvto.si / MojaNavtika.si)
 import { initI18n, translatePage } from './src/core/i18n.js';
-import './src/router.js';
+import { reloadCurrentView } from './src/router.js';
 import './src/pageController.js';
 import { onAuth } from './src/auth/auth.js';
 import { initHeader } from './src/components/header.js';
@@ -38,6 +38,16 @@ fetch('views/footer.html')
         }
     })
     .catch(err => console.error("Error loading footer:", err));
+
+// When the language changes, re-render the current view so JS-built views (which
+// call t() at render time, not via data-i18n-key) pick up the new strings.
+// The header and footer re-translate themselves via their own langChanged hooks.
+document.addEventListener('langChanged', () => {
+    reloadCurrentView();
+    // Re-apply the footer's translatable strings (footer is outside the router view)
+    const footerEl = document.getElementById('footer');
+    if (footerEl) translatePage(footerEl);
+});
 
 
 // Track auth state globally so views can use it

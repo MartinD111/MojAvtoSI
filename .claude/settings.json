@@ -10,7 +10,10 @@
       "Bash(node --check src/data/sampleAuctions.js)",
       "Bash(echo \"EXIT:$?\")",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\marti\\\\AMS d.o.o\\\\MojAvto.si\" -Directory -Force)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Read(//c/Users/marti/Desktop/**)",
+      "Bash(python -c ' *)",
+      "Bash(node -e ' *)"
     ]
   }
 }

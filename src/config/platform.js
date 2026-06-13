@@ -12,8 +12,8 @@
 const PLATFORMS = {
     avto: {
         id: 'avto',
-        brandName: 'MojAvto',
-        brandMark: 'M',
+        brandName: 'AutoHub',
+        brandMark: 'A',
         tld: '.si',
         domain: 'mojavto.si',
         siblingUrl: 'https://mojanavtika.si',

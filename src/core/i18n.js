@@ -2,8 +2,11 @@ import { PLATFORM } from '../config/platform.js';
 import { key as lsKey } from '../config/storageKeys.js';
 
 let translations = {};
-// Slovenian market — single language
-let currentLang = 'sl';
+// Default market language is Slovenian; users can switch to English via the
+// header language dropdown. The choice is persisted in localStorage.
+const SUPPORTED_LANGS = ['sl', 'en'];
+const DEFAULT_LANG = 'sl';
+let currentLang = DEFAULT_LANG;
 
 // Brand placeholder injected into every translation: "{brand}" → "MojAvto.si" |
 // "MojaNavtika.si". Lets one set of language strings serve both platforms.
@@ -16,10 +19,16 @@ let _resolveReady;
 export const i18nReady = new Promise(r => { _resolveReady = r; });
 
 export async function initI18n() {
-    currentLang = 'sl';
+    const saved = localStorage.getItem(lsKey('lang'));
+    currentLang = SUPPORTED_LANGS.includes(saved) ? saved : DEFAULT_LANG;
     await loadTranslations(currentLang);
     document.documentElement.lang = currentLang;
     _resolveReady();
+}
+
+/** Supported UI languages (for building the language dropdown). */
+export function getSupportedLangs() {
+    return [...SUPPORTED_LANGS];
 }
 
 async function loadTranslations(lang) {
@@ -70,6 +79,16 @@ export async function setLang(lang) {
     localStorage.setItem(lsKey('lang'), lang);
     await loadTranslations(lang);
     document.documentElement.lang = lang;
+}
+
+// Switch the active language and re-translate everything already in the DOM
+// (loaded view, header, footer), then notify listeners so JS-rendered views can
+// re-render with the new strings. Used by the header language dropdown.
+export async function switchLang(lang) {
+    if (lang === currentLang || !SUPPORTED_LANGS.includes(lang)) return;
+    await setLang(lang);
+    translatePage(document);
+    document.dispatchEvent(new CustomEvent('langChanged', { detail: { lang } }));
 }
 
 export function getCurrentLang() {

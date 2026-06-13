@@ -1,0 +1,584 @@
+
+### src/pages/admin.js (152)
+  45| <a href="#/" style="color:#2563eb;font-weight:600;">← Nazaj domov</a>
+  100| <input class="adm-global-search" id="adm-global-search" type="search" placeholder="Išči…" />
+  108| ${navItem('listings',     'listings',  'Oglasi')}
+  109| ${navItem('drazbe',       'featured',  'Dražbe')}
+  112| ${navItem('reports',      'reports',   'Poročila')}
+  125| ${navItem('payments',     'payments',  'Plačila')}
+  264| <th>Oglas</th><th>Status</th><th>Avtor</th><th>Cena</th><th>Datum</th><th>Akcija</th>
+  305| datasets: [{ label: 'Oglasi', data: data.map(d => d.count),
+  336| <button class="adm-btn adm-btn-red"   id="lst-bulk-delete">🗑 Izbriši</button>
+  377| <th>Oglas</th><th>Kategorija</th><th>Status</th>
+  378| <th>Avtor</th><th>Cena</th><th>Objavljeno</th><th>Akcije</th>
+  402| <button class="adm-btn adm-btn-xs adm-btn-red" title="Izbriši" onclick="window.__lstDelete('${l.id}')">🗑</button>
+  469| showToast('Oglas izbrisan.', 'success');
+  481| <input class="adm-input adm-input-sm" id="user-search" placeholder="Išči po imenu / emailu…">
+  647| <input id="tax-search" class="adm-input adm-input-sm" type="search" placeholder="Išči…" style="width:170px">
+  648| <button class="adm-btn adm-btn-sm adm-btn-green" id="tax-download-json-btn">⬇ Shrani JSON</button>
+  650| <button class="adm-btn adm-btn-sm adm-btn-primary" id="tax-add-brand-btn">+ Znamka</button>
+  704| if (!raw) { showToast('Podatki niso naloženi.', 'error'); return; }
+  744| <button class="adm-btn adm-btn-sm adm-btn-green" id="exhaust-download-btn">⬇ Shrani JSON</button>
+  750| <button class="exhaust-del-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;lin
+  826| <button class="adm-btn adm-btn-sm adm-btn-green" id="equip-download-btn">⬇ Shrani JSON</button>
+  835| <button class="equip-del-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;line-
+  856| showToast('Znamka dodana.', 'success');
+  878| const rows = [['Znamka'], ..._equipmentCache.map(b => [b])];
+  914| showToast(`Uvoženih ${added} novih znamk. Ne pozabite "Shrani JSON".`, 'success');
+  969| <label style="font-size:.78rem;color:#6b7280;display:block;margin-bottom:.25rem">Znamka</label>
+  980| <button class="adm-btn adm-btn-sm adm-btn-green" id="lines-download-btn" style="margin-left:auto">⬇ Shrani JSON</button>
+  1002| <button class="lines-del-line-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;
+  1039| if (data[name]) { showToast('Znamka že obstaja.', 'warn'); return; }
+  1044| showToast(`Znamka "${name}" dodana.`, 'success');
+  1070| showToast('Znamka odstranjena.', 'info');
+  1098| if (stats) stats.textContent = `${all.length} predlogov čaka na pregled`;
+  1105| const typeLabel = { linija: 'Linija', equipment: 'Oprema', make: '⛵ Znamka', model: '⛵ Model', vrsta: '⛵ Vrsta' };
+  1131| <th>Vrsta</th><th>Znamka</th><th>Kategorija</th><th>Vrednost</th><th>Akcija</th>
+  1219| if (statsEl) statsEl.textContent = `${totalBrands} znamk · ${totalModels} modelov · ${totalVariants} različic`;
+  1271| if (!confirm(`Izbrisati različico "${variant}"?`)) return;
+  1382| if (statsEl) statsEl.textContent = `${rows.length} različic`;
+  1405| <button class="adm-btn adm-btn-sm adm-btn-red" id="tax-bulk-del-btn" style="display:none">🗑 Briši izbrane</button>
+  1457| <button class="adm-btn adm-btn-sm" id="tax-prev-btn" ${_taxPage <= 1 ? 'disabled' : ''}>← Nazaj</button>
+  1459| <button class="adm-btn adm-btn-sm" id="tax-next-btn" ${_taxPage >= totalPages ? 'disabled' : ''}>Naprej →</button>
+  1488| if (!confirm(`Izbrisati različico "${btn.dataset.trim}"?`)) return;
+  1511| if (!confirm(`Izbrisati ${checked.length} izbranih različic?`)) return;
+  1549| <button class="adm-btn adm-btn-xs adm-btn-red" onclick="window.__taxDelBrand('${catArg}','${brandArg}')">Briši</button>
+  1577| <button class="adm-btn adm-btn-xs adm-btn-red" onclick="window.__taxDelVariant('${catArg}','${brandArg}','${modelArg}','${vArg}')"
+  1586| ${vc ? `<span class="tax-model-slug adm-sub">${vc} različic</span>` : ''}
+  1588| <button class="adm-btn adm-btn-xs adm-btn-green" onclick="window.__taxAddVariant('${catArg}','${brandArg}','${modelArg}')">+ Razli
+  1589| <button class="adm-btn adm-btn-xs adm-btn-red" onclick="window.__taxDelModel('${catArg}','${brandArg}','${modelArg}')">Briši</butt
+  1751| errs.push('Električni doseg mora biti med 1 in 2000 km.');
+  1782| if (!raw) { showToast('Taksonomija ni naložena.', 'error'); return; }
+  1801| openModal(`Uredi različico — ${escHtml(trimName)}`, `
+  1803| <label>Ime različice <span style="color:#ef4444">*</span></label>
+  1809| if (!newTrimName) { showToast('Ime različice je obvezno.', 'error'); return; }
+  1835| showToast(`Različica "${newTrimName}" posodobljena.`, 'success');
+  1851| if (raw[name]) { showToast('Znamka že obstaja.', 'warn'); return; }
+  1857| showToast(`Znamka "${name}" dodana.`, 'success');
+  1899| openModal(`Dodaj različico — ${escHtml(model)}`, `
+  1900| <div class="adm-form-row"><label>Ime različice <span style="color:#ef4444">*</span></label>
+  1906| if (!name) { showToast('Vnesite ime različice.', 'error'); return; }
+  1916| if (exists) { showToast('Različica že obstaja.', 'warn'); return; }
+  1921| if (exists) { showToast('Različica že obstaja.', 'warn'); return; }
+  1928| showToast(`Različica "${name}" dodana.`, 'success');
+  1945| ? [['Znamka', 'Model', 'Različica', 'Vrsta', 'Kategorija']]
+  1946| : [['Znamka', 'Model', 'Vrsta', 'Različica']];
+  1995| ? `<strong>Plovila:</strong> <code>Znamka · Model · Različica · Vrsta · Kategorija</code><br>
+  1996| <strong>Izvenkrmni motorji:</strong> <code>Znamka · Model · KM · Različica</code> (KM = konjska moč).<br>
+  1997| Podvojen vnos = ista znamka + model + različica → <strong>preskočen, ne podvojen</strong>.`
+  1999| <strong>Motorji:</strong> <code>Znamka · Model · Različica · Kategorija · Takt · Konfiguracija</code>
+  2000| — Kategorija z <code>/</code> loči več tipov (npr. <em>Športni / Naked</em>).<br>
+  2001| Podvojen vnos = ista znamka + model + različica → <strong>preskočen, ne podvojen</strong>.`;
+  2008| ${isNavtika ? '' : '<button class="adm-btn adm-btn-sm adm-btn-red" id="voz-clear-avto-btn" style="margin-left:auto">🗑 Pobriši avt
+  2041| if (!confirm('Ali ste prepričani, da želite pobrisati CELOTNO avtomobilsko taksonomijo iz Firestore (znamke, modeli in zapisi)? Te
+  2043| btn.disabled = true; btn.textContent = '⏳ Brišem…';
+  2046| showToast('Avtomobilska taksonomija je bila uspešno pobrisana iz Firestore.', 'success');
+  2050| btn.disabled = false; btn.textContent = '🗑 Pobriši avto taksonomijo (Firestore)';
+  2080| btn.disabled = true; btn.textContent = '⏳ Uvažam…';
+  2089| showToast('Uvoz uspešen!', 'success');
+  2100| return 'tip motorja' in row || 'prenos moči' in row || 'prenos moci' in row ||
+  2139| variant:       row['različica'] || row['razlicica'] || row['variant'] || row['trim'] || '',
+  2149| variant:    row['različica'] || row['razlicica'] || row['variant'] || row['trim'] || '',
+  2158| const prenosRaw = row['prenos moči'] || row['prenos moci'] || row['prenos'] || '';
+  2169| variant:         row['različica'] || row['razlicica'] || row['variant'] || row['trim'] || 'Base',
+  2185| variant:                    row['variant']                   || row['različica']             || row['razlicica'] || row['trim'] ||
+  2224| <div class="voz-dedup-cell voz-dup"><div class="voz-count">${dupBrands}</div><div class="voz-label">obstoječih znamk</div></div>
+  2226| <div class="voz-dedup-cell voz-dup"><div class="voz-count">${dupModels}</div><div class="voz-label">obstoječih modelov</div></div>
+  2235| ? `<tr><th>Znamka</th><th>Model</th><th>Vrsta</th><th>Različica</th><th>Prostornina</th><th>Takt</th><th>Tip motorja</th><th>Preno
+  2237| ? `<tr><th>Znamka</th><th>Model</th><th>Vrsta</th><th>Kategorija</th><th>Različica</th><th>Status</th></tr>`
+  2239| ? `<tr><th>Znamka</th><th>Model</th><th>KM</th><th>Različica</th><th>Status</th></tr>`
+  2241| ? `<tr><th>Znamka</th><th>Model</th><th>Trim</th><th>Gorivo</th><th>Prostornina</th><th>Status</th></tr>`
+  2242| : `<tr><th>Kat.</th><th>Znamka</th><th>Model</th><th>Različica</th><th>Status</th></tr>`;
+  2253| ? '<span class="adm-badge adm-badge-gray">Obstoječ</span>'
+  2308| ${rows.length > 20 ? `<tr><td colspan="${colSpan}" style="color:#6b7280;text-align:center;padding:.75rem">… in še ${rows.length - 
+  2332| I3: ['Trivaljnik', 'Inline-three'], I4: ['Štirivaljnik', 'Inline-four'], I6: ['Šestvaljnik', 'Inline-six'],
+  2342| if (electric) return 'Električni';
+  2357| const MOTO_ELECTRIC_VRSTA = new Set(['e-bike', 'električni skiro', 'elektricni skiro', 'električno kolo', 'elektricno kolo', 'elek
+  2378| 'electric': 'Electric', 'električni': 'Electric', 'ev': 'Electric',
+  2409| notes: 'OPOMBA: Vrsta = kategorija vozila (SportniMotor, Adventure, NakedBike, Classic, Cruiser, Moped, Skuter, ATV, UTV, Trikoles
+  2411| 'Znamka',
+  2414| 'Različica',
+  2418| 'Prenos moči',
+  2424| ['Amper', 'E-Bike', 'Električni skiro', 'Amper S45', '', 'Električni', 'Elektromotor', 'zobati jermen'],
+  2448| notes: 'OPOMBA: Stolpci so Znamka, Model, Različica, Vrsta, Kategorija. Vrsta = tip plovila (Čolni, Jadrnice …). Kategorija = podk
+  2450| 'Znamka',
+  2452| 'Različica',
+  2457| ['Azimut', 'Atlantis 45', 'Atlantis 45', 'Čolni', 'Športna jahta'],
+  2465| notes: 'OPOMBA: Stolpci so Znamka, Model, KM, Različica. KM = konjska moč (število). Za električne motorje pustite KM prazno ali v
+  2467| 'Znamka',
+  2470| 'Različica',
+  2530| <thead><tr><th>Oglas</th><th>Tip</th><th>Aktiviran</th><th>Poteče</th><th>Akcije</th></tr></thead>
+  2565| <option value="">Vsa poročila</option>
+  2567| <option value="resolved">Rešena</option>
+  2586| if (!reports.length) { wrap.innerHTML = '<div class="adm-empty">Ni poročil.</div>'; return; }
+  2589| <thead><tr><th>Oglas ID</th><th>Razlog</th><th>Prijavil</th><th>Datum</th><th>Status</th><th>Akcije</th></tr></thead>
+  2602| ` : '<span class="adm-sub">Zaključeno</span>'}
+  2622| <h3>Dražbe</h3>
+  2623| <span class="adm-sub">Backend (samodejno zaprtje, e-pošta, plačila) je še v pripravi — glej docs/AUCTIONS_HANDOFF.md</span>
+  2639| ended:    ['Zaključena', 'adm-badge'],
+  2651| if (!auctions.length) { wrap.innerHTML = '<div class="adm-empty">Ni dražb.</div>'; return; }
+  2655| <thead><tr><th>Oglas ID</th><th>Izklicna</th><th>Trenutna</th><th>Ponudb</th><th>Konec</th><th>Status</th><th>Akcije</th></tr></th
+  2669| <button class="adm-btn adm-btn-xs adm-btn-red" onclick="window.__aucClose('${a.listingId}')">Zaključi</button>`
+  2681| showToast('Status dražbe posodobljen.', 'success');
+  2685| if (!confirm('Zaključim to dražbo in določim zmagovalca po najvišji ponudbi?')) return;
+  2688| showToast('Dražba zaključena.', 'success');
+  2708| <thead><tr><th>E-pošta</th><th>Zanima</th><th>Datum</th></tr></thead>
+  2730| <div class="adm-card-header"><h3>Oglasi po dnevih (30 dni)</h3></div>
+  2766| datasets: [{ label: 'Oglasi', data: chartData30.map(d => d.count),
+  2795| <thead><tr><th>Poizvedba</th><th>Kategorija</th><th>Število iskanj</th><th>Brez rezultatov</th></tr></thead>
+  2862| ${kpi('Uspešnih', '—', '✅', 'green')}
+  2863| ${kpi('Neuspešnih', '—', '❌', 'red')}
+  2871| <p>Za produkcijsko okolje povežite Stripe webhooks z <code>/api/stripe/webhook</code> endpointom.<br>
+  2924| <p style="font-size:.85rem">Priporočena implementacija: Firebase Extensions → Resize Images (sharp)</p>
+  2952| <thead><tr><th>Čas</th><th>Admin</th><th>Akcija</th><th>Target</th><th>Podrobnosti</th></tr></thead>
+  2993| <label>Dealer mesečnina (€)</label>
+  3003| <h4>Oglasi</h4>
+  3013| <label>Oglasi gostov (brez prijave)</label>
+  3021| <label>Vzdrževalni način</label>
+  3028| <button type="submit" class="adm-btn adm-btn-primary">💾 Shrani nastavitve</button>
+  3100| <button class="adm-btn adm-btn-xs adm-btn-red" data-del="${s.id}">Izbriši</button>
+  3120| if (!confirm(`Izbrišem vir "${s.domain}"?`)) return;
+  3217| wrap.innerHTML = `<div style="padding:2.5rem;text-align:center;color:#9ca3af;">Ni ročno vnesenih izdelkov. (Na strani Gume in deli
+  3221| <thead><tr><th>Naziv</th><th>Tip</th><th>Vozilo</th><th>Najnižja cena</th><th>Ponudbe</th><th>Status</th><th>Akcije</th></tr></the
+  3232| <button class="adm-btn adm-btn-xs adm-btn-red" data-del="${p.id}">Izbriši</button>
+  3241| if (!confirm(`Izbrišem izdelek "${p.title}"?`)) return;
+  3259| <div class="adm-form-row"><label>Znamka</label>
+  3288| <input id="cat-oem"    class="adm-input" value="${escHtml(a.oemNumber || '')}" placeholder="OEM številka"></div>
+  3347| <button class="adm-btn" id="adm-modal-cancel">Prekliči</button>
+  3374| showToast('Oglas zavrnjen.', 'success');
+  3429| showToast(brand ? 'Znamka posodobljena.' : 'Znamka dodana.', 'success');
+  3438| <div class="adm-form-row"><label>Znamka</label>
+  3537| <thead><tr><th>Oglas</th><th>Status</th><th>Avtor</th><th>Akcija</th></tr></thead>
+  3594| free:      ['Brezplačni',   'gray'],
+  3604| wrong:    ['❌ Napačni podatki',  'orange'],
+  3612| const map = { open: ['Odprto','red'], resolved: ['Rešeno','green'], dismissed: ['Zavrnjeno','gray'] };
+
+### src/pages/create-listing.js (54)
+  207| const electricKeywords = ['electric', 'električni', 'ev', 'plaid'];
+  490| const restore = confirm('Najden je nedokončan oglas. Ali ga želite nadaljevati?');
+  652| <p class="cl-entry-card-desc">Čoln, jadrnica, jahta, gumenjak, jet-ski ipd.</p>
+  738| <p class="cl-step-sub">Izberite vašo vlogo in začnite z ročnim vnosom podatkov.</p>
+  746| <p class="cl-entry-card-title">Ročni vnos</p>
+  749| <li>Vsa plovila in motorne čolne</li>
+  751| <li>Vedno brezplačno</li>
+  1465| const COLORS = ['Bela', 'Črna', 'Siva', 'Srebrna', 'Modra', 'Rdeča', 'Zelena', 'Rumena', 'Rjava', 'Oranžna', 'Vijolična', 'Zlata',
+  1969| const COLORS_BOAT = ['Bela', 'Modra', 'Siva', 'Črna', 'Rdeča', 'Zelena', 'Rumena', 'Oranžna', 'Druga'];
+  1972| const JETSKI_ENGINE_TYPES = ['Bencin (4-taktni)', 'Bencin (2-taktni)', 'Električni'];
+  1983| <p class="cl-step-sub">Vnesite osnovne tehnične podatke o plovilu.</p>
+  1987| <label class="cl-label">Znamka <span class="req">*</span></label>
+  1995| <p class="cl-hint" style="margin-top:.25rem">Znamka bo predlagana za dodajanje v taksonomijo.</p>
+  2014| <label class="cl-label">Letnik <span class="req">*</span></label>
+  2016| <option value="">— Letnik —</option>${yearOpts}
+  2020| <label class="cl-label">Dolžina plovila (m) <span class="req">*</span></label>
+  2037| placeholder="npr. Elektična jadrnica, Tender, Hišna ladja"
+  2069| <label class="cl-label">Moč motorja <span class="req">*</span></label>
+  2110| <label class="cl-label">Število kabin</label>
+  2117| <label class="cl-label">Število ležišč</label>
+  2127| <label class="cl-label">Širina (m)</label>
+  2156| <label class="cl-label">Število prejšnjih lastnikov</label>
+  2159| ${[['1st owner','1. lastnik'],['2nd owner','2. lastnik'],['3rd owner','3. lastnik'],['4th owner','4. lastnik'],['5 or more','5 ali
+  2223| notListedOpt.textContent = '+ Znamka ni na seznamu';
+  2510| ['I4', 'I4 Štirivaljnik'],
+  2511| ['V6', 'V6 Šestvaljnik'],
+  2516| ['W16', 'W16 Šestnajstvaljnik'],
+  2517| ['Electric', 'Električni motor'],
+  2871| ['Elektrika', 'Električni pogon'],
+  2872| ['Hibrid', 'Hibrid (benzin + električni)'],
+  2880| ['Električni', 'Električni motor'],
+  2921| <label class="cl-label">Znamka motorja</label>
+  2932| <label class="cl-label">Moč motorja <span class="req">*</span></label>
+  2953| <label class="cl-label">Število motorjev <span class="req">*</span></label>
+  2968| <label class="cl-label">Maks. hitrost (vozliči)</label>
+  3092| <p class="cl-equipment-group-title" style="margin-bottom:.75rem;"><i data-lucide="wind"></i> Podrobnosti izpuha</p>
+  3099| <option value="">Znamka izpuha (opcijsko)</option>
+  3225| <span>Vaše fotografije niso bile shranjene med prijavo — prosimo, naložite jih znova.</span>
+  3496| 'Prodajalec se s tem dokumentom zavezuje, da bo predmet dražbe (vozilo) prodal',
+  3497| 'kupcu, ki ob zaključku dražbe odda najvišjo veljavno ponudbo, in sicer po tej',
+  3498| 'končni ceni.',
+  3500| 'Prodajalec potrjuje, da je navedena začetna cena resnična in zavezujoča.',
+  3502| 'Ta dokument se hrani le do zaključka dražbe.',
+  3587| <span style="font-size:0.75rem;color:#94a3b8;">Znižana cena je prikazana na oglasu. Originalna cena je vidna samo pri podrobnem og
+  3749| const regions = ['Osrednjeslovenska', 'Gorenjska', 'Podravska', 'Savinjska', 'Dolenjska', 'Obalno-kraška', 'Koroška', 'Pomurska', 
+  3999| ['Znamka', state.make],
+  4001| ['Letnik', state.year],
+  4002| ['Dolžina', state.lengthM ? state.lengthM + ' m' : ''],
+  4007| ['Kabine / Ležišča', (state.cabins || state.berths) ? `${state.cabins || '—'} / ${state.berths || '—'}` : ''],
+  4018| ['Gorivo / pogon', state.fuel],
+  4020| ['Znamka motorja', state.engineBrand],
+  4021| ['Moč motorja', state.powerKw ? `${Math.round(state.powerKw * 1.34102)} KM (${state.powerKw} kW)` : ''],
+  4023| ['Število motorjev', state.engineCount],
+  4025| ['Maks. hitrost', state.maxSpeedKn ? state.maxSpeedKn + ' vozličev' : ''],
+
+### src/pages/booking.js (29)
+  270| : 'Naprej <i data-lucide="chevron-right"></i>';
+  334| <label>Znamka</label>
+  347| <label>Letnik</label>
+  349| <option value="">Letnik...</option>
+  354| <label>Registrska številka</label>
+  424| desc: 'Imate že kupljene gume in jih želite samo namestiti pri nas.'
+  430| desc: 'Zamenjamo gume, ki so shranjene pri nas iz prejšnje sezone.'
+  436| desc: 'Izberite med našimi gumami — namestimo na mestu ob prihodu.'
+  529| <small style="color:#94a3b8;">Kliknite Naprej za nadaljevanje.</small>
+  568| <p class="step-subtitle">Naročite vnaprej — namestimo ob prihodu. Cene so prikazane brez montaže.</p>
+  631| const SL_DOW    = ['Pon','Tor','Sre','Čet','Pet','Sob','Ned'];
+  729| placeholder="Npr. Prosim pokličite dan prej...">${state.notes}</textarea>
+  847| <div class="csn-label">Številka storitve</div>
+  896| <span class="toggle-row-label">Pošlji potrditev s QR kodo na email</span>
+  897| <span class="toggle-row-sub">Kupec prejme potrditv in QR kodo po e-pošti</span>
+  906| <span class="toggle-row-label">Pošlji link potrditve na SMS</span>
+  992| <h2 class="success-title">Rezervacija uspešna!</h2>
+  1001| <div class="success-sn-label">Številka storitve</div>
+  1036| <span class="success-detail-val" style="color:#d97706;">Čaka potrditve</span>
+  1138| const labels = { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
+  1180| <strong>Nadaljujemo z rezervacijo montaže za vaše nove pnevmatike.</strong>
+  1214| <strong>Gume so bile naročene preko MojAvto in bodo dostavljene na vaš naslov.</strong>
+  1252| <p>Ni določenega poslovnega profila. Pojdite nazaj na <a href="#/zemljevid">zemljevid</a>.</p>
+  1267| <h2>Vulkanizer ni več na voljo</h2>
+  1276| <p>Poslovnega profila ni mogoče naložiti. <a href="#/zemljevid">Nazaj na zemljevid.</a></p>
+  1306| <h2>Naročilo gum še ni potrjeno</h2>
+  1307| <p>Vulkanizer še ni potrdil sprejema gum. Termin boste lahko rezervirali po potrditvi.</p>
+  1342| state.notes = `Montaža dostavljenih gum (naročilo MojAvto #${to.id}). Gume bodo dostavljene na vaš naslov.`;
+  1347| if (backLabel) backLabel.textContent = 'Nazaj na profil';
+
+### src/pages/b2b-profile-editor.js (20)
+  10| { key: 'thursday',  label: 'Četrtek' },
+  53| <p class="b2b-hint">Javni profil je stran, ki jo vidijo stranke na MojAvto.si. Uredite podatke in kliknite <strong>Predogled</stro
+  55| <button id="previewFullBtn" class="btn b2b-btn-secondary"><i data-lucide="eye"></i> Predogled v živo</button>
+  56| <button id="saveProfileBtn" type="submit" form="profileForm" class="btn b2b-btn-primary"><i data-lucide="save"></i> Shrani</button
+  65| <h2 class="b2b-card-title"><i data-lucide="image"></i> Grafična podoba</h2>
+  75| <button type="button" class="btn b2b-btn-secondary btn-sm" data-upload="logo"><i data-lucide="upload"></i> Naloži</button>
+  87| <button type="button" class="btn b2b-btn-secondary btn-sm" data-upload="cover"><i data-lucide="upload"></i> Naloži</button>
+  116| <label>Slogan <span class="b2b-field-hint">(kratka oznaka pod imenom)</span><input name="tagline" maxlength="80" placeholder="Vaš 
+  119| <label>Blagovne znamke <span class="b2b-field-hint">(ločene z vejico)</span><input name="brands" placeholder="BMW, Audi, Mercedes"
+  121| <label>Certifikati <span class="b2b-field-hint">(ločeni z vejico)</span><input name="certifications" placeholder="ISO 9001, Bosch 
+  128| <label>Telefon<input name="phone" value="${esc(biz.contact?.phone)}"/></label>
+  137| <h2 class="b2b-card-title"><i data-lucide="share-2"></i> Družbena omrežja</h2>
+  147| <h2 class="b2b-card-title"><i data-lucide="clock"></i> Delovni čas</h2>
+  178| <span>Predogled — takšnega vidijo vaše stranke</span>
+  183| <button class="b2b-device-btn" data-device="mobile"><i data-lucide="smartphone"></i> Telefon</button>
+  185| <button id="closeFullPreview" class="btn b2b-btn-secondary"><i data-lucide="x"></i> Zapri</button>
+  351| <h2>Delovni čas</h2>
+  417| status.textContent = 'Slika naložena. Ne pozabite klikniti Shrani.';
+  437| status.textContent = 'Dodano v galerijo. Ne pozabite klikniti Shrani.';
+  480| document.getElementById('profileStatus').textContent = '✓ Shranjeno — vaš profil je posodobljen.';
+
+### src/pages/advanced-search.js (16)
+  79| <div class="glass-card rounded-pill tabs-glass" role="tablist" aria-label="Prodaja ali najem">
+  81| <i data-lucide="tag"></i><span>Prodaja</span>
+  84| <i data-lucide="calendar-clock"></i><span>Najem</span>
+  509| avto: ['Audi','Dacia','Ford','Hyundai','Kia','Peugeot','Renault','Škoda','Toyota','Volkswagen'],
+  522| makeSelect.innerHTML = '<option value="">Znamka</option>';
+  551| variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
+  621| if (valueSpan) valueSpan.textContent = 'Znamka izpuha';
+  730| variantSelect.innerHTML = '<option value="">Različica</option>';
+  746| variantSelect.innerHTML = '<option value="">Različica</option>';
+  812| variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
+  1061| if (brandLimitNote) brandLimitNote.textContent = atLimit ? 'Omejitev dosežena (3).' : vehicles.length > 0 ? `Dodano: ${vehicles.le
+  1138| if (powerFromLabel) powerFromLabel.textContent = 'Moč motorja od (KM)';
+  1139| if (powerToLabel) powerToLabel.textContent = 'Moč motorja do (KM)';
+  1148| if (powerFromLabel) powerFromLabel.textContent = 'Moč motorja od (kW)';
+  1149| if (powerToLabel) powerToLabel.textContent = 'Moč motorja do (kW)';
+  1239| variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
+
+### src/auth/register.js (12)
+  73| 'auth/email-already-in-use': 'Ta e-mail je že v uporabi.',
+  74| 'auth/weak-password': 'Geslo je prešibko.',
+  79| submitBtn.textContent = 'Registracija';
+  121| bizStepLabel.textContent = step < 3 ? `Korak ${step} od 3` : 'Registracija zaključena';
+  142| if (!taxId) { err.textContent = 'Vnesite davčno številko.'; return; }
+  186| 'auth/email-already-in-use': 'Ta e-mail je že v uporabi.',
+  187| 'auth/weak-password': 'Geslo je prešibko.',
+  192| submitBtn.innerHTML = 'Zaključi registracijo <i class="fas fa-check" style="margin-left:6px"></i>';
+  199| mechanic: { icon: 'fa-book', label: 'Dostop do Digitalne servisne knjižice' },
+  200| vulcanizer: { icon: 'fa-circle', label: 'Upravljanje pnevmatičnih storitev in terminov' },
+  210| <span>Prejemali boste zahtevke za montažo pnevmatik</span>
+  214| <span>Vaša prva naloga je potrditev sprejema gum, šele nato stranka izbere termin</span>
+
+### src/components/CostPanel.jsx (11)
+  13| { key: 'energy', label: 'Gorivo/Energija', icon: '⛽' },
+  14| { key: 'maintenance', label: 'Vzdrževanje', icon: '🔧' },
+  146| <div className="cost-panel__total-label">Realni mesečni strošek</div>
+  148| <div className="cost-panel__subtext">ocena lastništva na mesec</div>
+  150| {isExpanded ? 'Skrij razčlenitev' : 'Prikaži razčlenitev'}
+  207| <span className="cost-panel__section-title">Mesečni stroški</span>
+  222| <h3 className="cost-panel__modal-title">Prilagodi izračun stroškov</h3>
+  274| {renderRow('🔧', 'Vzdrževanje', tco.breakdown.maintenance.monthly, 'maintenance')}
+  280| <span>Skupni mesečni strošek</span>
+  287| <span className="cost-panel__metric-label">Strošek na km</span>
+  291| <span className="cost-panel__metric-label">Letni strošek</span>
+
+### src/pages/compare.js (11)
+  5| { key: 'year',         label: 'Letnik',           icon: 'calendar'   },
+  6| { key: 'mileage',      label: 'Prevoženi km',     icon: 'gauge'       },
+  7| { key: 'power',        label: 'Moč',              icon: 'settings-2'  },
+  8| { key: 'fuel',         label: 'Gorivo',           icon: 'fuel'        },
+  9| { key: 'transmission', label: 'Menjalnik',        icon: 'cog'         },
+  11| { key: 'owners',       label: 'Število lastnikov', icon: 'users'     },
+  12| { key: 'location',     label: 'Lokacija',         icon: 'map-pin'     },
+  63| const rating = car.priceRating || { score: 2, label: 'Povprečna cena', color: 'amber' };
+  103| <button class="compare-clear-all" id="clearAllCompare">Počisti vse</button>
+  161| <button class="cfe-close-btn" id="cfeClose" aria-label="Zapri">
+  168| <button class="cfe-save-btn" id="cfeSave">Shrani</button>
+
+### src/pages/listing.js (11)
+  117| { stars: 3, label: 'Poštena cena' },
+  941| { value: 'napacna_cena', label: 'Napačna cena ali podatki' },
+  942| { value: 'ze_prodano',  label: 'Vozilo je že prodano' },
+  968| <button id="reportSubmitBtn" style="flex:1;padding:0.7rem;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:non
+  969| <button id="reportCancelBtn" style="padding:0.7rem 1rem;background:#f1f5f9;color:#475569;border:none;border-radius:0.9rem;font-wei
+  988| btn.textContent = 'Pošiljam...';
+  1001| <p style="font-size:0.82rem;color:#64748b;margin:0 0 1.25rem;">Preverili jo bomo čim prej.</p>
+  1002| <button id="reportDoneBtn" style="padding:0.6rem 1.5rem;background:#f1f5f9;color:#475569;border:none;border-radius:0.9rem;font-wei
+  1006| feedback.textContent = 'Napaka pri pošiljanju. Poskusite znova.';
+  1008| btn.textContent = 'Pošlji';
+  1055| ${l.salePriceEur ? `<span class="discount-tag-icon" title="Znižana cena" style="position:absolute;top:8px;left:8px;">${DISCOUNT_TA
+
+### src/pages/b2b-leads.js (10)
+  10| { key: 'closed',    label: 'Zaključeno', color: '#16a34a', bg: '#f0fdf4' },
+  15| const main = mountB2BShell({ activeRoute: '/b2b/leads', title: 'Povpraševanja' });
+  18| main.innerHTML = `<div class="b2b-empty"><p>Ta sekcija je namenjena avtohišam/preprodajalcem.</p></div>`;
+  36| <div class="b2b-empty"><i data-lucide="inbox"></i><p>Izberite povpraševanje.</p></div>
+  60| root.innerHTML = `<div class="b2b-empty"><i data-lucide="inbox"></i><p>Trenutno ni povpraševanj.</p></div>`;
+  89| root.innerHTML = `<div class="b2b-empty"><i data-lucide="inbox"></i><p>Izberite povpraševanje.</p></div>`;
+  110| <h4>Sporočilo stranke</h4>
+  118| <button class="btn b2b-btn-secondary" id="saveDraft">Shrani osnutek</button>
+  119| <a class="btn b2b-btn-primary" id="sendMail" href="mailto:${esc(l.customerContact || '')}?subject=Odgovor na vaše povpraševanje&bo
+  135| document.getElementById('sendMail').href = `mailto:${l.customerContact || ''}?subject=Odgovor na vaše povpraševanje&body=${body}`;
+
+### src/pages/b2b-services.js (10)
+  6| const CATEGORIES = ['Servis', 'Pnevmatike', 'Diagnostika', 'Avtoličarstvo', 'Pranje', 'Drugo'];
+  14| <p class="b2b-hint">Storitve, ki jih tukaj vnesete, se samodejno prikažejo na vašem javnem profilu.</p>
+  46| <label>Cena (€)<input name="price" type="number" min="0" step="0.01" placeholder="49.90"/></label>
+  52| <button type="button" class="btn b2b-btn-secondary" id="svcCancel">Prekliči</button>
+  53| <button type="submit" class="btn b2b-btn-primary">Shrani</button>
+  63| <input type="text" id="iconSearch" class="b2b-input" placeholder="Išči ikono…" style="width:100%;margin-bottom:1rem;"/>
+  66| <button type="button" class="btn b2b-btn-secondary" id="iconDialogClose">Zapri</button>
+  89| root.innerHTML = `<div class="b2b-empty"><i data-lucide="tag"></i><p>Še nimate storitev.</p><button class="btn b2b-btn-primary" id
+  105| <thead><tr><th style="width:60px;"></th><th>Ime</th><th>Trajanje</th><th>Cena</th><th></th></tr></thead>
+  118| <button class="b2b-icon-btn danger" data-del="${s.id}" title="Izbriši"><i data-lucide="trash-2"></i></button>
+
+### src/utils/authGate.js (10)
+  32| <button class="auth-gate-close" id="agClose" aria-label="Zapri">
+  43| <button class="auth-gate-tab active" data-tab="login">Prijava</button>
+  44| <button class="auth-gate-tab" data-tab="register">Registracija</button>
+  53| <div class="auth-gate-divider"><span>ali z e-pošto</span></div>
+  55| <input class="auth-gate-input" type="email" id="agEmail" placeholder="E-poštni naslov" autocomplete="email" required>
+  58| <button class="auth-gate-submit" type="submit">Prijava</button>
+  68| <div class="auth-gate-divider"><span>ali z e-pošto</span></div>
+  71| <input class="auth-gate-input" type="email" id="agEmailReg" placeholder="E-poštni naslov" autocomplete="email" required>
+  74| <button class="auth-gate-submit" type="submit">Ustvari račun</button>
+  133| errEl.textContent = 'Napačni podatki. Preverite e-naslov in geslo.';
+
+### src/components/TCOPreferencesPanel.jsx (9)
+  6| 'Osrednjeslovenska', 'Podravska', 'Savinjska', 'Gorenjska', 'Goriška',
+  7| 'Obalno-kraška', 'Jugovzhodna Slovenija', 'Pomurska', 'Posavska',
+  8| 'Primorsko-notranjska', 'Koroška', 'Zasavska',
+  83| setMessage('✅ Nastavitve so uspešno shranjene!');
+  101| <h2>💰 Nastavitve izračuna stroškov (TCO)</h2>
+  102| <p className="tco-prefs-subtitle">Prilagodite ocene stroškov vozila</p>
+  149| {annualMiles > 8000 && annualMiles <= 15000 && '✅ Povprečje (SLO povprečje: ~15.000)'}
+  150| {annualMiles > 15000 && annualMiles <= 25000 && '⚠️ Nad povprečjem'}
+  176| {isSaving ? '⏳ Shranjujem...' : '💾 Shrani nastavitve'}
+
+### src/pages/b2b-tire-hotel.js (9)
+  23| <input id="tireSearch" class="b2b-input" placeholder="Išči po imenu, telefonu, dimenziji…"/>
+  48| <label>Telefon<input name="customerContact" required placeholder="+386…"/></label>
+  50| <label>Registrska / vozilo<input name="vehicleLabel" placeholder="LJ ABC-123, Škoda Octavia"/></label>
+  60| <label>Število kosov<input name="quantity" type="number" min="1" max="8" value="4"/></label>
+  64| <label>Platišča?<select name="hasRims"><option value="false">Samo gume</option><option value="true">Z jeklenimi platišči</option><
+  68| <legend>Lokacija v skladišču</legend>
+  79| <button type="button" class="btn b2b-btn-secondary" id="tireCancel">Prekliči</button>
+  80| <button type="submit" class="btn b2b-btn-primary">Shrani</button>
+  135| <th>Lokacija</th>
+
+### src/pages/listing.navtika.js (9)
+  116| { stars: 3, label: 'Poštena cena' },
+  681| if (l.lengthM) keySpecs.push({ label: 'Dolžina', value: `${l.lengthM} m`, icon: 'ruler' });
+  682| if (l.fuel) keySpecs.push({ label: 'Gorivo', value: l.fuel, icon: 'fuel' });
+  683| if (l.enginePowerHp || l.powerHp) keySpecs.push({ label: 'Moč motorja', value: `${l.enginePowerHp || l.powerHp} KM`, icon: 'zap' }
+  688| if (l.beamM) secondarySpecs.push(['Širina', `${l.beamM} m`]);
+  692| if (l.engineCount) secondarySpecs.push(['Število motorjev', l.engineCount]);
+  694| if (l.berths) secondarySpecs.push(['Ležišča', l.berths]);
+  944| ${l.salePriceEur ? `<span class="discount-tag-icon" title="Znižana cena" style="position:absolute;top:8px;left:8px;">${DISCOUNT_TA
+  968| colni: 'Čolni',
+
+### src/pages/oglasi.navtika.js (9)
+  105| alert(`Lahko primerjate največ ${MAX_COMPARE} vozila naenkrat.`);
+  214| 'colni': 'Čoln',
+  235| 'motorni-coln': 'Motorni čoln',
+  242| 'sportni': 'Športni',
+  470| <span class="discount-tag-icon" title="Znižana cena">
+  1164| variantSelect.innerHTML = '<option value="">Vse različice</option>';
+  1186| variantSelect.innerHTML = '<option value="">Vse različice</option>' +
+  1515| if (berthsFrom) labels.push(`${berthsFrom}+ ležišč`);
+  1518| if (najemToggle?.checked) labels.push('Najem');
+
+### src/pages/b2b-inventory.js (8)
+  18| main.innerHTML = `<div class="b2b-empty"><p>Ta sekcija je namenjena avtohišam/preprodajalcem.</p></div>`;
+  45| <label>Znamka<input name="make" required/></label>
+  50| <label>Letnik<input name="year" type="number" min="1950" max="2099"/></label>
+  57| <label>Vir nakupa<input name="source" placeholder="Dražba / Uvoz DE / Od stranke"/></label>
+  62| <button type="button" class="btn b2b-btn-secondary" id="invCancel">Prekliči</button>
+  63| <button type="submit" class="btn b2b-btn-primary">Shrani</button>
+  97| <div class="b2b-kpi"><div class="b2b-kpi-icon" style="background:#e0e7ff;color:#4f46e5"><i data-lucide="trending-up"></i></div><di
+  109| <thead><tr><th>Vozilo</th><th>VIN</th><th>Nabava</th><th>Cilj</th><th>Marža</th><th>Status</th><th></th></tr></thead>
+
+### src/pages/business-profile.js (8)
+  35| const labels = { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
+  39| if (biz.authorizedBrands.length) badges.push(`<span class="biz-badge authorized"><i data-lucide="award"></i>Pooblaščen servis</spa
+  67| ${biz.authorizedBrands.map(b => `<span class="biz-brand-tag authorized" title="Pooblaščen">${b}</span>`).join('')}
+  147| grid.innerHTML = `<div class="biz-empty"><div style="font-size:2rem;margin-bottom:0.5rem;">🚗</div><div>Ta avto hiša nima aktivnih
+  298| <h3><i data-lucide="award"></i>Pooblaščene znamke</h3>
+  309| <h3><i data-lucide="map-pin"></i>Kontakt & lokacija</h3>
+  312| <strong>Telefon:</strong> <a href="tel:${biz.contact.phone}" style="color:var(--color-primary-start);">${biz.contact.phone}</a><br
+  313| <strong>E-pošta:</strong> <a href="mailto:${biz.contact.email}" style="color:var(--color-primary-start);">${biz.contact.email}</a>
+
+### src/pages/b2b-reservations.js (7)
+  6| pending:   { label: 'Čaka potrditve', color: '#d97706', bg: '#fffbeb' },
+  8| completed: { label: 'Zaključeno',     color: '#16a34a', bg: '#f0fdf4' },
+  51| <div class="b2b-loading"><i data-lucide="loader"></i> Nalagam naročila…</div>
+  114| root.innerHTML = `<div class="b2b-loading"><i data-lucide="loader"></i> Nalagam naročila…</div>`;
+  124| root.innerHTML = `<div class="b2b-empty"><i data-lucide="package"></i><p>Ni čakajočih naročil gum.</p></div>`;
+  254| const d = b.date || 'nedoločen';
+  299| <span>Pričakovana dostava: <strong>${esc(order.estimatedDeliveryDate || '—')}</strong></span>
+
+### src/pages/advanced-search.navtika.js (6)
+  303| makeSel.innerHTML = '<option value="">Znamka</option>';
+  329| if (variantSel) { variantSel.innerHTML = '<option value="">Različica</option>'; variantSel.disabled = true; }
+  362| variantSel.innerHTML = '<option value="">Različica</option>';
+  373| variantSel.innerHTML = '<option value="">Različica</option>';
+  645| variantSelect.innerHTML = '<option value="">Različica</option>';
+  896| if (brandLimitNote) brandLimitNote.textContent = atLimit ? 'Omejitev dosežena (3).' : vehicles.length > 0 ? `Dodano: ${vehicles.le
+
+### src/pages/drazbe.js (6)
+  56| ${bids > 0 ? `<span class="drazba-card-live">● V ŽIVO</span>` : ''}
+  74| <span title="Število ponudb">🔨 ${bids}</span>
+  75| <span title="Število ponudnikov">👤 ${bidders}</span>
+  116| <p>🔨 Trenutno ni aktivnih dražb${params.toString() ? ' za izbrane filtre' : ''}.</p>
+  117| <p class="drazbe-empty-sub">Prijavite se na obvestila spodaj in sporočili vam bomo, ko se odpre dražba.</p>
+  136| if (countEl) countEl.textContent = `${rows.length} aktivnih dražb`;
+
+### src/pages/oglasi.js (6)
+  104| alert(`Lahko primerjate največ ${MAX_COMPARE} vozila naenkrat.`);
+  296| <span class="discount-tag-icon" title="Znižana cena">
+  901| btn.innerHTML = `<button style="padding:0.75rem 2.5rem;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;b
+  1111| variantSelect.innerHTML = '<option value="">Vse različice</option>';
+  1329| const commonColors = ['bela', 'črna', 'siva', 'srebrna', 'modra', 'rdeča', 'zelena', 'rumena', 'rjava', 'zlata', 'oranžna'];
+  1554| variantSelect.innerHTML = '<option value="">Vse različice</option>';
+
+### src/auth/login.js (5)
+  19| googleBtn.innerHTML = '<i class="fab fa-google"></i> Prijava z Google';
+  40| 'auth/wrong-password': 'Napačno geslo.',
+  41| 'auth/invalid-credential': 'Napačen e-mail ali geslo.',
+  42| 'auth/too-many-requests': 'Preveč poskusov. Počakajte in poskusite znova.',
+  46| submitBtn.textContent = 'Prijava';
+
+### src/layouts/b2b-layout.js (5)
+  22| <h2>Dostop ni mogoč</h2>
+  24| <a href="#/dashboard" class="btn btn-primary">Domov</a>
+  65| <i data-lucide="user"></i> <span>Osebni račun</span>
+  84| <span>Vaše podjetje še ni verificirano — nekatere funkcije so omejene.</span>
+  117| || { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer' }[r]
+
+### src/pages/gume-in-deli.js (5)
+  126| <label>Znamka</label>
+  146| <label>Cena od (€)</label>
+  150| <label>Cena do (€)</label>
+  158| <label>Letnik od</label>
+  166| <label>Letnik do</label>
+
+### src/services/adminService.js (5)
+  274| const ALLOWED_MOTO_STROKE     = ['2T','4T','Električni','Wankel'];
+  299| errs.push(`${rowLabel}: KM "${row.horsepower_km}" mora biti celo število 1–2000 (ali prazno)`);
+  310| errs.push(`${rowLabel}: prostornina "${row.displacement_cc}" mora biti celo število 50–3000 (ali prazno za električne)`);
+  637| free: { name: 'Brezplačni', price: 0, maxListings: 3, durationDays: 30 },
+  914| if (!snap.exists()) throw new Error('Dražba ne obstaja.');
+
+### src/services/auctionService.js (5)
+  160| if (sampleAuction(listingId)) throw new Error('To je predstavitvena dražba — ponudb ni mogoče oddati.');
+  169| if (!aSnap.exists()) throw new Error('Dražba ne obstaja.');
+  173| if (!isAuctionActive(a)) throw new Error('Dražba je zaključena.');
+  228| if (!aSnap.exists()) throw new Error('Dražba ne obstaja.');
+  245| if (!email || !/.+@.+\..+/.test(email)) throw new Error('Vnesite veljaven e-poštni naslov.');
+
+### src/utils/valuationScore.js (5)
+  140| const labels = { 5: 'Odlična vrednost', 4.5: 'Odlična vrednost', 4: 'Dobra vrednost', 3.5: 'Poštena cena', 3: 'Poštena cena', 2.5:
+  141| const label = labels[stars] || 'Poštena cena';
+  146| ? `${absPct} % pod tržno mediano`
+  148| ? `${absPct} % nad tržno mediano`
+  149| : 'Na ravni tržne mediane';
+
+### src/pages/auction-listing.js (4)
+  48| if (page) page.innerHTML = `<div class="error-page"><h1>404</h1><p>Dražba ni najdena.</p></div>`;
+  307| `Ponudnik se zavezuje, da bo predmet dražbe kupil po ceni ${fmtEur(amount)},`,
+  308| 'če bo ob zaključku dražbe oddal najvišjo veljavno ponudbo (zmagal).',
+  310| 'Ta dokument se hrani le do zaključka dražbe.',
+
+### src/pages/b2b-dashboard.js (4)
+  29| <a href="#/b2b/rezervacije?status=pending" class="b2b-quick-btn"><i data-lucide="calendar-check"></i> Odpri rezervacije</a>
+  38| <h2 class="b2b-card-title"><i data-lucide="info"></i> Status računa</h2>
+  41| <li><strong>Davčna:</strong> ${esc(profile?.companyDetails?.taxId || '—')}</li>
+  90| return { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer' }[r] || r;
+
+### src/pages/map.js (3)
+  32| return `<span class="biz-type-badge multi">⭐ Večnamenski</span>`;
+  401| if (labelEl) labelEl.textContent = 'Določam lokacijo...';
+  418| }).addTo(leafletMap).bindPopup('📍 Vaša lokacija');
+
+### src/utils/auctionContract.js (3)
+  33| <button type="button" class="ac-mode-btn active" data-cmode="sign">✍️ Podpiši s prstom</button>
+  34| <button type="button" class="ac-mode-btn" data-cmode="print">🖨️ Natisni &amp; pošlji</button>
+  40| <button type="button" class="ac-sign-clear">Počisti</button>
+
+### src/utils/auctionNewsletter.js (3)
+  14| <p class="an-title">Obvestila o dražbah</p>
+  15| <p class="an-sub">Pustite e-naslov in obveščali vas bomo o dražbah vozil, ki vas zanimajo.</p>
+  23| <button type="submit" class="an-submit">Prijava</button>
+
+### src/App.jsx (2)
+  16| <Link to="/create" style={{ color: 'white', textDecoration: 'none' }}>Dodaj Oglas</Link>
+  48| <Route path="/create" element={<div style={{ padding: '40px' }}><h2>Dodaj Oglas</h2><p>Obrazec za vnos vozila prihaja kmalu.</p></
+
+### src/services/apiNavService.js (2)
+  20| { id: 'home', label: 'Domov', icon: 'home', href: '#/' },
+  21| { id: 'oglasi', label: 'Oglasi', icon: 'newspaper', href: '#/iskanje' }
+
+### src/services/bookingService.js (2)
+  229| pending:   { label: 'Čaka potrditve', cls: 'status-pending' },
+  231| completed: { label: 'Zaključeno',      cls: 'status-completed' },
+
+### src/services/googleCalendarService.js (2)
+  46| inspection:        'Tehnični pregled',
+  52| electrical_repair: 'Električna napaka',
+
+### src/services/listingService.js (2)
+  595| if (callForPrice) return 'Pokličite za ceno';
+  599| if (isNaN(num) || num <= 0) return 'Pokličite za ceno';
+
+### src/utils/countdown.js (2)
+  14| /** Human countdown string in Slovene, e.g. "2 dni 4 h 12 min" or "Zaključeno". */
+  18| if (diff <= 0) return 'Zaključeno';
+
+### src/core/extensions.js (1)
+  62| registerExtension({ id: 'b2b-leads', name: 'Povpraševanja (CRM)', icon: 'inbox', role: 'dealer', route: '/b2b/leads', order: 50 })
+
+### src/pages/b2b-workshop.js (1)
+  11| main.innerHTML = `<div class="b2b-empty"><p>Delavnica je namenjena pooblaščenim servisom.</p></div>`;
+
+### src/pages/dashboard.js (1)
+  51| <a href="#/garaža" class="dashboard-card dashboard-card-garage">
+
+### src/pages/home.navtika.js (1)
+  293| ${l.isRental ? `<span class="rental-badge" style="position:absolute;top:.6rem;left:.6rem;">Najem</span>` : ''}
+
+### src/router.js (1)
+  24| '/garaža': { view: 'profile', protected: true },
+
+### src/services/businessService.js (1)
+  128| : { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
+
+### src/utils/priceChart.js (1)
+  39| ctx.fillText('Še ni ponudb', cssW / 2, cssH / 2);
+
+### src/utils/priceRatingUi.js (1)
+  42| return { stars: 3, label: 'Poštena cena' };

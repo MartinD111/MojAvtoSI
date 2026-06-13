@@ -1,7 +1,7 @@
 // Header component — MojAvto.si
 // Renders the nav with Material 3 Expressive styling and dynamic API items
 import { onAuth, logout } from '../auth/auth.js';
-import { t } from '../core/i18n.js';
+import { t, getCurrentLang, switchLang } from '../core/i18n.js';
 import { PLATFORM } from '../config/platform.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { ApiNavService } from '../services/apiNavService.js';
@@ -16,6 +16,10 @@ export function initHeader() {
     const navData = await ApiNavService.fetchNavigation();
     const navItems = navData.navItems || [];
 
+    // Translate a nav label via its i18nKey when present, else fall back to the
+    // raw (Slovenian) label baked into navigation.json.
+    const navLabel = (item) => item.i18nKey ? t(item.i18nKey, item.label) : item.label;
+
     // Helper to generate nav items from JSON
     const renderNavItems = () => {
       return navItems.map(item => {
@@ -27,14 +31,14 @@ export function initHeader() {
           return `
             <div class="mega-menu-wrapper" id="${item.id}MenuWrapper">
               <button type="button" class="nav-pill mega-trigger ${isActive ? 'active-pill' : ''}" id="${item.id}Trigger" aria-haspopup="true" aria-expanded="false">
-                <i data-lucide="${item.icon}"></i> ${item.label}
+                <i data-lucide="${item.icon}"></i> ${navLabel(item)}
                 <i data-lucide="chevron-down" class="mega-caret"></i>
               </button>
               <div class="mega-menu" id="${item.id}Mega" role="menu">
                 <div class="mega-vertical-list">
                   ${item.children.map(child => `
                   <a href="${child.href}" class="mega-vertical-item ${hash.includes(child.href) ? 'active' : ''}" role="menuitem">
-                    <i data-lucide="${child.icon}"></i> ${child.label}
+                    <i data-lucide="${child.icon}"></i> ${navLabel(child)}
                   </a>`).join('')}
                 </div>
               </div>
@@ -44,7 +48,7 @@ export function initHeader() {
         
         return `
           <a href="${item.href}" class="nav-pill ${isActive ? 'active-pill' : ''}">
-            <i data-lucide="${item.icon}"></i> ${item.label}
+            <i data-lucide="${item.icon}"></i> ${navLabel(item)}
           </a>
         `;
       }).join('');
@@ -105,6 +109,19 @@ export function initHeader() {
                 </a>
               `}
 
+              <!-- Language switcher -->
+              <div class="lang-switcher desktop-only-action" id="langSwitcher">
+                <button type="button" class="pill-btn secondary lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-label="${t('lang_select', 'Language')}">
+                  <i data-lucide="globe"></i>
+                  <span class="lang-current">${getCurrentLang().toUpperCase()}</span>
+                  <i data-lucide="chevron-down" class="lang-caret"></i>
+                </button>
+                <div class="glass-dropdown lang-dropdown" id="langDropdown" role="menu">
+                  <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl" role="menuitem">🇸🇮 Slovenščina</button>
+                  <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en" role="menuitem">🇬🇧 English</button>
+                </div>
+              </div>
+
               <button class="pill-btn secondary btn-icon desktop-only-action" id="themeToggleBtn" aria-label="Preklopi temo" style="border-radius: 50%;">
                 <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
               </button>
@@ -127,8 +144,13 @@ export function initHeader() {
                     <div class="dropdown-divider"></div>
                     <button type="button" class="dropdown-theme-toggle" id="themeToggleMobileProfileBtn">
                       <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
-                      ${isDark ? 'Svetla tema' : 'Temna tema'}
+                      ${isDark ? t('theme_light') : t('theme_dark')}
                     </button>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-lang-row">
+                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">🇸🇮 SL</button>
+                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">🇬🇧 EN</button>
+                    </div>
                     <div class="dropdown-divider"></div>
                     <button class="dropdown-logout" id="mobileProfileLogoutBtn"><i data-lucide="log-out"></i> ${t('logout')}</button>
                   ` : `
@@ -136,8 +158,13 @@ export function initHeader() {
                     <div class="dropdown-divider"></div>
                     <button type="button" class="dropdown-theme-toggle" id="themeToggleMobileProfileBtn">
                       <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
-                      ${isDark ? 'Svetla tema' : 'Temna tema'}
+                      ${isDark ? t('theme_light') : t('theme_dark')}
                     </button>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-lang-row">
+                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">🇸🇮 SL</button>
+                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">🇬🇧 EN</button>
+                    </div>
                   `}
                 </div>
               </div>
@@ -156,6 +183,31 @@ export function initHeader() {
       const isDark = document.body.classList.contains('dark-mode');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       render(user);
+    });
+
+    // ── Language switcher ──
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+    if (langBtn && langDropdown) {
+      langBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = langDropdown.classList.toggle('open');
+        langBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      document.addEventListener('click', (e) => {
+        if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+          langDropdown.classList.remove('open');
+          langBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    // Delegate lang-option clicks (covers both desktop dropdown and mobile entries)
+    headerEl.querySelectorAll('.lang-option').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        switchLang(opt.getAttribute('data-lang'));
+        // header re-renders via the langChanged listener below
+      });
     });
 
     // ── Mobile hamburger: toggle category nav ──
@@ -295,9 +347,9 @@ export function initHeader() {
       );
       if (active?.children) {
         const child = active.children.find(c => hash.startsWith(c.href));
-        titleEl.textContent = child ? child.label : active.label;
+        titleEl.textContent = child ? navLabel(child) : navLabel(active);
       } else {
-        titleEl.textContent = active?.label ?? (PLATFORM.brandName + PLATFORM.tld);
+        titleEl.textContent = active ? navLabel(active) : (PLATFORM.brandName + PLATFORM.tld);
       }
     };
     updatePageTitle();
@@ -331,6 +383,11 @@ export function initHeader() {
   });
 
   window.addEventListener('hashchange', () => {
+    render(window._currentUser || null);
+  });
+
+  // Re-render header when the UI language changes so all t() strings update.
+  document.addEventListener('langChanged', () => {
     render(window._currentUser || null);
   });
 }

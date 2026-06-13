@@ -166,4 +166,11 @@ async function router() {
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
 
-export { router };
+// Force a full re-render of the current route (e.g. after a language switch),
+// bypassing the same-path guard so JS-rendered views rebuild with new strings.
+function reloadCurrentView() {
+    _lastLoadedPath = null;
+    return router();
+}
+
+export { router, reloadCurrentView };

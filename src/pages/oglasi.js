@@ -52,7 +52,7 @@ function applyPowerUnit(unit) {
         btn.classList.toggle('active', btn.dataset.unit === unit);
     });
     const label = document.getElementById('powerToggleLabel');
-    if (label) label.textContent = unit === 'kw' ? 'show in HP' : 'show in kW';
+    if (label) label.textContent = unit === 'kw' ? 'kW'  : 'KM';
 }
 
 // ── Price Rating Logic ───────────────────────────────────────
@@ -1138,6 +1138,11 @@ function bindSidebarAccordions() {
             if (body) {
                 body.style.display = ns ? 'flex' : 'none';
             }
+            // Show/hide the summary badge based on open state
+            const summary = trigger.querySelector('.acc-filter-summary');
+            if (summary && summary.textContent) {
+                summary.style.display = ns ? 'none' : '';
+            }
         });
     });
 }
@@ -1265,20 +1270,26 @@ function applySidebarFilters() {
                 const bodyLower = bodyType.toLowerCase();
                 if (bodyLower === 'limuzina') {
                     if (!seg.includes('sedan') && !seg.includes('limuzina')) return false;
+                } else if (bodyLower === 'kombilimuzina') {
+                    if (!seg.includes('hatchback') && !seg.includes('kombilimuzina')) return false;
                 } else if (bodyLower === 'karavan') {
                     if (!seg.includes('wagon') && !seg.includes('karavan') && !title.includes('avant') && !title.includes('touring') && !title.includes('karavan')) return false;
+                } else if (bodyLower === 'terensko' || bodyLower === 'suv') {
+                    if (!seg.includes('suv') && !seg.includes('terensko') && !seg.includes('crossover')) return false;
                 } else if (bodyLower === 'enoprostorec') {
                     if (!seg.includes('minivan') && !seg.includes('enoprostorec') && !seg.includes('mpv')) return false;
-                } else if (bodyLower === 'suv') {
-                    if (!seg.includes('suv') && !seg.includes('terensko') && !seg.includes('crossover')) return false;
                 } else if (bodyLower === 'coupe') {
                     if (!seg.includes('coupe') && !title.includes('coupe')) return false;
                 } else if (bodyLower === 'kabriolet') {
                     if (!seg.includes('convertible') && !seg.includes('cabriolet') && !seg.includes('kabriolet') && !title.includes('cabrio') && !title.includes('kabriolet')) return false;
+                } else if (bodyLower === 'sportni' || bodyLower === 'športni') {
+                    if (!seg.includes('sport') && !seg.includes('coupe') && !title.includes('sport')) return false;
+                } else if (bodyLower === 'pick-up') {
+                    if (!seg.includes('pick') && !seg.includes('pickup') && !title.includes('pick')) return false;
                 } else if (bodyLower === 'kombi' || bodyLower === 'dostavnik') {
                     if (!seg.includes('kombi') && !seg.includes('dostav') && !seg.includes('van')) return false;
                 } else if (bodyLower === 'drugo') {
-                    const commonSegs = ['sedan', 'limuzina', 'wagon', 'karavan', 'minivan', 'enoprostorec', 'mpv', 'suv', 'terensko', 'crossover', 'coupe', 'convertible', 'cabriolet', 'kabriolet', 'kombi', 'dostav', 'van'];
+                    const commonSegs = ['sedan', 'limuzina', 'hatchback', 'kombilimuzina', 'wagon', 'karavan', 'minivan', 'enoprostorec', 'mpv', 'suv', 'terensko', 'crossover', 'coupe', 'convertible', 'cabriolet', 'kabriolet', 'sport', 'pick', 'kombi', 'dostav', 'van'];
                     if (commonSegs.some(s => seg.includes(s))) return false;
                 }
             }
@@ -1339,6 +1350,7 @@ function applySidebarFilters() {
     renderListings(filtered);
     const countEl = document.querySelector(".results-header h1 span");
     if (countEl) countEl.textContent = `(${filtered.length} vozil)`;
+    updateAccordionSummaries();
 }
 
 function getSidebarFormState() {
@@ -1405,7 +1417,73 @@ function updateUrlParams(makes, models, variants, lines) {
     applySidebarFilters();
 }
 
+function updateAccordionSummaries() {
+    const params = parseHashParams();
+
+    // Osnovni podatki: make, model, variant, bodyType, onlySale
+    const makes = params.get('make') ? params.get('make').split(',').filter(Boolean) : [];
+    const models = params.get('model') ? params.get('model').split(',').filter(Boolean) : [];
+    const variants = params.get('variant') ? params.get('variant').split(',').filter(Boolean) : [];
+    const bodyType = document.getElementById('sidebarBodyType')?.value || '';
+    const onlySale = document.getElementById('sidebarOnlySale')?.checked;
+    const osnovniParts = [...makes, ...models, ...variants];
+    if (bodyType) osnovniParts.push(bodyType);
+    if (onlySale) osnovniParts.push('Akcija');
+    _setAccSummary('summaryOsnovni', 'summaryOsnovni' && document.querySelector('[id="summaryOsnovni"]')?.closest('.adv-accordion')?.querySelector('.adv-acc-trigger'), osnovniParts);
+
+    // Cena in letnik: yearFrom, yearTo, priceTo
+    const cenaParts = [];
+    const yearFrom = document.getElementById('sidebarYearFrom')?.value;
+    const yearTo = document.getElementById('sidebarYearTo')?.value;
+    const priceTo = document.getElementById('sidebarPriceTo')?.value;
+    if (yearFrom || yearTo) cenaParts.push(`${yearFrom || '…'}–${yearTo || '…'}`);
+    if (priceTo) cenaParts.push(`do ${priceTo} €`);
+    _setAccSummary('summaryCena', null, cenaParts);
+
+    // Motor in pogon: fuel checkboxes, transmission, driveType, power
+    const motorParts = [];
+    const form = document.getElementById('sidebarFiltersForm');
+    if (form) {
+        const fd = new FormData(form);
+        const fuels = fd.getAll('fuel').filter(Boolean);
+        const trans = fd.getAll('transmission').filter(Boolean);
+        motorParts.push(...fuels, ...trans);
+    }
+    const driveType = document.getElementById('sidebarDriveType')?.value;
+    const powerFrom = document.getElementById('sidebarPowerFrom')?.value;
+    const powerTo = document.getElementById('sidebarPowerTo')?.value;
+    const color = document.getElementById('sidebarColor')?.value;
+    if (driveType) motorParts.push(driveType);
+    if (powerFrom || powerTo) motorParts.push(`${powerFrom || '0'}–${powerTo || '∞'} kW`);
+    if (color) motorParts.push(color);
+    _setAccSummary('summaryMotor', null, motorParts);
+
+    // Prodajalec: sellerType, region
+    const prodParts = [];
+    const sellerType = document.getElementById('sidebarSellerType')?.value;
+    const region = document.getElementById('sidebarRegion')?.value;
+    if (sellerType) prodParts.push(sellerType === 'private' ? 'Privat' : 'Trgovec');
+    if (region) prodParts.push(region);
+    _setAccSummary('summaryProdajalec', null, prodParts);
+}
+
+function _setAccSummary(id, _unused, parts) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const trigger = el.closest('.adv-acc-trigger');
+    const isOpen = trigger?.getAttribute('aria-expanded') === 'true';
+    if (parts.length === 0) {
+        el.style.display = 'none';
+        el.textContent = '';
+    } else {
+        el.textContent = parts.join(', ');
+        // Show only when accordion is closed
+        el.style.display = isOpen ? 'none' : '';
+    }
+}
+
 function updateFiltersUI() {
+    updateAccordionSummaries();
     const params = parseHashParams();
     const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];

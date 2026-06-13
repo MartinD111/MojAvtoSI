@@ -112,6 +112,27 @@
                     overflow: visible !important;
                 }
             }
+
+            /* Active filter summary badge on collapsed accordions */
+            #sidebarFiltersForm .adv-acc-trigger {
+                flex-wrap: wrap !important;
+                row-gap: 0.25rem !important;
+            }
+            .acc-filter-summary {
+                display: inline-flex;
+                align-items: center;
+                font-size: 0.72rem;
+                font-weight: 600;
+                color: #ffffff;
+                background: #2563eb;
+                border: 1px solid #1d4ed8;
+                border-radius: 999px;
+                padding: 0.2rem 0.55rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                pointer-events: none;
+            }
         </style>
 
         <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
@@ -122,7 +143,8 @@
 
         <div class="oglasi-sidebar-card glass-card" id="filtersCard">
             <div class="filters-card-inner" style="min-height: 0; overflow: hidden;">
-                <div class="sidebar-filters-header" style="display:flex; justify-content:center; align-items:center; margin-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.4rem;">
+                <div class="sidebar-filters-header" style="display:flex; justify-content:center; align-items:center; gap:0.4rem; margin-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.4rem;">
+                    <i data-lucide="sliders-horizontal" style="width:16px; height:16px; flex-shrink:0;"></i>
                     <h3 style="margin:0; font-size:1.1rem; font-weight:700;" data-i18n-key="sidebar_filters_title">Filtri</h3>
                 </div>
 
@@ -131,12 +153,13 @@
                 <!-- Osnovni podatki Accordion -->
                 <div class="adv-accordion">
                     <div class="adv-acc-header">
-                        <button class="adv-acc-trigger" type="button" aria-expanded="true">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="car" style="width: 16px; height: 16px;"></i>
                             <span class="adv-acc-title">Osnovni podatki</span>
+                            <span class="acc-filter-summary" id="summaryOsnovni" style="display:none;"></span>
                         </button>
                     </div>
-                    <div class="adv-acc-body" style="display:flex;">
+                    <div class="adv-acc-body" style="display:none;">
                         <!-- Znamka -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="make">Znamka</label>
@@ -182,13 +205,15 @@
                             <select id="sidebarBodyType" name="bodyType" class="glass-select">
                                 <option value="">Vse oblike</option>
                                 <option value="Limuzina">Limuzina</option>
+                                <option value="Kombilimuzina">Kombilimuzina</option>
                                 <option value="Karavan">Karavan</option>
+                                <option value="Terensko">SUV</option>
                                 <option value="Enoprostorec">Enoprostorec</option>
-                                <option value="SUV">SUV / Terensko vozilo</option>
-                                <option value="Coupe">Coupe</option>
                                 <option value="Kabriolet">Kabriolet</option>
-                                <option value="Kombi">Kombi</option>
-                                <option value="Dostavnik">Dostavnik</option>
+                                <option value="Coupe">Coupe</option>
+                                <option value="Sportni">Športni avto</option>
+                                <option value="Pick-up">Pick-up</option>
+                                <option value="Kombi">Kombi / Dostavnik</option>
                                 <option value="Drugo">Drugo</option>
                             </select>
                         </div>
@@ -211,6 +236,7 @@
                         <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="tag" style="width: 16px; height: 16px;"></i>
                             <span class="adv-acc-title">Cena in letnik</span>
+                            <span class="acc-filter-summary" id="summaryCena" style="display:none;"></span>
                         </button>
                     </div>
                     <div class="adv-acc-body" style="display:none;">
@@ -241,6 +267,7 @@
                         <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="cog" style="width: 16px; height: 16px;"></i>
                             <span class="adv-acc-title">Motor in pogon</span>
+                            <span class="acc-filter-summary" id="summaryMotor" style="display:none;"></span>
                         </button>
                     </div>
                     <div class="adv-acc-body" style="display:none;">
@@ -402,6 +429,7 @@
                         <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="user" style="width: 16px; height: 16px;"></i>
                             <span class="adv-acc-title">Prodajalec</span>
+                            <span class="acc-filter-summary" id="summaryProdajalec" style="display:none;"></span>
                         </button>
                     </div>
                     <div class="adv-acc-body" style="display:none;">
@@ -497,103 +525,84 @@
 
 <!-- Legend popup (icons reference) -->
 <div class="legend-overlay" id="legendOverlay">
-    <div class="legend-card">
-        <div class="legend-card-header">
-            <h3>Listing Icon Legend</h3>
+    <div class="legend-card" style="max-width:320px; padding:1rem 1.25rem 1.25rem;">
+        <div class="legend-card-header" style="margin-bottom:0.75rem;">
+            <h3 style="font-size:1rem;">Legenda ikon</h3>
             <button class="legend-close-btn" id="legendCloseBtn" aria-label="Close">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
             </button>
         </div>
 
-        <!-- Fuel types -->
-        <p class="legend-section-title">Fuel Type</p>
-        <div class="legend-rows">
-            <div class="legend-row">
-                <span class="legend-pill-demo fuel-pill-P"><i data-lucide="fuel" style="width:12px;height:12px;"></i>
-                    P</span>
-                <span class="legend-row-desc">Petrol</span>
+        <!-- Fuel types compact grid -->
+        <p class="legend-section-title" style="font-size:0.7rem; margin-bottom:0.4rem; text-align:center;">Gorivo</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem 0.75rem; margin-bottom:0.75rem;">
+            <div class="legend-row" style="gap:0.4rem; justify-content:center;">
+                <span class="legend-pill-demo fuel-pill-P" style="font-size:0.68rem; padding:0.15rem 0.4rem;"><i data-lucide="fuel" style="width:10px;height:10px;"></i> B</span>
+                <span class="legend-row-desc" style="font-size:0.78rem;">Bencin</span>
             </div>
-            <div class="legend-row">
-                <span class="legend-pill-demo fuel-pill-D"><i data-lucide="fuel" style="width:12px;height:12px;"></i>
-                    D</span>
-                <span class="legend-row-desc">Diesel</span>
+            <div class="legend-row" style="gap:0.4rem; justify-content:center;">
+                <span class="legend-pill-demo fuel-pill-D" style="font-size:0.68rem; padding:0.15rem 0.4rem;"><i data-lucide="fuel" style="width:10px;height:10px;"></i> D</span>
+                <span class="legend-row-desc" style="font-size:0.78rem;">Dizel</span>
             </div>
-            <div class="legend-row">
-                <span class="legend-pill-demo fuel-pill-H"><i data-lucide="zap" style="width:12px;height:12px;"></i>
-                    H</span>
-                <span class="legend-row-desc">Hybrid (Self-charging)</span>
+            <div class="legend-row" style="gap:0.4rem; justify-content:center;">
+                <span class="legend-pill-demo fuel-pill-H" style="font-size:0.68rem; padding:0.15rem 0.4rem;"><i data-lucide="zap" style="width:10px;height:10px;"></i> H</span>
+                <span class="legend-row-desc" style="font-size:0.78rem;">Hibrid</span>
             </div>
-            <div class="legend-row">
-                <span class="legend-pill-demo fuel-pill-HB"><i data-lucide="zap" style="width:12px;height:12px;"></i>
-                    HB</span>
-                <span class="legend-row-desc">Plug-in Hybrid</span>
+            <div class="legend-row" style="gap:0.4rem; justify-content:center;">
+                <span class="legend-pill-demo fuel-pill-HB" style="font-size:0.68rem; padding:0.15rem 0.4rem;"><i data-lucide="zap" style="width:10px;height:10px;"></i> HB</span>
+                <span class="legend-row-desc" style="font-size:0.78rem;">Plug-in hibrid</span>
             </div>
-            <div class="legend-row">
-                <span class="legend-pill-demo fuel-pill-E"><i data-lucide="zap" style="width:12px;height:12px;"></i>
-                    E</span>
-                <span class="legend-row-desc">Electric Vehicle (BEV)</span>
+            <div class="legend-row" style="gap:0.4rem; justify-content:center;">
+                <span class="legend-pill-demo fuel-pill-E" style="font-size:0.68rem; padding:0.15rem 0.4rem;"><i data-lucide="zap" style="width:10px;height:10px;"></i> E</span>
+                <span class="legend-row-desc" style="font-size:0.78rem;">Električno</span>
             </div>
-            <div class="legend-row">
-                <span class="legend-pill-demo fuel-pill-LPG"><i data-lucide="help-circle"
-                        style="width:12px;height:12px;"></i> LPG</span>
-                <span class="legend-row-desc">Liquefied Petroleum Gas</span>
+            <div class="legend-row" style="gap:0.4rem; justify-content:center;">
+                <span class="legend-pill-demo fuel-pill-LPG" style="font-size:0.68rem; padding:0.15rem 0.4rem;"><i data-lucide="help-circle" style="width:10px;height:10px;"></i> LPG</span>
+                <span class="legend-row-desc" style="font-size:0.78rem;">LPG / Plin</span>
             </div>
         </div>
 
-        <!-- Discount / sale -->
-        <p class="legend-section-title">Cena</p>
-        <div class="legend-rows">
-            <div class="legend-row">
-                <span class="legend-pill-demo discount-tag-legend">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                        <line x1="7" y1="7" x2="7.01" y2="7"/>
-                    </svg>
-                </span>
-                <span class="legend-row-desc">Znižana cena — oglas vsebuje popust ali posebno ponudbo</span>
+        <!-- Technical data compact grid -->
+        <p class="legend-section-title" style="font-size:0.7rem; margin-bottom:0.4rem; text-align:center;">Tehnični podatki</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.3rem 0.5rem; margin-bottom:0.75rem;">
+            <div class="legend-row" style="gap:0.35rem; flex-direction:column; align-items:center;">
+                <span class="legend-pill-demo" style="font-size:0.68rem; padding:0.15rem 0.4rem; background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);color:#4f46e5;"><i data-lucide="zap" style="width:10px;height:10px;"></i> <span id="powerToggleLabel">kW</span></span>
+                <span class="legend-row-desc" style="font-size:0.72rem; text-align:center;">Moč motorja</span>
+            </div>
+            <div class="legend-row" style="gap:0.35rem; flex-direction:column; align-items:center;">
+                <span class="legend-pill-demo consumption-pill" style="font-size:0.68rem; padding:0.15rem 0.4rem;"><i data-lucide="droplet" style="width:10px;height:10px;"></i> l/100</span>
+                <span class="legend-row-desc" style="font-size:0.72rem; text-align:center;">Poraba</span>
+            </div>
+            <div class="legend-row" style="gap:0.35rem; flex-direction:column; align-items:center;">
+                <span class="legend-pill-demo" style="font-size:0.68rem; padding:0.15rem 0.4rem; background:rgba(241,245,249,0.5);border-color:#e2e8f0;color:#475569;"><i data-lucide="layers" style="width:10px;height:10px;"></i> R/A</span>
+                <span class="legend-row-desc" style="font-size:0.72rem; text-align:center;">Menjalnik</span>
             </div>
         </div>
 
-        <!-- Other icons -->
-        <p class="legend-section-title">Technical Data</p>
-        <div class="legend-rows">
-            <div class="legend-row">
-                <span class="legend-pill-demo"
-                    style="background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);color:#4f46e5;">
-                    <i data-lucide="zap" style="width:13px;height:13px;"></i>
-                    kW
-                </span>
-                <span class="legend-row-desc">Engine Power — <strong id="powerToggleLabel">show in HP</strong></span>
-            </div>
-            <div class="legend-row">
-                <span class="legend-pill-demo consumption-pill">
-                    <i data-lucide="droplet" style="width:13px;height:13px;"></i>
-                    l/100
-                </span>
-                <span class="legend-row-desc">Fuel Consumption</span>
-            </div>
-            <div class="legend-row">
-                <span class="legend-pill-demo"
-                    style="background:rgba(241,245,249,0.5);border-color:#e2e8f0;color:#475569;">
-                    <i data-lucide="layers" style="width:13px;height:13px;"></i>
-                    R/A
-                </span>
-                <span class="legend-row-desc">Transmission (Manual / Automatic)</span>
-            </div>
+        <!-- Cena -->
+        <p class="legend-section-title" style="font-size:0.7rem; margin-bottom:0.4rem; text-align:center;">Cena</p>
+        <div class="legend-row" style="gap:0.5rem; margin-bottom:0.75rem; justify-content:center;">
+            <span class="legend-pill-demo discount-tag-legend">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                    <line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+            </span>
+            <span class="legend-row-desc" style="font-size:0.78rem;">Znižana cena / posebna ponudba</span>
         </div>
 
         <!-- Power unit toggle -->
-        <div class="power-unit-toggle" style="margin-top: 1.5rem; padding-top: 1rem; display: flex; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-            <span class="legend-toggle-label" style="font-size: 0.85rem; font-weight: 600; margin-right: auto; color: #cbd5e1;">Prikaz moči:</span>
-            <button class="power-unit-btn active" data-unit="kw" id="puBtnKw">kW</button>
-            <button class="power-unit-btn" data-unit="km" id="puBtnKm">KM</button>
+        <div class="power-unit-toggle" style="margin-top:0.5rem; padding-top:0.6rem; display:flex; align-items:center; border-top:1px solid rgba(128,128,128,0.15);">
+            <span class="legend-toggle-label" style="font-size:0.8rem; font-weight:600; margin-right:auto; color:#cbd5e1;">Prikaz moči:</span>
+            <button class="power-unit-btn" data-unit="kw" id="puBtnKw">kW</button>
+            <button class="power-unit-btn active" data-unit="km" id="puBtnKm">KM</button>
         </div>
 
         <!-- Displacement unit toggle -->
-        <div class="displacement-unit-toggle" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem;">
-            <span class="legend-toggle-label" style="font-size: 0.85rem; font-weight: 600; margin-right: auto; color: #cbd5e1;">Prikaz prostornine:</span>
+        <div class="displacement-unit-toggle" style="margin-top:0.5rem; padding-top:0.6rem; border-top:1px solid rgba(128,128,128,0.15); display:flex; align-items:center; gap:0.5rem;">
+            <span class="legend-toggle-label" style="font-size:0.8rem; font-weight:600; margin-right:auto; color:#cbd5e1;">Prikaz prostornine:</span>
             <button class="displacement-unit-btn active" data-unit="cc" id="duBtnCc">cc</button>
             <button class="displacement-unit-btn" data-unit="l" id="duBtnL">L</button>
         </div>

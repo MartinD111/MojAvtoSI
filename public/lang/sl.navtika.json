@@ -138,5 +138,6 @@
   "eval_error_alert": "Prišlo je do napake pri oceni vrednosti plovila.",
   "eval_no_comparables": "Na portalu trenutno ni točno takšnih plovil. Ocena je narejena na podlagi splošnega algoritma padca vrednosti.",
   "eval_warning_history": "Preveri zgodovino plovila",
-  "eval_btn_evaluating": "Ocenujem..."
+  "eval_btn_evaluating": "Ocenujem...",
+  "nav_dealers": "Marine / Prodajalci"
 }

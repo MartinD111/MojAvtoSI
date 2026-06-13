@@ -689,13 +689,80 @@ body.dark-mode .compare-badge {
   gap: 12px;
 }
 
-.lang-switcher a {
-  text-decoration: none;
-  color: #4b5563;
+/* ── Language switcher (header) ───────────────────────────────────────────── */
+.lang-switcher {
+  position: relative;
 }
 
-.lang-switcher a:hover {
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.lang-btn .lang-caret {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s;
+}
+
+.lang-btn[aria-expanded="true"] .lang-caret {
+  transform: rotate(180deg);
+}
+
+.lang-dropdown {
+  min-width: 180px;
+}
+
+.lang-option,
+.dropdown-lang-row .lang-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  font-family: inherit;
+}
+
+.lang-option:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.lang-option.active {
   color: var(--color-primary-start);
+  font-weight: 700;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+/* Mobile profile dropdown: SL | EN side by side */
+.dropdown-lang-row {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+}
+
+.dropdown-lang-row .lang-option {
+  justify-content: center;
+  padding: 8px 10px;
+}
+
+body.dark-mode .lang-option {
+  color: #e5e7eb;
+}
+
+body.dark-mode .lang-option:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-login {
@@ -1603,10 +1670,35 @@ main {
 
 /* Hero Section (Liquid Glass) */
 .glass-hero {
+  position: relative;
   text-align: center;
-  max-width: 800px;
+  max-width: 1100px;
   margin: 40px auto;
   padding: 0 20px;
+}
+
+.hero-car-img {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-30%);
+  width: clamp(300px, 42vw, 620px);
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.hero-car-img--left {
+  right: auto;
+  left: -60px;
+  width: clamp(240px, 34vw, 500px);
+  transform: translateY(-20%);
+}
+
+@media (max-width: 768px) {
+  .hero-car-img {
+    display: none;
+  }
 }
 
 .hero-title {
@@ -7129,8 +7221,10 @@ body.dark-mode .results-header h1 span {
   border-radius: 999px !important;
   text-align: center;
   text-align-last: center;
-  padding: 0 2.5rem !important;
+  padding: 0 1.25rem !important;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 /* Action buttons are now uniform circles */
