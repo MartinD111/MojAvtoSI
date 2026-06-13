@@ -1,6 +1,6 @@
 import {
     collection, addDoc, getDocs, doc, setDoc, updateDoc,
-    query, orderBy, serverTimestamp, increment,
+    query, where, orderBy, serverTimestamp, increment,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase.js';
@@ -480,7 +480,8 @@ export function getListingViewStats(listing) {
 export async function getListings() {
     let listings = [];
     try {
-        const q = query(collection(db, 'listings'), orderBy('createdAt', 'desc'));
+        const { limit: fsLimit } = await import('firebase/firestore');
+        const q = query(collection(db, 'listings'), where('status', '==', 'active'), orderBy('createdAt', 'desc'), fsLimit(48));
         const snapshot = await getDocs(q);
         listings = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (err) {
@@ -492,9 +493,35 @@ export async function getListings() {
     return sortByPromotion(allListings);
 }
 
+// ── Paginated listings (for oglasi feed) ──────────────────────────────────────
+export async function getListingsPaged({ lastDoc = null, pageSize = 24 } = {}) {
+    const { limit: fsLimit, startAfter } = await import('firebase/firestore');
+    let q = query(
+        collection(db, 'listings'),
+        where('status', '==', 'active'),
+        orderBy('createdAt', 'desc'),
+        fsLimit(pageSize)
+    );
+    if (lastDoc) q = query(q, startAfter(lastDoc));
+
+    let snapshot;
+    try {
+        snapshot = await getDocs(q);
+    } catch (err) {
+        console.warn('[getListingsPaged] Firestore error, returning empty page.', err);
+        return { listings: [], lastDoc: null, hasMore: false };
+    }
+
+    const listings = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    return {
+        listings: sortByPromotion(lastDoc ? listings : [...listings, ...SAMPLE_LISTINGS]),
+        lastDoc: snapshot.docs.at(-1) || null,
+        hasMore: snapshot.docs.length === pageSize,
+    };
+}
+
 // ── Get user listings ─────────────────────────────────────────────────────────
 export async function getUserListings(userId) {
-    const { where } = await import('firebase/firestore');
     const q = query(collection(db, 'listings'), where('authorId', '==', userId));
     const snapshot = await getDocs(q);
     const listings = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -502,9 +529,18 @@ export async function getUserListings(userId) {
 }
 
 // ── Delete listing ────────────────────────────────────────────────────────────
-export async function deleteListing(listingId) {
-    const { deleteDoc, doc: docFn } = await import('firebase/firestore');
-    await deleteDoc(docFn(db, 'listings', listingId));
+export async function deleteListing(listingId, action = 'removed') {
+    const docRef = doc(db, 'listings', listingId);
+    if (action === 'sold') {
+        await updateDoc(docRef, {
+            status: 'sold',
+            soldAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+        });
+    } else {
+        const { deleteDoc } = await import('firebase/firestore');
+        await deleteDoc(docRef);
+    }
 }
 
 import { sampleCars } from '../data/sampleListings.js';
@@ -531,16 +567,24 @@ export async function getListingById(listingId) {
 }
 
 // ── Promotion-aware sort ──────────────────────────────────────────────────────
-const TIER_WEIGHT = { sponsored: 2, homepage: 1, free: 0 };
 const SPONSORED_MAX = 3; // max sponsored cards shown at top
+
+function isActiveBoost(listing) {
+    const tier = listing.promotion?.tier;
+    if (!tier || tier === 'free') return false;
+    const exp = listing.promotion?.expiresAt;
+    if (!exp) return true; // no expiry set = legacy listing, treat as active
+    const ms = exp?.toMillis?.() ?? (typeof exp === 'number' ? exp : null);
+    return ms === null || ms > Date.now();
+}
 
 export function sortByPromotion(listings) {
     const sponsored = listings
-        .filter(l => l.promotion?.tier === 'sponsored')
+        .filter(l => l.promotion?.tier === 'sponsored' && isActiveBoost(l))
         .slice(0, SPONSORED_MAX);
 
     const rest = listings
-        .filter(l => l.promotion?.tier !== 'sponsored')
+        .filter(l => !(l.promotion?.tier === 'sponsored' && isActiveBoost(l)))
         .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
 
     return [...sponsored, ...rest];

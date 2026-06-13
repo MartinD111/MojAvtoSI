@@ -7,7 +7,8 @@ import { kmToMiles, kwToHp, l100kmToMpg, formatDisplacement } from '../utils/lis
 import { getVehicleRating } from '../utils/valuationScore.js';
 import { renderRatingBlockDetail } from '../utils/priceRatingUi.js';
 import { getEquipmentLabel, EQUIPMENT_GROUPS } from '../data/equipment.js';
-import { auth } from '../firebase.js';
+import { auth, db } from '../firebase.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite } from '../services/garageService.js';
 import { key as lsKey } from '../config/storageKeys.js';
@@ -497,6 +498,9 @@ function renderListing(l) {
     // Compare button
     initCompareBtn(l);
 
+    // Report listing
+    document.getElementById('lpReportBtn')?.addEventListener('click', () => showReportModal(l.id));
+
     // Phone reveal
     document.getElementById('btnShowPhone')?.addEventListener('click', () => {
         const btn = document.getElementById('btnShowPhone');
@@ -924,9 +928,87 @@ function renderSellerCardHtml(l) {
                 📍 ${escHtml(loc.city)}${loc.region ? ', ' + escHtml(loc.region) : ''}
             </div>` : ''}
             ${hoursHtml}
+            <button id="lpReportBtn" style="margin-top:1rem;background:none;border:none;color:#94a3b8;font-size:0.78rem;cursor:pointer;display:flex;align-items:center;gap:0.3rem;padding:0;font-family:inherit;" title="Prijavi oglas">
+                <i data-lucide="flag" style="width:13px;height:13px;"></i> Prijavi oglas
+            </button>
         </div>`;
 }
 
+
+// ── Report listing modal ──────────────────────────────────────────────────────
+const REPORT_REASONS = [
+    { value: 'spam',        label: 'Spam ali prevara' },
+    { value: 'napacna_cena', label: 'Napačna cena ali podatki' },
+    { value: 'ze_prodano',  label: 'Vozilo je že prodano' },
+    { value: 'neprimerno',  label: 'Neprimerna vsebina' },
+    { value: 'ostalo',      label: 'Drugo' },
+];
+
+function showReportModal(listingId) {
+    const existing = document.getElementById('reportModalOverlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'reportModalOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+
+    overlay.innerHTML = `
+        <div style="background:#fff;border-radius:1.5rem;padding:2rem;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);">
+            <h3 style="margin:0 0 0.25rem;font-size:1.05rem;font-weight:800;color:#0f172a;">Prijavi oglas</h3>
+            <p style="margin:0 0 1.25rem;font-size:0.82rem;color:#64748b;">Izberite razlog za prijavo:</p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem;">
+                ${REPORT_REASONS.map(r => `
+                <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-size:0.88rem;color:#334155;padding:0.5rem 0.75rem;border-radius:0.75rem;border:1.5px solid #e2e8f0;transition:border-color 0.15s;">
+                    <input type="radio" name="reportReason" value="${r.value}" style="accent-color:#f97316;">
+                    ${r.label}
+                </label>`).join('')}
+            </div>
+            <div id="reportFeedback" style="min-height:1.2rem;font-size:0.82rem;color:#dc2626;margin-bottom:0.75rem;"></div>
+            <div style="display:flex;gap:0.5rem;">
+                <button id="reportSubmitBtn" style="flex:1;padding:0.7rem;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;border-radius:0.9rem;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:inherit;">Pošlji</button>
+                <button id="reportCancelBtn" style="padding:0.7rem 1rem;background:#f1f5f9;color:#475569;border:none;border-radius:0.9rem;font-weight:600;font-size:0.9rem;cursor:pointer;font-family:inherit;">Prekliči</button>
+            </div>
+        </div>`;
+
+    document.body.appendChild(overlay);
+
+    const close = () => overlay.remove();
+    overlay.querySelector('#reportCancelBtn').addEventListener('click', close);
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+    overlay.querySelector('#reportSubmitBtn').addEventListener('click', async () => {
+        const selected = overlay.querySelector('input[name="reportReason"]:checked');
+        const feedback = overlay.querySelector('#reportFeedback');
+        if (!selected) {
+            feedback.textContent = 'Prosimo, izberite razlog.';
+            return;
+        }
+        const btn = overlay.querySelector('#reportSubmitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Pošiljam...';
+        try {
+            await addDoc(collection(db, 'reports'), {
+                listingId,
+                reporterId: auth.currentUser?.uid || null,
+                reason: selected.value,
+                createdAt: serverTimestamp(),
+                status: 'pending',
+            });
+            overlay.querySelector('div').innerHTML = `
+                <div style="text-align:center;padding:1rem 0;">
+                    <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
+                    <p style="font-weight:700;color:#0f172a;margin:0 0 0.25rem;">Hvala za prijavo!</p>
+                    <p style="font-size:0.82rem;color:#64748b;margin:0 0 1.25rem;">Preverili jo bomo čim prej.</p>
+                    <button id="reportDoneBtn" style="padding:0.6rem 1.5rem;background:#f1f5f9;color:#475569;border:none;border-radius:0.9rem;font-weight:600;cursor:pointer;font-family:inherit;">Zapri</button>
+                </div>`;
+            overlay.querySelector('#reportDoneBtn').addEventListener('click', close);
+        } catch {
+            feedback.textContent = 'Napaka pri pošiljanju. Poskusite znova.';
+            btn.disabled = false;
+            btn.textContent = 'Pošlji';
+        }
+    });
+}
 
 // ── Similar listings ──────────────────────────────────────────────────────────
 async function loadSimilar(current) {

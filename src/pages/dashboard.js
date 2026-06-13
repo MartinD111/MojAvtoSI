@@ -125,10 +125,14 @@ export async function initDashboardPage() {
             ? new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(priceVal)
             : '—';
         const km = listing.mileageKm ?? listing.mileage;
+        const isSold = listing.status === 'sold';
 
         html += `
-          <div class="dashboard-item-card">
-              <img src="${imgUrl}" style="width:120px;height:80px;object-fit:cover;border-radius:6px;" alt="${listing.title}">
+          <div class="dashboard-item-card" style="${isSold ? 'opacity:0.6;' : ''}">
+              <div style="position:relative;flex-shrink:0;">
+                  <img src="${imgUrl}" style="width:120px;height:80px;object-fit:cover;border-radius:6px;" alt="${listing.title}">
+                  ${isSold ? `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);border-radius:6px;"><span style="color:#fff;font-size:0.7rem;font-weight:800;letter-spacing:0.05em;background:#16a34a;padding:2px 8px;border-radius:9999px;">PRODANO</span></div>` : ''}
+              </div>
               <div style="flex:1;">
                   <h3>${listing.make} ${listing.model} ${listing.variant || listing.type || ''}</h3>
                   <div class="item-specs">
@@ -138,11 +142,13 @@ export async function initDashboardPage() {
                   </div>
               </div>
               <div style="text-align:right;">
-                  <div style="font-weight:700;font-size:1.2rem;color:#f97316;margin-bottom:0.5rem;">${price}</div>
-                  <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                  <button class="btn btn-outline btn-sm print-listing-btn" data-id="${listing.id}" style="border-color:#3b82f6;color:#3b82f6;" title="${t('dashboard_print_sheet')}">🖨️ ${t('dashboard_print_sheet')}</button>
-                  <button class="btn btn-outline btn-sm delete-listing-btn" data-id="${listing.id}" data-title="${listing.make} ${listing.model}">${t('remove')}</button>
-              </div>
+                  <div style="font-weight:700;font-size:1.2rem;color:${isSold ? '#16a34a' : '#f97316'};margin-bottom:0.5rem;">${isSold ? 'Prodano ✓' : price}</div>
+                  ${isSold ? '' : `
+                  <div style="display:flex;gap:0.5rem;justify-content:flex-end;flex-wrap:wrap;">
+                      <a href="#/novi-oglas?edit=${listing.id}" class="btn btn-outline btn-sm" style="border-color:#f97316;color:#f97316;">✎ Uredi</a>
+                      <button class="btn btn-outline btn-sm print-listing-btn" data-id="${listing.id}" style="border-color:#3b82f6;color:#3b82f6;" title="${t('dashboard_print_sheet')}">🖨️ ${t('dashboard_print_sheet')}</button>
+                      <button class="btn btn-outline btn-sm delete-listing-btn" data-id="${listing.id}" data-title="${listing.make} ${listing.model}">${t('remove')}</button>
+                  </div>`}
               </div>
           </div>
         `;

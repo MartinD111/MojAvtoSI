@@ -12,7 +12,7 @@ const PRIMARY_ITEM_TYPES = PLATFORM.id === 'navtika' ? ['plovilo', 'motor'] : ['
 const isPrimaryItem = l => PRIMARY_ITEM_TYPES.includes(l.itemType) || (PLATFORM.id !== 'navtika' && !l.itemType);
 import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite, getFavourites } from '../services/garageService.js';
-import { getListings } from '../services/listingService.js';
+import { getListings, getListingsPaged } from '../services/listingService.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 import { getCurrentLang } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
@@ -813,6 +813,9 @@ export function initOglasiPage() {
 // ── Sidebar dynamic filtering implementation ──────────────────────────────────
 let _allActiveListings = [];
 let _sidebarBrandFile = null; // currently loaded brands JSON path (avoids redundant refetch)
+let _lastDoc = null;
+let _hasMore = false;
+let _loadingMore = false;
 
 /**
  * Loads the brands/models JSON appropriate for the given category and repopulates
@@ -882,16 +885,66 @@ function updateSidebarHybridGroup() {
     }
 }
 
-async function initSidebarFiltering() {
-    // 1. Fetch all listings
-    try {
-        const userListings = await getListings();
-        // Exclude parts & tires — those live under "Gume in deli", not the vehicle feed.
-        _allActiveListings = [...SAMPLE_LISTINGS, ...userListings].filter(isPrimaryItem);
-    } catch (e) {
-        console.error("Failed to load user listings, using SAMPLE_LISTINGS only:", e);
-        _allActiveListings = SAMPLE_LISTINGS;
+function setupLoadMore() {
+    let btn = document.getElementById('oglasiLoadMoreBtn');
+    if (!btn) {
+        const container = document.getElementById('carListingsContainer');
+        if (!container) return;
+        btn = document.createElement('div');
+        btn.id = 'oglasiLoadMoreBtn';
+        btn.style.cssText = 'text-align:center;padding:2rem 0;';
+        container.insertAdjacentElement('afterend', btn);
     }
+
+    const render = () => {
+        if (_hasMore) {
+            btn.innerHTML = `<button style="padding:0.75rem 2.5rem;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;border-radius:9999px;font-size:0.95rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(249,115,22,0.3);" id="oglasiLoadMoreInner">Naloži več oglasov</button>`;
+            document.getElementById('oglasiLoadMoreInner')?.addEventListener('click', loadMoreListings);
+        } else {
+            btn.innerHTML = '';
+        }
+    };
+
+    render();
+    window._oglasiRefreshLoadMore = render;
+}
+
+async function loadMoreListings() {
+    if (_loadingMore || !_hasMore) return;
+    _loadingMore = true;
+
+    const btn = document.getElementById('oglasiLoadMoreInner');
+    if (btn) { btn.disabled = true; btn.textContent = 'Nalagam...'; }
+
+    try {
+        const page = await getListingsPaged({ lastDoc: _lastDoc, pageSize: 24 });
+        _lastDoc = page.lastDoc;
+        _hasMore = page.hasMore;
+        const newItems = page.listings.filter(isPrimaryItem);
+        _allActiveListings = [..._allActiveListings, ...newItems];
+        // Re-apply current filters to the expanded set
+        applySidebarFilters();
+    } catch (e) {
+        console.error('Failed to load more listings:', e);
+    } finally {
+        _loadingMore = false;
+        if (window._oglasiRefreshLoadMore) window._oglasiRefreshLoadMore();
+    }
+}
+
+async function initSidebarFiltering() {
+    // 1. Fetch first page of listings
+    try {
+        const page = await getListingsPaged({ lastDoc: null, pageSize: 24 });
+        _lastDoc = page.lastDoc;
+        _hasMore = page.hasMore;
+        // Exclude parts & tires — those live under "Gume in deli", not the vehicle feed.
+        _allActiveListings = page.listings.filter(isPrimaryItem);
+    } catch (e) {
+        console.error("Failed to load listings, using SAMPLE_LISTINGS only:", e);
+        _allActiveListings = [...SAMPLE_LISTINGS].filter(isPrimaryItem);
+    }
+    setupLoadMore();
 
     // 2. Populate fields
     const makeSelect = document.getElementById("sidebarMake");

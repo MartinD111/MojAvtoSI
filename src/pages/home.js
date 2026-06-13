@@ -58,7 +58,13 @@ export async function initHomePage() {
 function updateHomeCategory(category) {
     // Filter featured listings for this category
     const categoryListings = allListings.filter(l => l.category === category);
-    const featured = categoryListings.filter(l => l.isPremium);
+    const featured = categoryListings.filter(l => {
+        if (!l.isPremium && l.promotion?.tier !== 'homepage') return false;
+        const exp = l.promotion?.expiresAt;
+        if (!exp) return true;
+        const ms = exp?.toMillis?.() ?? (typeof exp === 'number' ? exp : null);
+        return ms === null || ms > Date.now();
+    });
     
     renderListingsSection('featured-container', 'featured-section', featured, false);
     
@@ -83,8 +89,10 @@ function setupRotatingAds() {
     const nextBtn = document.getElementById('rot-next-btn');
     if (!track || !prevBtn || !nextBtn) return;
 
-    // Filter for rotating ads (usually premium/sponsored across all categories)
-    const sponsored = allListings.length > 0 ? allListings.filter(l => l.isPremium) : [...SAMPLE_LISTINGS];
+    // Filter for rotating ads — include both 'homepage' tier (isPremium) and 'sponsored' tier
+    const sponsored = allListings.length > 0
+        ? allListings.filter(l => l.isPremium || l.promotion?.tier === 'sponsored' || l.promotion?.tier === 'homepage')
+        : [...SAMPLE_LISTINGS];
     if (sponsored.length === 0) return;
 
     function renderAdCard(car) {

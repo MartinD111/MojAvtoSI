@@ -2,7 +2,7 @@
 // Create Listing — Multi-step Controller — MojAvto.si
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { createListing } from '../services/listingService.js';
+import { createListing, updateListing, getListingById } from '../services/listingService.js';
 import { EQUIPMENT_GROUPS, getEquipmentForCategory } from '../data/equipment.js';
 import { auth } from '../firebase.js';
 import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
@@ -141,6 +141,7 @@ let state = {
 };
 
 let brandModelData = null;
+let editListingId = null; // set when wizard is opened via ?edit=<id>
 const isNavtika = () => PLATFORM.id === 'navtika';
 
 // ── Taxonomy auto-fill helpers (D-08 / D-09) ──────────────────────────────────
@@ -339,6 +340,108 @@ function applyBodyTypeAutoFill(make, model) {
     if (el) el.value = canonical;
 }
 
+// ── Hydrate state from an existing Firestore listing (edit mode) ──────────────
+function hydrateStateFromListing(l) {
+    // Reset to defaults first so stale state from a previous session doesn't bleed in
+    Object.assign(state, {
+        entryType: l.entryType || 'classic',
+        itemType: l.itemType || 'vehicle',
+        category: l.category || 'avto',
+        subcategory: l.subcategory || '',
+        bodyType: l.bodyType || '',
+        vehicleCategory: l.vehicleCategory || '',
+        // Vehicle basics
+        make: l.make || '',
+        model: l.model || '',
+        variant: l.variant || '',
+        linija: l.linija || '',
+        year: l.year ? String(l.year) : '',
+        mileageKm: l.mileageKm ?? (l.mileage ? String(l.mileage) : ''),
+        color: l.color || '',
+        colorType: l.colorType || 'solid',
+        doorsCount: l.doorsCount ? String(l.doorsCount) : '',
+        seatsCount: l.seatsCount ? String(l.seatsCount) : '',
+        condition: l.condition || 'Rabljeno',
+        firstRegistration: l.firstRegistration || '',
+        previousOwnersCount: l.previousOwnersCount ? String(l.previousOwnersCount) : '',
+        // Drivetrain
+        fuel: l.fuel || '',
+        hybridType: l.hybridType || null,
+        transmission: l.transmission || '',
+        driveType: l.driveType || '',
+        engineCc: l.engineCc ? String(l.engineCc) : '',
+        engineConfig: l.engineConfig || '',
+        powerKw: l.powerKw ? String(l.powerKw) : '',
+        co2: l.co2 ? String(l.co2) : '',
+        emissionClass: l.emissionClass || '',
+        fuelL100kmCombined: l.fuelL100kmCombined ? String(l.fuelL100kmCombined) : '',
+        fuelL100kmCity: l.fuelL100kmCity ? String(l.fuelL100kmCity) : '',
+        fuelL100kmHighway: l.fuelL100kmHighway ? String(l.fuelL100kmHighway) : '',
+        batteryKwh: l.batteryKwh ? String(l.batteryKwh) : '',
+        rangeKm: l.rangeKm ? String(l.rangeKm) : '',
+        batteryHealth: l.batteryHealth ? String(l.batteryHealth) : '',
+        consumptionKwh100: l.consumptionKwh100 ? String(l.consumptionKwh100) : '',
+        towingKg: l.towingKg ? String(l.towingKg) : '',
+        a2Eligible: l.a2Eligible || false,
+        // Navtika
+        engineHoursUsed: l.engineHoursUsed ? String(l.engineHoursUsed) : '',
+        lengthM: l.lengthM ? String(l.lengthM) : '',
+        beamM: l.beamM ? String(l.beamM) : '',
+        draughtM: l.draughtM ? String(l.draughtM) : '',
+        hullMaterial: l.hullMaterial || '',
+        engineCount: l.engineCount ? String(l.engineCount) : '1',
+        driveSystem: l.driveSystem || '',
+        maxSpeedKn: l.maxSpeedKn ? String(l.maxSpeedKn) : '',
+        fuelTankL: l.fuelTankL ? String(l.fuelTankL) : '',
+        waterTankL: l.waterTankL ? String(l.waterTankL) : '',
+        cabins: l.cabins ? String(l.cabins) : '',
+        berths: l.berths ? String(l.berths) : '',
+        // Parts
+        partGroup: l.partGroup || '',
+        partType: l.partType || '',
+        oemNumber: l.oemNumber || '',
+        brand: l.brand || '',
+        vehicleApplication: l.vehicleApplication || { make: '', model: '', yearFrom: '', yearTo: '' },
+        // Tires
+        tireSize: l.tireSize || '',
+        tireWidth: l.tireWidth ? String(l.tireWidth) : '',
+        tireAspect: l.tireAspect ? String(l.tireAspect) : '',
+        tireRim: l.tireRim ? String(l.tireRim) : '',
+        tireSeason: l.tireSeason || '',
+        treadDepthMm: l.treadDepthMm ? String(l.treadDepthMm) : '',
+        // Equipment
+        equipment: l.equipment || [],
+        customEquipment: l.customEquipment || [],
+        // Media — keep existing image URLs, no files (user must re-upload to change)
+        _exteriorFiles: [],
+        _exteriorUrls: Array.isArray(l.images?.exterior) ? [...l.images.exterior] : [],
+        _interiorFiles: [],
+        _interiorUrls: Array.isArray(l.images?.interior) ? [...l.images.interior] : [],
+        coverIndex: l.coverIndex || 0,
+        // Description
+        description: l.description || '',
+        // Price
+        priceEur: l.priceEur ? String(l.priceEur) : (l.price ? String(l.price) : ''),
+        salePriceEur: l.salePriceEur ? String(l.salePriceEur) : null,
+        priceNegotiable: l.priceNegotiable || false,
+        priceInclVat: l.priceInclVat || false,
+        leaseAvailable: l.leaseAvailable || false,
+        callForPrice: l.callForPrice || false,
+        priceIsFinal: l.priceIsFinal || false,
+        listingType: l.listingType || 'sale',
+        isRental: l.isRental || false,
+        rentalPricing: l.rentalPricing || { perDay: '', perWeek: '', deposit: '', minDays: '' },
+        // Seller
+        sellerType: l.sellerType || 'private',
+        sellerNote: l.sellerNote || '',
+        // Location
+        location: l.location || { city: '', postalCode: '', region: '' },
+        contact: l.contact || { name: '', phone: '', showPhone: false, email: '' },
+        // Promotion — keep existing tier but don't change it via the wizard
+        promotionTier: l.promotion?.tier || 'free',
+    });
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 export async function initCreateListingPage() {
     console.log('[CreateListing] init');
@@ -360,6 +463,26 @@ export async function initCreateListingPage() {
         .then(r => r.json())
         .then(d => { brandModelData = d; })
         .catch(() => { });
+
+    // Edit mode — detect ?edit=<listingId> in the hash
+    const hashParams = new URLSearchParams(window.location.hash.split('?')[1] || '');
+    const editId = hashParams.get('edit');
+    if (editId) {
+        editListingId = editId;
+        try {
+            const existing = await getListingById(editId);
+            if (!existing) throw new Error('Listing not found');
+            hydrateStateFromListing(existing);
+        } catch (e) {
+            console.error('[CreateListing] Failed to load listing for edit:', e);
+            editListingId = null;
+        }
+        // Skip draft restore and jump straight to category step
+        state.currentStep = getActiveSteps().findIndex(s => s.id === 'category');
+        if (state.currentStep < 0) state.currentStep = 0;
+        renderCurrentStep();
+        return;
+    }
 
     // Restore draft if available
     const saved = loadDraft();
@@ -3096,8 +3219,17 @@ function renderEquipmentStep() {
 let _mediaTab = 'exterior'; // 'exterior' | 'interior'
 
 function renderMediaStep() {
+    const photoNotice = state._photoLostNotice
+        ? `<div style="background:#fef3c7;border:1.5px solid #f59e0b;border-radius:0.75rem;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:#92400e;display:flex;gap:0.5rem;align-items:flex-start;">
+               <span style="flex-shrink:0;">⚠️</span>
+               <span>Vaše fotografije niso bile shranjene med prijavo — prosimo, naložite jih znova.</span>
+           </div>`
+        : '';
+    state._photoLostNotice = false;
+
     setHtml(`
         <div class="cl-card">
+            ${photoNotice}
             <h2 class="cl-step-title">${t('cl_media_title')}</h2>
             <p class="cl-step-sub">${t('cl_media_sub')}</p>
 
@@ -3952,7 +4084,7 @@ function renderReviewStep() {
 
             <div class="cl-nav">
                 <button class="cl-btn cl-btn--ghost" id="btnRevBack">${t('cl_btn_back')}</button>
-                <button class="cl-btn cl-btn--primary" id="btnRevNext">${t('cl_btn_post')}</button>
+                <button class="cl-btn cl-btn--primary" id="btnRevNext">${editListingId ? 'Shrani spremembe' : t('cl_btn_post')}</button>
             </div>
         </div>
     `);
@@ -4021,10 +4153,24 @@ function renderAuthStep() {
         el.style.display = 'block';
     };
 
+    const hasPhotos = () =>
+        state._exteriorFiles.length > 0 || state._exteriorUrls.length > 0;
+
+    const afterAuth = async (user) => {
+        if (!hasPhotos()) {
+            // Photos were lost when sessionStorage was saved — File objects can't be serialised.
+            // Send the user back to the media step with an explanatory notice.
+            state._photoLostNotice = true;
+            jumpToStep('media');
+            return;
+        }
+        await submitListing(user);
+    };
+
     document.getElementById('btnGoogle').addEventListener('click', async () => {
         try {
             const result = await signInWithPopup(auth, new GoogleAuthProvider());
-            await submitListing(result.user);
+            await afterAuth(result.user);
         } catch (e) { showErr(e.message); }
     });
 
@@ -4033,7 +4179,7 @@ function renderAuthStep() {
             const email = document.getElementById('authEmail').value;
             const pw = document.getElementById('authPassword').value;
             const result = await signInWithEmailAndPassword(auth, email, pw);
-            await submitListing(result.user);
+            await afterAuth(result.user);
         } catch (e) { showErr(t('cl_err_signin') + e.message); }
     });
 
@@ -4042,7 +4188,7 @@ function renderAuthStep() {
             const email = document.getElementById('authEmail').value;
             const pw = document.getElementById('authPassword').value;
             const result = await createUserWithEmailAndPassword(auth, email, pw);
-            await submitListing(result.user);
+            await afterAuth(result.user);
         } catch (e) { showErr(t('cl_err_register') + e.message); }
     });
 }
@@ -4064,18 +4210,91 @@ async function submitListing(user) {
         if (userDoc && userDoc.sellerType) {
             state.sellerType = userDoc.sellerType;
         }
-        const id = await createListing(state, state._exteriorFiles, state._interiorFiles, user);
-        clearDraft();
-        state._exteriorUrls.forEach(url => URL.revokeObjectURL(url));
-        state._interiorUrls.forEach(url => URL.revokeObjectURL(url));
+
+        let listingId;
+        const wasEditing = !!editListingId;
+
+        if (editListingId) {
+            // ── Edit mode: upload only new File objects, keep existing URLs ──
+            const [newExtUrls, newIntUrls] = await Promise.all([
+                state._exteriorFiles.length > 0
+                    ? (await import('../services/listingService.js')).uploadImages(state._exteriorFiles, user.uid)
+                    : Promise.resolve([]),
+                state._interiorFiles.length > 0
+                    ? (await import('../services/listingService.js')).uploadImages(state._interiorFiles, user.uid)
+                    : Promise.resolve([]),
+            ]);
+
+            const exteriorUrls = [...state._exteriorUrls.filter(u => u.startsWith('http')), ...newExtUrls];
+            const interiorUrls = [...state._interiorUrls.filter(u => u.startsWith('http')), ...newIntUrls];
+
+            await updateListing(editListingId, {
+                category: state.category,
+                subcategory: state.subcategory,
+                bodyType: state.bodyType,
+                itemType: state.itemType,
+                make: state.make,
+                model: state.model,
+                variant: state.variant,
+                linija: state.linija,
+                year: state.year ? Number(state.year) : null,
+                mileageKm: state.mileageKm ? Number(state.mileageKm) : null,
+                mileage: state.mileageKm ? Number(state.mileageKm) : null,
+                color: state.color,
+                colorType: state.colorType,
+                doorsCount: state.doorsCount ? Number(state.doorsCount) : null,
+                seatsCount: state.seatsCount ? Number(state.seatsCount) : null,
+                condition: state.condition,
+                firstRegistration: state.firstRegistration,
+                previousOwnersCount: state.previousOwnersCount ? Number(state.previousOwnersCount) : null,
+                fuel: state.fuel,
+                hybridType: state.hybridType,
+                transmission: state.transmission,
+                driveType: state.driveType,
+                engineCc: state.engineCc ? Number(state.engineCc) : null,
+                powerKw: state.powerKw ? Number(state.powerKw) : null,
+                power: state.powerKw ? Number(state.powerKw) : null,
+                co2: state.co2 ? Number(state.co2) : null,
+                emissionClass: state.emissionClass,
+                fuelL100kmCombined: state.fuelL100kmCombined ? Number(state.fuelL100kmCombined) : null,
+                batteryKwh: state.batteryKwh ? Number(state.batteryKwh) : null,
+                rangeKm: state.rangeKm ? Number(state.rangeKm) : null,
+                equipment: state.equipment,
+                description: state.description,
+                priceEur: Number(state.priceEur) || 0,
+                price: Number(state.priceEur) || 0,
+                salePriceEur: state.salePriceEur ? Number(state.salePriceEur) : null,
+                priceNegotiable: state.priceNegotiable,
+                priceInclVat: state.priceInclVat,
+                callForPrice: state.callForPrice,
+                listingType: state.listingType,
+                isRental: state.isRental,
+                location: state.location,
+                contact: state.contact,
+                sellerNote: state.sellerNote,
+                images: { exterior: exteriorUrls, interior: interiorUrls },
+                coverIndex: state.coverIndex,
+                title: `${state.make || ''} ${state.model || ''} ${state.variant || ''}`.trim(),
+            });
+
+            listingId = editListingId;
+            editListingId = null;
+        } else {
+            // ── Create mode ──
+            listingId = await createListing(state, state._exteriorFiles, state._interiorFiles, user);
+            clearDraft();
+        }
+
+        state._exteriorUrls.forEach(url => { try { URL.revokeObjectURL(url); } catch {} });
+        state._interiorUrls.forEach(url => { try { URL.revokeObjectURL(url); } catch {} });
 
         container.innerHTML = `
             <div class="cl-card" style="text-align:center;padding:3rem 2rem;">
                 <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
-                <h2 class="cl-step-title">${t('cl_success_title')}</h2>
+                <h2 class="cl-step-title">${wasEditing ? 'Oglas posodobljen!' : t('cl_success_title')}</h2>
                 <p class="cl-step-sub">${t('cl_success_sub')}</p>
                 <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.5rem;">
-                    <a href="#/${state.entryType === 'auction' ? 'drazba' : 'oglas'}?id=${id}" class="cl-btn cl-btn--primary">${t('cl_btn_view_listing')}</a>
+                    <a href="#/${state.entryType === 'auction' ? 'drazba' : 'oglas'}?id=${listingId}" class="cl-btn cl-btn--primary">${t('cl_btn_view_listing')}</a>
                     <a href="#/dashboard" class="cl-btn cl-btn--secondary">${t('cl_btn_my_listings')}</a>
                 </div>
             </div>`;
