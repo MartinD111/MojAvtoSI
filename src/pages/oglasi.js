@@ -6,6 +6,7 @@ const MAX_COMPARE = 3;
 import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { PLATFORM } from '../config/platform.js';
 import { auth } from '../firebase.js';
+import { COUNTRIES, getRegions } from '../data/locationData.js';
 
 // itemTypes shown on the main listings board for the active platform.
 const PRIMARY_ITEM_TYPES = PLATFORM.id === 'navtika' ? ['plovilo', 'motor'] : ['vehicle'];
@@ -350,10 +351,10 @@ function renderCarCard(car) {
             </div>
 
             <div class="note-contact-row">
-                ${car.location?.city ? `
+                ${car.location?.region ? `
                 <div class="seller-note-card">
                     <i data-lucide="map-pin"></i>
-                    <span>${car.location.city}${car.location.region ? ', ' + car.location.region : ''}</span>
+                    <span>${car.location.region}${car.location.country && car.location.country !== 'SI' ? ', ' + car.location.country : ''}</span>
                 </div>
                 ` : '<div style="flex: 1;"></div>'}
                 <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
@@ -388,7 +389,7 @@ window.showContactPopup = function (carId) {
             <div class="contact-popup-info-box">
                 <div class="contact-row">
                     <i data-lucide="map-pin" class="row-icon"></i>
-                    <span class="row-text">${typeof car.location === 'object' ? car.location.city : car.location}</span>
+                    <span class="row-text">${typeof car.location === 'object' ? (car.location.region || car.location.city || '') : car.location}</span>
                 </div>
                 <div class="contact-row">
                     <i data-lucide="phone" class="row-icon"></i>
@@ -961,6 +962,64 @@ async function initSidebarFiltering() {
         const o2 = document.createElement("option"); o2.value = y; o2.textContent = y; yearToSelect.appendChild(o2);
     }
 
+    // Country + Region selects (with localStorage persistence)
+    const countrySelect = document.getElementById('sidebarCountry');
+    const regionSelect = document.getElementById('sidebarRegion');
+    if (countrySelect && regionSelect) {
+        const savedCountry = localStorage.getItem(lsKey('filterCountry')) || '';
+        const savedRegion = localStorage.getItem(lsKey('filterRegion')) || '';
+
+        // Populate countries
+        COUNTRIES.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c.code;
+            o.textContent = c.label;
+            countrySelect.appendChild(o);
+        });
+
+        const populateRegions = (countryCode, selectValue) => {
+            regionSelect.innerHTML = '<option value="">Vse regije</option>';
+            if (countryCode) {
+                getRegions(countryCode).forEach(r => {
+                    const o = document.createElement('option');
+                    o.value = r;
+                    o.textContent = r;
+                    regionSelect.appendChild(o);
+                });
+                regionSelect.disabled = false;
+            } else {
+                regionSelect.disabled = true;
+            }
+            if (selectValue) regionSelect.value = selectValue;
+        };
+
+        // Restore saved selection
+        if (savedCountry) {
+            countrySelect.value = savedCountry;
+            populateRegions(savedCountry, savedRegion);
+        } else {
+            regionSelect.disabled = true;
+        }
+
+        // Apply custom select styling
+        initCustomSelects();
+
+        countrySelect.addEventListener('change', () => {
+            const code = countrySelect.value;
+            localStorage.setItem(lsKey('filterCountry'), code);
+            localStorage.setItem(lsKey('filterRegion'), '');
+            populateRegions(code, '');
+            applySidebarFilters();
+            updateUrlParamsFromInputs();
+        });
+
+        regionSelect.addEventListener('change', () => {
+            localStorage.setItem(lsKey('filterRegion'), regionSelect.value);
+            applySidebarFilters();
+            updateUrlParamsFromInputs();
+        });
+    }
+
     // Brands — load the file matching the current category (avto/moto/gospodarska)
     const initialCat = parseHashParams().get('cat') || '';
     loadSidebarBrands(initialCat, () => {
@@ -1116,6 +1175,17 @@ async function initSidebarFiltering() {
             if (lineSelectReset) lineSelectReset.innerHTML = '<option value="">Vse linije</option>';
             if (lineGroupReset) lineGroupReset.style.display = 'none';
 
+            // Clear country/region and their localStorage state
+            const countrySelectReset = document.getElementById('sidebarCountry');
+            const regionSelectReset = document.getElementById('sidebarRegion');
+            if (countrySelectReset) countrySelectReset.value = '';
+            if (regionSelectReset) {
+                regionSelectReset.innerHTML = '<option value="">Vse regije</option>';
+                regionSelectReset.disabled = true;
+            }
+            localStorage.removeItem(lsKey('filterCountry'));
+            localStorage.removeItem(lsKey('filterRegion'));
+
             const params = parseHashParams();
             const cat = params.get('cat');
             window.history.replaceState(null, '', `#/oglasi${cat ? '?cat=' + cat : ''}`);
@@ -1129,15 +1199,47 @@ async function initSidebarFiltering() {
 function bindSidebarAccordions() {
     const triggers = document.querySelectorAll('#sidebarFiltersForm .adv-acc-trigger');
     triggers.forEach(trigger => {
+        const accordion = trigger.closest('.adv-accordion');
+        const body = accordion.querySelector('.adv-acc-body');
+
+        // Set up transition — body is always display:flex, max-height collapses it
+        if (body) {
+            body.style.overflow = 'hidden';
+            body.style.transition = 'max-height 0.28s ease, opacity 0.28s ease';
+            body.style.display = 'flex';
+            const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+            if (!isOpen) {
+                body.style.maxHeight = '0';
+                body.style.opacity = '0';
+            } else {
+                // Defer so the DOM is ready to measure
+                requestAnimationFrame(() => {
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                    body.style.opacity = '1';
+                });
+            }
+        }
+
         trigger.addEventListener('click', () => {
-            const accordion = trigger.closest('.adv-accordion');
-            const body = accordion.querySelector('.adv-acc-body');
             const isOpen = trigger.getAttribute('aria-expanded') === 'true';
             const ns = !isOpen;
             trigger.setAttribute('aria-expanded', String(ns));
+
             if (body) {
-                body.style.display = ns ? 'flex' : 'none';
+                if (ns) {
+                    // Opening
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                    body.style.opacity = '1';
+                } else {
+                    // Closing: snap to exact current height then animate to 0
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                        body.style.maxHeight = '0';
+                        body.style.opacity = '0';
+                    }));
+                }
             }
+
             // Show/hide the summary badge based on open state
             const summary = trigger.querySelector('.acc-filter-summary');
             if (summary && summary.textContent) {
@@ -1162,6 +1264,7 @@ function applySidebarFilters() {
 
     const color = document.getElementById("sidebarColor")?.value || '';
     const sellerType = document.getElementById("sidebarSellerType")?.value || '';
+    const country = document.getElementById("sidebarCountry")?.value || '';
     const region = document.getElementById("sidebarRegion")?.value || '';
 
     const onlySale = document.getElementById("sidebarOnlySale")?.checked || false;
@@ -1334,6 +1437,10 @@ function applySidebarFilters() {
         }
 
         if (sellerType && car.sellerType !== sellerType) return false;
+        if (country) {
+            const carCountry = car.location?.country || '';
+            if (carCountry !== country) return false;
+        }
         if (region) {
             const carRegion = car.location?.region || '';
             if (carRegion !== region) return false;
@@ -1458,11 +1565,16 @@ function updateAccordionSummaries() {
     if (color) motorParts.push(color);
     _setAccSummary('summaryMotor', null, motorParts);
 
-    // Prodajalec: sellerType, region
+    // Prodajalec: sellerType, country, region
     const prodParts = [];
     const sellerType = document.getElementById('sidebarSellerType')?.value;
+    const countryCode = document.getElementById('sidebarCountry')?.value;
     const region = document.getElementById('sidebarRegion')?.value;
     if (sellerType) prodParts.push(sellerType === 'private' ? 'Privat' : 'Trgovec');
+    if (countryCode) {
+        const countryLabel = COUNTRIES.find(c => c.code === countryCode)?.label || countryCode;
+        prodParts.push(countryLabel);
+    }
     if (region) prodParts.push(region);
     _setAccSummary('summaryProdajalec', null, prodParts);
 }
@@ -1578,11 +1690,37 @@ function prefillSidebarFromUrl() {
     window._isPrefilling = true;
     const params = parseHashParams();
     
-    const fields = ['yearFrom', 'yearTo', 'priceTo', 'bodyType', 'driveType', 'engineType', 'engineStroke', 'color', 'sellerType', 'region', 'powerFrom', 'powerTo'];
+    const fields = ['yearFrom', 'yearTo', 'priceTo', 'bodyType', 'driveType', 'engineType', 'engineStroke', 'color', 'sellerType', 'powerFrom', 'powerTo'];
     fields.forEach(f => {
         const el = document.getElementById(`sidebar${f.charAt(0).toUpperCase() + f.slice(1)}`);
         if (el && params.get(f)) el.value = params.get(f);
     });
+
+    // Country → populate regions → set region
+    const countryParam = params.get('country');
+    const regionParam = params.get('region');
+    const countrySel = document.getElementById('sidebarCountry');
+    const regionSel = document.getElementById('sidebarRegion');
+    if (countrySel && (countryParam || regionParam)) {
+        if (countryParam) {
+            countrySel.value = countryParam;
+            localStorage.setItem(lsKey('filterCountry'), countryParam);
+        }
+        const codeToUse = countryParam || countrySel.value;
+        if (codeToUse && regionSel) {
+            regionSel.innerHTML = '<option value="">Vse regije</option>';
+            getRegions(codeToUse).forEach(r => {
+                const o = document.createElement('option');
+                o.value = r; o.textContent = r;
+                regionSel.appendChild(o);
+            });
+            regionSel.disabled = false;
+            if (regionParam) {
+                regionSel.value = regionParam;
+                localStorage.setItem(lsKey('filterRegion'), regionParam);
+            }
+        }
+    }
 
     const onlySale = params.get("onlySale");
     const showNoPrice = params.get("showNoPrice");

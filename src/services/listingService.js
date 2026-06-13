@@ -223,9 +223,8 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
 
         // Location
         location: {
-            city: draft.location?.city || '',
-            zipCode: draft.location?.zipCode || '',
-            state: draft.location?.state || '',
+            country: draft.location?.country || '',
+            region: draft.location?.region || '',
             lat: draft.location?.lat || null,
             lng: draft.location?.lng || null,
         },
@@ -508,8 +507,12 @@ export async function getListingsPaged({ lastDoc = null, pageSize = 24 } = {}) {
     try {
         snapshot = await getDocs(q);
     } catch (err) {
-        console.warn('[getListingsPaged] Firestore error, returning empty page.', err);
-        return { listings: [], lastDoc: null, hasMore: false };
+        console.warn('[getListingsPaged] Firestore error, returning sample data fallback.', err);
+        return { 
+            listings: sortByPromotion(lastDoc ? [] : [...SAMPLE_LISTINGS]), 
+            lastDoc: null, 
+            hasMore: false 
+        };
     }
 
     const listings = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));

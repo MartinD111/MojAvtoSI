@@ -96,6 +96,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+  padding-left: 0;
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;

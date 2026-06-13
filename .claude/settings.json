@@ -13,7 +13,21 @@
       "Bash(Select-Object Name)",
       "Read(//c/Users/marti/Desktop/**)",
       "Bash(python -c ' *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node --check src/utils/aiListingImport.js)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('public/lang/sl.json','utf8'\\)\\);JSON.parse\\(require\\('fs'\\).readFileSync\\('public/lang/en.json','utf8'\\)\\);console.log\\('JSON OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('public/lang/sl.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('public/lang/en.json','utf8'\\)\\); console.log\\('JSON OK'\\);\")",
+      "Bash(node --input-type=module -e \"import\\('./src/data/equipment.js'\\).then\\(m=>{console.log\\('groups',m.EQUIPMENT_GROUPS.length,'values',m.ALL_EQUIPMENT_VALUES.length\\); const seen=new Set\\(\\),dup=[]; for\\(const v of m.ALL_EQUIPMENT_VALUES\\){if\\(seen.has\\(v\\)\\)dup.push\\(v\\);seen.add\\(v\\);} console.log\\('dupes',dup\\);}\\).catch\\(e=>{console.error\\(e\\);process.exit\\(1\\)}\\)\")",
+      "Bash(node --input-type=module -e ' *)",
+      "Bash(node scripts/build_equipment_reference.mjs)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('public/lang/sl.json','utf8'\\)\\);JSON.parse\\(require\\('fs'\\).readFileSync\\('public/lang/en.json','utf8'\\)\\);console.log\\('JSON still valid'\\)\")",
+      "Bash(grep -rl 'name=\"features\"' public/ src/)",
+      "Bash(grep -rln 'adv-chip-group\\\\|data-eq-group\\\\|name=.features' public/views/)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(node --check src/data/equipment.js)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\marti\\.claude\\projects\\c--Users-marti-AMS-d-o-o-MojAvto-si\\memory"
     ]
   }
 }

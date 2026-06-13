@@ -511,6 +511,28 @@ function renderListing(l) {
         }
     });
 
+    // Owner edit bar — shown async once auth resolves
+    const injectOwnerBar = (user) => {
+        if (!user || user.uid !== l.authorId) return;
+        if (document.getElementById('lpOwnerBar')) return;
+        const bar = document.createElement('div');
+        bar.id = 'lpOwnerBar';
+        bar.className = 'lp-owner-bar';
+        bar.innerHTML = `
+            <span class="lp-owner-bar-label"><i data-lucide="pencil-ruler"></i> ${t('owner_bar_label', 'Vaš oglas')}</span>
+            <a class="lp-owner-bar-btn" href="#/novi-oglas?edit=${encodeURIComponent(l.id)}">
+                <i data-lucide="pencil"></i> ${t('owner_bar_edit', 'Uredi oglas')}
+            </a>`;
+        const container = document.getElementById('listingPage');
+        container?.insertAdjacentElement('afterbegin', bar);
+        if (window.lucide) window.lucide.createIcons({ nodes: [bar] });
+    };
+    if (auth.currentUser) {
+        injectOwnerBar(auth.currentUser);
+    } else {
+        const unsub = auth.onAuthStateChanged(user => { unsub(); injectOwnerBar(user); });
+    }
+
     // Init icons
     // Mobile layout: move price card right after gallery so order is
     // gallery → price → specs/description/seller-note → TCO → seller card
@@ -782,55 +804,66 @@ function renderSpecsHtml(l) {
 }
 
 function renderEquipmentAccordions(l) {
-    const eq = l.equipment;
-    if (!eq || eq.length === 0) return '';
+    const eq = Array.isArray(l.equipment) ? l.equipment : [];
+    const customEq = Array.isArray(l.customEquipment) ? l.customEquipment : [];
+    if (eq.length === 0 && customEq.length === 0) return '';
 
-    // Map group IDs into two top-level dropdowns
-    const INTERIOR_IDS = new Set(['udobje', 'parkiranje']);
-    const EQUIPMENT_IDS = new Set(['varnost', 'razsvetljava', 'multimedija', 'asistenti', 'prtljaga', 'garancija', 'moto', 'gospodarska']);
+    // Build per-group sections — each group that has at least one matching item
+    // gets its own titled chip-row so the buyer can scan by category.
+    const groupSections = EQUIPMENT_GROUPS
+        .map(group => {
+            const items = group.items.filter(i => eq.includes(i.value));
+            return items.length ? { group, items } : null;
+        })
+        .filter(Boolean);
 
-    const interiorItems = [];
-    const equipmentItems = [];
+    if (groupSections.length === 0 && customEq.length === 0) return '';
 
-    for (const group of EQUIPMENT_GROUPS) {
-        const matched = group.items.filter(i => eq.includes(i.value));
-        if (matched.length === 0) continue;
-        if (INTERIOR_IDS.has(group.id)) {
-            interiorItems.push(...matched);
-        } else if (EQUIPMENT_IDS.has(group.id)) {
-            equipmentItems.push(...matched);
-        }
-    }
+    const groupHtml = groupSections.map(({ group, items }) => `
+        <div class="lp-eq-group">
+            <div class="lp-eq-group-header">
+                <i data-lucide="${group.icon}" class="lp-eq-group-icon"></i>
+                <span class="lp-eq-group-label">${escHtml(t(group.label, group.id))}</span>
+            </div>
+            <div class="lp-eq-chips">
+                ${items.map(i => `
+                    <span class="lp-eq-chip">
+                        <i data-lucide="${i.icon}"></i>
+                        ${escHtml(t(i.label, i.value))}
+                    </span>`).join('')}
+            </div>
+        </div>`).join('');
 
-    const accordionHtml = (icon, label, items) => {
-        if (items.length === 0) return '';
-        return `
-            <div class="adv-accordion glass-card">
-                <div class="adv-acc-header">
-                    <button type="button" class="adv-acc-trigger" aria-expanded="false">
-                        <span class="adv-acc-title">
-                            <i data-lucide="${icon}"></i>
-                            ${escHtml(label)}
-                            <span style="font-size:0.75rem; color:#94a3b8; margin-left:0.4rem;">(${items.length})</span>
-                        </span>
-                        <div class="adv-acc-right"><i data-lucide="chevron-down" class="adv-acc-chevron"></i></div>
-                    </button>
-                </div>
-                <div class="adv-acc-body" style="display:none; padding:1rem 1.5rem 1.25rem; flex-direction:row; flex-wrap:wrap; gap:0.6rem;">
-                    ${items.map(i => `<span class="adv-chip" style="cursor:default;">${escHtml(i.label)}</span>`).join('')}
-                </div>
-            </div>`;
-    };
+    const customHtml = customEq.length ? `
+        <div class="lp-eq-group">
+            <div class="lp-eq-group-header">
+                <i data-lucide="plus-circle" class="lp-eq-group-icon"></i>
+                <span class="lp-eq-group-label">${t('equipment_custom', 'Dodatna oprema')}</span>
+            </div>
+            <div class="lp-eq-chips">
+                ${customEq.map(ce => `<span class="lp-eq-chip lp-eq-chip--custom">${escHtml(ce.value || '')}</span>`).join('')}
+            </div>
+        </div>` : '';
 
-    if (interiorItems.length === 0 && equipmentItems.length === 0) return '';
+    const total = eq.length + customEq.length;
 
     return `
-        <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px solid rgba(0,0,0,0.06);">
-            <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em;">${t('equipment_and_features')}</span>
-        </div>
-        ${accordionHtml('sofa', t('interior_and_comfort'), interiorItems)}
-        ${accordionHtml('shield-check', t('equipment_safety_etc'), equipmentItems)}
-    `;
+        <div class="adv-accordion glass-card lp-eq-accordion">
+            <div class="adv-acc-header">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false">
+                    <span class="adv-acc-title">
+                        <i data-lucide="list-checks"></i>
+                        ${t('equipment_and_features', 'Oprema in dodatki')}
+                        <span class="lp-eq-count">${total}</span>
+                    </span>
+                    <div class="adv-acc-right"><i data-lucide="chevron-down" class="adv-acc-chevron"></i></div>
+                </button>
+            </div>
+            <div class="adv-acc-body lp-eq-body" style="display:none;">
+                ${groupHtml}
+                ${customHtml}
+            </div>
+        </div>`;
 }
 
 function buildConsumptionLabel(l) {

@@ -1,4 +1,4 @@
-// Oglasi (Listings Board) page — MojAvto.si
+﻿// Oglasi (Listings Board) page — MojAvto.si
 // Renders car listing cards + comparison tray logic
 
 const MAX_COMPARE = 3;
@@ -504,7 +504,7 @@ function renderCarCard(car) {
                 <div class="navtika-card-location">
                     ${car.location?.city ? `
                     <i data-lucide="map-pin"></i>
-                    <span>${car.location.city}${car.location.region ? ', ' + car.location.region : ''}</span>
+                    <span>${car.location.region || car.location.city || ''}</span>
                     ` : ''}
                 </div>
                 <div class="navtika-card-actions">
@@ -547,7 +547,7 @@ window.showContactPopup = function (carId) {
             <div class="contact-popup-info-box">
                 <div class="contact-row">
                     <i data-lucide="map-pin" class="row-icon"></i>
-                    <span class="row-text">${typeof car.location === 'object' ? car.location.city : car.location}</span>
+                    <span class="row-text">${typeof car.location === 'object' ? (car.location.region || car.location.city || '') : car.location}</span>
                 </div>
                 <div class="contact-row">
                     <i data-lucide="phone" class="row-icon"></i>

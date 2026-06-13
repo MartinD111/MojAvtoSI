@@ -873,68 +873,15 @@
                 </label>
             </div>
             <div class="adv-acc-body" style="display:none;">
-                <div class="car-only-field">
-                    <!-- Safety -->
-                    <p class="adv-sub-label"><i data-lucide="shield-check"></i> Varnost</p>
-                    <div class="adv-chip-group" data-eq-group="varnost" style="margin-bottom:1.5rem;">
-                        <label class="adv-chip"><input type="checkbox" name="features" value="ABS"> ABS</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="ESP"> ESP</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Alarm"> Alarmni sistem</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="BlindSpot"> Pomoč za mrtvi kot</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="RoadSign"> Prepoznavanje znakov</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="LaneDep"> Ohranjanje pasu</label>
-                    </div>
-
-                    <!-- Lighting -->
-                    <p class="adv-sub-label"><i data-lucide="sun"></i> Osvetlitev</p>
-                    <div class="adv-chip-group" data-eq-group="razsvetljava" style="margin-bottom:1.5rem;">
-                        <label class="adv-chip"><input type="checkbox" name="features" value="LED"> LED luči</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Xenon"> Ksenonski žarometi</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Matrix"> Matrični žarometi</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="DRL"> Dnevne luči</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Fog"> Meglenke</label>
-                    </div>
-
-                    <!-- Comfort -->
-                    <p class="adv-sub-label"><i data-lucide="sofa"></i> Udobje</p>
-                    <div class="adv-chip-group" data-eq-group="udobje" style="margin-bottom:1.5rem;">
-                        <label class="adv-chip"><input type="checkbox" name="features" value="ElectricSeats"> Električni sedeži</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="HeatedSeats"> Ogrevani sedeži</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="HeatedSeatsRear">
-                            Ogrevani sedeži (zadaj)</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="MassageSeats"> Masažni sedeži</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="CooledSeats"> Hlajeni sedeži</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Panorama"> Panoramska streha</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Sibedah"> Senčni rolo</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="ElecTrunk"> Električni prtljažnik</label>
-                    </div>
-
-                    <!-- Multimedia -->
-                    <p class="adv-sub-label"><i data-lucide="monitor-smartphone"></i> Multimedija</p>
-                    <div class="adv-chip-group" data-eq-group="multimedija">
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Navigation"> Navigacijski sistem</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Bluetooth">
-                            Bluetooth</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Handsfree"> Prostoročno klicanje</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="CarPlay"> Apple CarPlay / Android Auto</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="HifiSound"> Premium ozvočenje</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="DigitalCockpit"> Digitalni števci</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="HUD"> Head-up zaslon</label>
-                    </div>
-                </div>
+                <!-- Car equipment chips — generated from equipment.js (renderEquipmentChipsHtml) -->
+                <div class="car-only-field" id="car-equipment-chips"></div>
 
                 <!-- Motorcycle Specific Equipment -->
                 <div class="moto-only-field" style="display:none;" id="moto-equipment">
-                    <!-- Row 1: regular feature chips -->
+                    <!-- Row 1: regular feature chips — generated from equipment.js.
+                         SportExhaust + the IMU sub-chips are excluded (bespoke UI below). -->
+                    <div id="moto-equipment-chips"></div>
                     <div class="adv-chip-group">
-                        <label class="adv-chip"><input type="checkbox" name="features" value="MotoABS"> ABS</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="MotoCruise"> Tempomat</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="ElecSuspension"> Elektronsko vzmetenje</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="MotoNavigation"> Navigacija</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Panniers"> Kovčki</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="TPMS"> Nadzor tlaka (TPMS)</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="Quickshifter"> Quickshifter</label>
-                        <label class="adv-chip"><input type="checkbox" name="features" value="HeatedGrips"> Ogrevane ročke</label>
                         <label class="adv-chip" id="sport-exhaust-label">
                             <input type="checkbox" name="features" value="SportExhaust" id="sport-exhaust-check"> Športni izpuh
                         </label>

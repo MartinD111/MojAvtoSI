@@ -183,4 +183,34 @@ export const SAMPLE_CATALOG = build([
             { shop: 'Avtodom Shop', domain: 'avtodom-shop.si', price: 129, url: 'https://www.avtodom-shop.si/', inStock: true },
         ],
     },
+    // ── More tires and parts ─────────────────────────────────────────────────
+    {
+        id: 'cat-tire-6',
+        itemType: 'tire',
+        vehicleCategory: 'avto',
+        title: 'Pirelli P Zero 245/40 R18 97Y',
+        brand: 'Pirelli',
+        imageUrl: '',
+        attributes: { size: '245/40 R18', width: 245, aspect: 40, rim: 18, season: 'letne', loadIndex: '97', speedRating: 'Y' },
+        offers: [
+            { shop: 'Pnevmatike24', domain: 'pnevmatike24.si', price: 145, url: 'https://www.pnevmatike24.si/', inStock: true },
+            { shop: 'Guma Shop', domain: 'guma-shop.si', price: 152, url: 'https://www.guma-shop.si/', inStock: true },
+        ],
+    },
+    {
+        id: 'cat-part-6',
+        itemType: 'part',
+        vehicleCategory: 'avto',
+        title: 'Brembo zavorni diski spredaj',
+        brand: 'Brembo',
+        imageUrl: '',
+        attributes: {
+            partGroup: 'zavore', partType: 'diski', oemNumber: '09.A259.1X',
+            compatibility: [{ make: 'Skoda', model: 'Octavia' }, { make: 'Volkswagen', model: 'Golf' }],
+        },
+        offers: [
+            { shop: 'Avto Deli', domain: 'avto-deli.si', price: 85, url: 'https://www.avto-deli.si/', inStock: true },
+            { shop: 'Rezervni Deli', domain: 'rezervni-deli.si', price: 89, url: 'https://www.rezervni-deli.si/', inStock: true },
+        ],
+    },
 ]);

@@ -1,5 +1,7 @@
 import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { getListings } from '../services/listingService.js';
+import { COUNTRIES, getRegions } from '../data/locationData.js';
+import { key as lsKey } from '../config/storageKeys.js';
 import { 
     getFuelPill, 
     getPowerPill, 
@@ -404,6 +406,69 @@ function setupSearchForm() {
     const priceInput = document.getElementById("home-price-to");
     if (priceInput) setupNumericFormatter(priceInput);
 
+    // Country + Region selects with localStorage persistence
+    const countrySelect = document.getElementById('home-country');
+    const regionSelect = document.getElementById('home-region');
+    if (countrySelect && regionSelect) {
+        const savedCountry = localStorage.getItem(lsKey('filterCountry')) || '';
+        const savedRegion = localStorage.getItem(lsKey('filterRegion')) || '';
+
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = t('cl_sel_country') || 'Vse države';
+        countrySelect.appendChild(emptyOpt);
+
+        COUNTRIES.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c.code;
+            o.textContent = c.label;
+            countrySelect.appendChild(o);
+        });
+
+        const populateRegions = (code, selectValue) => {
+            regionSelect.innerHTML = '';
+            const empty = document.createElement('option');
+            empty.value = '';
+            empty.textContent = t('cl_sel_region') || 'Vse regije';
+            regionSelect.appendChild(empty);
+            if (code) {
+                getRegions(code).forEach(r => {
+                    const o = document.createElement('option');
+                    o.value = r; o.textContent = r;
+                    regionSelect.appendChild(o);
+                });
+                regionSelect.disabled = false;
+            } else {
+                regionSelect.disabled = true;
+            }
+            if (selectValue) regionSelect.value = selectValue;
+        };
+
+        if (savedCountry) {
+            countrySelect.value = savedCountry;
+            populateRegions(savedCountry, savedRegion);
+        } else {
+            populateRegions('', '');
+        }
+
+        // Apply custom select styling
+        import('../utils/customSelect.js').then(m => {
+            m.createCustomSelect(countrySelect);
+            m.createCustomSelect(regionSelect);
+        });
+
+        countrySelect.addEventListener('change', () => {
+            const code = countrySelect.value;
+            localStorage.setItem(lsKey('filterCountry'), code);
+            localStorage.setItem(lsKey('filterRegion'), '');
+            populateRegions(code, '');
+        });
+
+        regionSelect.addEventListener('change', () => {
+            localStorage.setItem(lsKey('filterRegion'), regionSelect.value);
+        });
+    }
+
     // Search-mode pills (Išči oglase / Išči dražbe) — drive the submit target.
     let homeSearchMode = 'oglasi';
     const modePills = document.getElementById('homeSearchMode');
@@ -433,7 +498,8 @@ function setupSearchForm() {
             const mileage = document.getElementById('home-mileage-to')?.value || '';
             const priceVal = document.getElementById('home-price-to')?.value || '';
             const price = parseFormattedNumber(priceVal) || '';
-            const location = document.getElementById('home-location')?.value || '';
+            const country = document.getElementById('home-country')?.value || '';
+            const region = document.getElementById('home-region')?.value || '';
 
             let query = `?cat=${catSlug}`;
             if (make) query += `&make=${encodeURIComponent(make)}`;
@@ -442,7 +508,8 @@ function setupSearchForm() {
             if (year) query += `&yearFrom=${year}`;
             if (mileage) query += `&mileageTo=${mileage}`;
             if (price) query += `&priceTo=${price}`;
-            if (location) query += `&loc=${encodeURIComponent(location)}`;
+            if (country) query += `&country=${encodeURIComponent(country)}`;
+            if (region) query += `&region=${encodeURIComponent(region)}`;
 
             const target = homeSearchMode === 'drazbe' ? '/drazbe' : '/oglasi';
             window.location.hash = `${target}${query}`;

@@ -9,6 +9,7 @@ import { brandsFileFor } from '../data/brandFiles.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
 import { getModelBodyType, getModelVariants } from '../utils/bodyType.js';
+import { renderEquipmentChipsHtml } from '../data/equipment.js';
 import { COMMERCIAL_TAXONOMY, COMMERCIAL_BY_KEY } from '../data/commercialTaxonomy.js';
 import {
     MOTO_STROKE_OPTIONS,
@@ -49,6 +50,7 @@ export function initAdvancedSearchPage() {
     };
 
     injectRentalToggle(catContext);
+    populateEquipmentChips(catContext.cat || 'avto');
     applyCategoryContext(catContext);
     bindAccordions();
     bindSearchLogic(catContext);
@@ -111,6 +113,33 @@ function parseHashParams() {
     const qIndex = hash.indexOf('?');
     if (qIndex === -1) return new URLSearchParams();
     return new URLSearchParams(hash.slice(qIndex + 1));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Equipment chips — generated from equipment.js so the search filter and the
+// create-listing form stay in lockstep. Fills the car + moto chip containers in
+// the Oprema accordion. SportExhaust and the IMU sub-chips have bespoke UI in the
+// HTML, so they're excluded from the auto-render to avoid duplicate checkboxes.
+// ═══════════════════════════════════════════════════════════════════════════════
+const MOTO_BESPOKE_FEATURES = new Set([
+    'SportExhaust', 'IMU', 'TractionControl', 'AntiWheelie', 'CorneringABS', 'LinkedBraking',
+]);
+
+// The "car-only-field" equipment block is shown for every non-moto tab (avto,
+// gospodarska, prosti-cas, mehanizacija), so its chips are re-rendered to match
+// the active tab's category. Moto has its own block with bespoke controls.
+function populateEquipmentChips(category = 'avto') {
+    const carEl = document.getElementById('car-equipment-chips');
+    if (carEl && carEl.dataset.cat !== category) {
+        carEl.innerHTML = renderEquipmentChipsHtml(category, t);
+        carEl.dataset.cat = category;
+    }
+    const motoEl = document.getElementById('moto-equipment-chips');
+    if (motoEl && !motoEl.dataset.filled) {
+        motoEl.innerHTML = renderEquipmentChipsHtml('moto', t, { exclude: MOTO_BESPOKE_FEATURES });
+        motoEl.dataset.filled = '1';
+    }
+    if (window.lucide) window.lucide.createIcons();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -566,6 +595,7 @@ function bindSearchLogic(catContext) {
             activeTab = btn.dataset.tab;
             showGridForTab(activeTab);
             toggleVehicleSpecificFields(activeTab);
+            if (activeTab !== 'moto') populateEquipmentChips(activeTab);
             fetchBrandData(activeTab).then(applyRelevance);
 
             // Reset the search form to default

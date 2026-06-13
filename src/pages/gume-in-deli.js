@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════════════════════════
 // Gume in deli — parts & tires search — MojAvto.si
 // Two data sources merged into one result grid:
 //   1. Peer listings (rabljeni/novi deli & gume) posted by users — Firestore listings
@@ -732,7 +732,7 @@ function peerCard(l) {
                 <div class="gd-card-sub">${escHtml(subtitle)}</div>
                 <div class="gd-card-foot">
                     <span class="gd-card-price">${price != null ? fmtEur(price) : t('cl_label_call_for_price', 'Po dogovoru')}</span>
-                    ${l.location?.city ? `<span class="gd-card-loc"><i data-lucide="map-pin"></i> ${escHtml(l.location.city)}</span>` : ''}
+                    ${l.location?.region ? `<span class="gd-card-loc"><i data-lucide="map-pin"></i> ${escHtml(l.location.region)}</span>` : ''}
                 </div>
             </div>
         </a>`;

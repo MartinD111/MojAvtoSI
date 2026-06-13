@@ -85,7 +85,7 @@ export function initHeader() {
                       : `<i data-lucide="user"></i>`}
                     <span>${user.displayName?.split(' ')[0] || t('my_profile')}</span>
                   </button>
-                  <div id="userDropdown" class="glass-dropdown" style="background: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); border-radius: var(--md-sys-shape-corner-large);">
+                  <div id="userDropdown" class="glass-dropdown">
                     <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
                     <div class="dropdown-divider dropdown-publish-listing"></div>
                     <a href="#/dashboard"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
@@ -95,6 +95,11 @@ export function initHeader() {
                         <span><i data-lucide="scale"></i> ${t('compare_corner')}</span>
                         <span id="compareBadgeDropdown" class="compare-badge-small" style="display: none; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: 800;">0</span>
                     </a>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-lang-row">
+                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">🇸🇮 SL</button>
+                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">🇬🇧 EN</button>
+                    </div>
                     <div class="dropdown-divider"></div>
                     <button id="logoutBtn" class="dropdown-logout"><i data-lucide="log-out"></i> ${t('logout')}</button>
                     <a href="#/admin" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
@@ -109,20 +114,7 @@ export function initHeader() {
                 </a>
               `}
 
-              <!-- Language switcher -->
-              <div class="lang-switcher desktop-only-action" id="langSwitcher">
-                <button type="button" class="pill-btn secondary lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-label="${t('lang_select', 'Language')}">
-                  <i data-lucide="globe"></i>
-                  <span class="lang-current">${getCurrentLang().toUpperCase()}</span>
-                  <i data-lucide="chevron-down" class="lang-caret"></i>
-                </button>
-                <div class="glass-dropdown lang-dropdown" id="langDropdown" role="menu">
-                  <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl" role="menuitem">🇸🇮 Slovenščina</button>
-                  <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en" role="menuitem">🇬🇧 English</button>
-                </div>
-              </div>
-
-              <button class="pill-btn secondary btn-icon desktop-only-action" id="themeToggleBtn" aria-label="Preklopi temo" style="border-radius: 50%;">
+<button class="pill-btn secondary btn-icon desktop-only-action" id="themeToggleBtn" aria-label="Preklopi temo" style="border-radius: 50%;">
                 <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
               </button>
 
@@ -133,7 +125,7 @@ export function initHeader() {
                     ? `<img src="${user.photoURL}" alt="Profil" />`
                     : `<i data-lucide="user"></i>`}
                 </button>
-                <div id="mobileProfileDropdown" class="glass-dropdown mobile-profile-dropdown" style="background: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); border-radius: var(--md-sys-shape-corner-large);">
+                <div id="mobileProfileDropdown" class="glass-dropdown mobile-profile-dropdown">
                   ${user ? `
                     <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
                     <div class="dropdown-divider dropdown-publish-listing"></div>
@@ -185,23 +177,7 @@ export function initHeader() {
       render(user);
     });
 
-    // ── Language switcher ──
-    const langBtn = document.getElementById('langBtn');
-    const langDropdown = document.getElementById('langDropdown');
-    if (langBtn && langDropdown) {
-      langBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const open = langDropdown.classList.toggle('open');
-        langBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-      document.addEventListener('click', (e) => {
-        if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
-          langDropdown.classList.remove('open');
-          langBtn.setAttribute('aria-expanded', 'false');
-        }
-      });
-    }
-    // Delegate lang-option clicks (covers both desktop dropdown and mobile entries)
+    // Delegate lang-option clicks (covers desktop user dropdown and mobile entries)
     headerEl.querySelectorAll('.lang-option').forEach(opt => {
       opt.addEventListener('click', (e) => {
         e.stopPropagation();

@@ -1912,3 +1912,97 @@ body.dark-mode .cost-panel__breakdown-row span:last-child { color: #f1f5f9; }
     line-height: 1.5;
     margin: 0;
 }
+
+/* ── Equipment groups (per-category chip layout) ───────────────────────────── */
+.lp-eq-accordion .adv-acc-body.lp-eq-body {
+    display: none;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+}
+.lp-eq-accordion[data-open] .adv-acc-body.lp-eq-body,
+.lp-eq-accordion .adv-acc-body.lp-eq-body[style*="flex"] {
+    display: flex;
+}
+.lp-eq-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.lp-eq-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+body.dark-mode .lp-eq-group-header { color: #94a3b8; }
+.lp-eq-group-icon { width: 0.9rem; height: 0.9rem; stroke-width: 2; color: #7c3aed; flex-shrink: 0; }
+.lp-eq-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.lp-eq-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #334155;
+    background: rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    border-radius: 999px;
+    padding: 0.28rem 0.75rem;
+}
+.lp-eq-chip svg { width: 0.85rem; height: 0.85rem; stroke-width: 2; color: #2563eb; flex-shrink: 0; }
+.lp-eq-chip--custom {
+    background: rgba(124, 58, 237, 0.06);
+    border-color: rgba(124, 58, 237, 0.2);
+    color: #4c1d95;
+}
+body.dark-mode .lp-eq-chip { background: rgba(37,99,235,0.12); border-color: rgba(37,99,235,0.25); color: #cbd5e1; }
+body.dark-mode .lp-eq-chip--custom { background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.3); color: #c4b5fd; }
+.lp-eq-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    background: #2563eb;
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    margin-left: 0.3rem;
+}
+
+/* ── Owner edit bar ─────────────────────────────────────────────────────────── */
+.lp-owner-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(124,58,237,0.06));
+    border: 1.5px solid rgba(37,99,235,0.2);
+    border-radius: 1rem;
+    padding: 0.65rem 1.1rem;
+    margin-bottom: 1rem;
+}
+body.dark-mode .lp-owner-bar { background: rgba(37,99,235,0.12); border-color: rgba(37,99,235,0.3); }
+.lp-owner-bar-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e40af;
+}
+body.dark-mode .lp-owner-bar-label { color: #93c5fd; }
+.lp-owner-bar-label svg { width: 1rem; height: 1rem; }
+.lp-owner-bar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border-radius: 0.65rem;
+    padding: 0.45rem 1rem;
+    text-decoration: none;
+    transition: opacity 0.18s;
+}
+.lp-owner-bar-btn:hover { opacity: 0.88; }
+.lp-owner-bar-btn svg { width: 0.85rem; height: 0.85rem; }

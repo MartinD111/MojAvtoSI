@@ -360,15 +360,14 @@ body {
 }
 
 .nav-actions a[href="#/novi-oglas"].pill-btn.primary:hover {
-  width: 148px;
+  width: 172px;
   padding: 0 16px 0 12px;
   gap: 8px;
-  /* Restore gap on hover */
 }
 
 .nav-actions a[href="#/novi-oglas"].pill-btn.primary:hover span {
   opacity: 1;
-  max-width: 120px;
+  max-width: 150px;
 }
 
 /* Force Green Login Button for Header specifically */
@@ -717,6 +716,110 @@ body.dark-mode .compare-badge {
   min-width: 180px;
 }
 
+/* ── Home page lang dropdown ──────────────────────────────────────────────── */
+.home-lang-switcher {
+  position: relative;
+}
+
+.home-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px !important;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--bg-glass);
+  border: var(--border-glass);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+body.dark-mode .home-lang-btn {
+  color: #f1f5f9;
+}
+
+.home-lang-btn:hover {
+  background: #fff;
+  border-color: var(--color-primary-start);
+  color: var(--color-primary-start);
+}
+
+body.dark-mode .home-lang-btn:hover {
+  background: rgba(30, 41, 59, 1);
+  color: #fff;
+}
+
+.home-lang-btn .lang-caret {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.2s;
+}
+
+.home-lang-btn[aria-expanded="true"] .lang-caret {
+  transform: rotate(180deg);
+}
+
+.home-lang-dropdown {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  z-index: 200;
+}
+
+body.dark-mode .home-lang-dropdown {
+  background: #1e293b;
+  border-color: rgba(255,255,255,0.1);
+}
+
+.home-lang-dropdown.open {
+  display: block;
+}
+
+.home-lang-dropdown li a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+body.dark-mode .home-lang-dropdown li a {
+  color: #e2e8f0;
+}
+
+.home-lang-dropdown li a:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+body.dark-mode .home-lang-dropdown li a:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.home-lang-dropdown li a.active {
+  color: var(--color-primary-start);
+  font-weight: 700;
+  background: rgba(37,99,235,0.08);
+}
+
 .lang-option,
 .dropdown-lang-row .lang-option {
   display: flex;
@@ -805,6 +908,8 @@ body.dark-mode .lang-option:hover {
   min-width: 200px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
   z-index: 100;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .glass-dropdown.open {
@@ -814,6 +919,9 @@ body.dark-mode .lang-option:hover {
 }
 
 .glass-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 16px;
   border-radius: 8px;
   text-decoration: none;
@@ -1322,8 +1430,10 @@ body.dark-mode .mega-rental-toggle .toggle-slider-sm {
 }
 
 body.dark-mode .glass-dropdown {
-  background: var(--bg-glass);
+  background: #0f172a;
   border-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 body.dark-mode .m3-app-bar {
@@ -2923,7 +3033,7 @@ select:focus {
   }
 
   .main-search-card {
-    padding: 20px !important;
+    padding: 20px 20px 12px !important;
     max-width: 100% !important;
     box-sizing: border-box;
     margin: 0 auto;
@@ -6244,6 +6354,11 @@ body.dark-mode .filters-pill:hover {
     flex-wrap: wrap !important;
     flex-direction: row !important;
     gap: 0.4rem !important;
+    margin-bottom: 0 !important;
+  }
+
+  .search-grid {
+    margin-bottom: 12px;
   }
   .home-action-btns .reset-pill,
   .home-action-btns .filters-pill {
@@ -8753,8 +8868,9 @@ body.dark-mode .catalog-offers-title {
     gap: 0.75rem !important;
   }
 
-  /* Location label+input takes full width */
-  #homeSearchForm .search-grid > .form-group:last-child > div:first-child {
+  /* Location label+input takes full width (country + region) */
+  #homeSearchForm .search-grid > .form-group:last-child > div:first-child,
+  #homeSearchForm .search-grid > .form-group:last-child > div:nth-child(2) {
     width: 100% !important;
     flex: unset !important;
     align-items: center !important;

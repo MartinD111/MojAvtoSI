@@ -15,8 +15,10 @@ import { VEHICLE_CATEGORIES, getPartGroups, getPartTypes, getPartTypeLabel } fro
 import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, getEquipmentGroupLabel, EQUIPMENT_SIZES } from '../data/equipmentTypes.js';
 import { PLATFORM } from '../config/platform.js';
 import { scrollToTopOnMobile } from '../utils/viewport.js';
+import { COUNTRIES, getRegions } from '../data/locationData.js';
 import { AUCTION_PACKAGES } from '../services/auctionService.js';
 import { contractWidgetHtml, mountContractWidget, isContractComplete } from '../utils/auctionContract.js';
+import { openAiImportOverlay } from '../utils/aiListingImport.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -135,7 +137,7 @@ let state = {
     sellerNote: '',
     businessHours: {},
     leasingConditions: '',
-    location: { city: '', postalCode: '', region: '' },
+    location: { country: '', region: '' },
     contact: { name: '', phone: '', showPhone: false, email: '' },
     promotionTier: 'free',
 };
@@ -584,6 +586,7 @@ function renderCurrentStep() {
 }
 
 function goNext() {
+    _reviewEditSection = null;
     saveDraft(state);
     const active = getActiveSteps();
     if (state.currentStep < active.length - 1) {
@@ -593,6 +596,7 @@ function goNext() {
 }
 
 function goPrev() {
+    _reviewEditSection = null;
     saveDraft(state);
     if (state.currentStep > 0) {
         state.currentStep--;
@@ -601,6 +605,7 @@ function goPrev() {
 }
 
 function jumpToStep(id) {
+    _reviewEditSection = null;
     const active = getActiveSteps();
     const idx = active.findIndex(s => s.id === id);
     if (idx >= 0) {
@@ -615,17 +620,19 @@ function jumpToStep(id) {
 function listingModePillsHtml() {
     const vLabel = isNavtika() ? t('cl_mode_listing_navtika', 'Navaden oglas') : t('cl_mode_listing', 'Navaden oglas');
     return `
-        <div class="cl-mode-pills" role="tablist" aria-label="${t('cl_mode_label', 'Vrsta objave')}">
-            <button type="button" class="cl-mode-pill ${state.entryType !== 'auction' ? 'active' : ''}" data-mode="classic">
-                📄 ${vLabel}
-            </button>
-            <button type="button" class="cl-mode-pill ${state.entryType === 'auction' ? 'active' : ''}" data-mode="auction">
-                🔨 ${t('cl_mode_auction', 'Dražba')}
-            </button>
-        </div>
-        <p class="cl-mode-hint">${state.entryType === 'auction'
-            ? t('cl_mode_auction_hint', 'Dražba: 3 tedne 4,99 € ali 6 tednov 9,99 €. Na voljo le za vozila.')
-            : t('cl_mode_listing_hint', 'Standardni oglas s fiksno ali pogajalno ceno.')}</p>`;
+        <div class="cl-mode-pills-wrap">
+            <div class="cl-mode-pills" role="tablist" aria-label="${t('cl_mode_label', 'Vrsta objave')}">
+                <button type="button" class="cl-mode-pill ${state.entryType !== 'auction' ? 'active' : ''}" data-mode="classic">
+                    📄 ${vLabel}
+                </button>
+                <button type="button" class="cl-mode-pill ${state.entryType === 'auction' ? 'active' : ''}" data-mode="auction">
+                    🔨 ${t('cl_mode_auction', 'Dražba')}
+                </button>
+            </div>
+            <p class="cl-mode-hint">${state.entryType === 'auction'
+                ? t('cl_mode_auction_hint', 'Dražba: 3 tedne 4,99 € ali 6 tednov 9,99 €. Na voljo le za vozila.')
+                : t('cl_mode_listing_hint', 'Standardni oglas s fiksno ali pogajalno ceno.')}</p>
+        </div>`;
 }
 
 function bindModePills() {
@@ -695,6 +702,15 @@ function renderTypeSelectStep() {
                     <p class="cl-entry-card-desc">${t('cl_type_parts_desc', 'Nadomestni deli, pnevmatike, oprema.')}</p>
                 </div>
             </div>
+
+            <button type="button" class="cl-ai-launch ${state.entryType === 'auction' ? 'cl-ai-launch--disabled' : ''}" id="typeAiImport">
+                <span class="cl-ai-launch-icon">✨</span>
+                <span class="cl-ai-launch-text">
+                    <span class="cl-ai-launch-title">${t('cl_ai_launch_title', 'Že imate oglas?')} <span class="cl-ai-badge">${t('cl_ai_badge', 'Eksperimentalno')}</span></span>
+                    <span class="cl-ai-launch-desc">${t('cl_ai_launch_desc', 'Uvozite obstoječi oglas s pomočjo AI (ChatGPT / DeepSeek) — izpolnimo vse razen fotografij.')}</span>
+                </span>
+                <span class="cl-ai-launch-arrow">→</span>
+            </button>
         </div>
     `);
 
@@ -712,6 +728,55 @@ function renderTypeSelectStep() {
         state.category = 'deli';
         goNext();
     });
+
+    document.getElementById('typeAiImport').addEventListener('click', () => {
+        if (state.entryType === 'auction') return; // AI import is for standard vehicle listings
+        openAiImportOverlay({ onApply: applyAiImport });
+    });
+}
+
+// ── AI import ("Že imate oglas?") ─────────────────────────────────────────────
+// Receives a validated/sanitised partial from aiListingImport, overlays it onto
+// state, and drops the user on the photo step (photos must be uploaded manually).
+function applyAiImport(data, warnings) {
+    // Force a standard vehicle listing regardless of the entry path.
+    state.itemType = 'vehicle';
+    state.entryType = 'classic';
+    const proposedLinija = data._linijaProposed || '';
+    delete data._linijaProposed;
+    Object.assign(state, data);
+    if (!Array.isArray(state.equipment)) state.equipment = [];
+    if (!Array.isArray(state.customEquipment)) state.customEquipment = [];
+    state._customLinija = '';
+
+    const finish = (extraWarnings) => {
+        const all = [...(warnings || []), ...(extraWarnings || [])];
+        state._aiImported = true;
+        state._aiImportWarnings = all.length ? all : null;
+        saveDraft(state);
+        jumpToStep('media');
+    };
+
+    // Resolve the AI-provided linija against the per-brand known lines. If it's a
+    // known line we keep state.linija; otherwise it becomes a custom proposal that
+    // flows into taxonomy_proposals (admin approval), same as a manual entry.
+    if (proposedLinija && state.make) {
+        fetch('json/vehicle_lines.json')
+            .then(r => (r.ok ? r.json() : {}))
+            .then(map => {
+                const known = (map[state.make] || []);
+                const match = known.find(l => l.toLowerCase() === proposedLinija.toLowerCase());
+                if (match) { state.linija = match; finish(); }
+                else {
+                    state.linija = '';
+                    state._customLinija = proposedLinija;
+                    finish([`Linija «${proposedLinija}» še ni v sistemu — predlagana je v pregled uredništvu.`]);
+                }
+            })
+            .catch(() => { state.linija = ''; state._customLinija = proposedLinija; finish(); });
+        return;
+    }
+    finish();
 }
 
 // ── Step 1: Entry mode (vehicles only) ────────────────────────────────────────
@@ -3227,9 +3292,24 @@ function renderMediaStep() {
         : '';
     state._photoLostNotice = false;
 
+    let aiNotice = '';
+    if (state._aiImported) {
+        const warnHtml = (state._aiImportWarnings || []).length
+            ? `<ul style="margin:0.4rem 0 0;padding-left:1.1rem;">${state._aiImportWarnings.map(w => `<li>${escHtml(w)}</li>`).join('')}</ul>`
+            : '';
+        aiNotice = `<div style="background:#ecfdf5;border:1.5px solid #10b981;border-radius:0.75rem;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:#065f46;">
+               <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="flex-shrink:0;">✨</span>
+               <span><strong>${escHtml(`${state.make} ${state.model}`.trim())}</strong> ${t('cl_ai_imported_ok', 'je bil uvožen. Preverite vse korake in dodajte fotografije.')}</span></div>
+               ${warnHtml}
+           </div>`;
+        state._aiImported = false;
+        state._aiImportWarnings = null;
+    }
+
     setHtml(`
         <div class="cl-card">
             ${photoNotice}
+            ${aiNotice}
             <h2 class="cl-step-title">${t('cl_media_title')}</h2>
             <p class="cl-step-sub">${t('cl_media_sub')}</p>
 
@@ -3746,8 +3826,19 @@ function renderPriceStep() {
 
 // ── Step 9: Location & contact ────────────────────────────────────────────────
 function renderLocationStep() {
-    const regions = ['Osrednjeslovenska', 'Gorenjska', 'Podravska', 'Savinjska', 'Dolenjska', 'Obalno-kraška', 'Koroška', 'Pomurska', 'Zasavska', 'Posavska', 'Primorsko-notranjska', 'Goriška'];
     const isBusiness = state.sellerType === 'business';
+    const savedCountry = state.location?.country || '';
+    const savedRegion = state.location?.region || '';
+
+    const countryOptions = COUNTRIES.map(c =>
+        `<option value="${c.code}" ${savedCountry === c.code ? 'selected' : ''}>${c.label}</option>`
+    ).join('');
+
+    const regionOptions = savedCountry
+        ? getRegions(savedCountry).map(r =>
+            `<option value="${r}" ${savedRegion === r ? 'selected' : ''}>${r}</option>`
+          ).join('')
+        : '';
 
     const BH_DAYS = [
         { key: 'mon', label: t('cl_day_mon') },
@@ -3767,21 +3858,19 @@ function renderLocationStep() {
 
             <div class="cl-row">
                 <div class="cl-field">
-                    <label class="cl-label">${t('cl_label_city')} <span class="req">*</span></label>
-                    <input class="cl-input" id="fCity" type="text" value="${escHtml(state.location?.city || '')}" placeholder="${t('cl_placeholder_city')}" />
+                    <label class="cl-label">${t('cl_label_country')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fCountry">
+                        <option value="">${t('cl_sel_country')}</option>
+                        ${countryOptions}
+                    </select>
                 </div>
                 <div class="cl-field">
-                    <label class="cl-label">${t('cl_label_postal')}</label>
-                    <input class="cl-input" id="fPostal" type="text" value="${escHtml(state.location?.postalCode || '')}" placeholder="${t('cl_placeholder_postal')}" />
+                    <label class="cl-label">${t('cl_label_region')} <span class="req">*</span></label>
+                    <select class="cl-select" id="fRegion" ${savedCountry ? '' : 'disabled'}>
+                        <option value="">${t('cl_sel_region')}</option>
+                        ${regionOptions}
+                    </select>
                 </div>
-            </div>
-
-            <div class="cl-field">
-                <label class="cl-label">${t('cl_label_region')}</label>
-                <select class="cl-select" id="fRegion">
-                    <option value="">${t('cl_sel_region')}</option>
-                    ${regions.map(r => `<option value="${r}" ${state.location?.region === r ? 'selected' : ''}>${r}</option>`).join('')}
-                </select>
             </div>
 
             <hr style="border:none;border-top:1px solid rgba(0,0,0,0.07);margin:1.25rem 0;" />
@@ -3846,6 +3935,24 @@ function renderLocationStep() {
     initCustomSelects();
     if (window.lucide) window.lucide.createIcons();
 
+    // Country → region cascade
+    const fCountry = document.getElementById('fCountry');
+    const fRegion = document.getElementById('fRegion');
+    fCountry.addEventListener('change', () => {
+        const code = fCountry.value;
+        fRegion.innerHTML = `<option value="">${t('cl_sel_region')}</option>`;
+        if (code) {
+            getRegions(code).forEach(r => {
+                const o = document.createElement('option');
+                o.value = r; o.textContent = r;
+                fRegion.appendChild(o);
+            });
+            fRegion.disabled = false;
+        } else {
+            fRegion.disabled = true;
+        }
+    });
+
     // Wire business hours checkboxes
     if (isBusiness) {
         document.querySelectorAll('.bh-check').forEach(cb => {
@@ -3860,16 +3967,14 @@ function renderLocationStep() {
     }
 
     document.getElementById('btnLocNext').addEventListener('click', () => {
-        const city = document.getElementById('fCity').value.trim();
+        const country = document.getElementById('fCountry').value;
+        const region = document.getElementById('fRegion').value;
         const name = document.getElementById('fContactName').value.trim();
-        if (!city) return alert(t('cl_err_city'));
+        if (!country) return alert(t('cl_err_country'));
+        if (!region) return alert(t('cl_err_region'));
         if (!name) return alert(t('cl_err_contact_name'));
 
-        state.location = {
-            city,
-            postalCode: document.getElementById('fPostal').value.trim(),
-            region: document.getElementById('fRegion').value,
-        };
+        state.location = { country, region };
         state.contact = {
             name,
             phone: document.getElementById('fPhone').value.trim(),
@@ -3953,6 +4058,255 @@ function renderPromotionStep() {
 }
 
 // ── Step 11: Review ───────────────────────────────────────────────────────────
+// Inline-edit support: which review section is currently open as an editable form.
+// null = all sections read-only. Set by the ✎ button, cleared on Save/Cancel.
+let _reviewEditSection = null;
+
+// Option lists for inline edit selects (mirror the wizard's own step renderers).
+const REVIEW_OPT = {
+    condition: [
+        ['Rabljeno', 'cl_condition_used'], ['Novo', 'cl_condition_new'],
+        ['Razstavno vozilo', 'cl_condition_demo'], ['Starodobnik', 'cl_condition_classic'],
+        ['Za dele', 'cl_condition_for_parts'],
+    ],
+    color: ['Bela', 'Črna', 'Siva', 'Srebrna', 'Modra', 'Rdeča', 'Zelena', 'Rumena', 'Rjava', 'Oranžna', 'Vijolična', 'Zlata', 'Bronasta', 'Druga'],
+    fuel: [
+        ['Petrol', 'cl_fuel_petrol'], ['Dizel', 'cl_fuel_diesel'], ['Hibrid', 'cl_fuel_hybrid'],
+        ['Elektrika', 'cl_fuel_electric'], ['LPG', 'cl_fuel_lpg'], ['CNG', 'cl_fuel_cng'], ['Vodik', 'cl_fuel_hydrogen'],
+    ],
+    transmission: [['Ročni', 'cl_trans_manual'], ['Avtomatski', 'cl_trans_automatic'], ['Polavtomatski', 'cl_trans_semi']],
+    drive: [['FWD (sprednji)', 'cl_drive_fwd'], ['RWD (zadnji)', 'cl_drive_rwd'], ['AWD / 4x4', 'cl_drive_awd']],
+    emission: ['Euro 4', 'Euro 5', 'Euro 6', 'Euro 6d', 'Euro 6d-temp'],
+};
+
+const reviewEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// Build a <select> from a list of [value, i18nKey] pairs or plain strings.
+function reviewSelect(id, current, opts, placeholder) {
+    const optHtml = opts.map(o => {
+        const [v, lbl] = Array.isArray(o) ? [o[0], t(o[1], o[0])] : [o, o];
+        return `<option value="${reviewEsc(v)}" ${current === v ? 'selected' : ''}>${reviewEsc(lbl)}</option>`;
+    }).join('');
+    const ph = placeholder ? `<option value="">${reviewEsc(placeholder)}</option>` : '';
+    return `<select class="cl-select cl-redit-input" id="${id}">${ph}${optHtml}</select>`;
+}
+
+function reviewField(label, inputHtml) {
+    return `<div class="cl-redit-field"><label class="cl-redit-label">${reviewEsc(label)}</label>${inputHtml}</div>`;
+}
+
+function reviewTextInput(id, value, attrs = '') {
+    return `<input class="cl-input cl-redit-input" id="${id}" value="${reviewEsc(value)}" ${attrs} />`;
+}
+
+// Returns the inline edit-form HTML for a given vehicle section, or '' if that
+// section isn't inline-editable (falls back to jump-to-step).
+function reviewEditFormHtml(stepId) {
+    if (!isVehicleItem(state) || isNavtika()) return '';
+    switch (stepId) {
+        case 'category': {
+            // Category itself stays fixed (changing it would invalidate the flow);
+            // only the body-type subcategory is editable, scoped to that category.
+            const catEntry = CATEGORIES_AVTO.find(c => c.id === state.category);
+            const subOpts = (catEntry?.subs || []).map(s => [s.value, t(s.name, s.value)]);
+            const catLabel = catEntry ? t(catEntry.label, state.category) : state.category;
+            return `<div class="cl-redit-grid">
+                ${reviewField(t('cl_section_category'), `<div class="cl-redit-static">${reviewEsc(catLabel)}</div>`)}
+                ${reviewField(t('cl_label_subcategory', 'Podkategorija'), subOpts.length
+                    ? reviewSelect('reSubcategory', state.subcategory, subOpts, t('cl_sel_body_type', 'Izberite'))
+                    : reviewTextInput('reSubcategory', state.subcategory))}
+            </div>`;
+        }
+        case 'basic':
+            return `<div class="cl-redit-grid">
+                ${reviewField(t('cl_label_make'), reviewTextInput('reMake', state.make))}
+                ${reviewField(t('cl_label_model'), reviewTextInput('reModel', state.model))}
+                ${reviewField(t('cl_label_year'), reviewTextInput('reYear', state.year, 'type="number" min="1900" max="2100"'))}
+                ${reviewField(t('cl_label_mileage_review'), reviewTextInput('reMileage', state.mileageKm, 'type="number" min="0"'))}
+                ${reviewField(t('cl_label_condition'), reviewSelect('reCondition', state.condition, REVIEW_OPT.condition))}
+                ${reviewField(t('cl_label_color'), reviewSelect('reColor', state.color, REVIEW_OPT.color, t('cl_sel_color', 'Izberite barvo')))}
+            </div>`;
+        case 'technical':
+            return `<div class="cl-redit-grid">
+                ${reviewField(t('cl_label_fuel'), reviewSelect('reFuel', state.fuel, REVIEW_OPT.fuel, t('cl_sel_fuel', 'Izberite')))}
+                ${reviewField(t('cl_label_transmission'), reviewSelect('reTransmission', state.transmission, REVIEW_OPT.transmission, t('cl_sel_transmission', 'Izberite')))}
+                ${reviewField(t('cl_drive_label', 'Pogon'), reviewSelect('reDrive', state.driveType, REVIEW_OPT.drive, t('cl_sel_drive', 'Izberite')))}
+                ${reviewField(t('cl_label_power_review', 'Moč (kW)'), reviewTextInput('rePowerKw', state.powerKw, 'type="number" min="0"'))}
+                ${reviewField(t('cl_label_displacement_review', 'Prostornina (cc)'), reviewTextInput('reEngineCc', state.engineCc, 'type="number" min="0"'))}
+                ${reviewField(t('cl_label_emissions'), reviewSelect('reEmission', state.emissionClass, REVIEW_OPT.emission, t('cl_sel_emission', '—')))}
+                ${reviewField(t('cl_label_cons_combined', 'Poraba (komb.)'), reviewTextInput('reConsComb', state.fuelL100kmCombined, 'type="number" step="0.1" min="0"'))}
+                ${reviewField(t('cl_label_cons_city', 'Poraba (mesto)'), reviewTextInput('reConsCity', state.fuelL100kmCity, 'type="number" step="0.1" min="0"'))}
+                ${reviewField(t('cl_label_cons_highway', 'Poraba (avtocesta)'), reviewTextInput('reConsHwy', state.fuelL100kmHighway, 'type="number" step="0.1" min="0"'))}
+                ${reviewField(t('cl_label_range_review', 'Doseg (km)'), reviewTextInput('reRange', state.rangeKm, 'type="number" min="0"'))}
+            </div>`;
+        case 'price':
+            return `<div class="cl-redit-grid">
+                ${reviewField(t('cl_section_price'), reviewTextInput('rePrice', state.priceEur, 'type="number" min="0"'))}
+                ${reviewField(t('cl_label_negotiable'), `<label class="cl-redit-check"><input type="checkbox" id="reNegotiable" ${state.priceNegotiable ? 'checked' : ''}/> ${t('cl_val_yes')}</label>`)}
+                ${reviewField(t('cl_label_call_for_price', 'Cena po dogovoru'), `<label class="cl-redit-check"><input type="checkbox" id="reCallForPrice" ${state.callForPrice ? 'checked' : ''}/> ${t('cl_val_yes')}</label>`)}
+            </div>`;
+        case 'location':
+            return `<div class="cl-redit-grid">
+                ${reviewField(t('cl_label_country'), reviewSelect('reCountry', state.location?.country || '', COUNTRIES.map(c => [c.code, c.label]), t('cl_sel_country', 'Izberite')))}
+                ${reviewField(t('cl_label_region'), `<select class="cl-select cl-redit-input" id="reRegion"><option value="">${t('cl_sel_region', 'Izberite')}</option></select>`)}
+                ${reviewField(t('cl_label_contact'), reviewTextInput('reContact', state.contact?.name || ''))}
+            </div>`;
+        case 'promotion':
+            return `<div class="cl-redit-grid">
+                ${reviewField(t('cl_label_tier'), reviewSelect('reTier', state.promotionTier, [['free', t('cl_tier_free')], ['homepage', t('cl_tier_featured')], ['sponsored', t('cl_tier_sponsored')]]))}
+            </div>`;
+        default:
+            return '';
+    }
+}
+
+// After a section's edit form is mounted, wire any dynamic behaviour (region list).
+function wireReviewEditForm(stepId) {
+    if (stepId === 'location') {
+        const countrySel = document.getElementById('reCountry');
+        const regionSel = document.getElementById('reRegion');
+        const fillRegions = (code) => {
+            if (!regionSel) return;
+            const regions = getRegions(code) || [];
+            regionSel.innerHTML = `<option value="">${t('cl_sel_region', 'Izberite')}</option>` +
+                regions.map(r => `<option value="${reviewEsc(r)}" ${state.location?.region === r ? 'selected' : ''}>${reviewEsc(r)}</option>`).join('');
+        };
+        fillRegions(state.location?.country || '');
+        countrySel?.addEventListener('change', () => fillRegions(countrySel.value));
+    }
+}
+
+// Read the inline form's inputs back into state. Returns false if validation fails.
+function saveReviewEdit(stepId) {
+    const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    const checked = id => { const el = document.getElementById(id); return !!(el && el.checked); };
+    switch (stepId) {
+        case 'category':
+            state.subcategory = val('reSubcategory');
+            state.bodyType = state.subcategory;
+            break;
+        case 'basic':
+            state.make = val('reMake');
+            state.model = val('reModel');
+            state.year = val('reYear');
+            state.mileageKm = val('reMileage');
+            state.condition = val('reCondition');
+            state.color = val('reColor');
+            break;
+        case 'technical':
+            state.fuel = val('reFuel');
+            state.transmission = val('reTransmission');
+            state.driveType = val('reDrive');
+            state.powerKw = val('rePowerKw');
+            state.engineCc = val('reEngineCc');
+            state.emissionClass = val('reEmission');
+            state.fuelL100kmCombined = val('reConsComb');
+            state.fuelL100kmCity = val('reConsCity');
+            state.fuelL100kmHighway = val('reConsHwy');
+            state.rangeKm = val('reRange');
+            break;
+        case 'price':
+            state.priceEur = val('rePrice');
+            state.priceNegotiable = checked('reNegotiable');
+            state.callForPrice = checked('reCallForPrice');
+            break;
+        case 'location':
+            if (!state.location) state.location = {};
+            state.location.country = val('reCountry');
+            state.location.region = val('reRegion');
+            if (!state.contact) state.contact = {};
+            state.contact.name = val('reContact');
+            break;
+        case 'promotion':
+            state.promotionTier = val('reTier') || 'free';
+            break;
+        case 'equipment':
+            // Equipment is edited via live chip toggles that already mutate state.
+            break;
+    }
+    saveDraft(state);
+    return true;
+}
+
+// Equipment block for the review step — grouped known features + custom (pending)
+// chips. Read-only by default; inline-editable (live chip toggles) when its ✎ is
+// clicked. Always rendered for vehicles so the user can add equipment even when none
+// is set yet.
+function reviewEquipmentSection() {
+    const eq = Array.isArray(state.equipment) ? state.equipment : [];
+    const custom = Array.isArray(state.customEquipment) ? state.customEquipment : [];
+    const esc = reviewEsc;
+    const editing = _reviewEditSection === 'equipment';
+    const total = eq.length + custom.length;
+
+    if (!editing && total === 0) {
+        // Nothing selected — still show the section with an Add affordance.
+        return `
+        <div class="cl-review-section">
+            <div class="cl-review-section-header">
+                <span class="cl-review-section-title">${t('cl_eq_title', 'Oprema in dodatki')}</span>
+                <button class="cl-review-edit-btn" data-redit-open="equipment">✎ ${t('cl_btn_edit')}</button>
+            </div>
+            <div class="cl-review-eq-empty">${t('cl_eq_none', 'Ni izbrane opreme.')}</div>
+        </div>`;
+    }
+
+    if (editing) {
+        // Editable: every group's full item set as toggle chips + custom add/remove.
+        const groups = getEquipmentForCategory(state.category);
+        const groupBlocks = groups.map(g => {
+            const chips = g.items.map(i => `
+                <button type="button" class="cl-review-eq-chip cl-review-eq-chip--toggle ${eq.includes(i.value) ? 'active' : ''}" data-eq-toggle="${esc(i.value)}">${esc(t(i.label, i.value))}</button>`).join('');
+            const customInGroup = custom.filter(ce => ce.category === g.id);
+            const customChipsHtml = customInGroup.map(ce => `
+                <span class="cl-review-eq-chip cl-review-eq-chip--custom active">${esc(ce.value)}<span class="cl-review-eq-remove" data-eq-custom-remove="${esc(ce.value)}" data-eq-custom-cat="${esc(g.id)}">×</span></span>`).join('');
+            return `<div class="cl-review-eq-group">
+                <span class="cl-review-eq-group-label"><i data-lucide="${g.icon}"></i> ${esc(t(g.label, g.id))}</span>
+                <div class="cl-review-eq-chips">${chips}${customChipsHtml}
+                    <button type="button" class="cl-review-eq-addcustom" data-eq-add-custom="${esc(g.id)}">+ ${t('cl_eq_add_custom', 'Dodaj lastno')}</button>
+                </div>
+            </div>`;
+        }).join('');
+        return `
+        <div class="cl-review-section cl-review-section--editing">
+            <div class="cl-review-section-header">
+                <span class="cl-review-section-title">${t('cl_eq_title', 'Oprema in dodatki')} <span class="cl-review-eq-count">${total}</span></span>
+            </div>
+            <div class="cl-review-eq-body">${groupBlocks}</div>
+            <div class="cl-redit-actions">
+                <button class="cl-btn cl-btn--sm cl-btn--primary" data-redit-cancel>${t('cl_done', 'Končano')}</button>
+            </div>
+        </div>`;
+    }
+
+    // Read-only view.
+    const groupBlocks = EQUIPMENT_GROUPS.map(g => {
+        const items = g.items.filter(i => eq.includes(i.value));
+        if (!items.length) return '';
+        const chips = items.map(i => `<span class="cl-review-eq-chip">${esc(t(i.label, i.value))}</span>`).join('');
+        return `<div class="cl-review-eq-group">
+            <span class="cl-review-eq-group-label"><i data-lucide="${g.icon}"></i> ${esc(t(g.label, g.id))}</span>
+            <div class="cl-review-eq-chips">${chips}</div>
+        </div>`;
+    }).filter(Boolean).join('');
+
+    const customChips = custom.length
+        ? `<div class="cl-review-eq-group">
+            <span class="cl-review-eq-group-label"><i data-lucide="plus-circle"></i> ${t('cl_eq_custom_pending', 'Dodatna oprema (v pregledu)')}</span>
+            <div class="cl-review-eq-chips">${custom.map(ce => `<span class="cl-review-eq-chip cl-review-eq-chip--custom">${esc(ce.value || '')}</span>`).join('')}</div>
+        </div>`
+        : '';
+
+    return `
+        <div class="cl-review-section">
+            <div class="cl-review-section-header">
+                <span class="cl-review-section-title">${t('cl_eq_title', 'Oprema in dodatki')} <span class="cl-review-eq-count">${total}</span></span>
+                <button class="cl-review-edit-btn" data-redit-open="equipment">✎ ${t('cl_btn_edit')}</button>
+            </div>
+            <div class="cl-review-eq-body">${groupBlocks}${customChips}</div>
+        </div>`;
+}
+
 function renderReviewStep() {
     const fmt = n => new Intl.NumberFormat(getCurrentLang() === 'sl' ? 'sl-SI' : 'en-US').format(n);
     const tierLabels = { free: t('cl_tier_free'), homepage: t('cl_tier_featured'), sponsored: t('cl_tier_sponsored') };
@@ -3962,16 +4316,38 @@ function renderReviewStep() {
         : '';
 
     function section(title, stepId, rows) {
+        // Inline-editable sections (vehicle, non-navtika) render a form when active;
+        // everything else keeps the jump-to-step ✎ button.
+        const inlineForm = reviewEditFormHtml(stepId);
+        const canInline = inlineForm !== '';
+
+        if (canInline && _reviewEditSection === stepId) {
+            return `
+            <div class="cl-review-section cl-review-section--editing">
+                <div class="cl-review-section-header">
+                    <span class="cl-review-section-title">${title}</span>
+                </div>
+                ${inlineForm}
+                <div class="cl-redit-actions">
+                    <button class="cl-btn cl-btn--sm cl-btn--ghost" data-redit-cancel>${t('cl_cancel', 'Prekliči')}</button>
+                    <button class="cl-btn cl-btn--sm cl-btn--primary" data-redit-save="${stepId}">${t('cl_save', 'Shrani')}</button>
+                </div>
+            </div>`;
+        }
+
         const items = rows.filter(([, v]) => v).map(([l, v]) => `
             <div class="cl-review-item">
                 <span class="cl-review-item-label">${l}</span>
                 <span class="cl-review-item-value">${escHtml(String(v))}</span>
             </div>`).join('');
+        const editBtn = canInline
+            ? `<button class="cl-review-edit-btn" data-redit-open="${stepId}">✎ ${t('cl_btn_edit')}</button>`
+            : `<button class="cl-review-edit-btn" data-jump="${stepId}">✎ ${t('cl_btn_edit')}</button>`;
         return `
             <div class="cl-review-section">
                 <div class="cl-review-section-header">
                     <span class="cl-review-section-title">${title}</span>
-                    <button class="cl-review-edit-btn" data-jump="${stepId}">✎ ${t('cl_btn_edit')}</button>
+                    ${editBtn}
                 </div>
                 <div class="cl-review-grid">${items}</div>
             </div>`;
@@ -4035,6 +4411,8 @@ function renderReviewStep() {
         [t('cl_label_emissions'), state.emissionClass],
     ]) : ''}
 
+            ${isVehicleItem(state) ? reviewEquipmentSection() : ''}
+
             ${isPartItem(state) ? section(t('cl_step_part_details', 'Podatki o delu'), 'partDetails', [
         [t('gd_part_group', 'Sklop'), (getPartGroups(state.vehicleCategory).find(g => g.value === state.partGroup) || {}).label],
         [t('gd_part_type', 'Vrsta dela'), state.partTypeLabel || state.partType],
@@ -4073,7 +4451,7 @@ function renderReviewStep() {
     ])}
 
             ${section(t('cl_section_location'), 'location', [
-        [t('cl_label_city'), state.location?.city],
+        [t('cl_label_country'), COUNTRIES.find(c => c.code === state.location?.country)?.label || state.location?.country],
         [t('cl_label_region'), state.location?.region],
         [t('cl_label_contact'), state.contact?.name],
     ])}
@@ -4089,9 +4467,82 @@ function renderReviewStep() {
         </div>
     `);
 
+    if (window.lucide) window.lucide.createIcons();
+
     document.querySelectorAll('[data-jump]').forEach(btn => {
         btn.addEventListener('click', () => jumpToStep(btn.dataset.jump));
     });
+
+    // ── Inline review editing ──
+    // Open a section's edit form (scrolls it into view after re-render).
+    document.querySelectorAll('[data-redit-open]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            _reviewEditSection = btn.dataset.reditOpen;
+            renderReviewStep();
+        });
+    });
+    // Cancel: discard the open form and re-render read-only.
+    document.querySelectorAll('[data-redit-cancel]').forEach(btn => {
+        btn.addEventListener('click', () => { _reviewEditSection = null; renderReviewStep(); });
+    });
+    // Save: write inputs back to state, then re-render read-only.
+    document.querySelectorAll('[data-redit-save]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (saveReviewEdit(btn.dataset.reditSave) !== false) {
+                _reviewEditSection = null;
+                renderReviewStep();
+            }
+        });
+    });
+
+    // Wire any dynamic behaviour inside the currently-open form (e.g. region list).
+    if (_reviewEditSection) wireReviewEditForm(_reviewEditSection);
+
+    // Equipment inline editing — live chip toggles mutate state immediately.
+    document.querySelectorAll('[data-eq-toggle]').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const v = chip.dataset.eqToggle;
+            if (!Array.isArray(state.equipment)) state.equipment = [];
+            if (state.equipment.includes(v)) {
+                state.equipment = state.equipment.filter(x => x !== v);
+                chip.classList.remove('active');
+            } else {
+                state.equipment = [...state.equipment, v];
+                chip.classList.add('active');
+            }
+            saveDraft(state);
+            updateReviewEqCount();
+        });
+    });
+    document.querySelectorAll('[data-eq-add-custom]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const cat = btn.dataset.eqAddCustom;
+            const val = (window.prompt(t('cl_eq_custom_placeholder', 'Vnesite ime opreme')) || '').trim();
+            if (!val) return;
+            if (!Array.isArray(state.customEquipment)) state.customEquipment = [];
+            if (!state.customEquipment.some(ce => ce.category === cat && ce.value.toLowerCase() === val.toLowerCase())) {
+                state.customEquipment = [...state.customEquipment, { category: cat, value: val }];
+                saveDraft(state);
+            }
+            renderReviewStep();
+        });
+    });
+    document.querySelectorAll('[data-eq-custom-remove]').forEach(span => {
+        span.addEventListener('click', e => {
+            e.stopPropagation();
+            const v = span.dataset.eqCustomRemove;
+            const cat = span.dataset.eqCustomCat;
+            state.customEquipment = (state.customEquipment || []).filter(ce => !(ce.category === cat && ce.value === v));
+            saveDraft(state);
+            renderReviewStep();
+        });
+    });
+
+    // Keep the open section visible after a re-render triggered by an edit click.
+    if (_reviewEditSection) {
+        const openSection = document.querySelector('.cl-review-section--editing');
+        openSection?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
 
     document.getElementById('btnRevBack').addEventListener('click', goPrev);
     document.getElementById('btnRevNext').addEventListener('click', () => {
@@ -4101,6 +4552,13 @@ function renderReviewStep() {
             goNext(); // go to auth step
         }
     });
+}
+
+// Update the equipment count badge live during inline chip toggling.
+function updateReviewEqCount() {
+    const eq = Array.isArray(state.equipment) ? state.equipment : [];
+    const custom = Array.isArray(state.customEquipment) ? state.customEquipment : [];
+    document.querySelectorAll('.cl-review-eq-count').forEach(el => { el.textContent = String(eq.length + custom.length); });
 }
 
 // ── Step 12: Auth ─────────────────────────────────────────────────────────────

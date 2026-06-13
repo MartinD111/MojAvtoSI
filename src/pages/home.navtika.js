@@ -9,13 +9,60 @@ import { t } from '../core/i18n.js';
 import { initWordSlider } from './home.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 
+const SEA_JOKES = {
+    sl: [
+        { text: '🚤 Najboljše ime za čoln je "Manjka meter"', sub: 'ker manjka vedno en meter do kaj.' },
+        { text: '⚓ "Štart ob 9" – pristane ob 17', sub: 'Morski čas je edini urnik, ki ga nihče ne spoštuje.' },
+        { text: '🌊 "Banka na vodi"', sub: 'Čoln je luknja v morju, v katero greš met denar.' },
+        { text: '🦈 "Neizplačana Hipoteka"', sub: 'Vsak lastnik čolna jo pozna.' },
+        { text: '🪝 "Vikend Projekt"', sub: 'Popravil ga bom naslednji vikend. In naslednji. In...' },
+        { text: '⛵ "Moja Terapevtka"', sub: 'Cenejša od psihologa – razen vzdrževanja.' },
+        { text: '🐟 "Ribe Niso Doma"', sub: 'Optimistično ime za realiste.' },
+        { text: '🌅 "Jutri Odplujemo"', sub: 'Jadralec ve, da je jutri vedno malo preveč vetra.' },
+        { text: '⚡ "Brez Bencina"', sub: 'Klasika. Vedno se zgodi ravno na sredini jezera.' },
+        { text: '🗺️ "GPS Je Goljuf"', sub: 'Kje pa je zdaj ta plaža? Tu piše tu!' },
+        { text: '🍺 "Dve Pivi Do Pristanišča"', sub: 'Uradna merska enota za razdaljo na morju.' },
+    ],
+    en: [
+        { text: '🌊 Why don\'t boats ever get stressed?', sub: 'They just go with the flow.' },
+        { text: '😂 What do you call a boat that tells jokes?', sub: 'A laugh yacht.' },
+        { text: '✏️ Why did the sailor bring a pencil on board?', sub: 'In case he needed to draw the anchor.' },
+        { text: '🏥 What do boats do when they\'re sick?', sub: 'They visit the dock-tor.' },
+        { text: '📚 Why was the boat so good at school?', sub: 'It always stayed afloat in class.' },
+        { text: '🗣️ What did one boat say to the other?', sub: '"Are you shore about that?"' },
+        { text: '🏴‍☠️ Why couldn\'t the pirate learn the alphabet?', sub: 'He kept getting lost at C.' },
+        { text: '🎵 What\'s a boat\'s favorite type of music?', sub: 'Anything with a good current beat.' },
+        { text: '🎶 Why did the fisherman get kicked out of the orchestra?', sub: 'He kept casting instead of conducting.' },
+        { text: '😬 What do you call a nervous boat?', sub: 'A jitter-ship.' },
+        { text: '💔 Why did the sailboat break up with the motorboat?', sub: 'It felt the relationship was going nowhere fast.' },
+        { text: '👋 How do boats say goodbye?', sub: '"Sea you later!"' },
+        { text: '🤝 What kind of boat never sinks?', sub: 'A friendship.' },
+        { text: '😎 Why was the captain always calm?', sub: 'He knew how to weather any situation.' },
+        { text: '😤 What do you call a boat full of rude people?', sub: 'A discourtesy vessel.' },
+        { text: '😳 Why did the yacht blush?', sub: 'It saw the ocean\'s bottom.' },
+        { text: '🥣 What do sailors eat for breakfast?', sub: 'Captain Crunch.' },
+        { text: '🤫 Why are boats terrible at keeping secrets?', sub: 'They always leak something.' },
+        { text: '📈 What happened when the boat got promoted?', sub: 'It rose through the ranks of the fleet.' },
+        { text: '💸 Why did the boat apply for a loan?', sub: 'It was a little underwater.' },
+    ],
+};
+
+function initSeaJoke() {
+    const jokes = SEA_JOKES.en;
+    const joke = jokes[Math.floor(Math.random() * jokes.length)];
+    const el = document.getElementById('seaJokeText');
+    const sub = document.getElementById('seaJokeQuote');
+    if (el) el.textContent = joke.text;
+    if (sub) sub.textContent = joke.sub;
+}
+
 export async function initNavtikaHomePage() {
     console.log('[NavtikaHome] init');
 
     fillCategorySelect();
     initCustomSelects();
     bindSearch();
-    initWordSlider();
+    initSeaJoke();
 
     try {
         const listings = await getListings();

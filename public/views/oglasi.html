@@ -63,14 +63,22 @@
                 color: #ffffff !important;
             }
             #sidebarFiltersForm .adv-acc-body {
-                padding: 0.75rem 1rem 1rem 1rem !important;
-                padding-top: 0.5rem !important;
+                padding: 0 !important;
                 display: flex;
                 flex-direction: column;
-                gap: 0.5rem !important; /* Minimal spacing between inputs */
-                border-top: 1px solid rgba(0, 0, 0, 0.04);
+                gap: 0 !important;
+                border-top: none;
             }
-            body.dark-mode #sidebarFiltersForm .adv-acc-body {
+            #sidebarFiltersForm .adv-acc-body-inner {
+                padding: 0.5rem 1rem 1rem 1rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.04);
+                width: 100%;
+                box-sizing: border-box;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-body-inner {
                 border-top-color: rgba(255, 255, 255, 0.04);
             }
             #sidebarFiltersForm .form-group {
@@ -121,6 +129,8 @@
             .acc-filter-summary {
                 display: inline-flex;
                 align-items: center;
+                width: 100%;
+                justify-content: center;
                 font-size: 0.72rem;
                 font-weight: 600;
                 color: #ffffff;
@@ -132,12 +142,14 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
                 pointer-events: none;
+                max-width: fit-content;
+                margin: 0 auto;
             }
         </style>
 
         <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
         <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
-            <span><i data-lucide="sliders-horizontal"></i> Filtri</span>
+            <span class="mft-label"><i data-lucide="sliders-horizontal"></i> Filtri</span>
             <i data-lucide="chevron-down" class="mft-chevron"></i>
         </button>
 
@@ -159,7 +171,8 @@
                             <span class="acc-filter-summary" id="summaryOsnovni" style="display:none;"></span>
                         </button>
                     </div>
-                    <div class="adv-acc-body" style="display:none;">
+                    <div class="adv-acc-body" style="display:flex;">
+                        <div class="adv-acc-body-inner">
                         <!-- Znamka -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="make">Znamka</label>
@@ -227,6 +240,7 @@
                                 <input type="checkbox" id="sidebarShowNoPrice" name="showNoPrice" checked style="margin:0;"> Prikaži oglase brez cene
                             </label>
                         </div>
+                        </div><!-- /adv-acc-body-inner -->
                     </div>
                 </div>
 
@@ -239,7 +253,8 @@
                             <span class="acc-filter-summary" id="summaryCena" style="display:none;"></span>
                         </button>
                     </div>
-                    <div class="adv-acc-body" style="display:none;">
+                    <div class="adv-acc-body" style="display:flex;">
+                        <div class="adv-acc-body-inner">
                         <!-- Letnik od / do -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Letnik</label>
@@ -258,6 +273,7 @@
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Cena do (€)</label>
                             <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20.000 €" class="pill-input js-format-number" style="width:100%; box-sizing:border-box;" inputmode="numeric">
                         </div>
+                        </div><!-- /adv-acc-body-inner -->
                     </div>
                 </div>
 
@@ -270,7 +286,8 @@
                             <span class="acc-filter-summary" id="summaryMotor" style="display:none;"></span>
                         </button>
                     </div>
-                    <div class="adv-acc-body" style="display:none;">
+                    <div class="adv-acc-body" style="display:flex;">
+                        <div class="adv-acc-body-inner">
                         <!-- Gorivo -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Gorivo</label>
@@ -420,6 +437,7 @@
                                 <option value="Drugo">Drugo</option>
                             </select>
                         </div>
+                        </div><!-- /adv-acc-body-inner -->
                     </div>
                 </div>
 
@@ -432,7 +450,8 @@
                             <span class="acc-filter-summary" id="summaryProdajalec" style="display:none;"></span>
                         </button>
                     </div>
-                    <div class="adv-acc-body" style="display:none;">
+                    <div class="adv-acc-body" style="display:flex;">
+                        <div class="adv-acc-body-inner">
                         <!-- Tip prodajalca -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Tip prodajalca</label>
@@ -443,25 +462,19 @@
                             </select>
                         </div>
 
-                        <!-- Lokacija (Regija) -->
+                        <!-- Lokacija: Država + Regija -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Lokacija / Regija</label>
-                            <select id="sidebarRegion" name="region" class="glass-select">
-                                <option value="">Vse regije</option>
-                                <option value="Osrednjeslovenska">Osrednjeslovenska</option>
-                                <option value="Podravska">Podravska</option>
-                                <option value="Savinjska">Savinjska</option>
-                                <option value="Gorenjska">Gorenjska</option>
-                                <option value="Obalno-kraška">Obalno-kraška</option>
-                                <option value="Pomurska">Pomurska</option>
-                                <option value="Koroška">Koroška</option>
-                                <option value="Zasavska">Zasavska</option>
-                                <option value="Posavska">Posavska</option>
-                                <option value="Primorsko-notranjska">Primorsko-notranjska</option>
-                                <option value="Goriška">Goriška</option>
-                                <option value="Jugovzhodna Slovenija">Jugovzhodna Slovenija</option>
-                            </select>
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Lokacija</label>
+                            <div style="display:flex; gap:0.4rem; width:100%;">
+                                <select id="sidebarCountry" name="country" class="glass-select" style="flex:1; min-width:0;">
+                                    <option value="">Vse države</option>
+                                </select>
+                                <select id="sidebarRegion" name="region" class="glass-select" style="flex:1; min-width:0;">
+                                    <option value="">Vse regije</option>
+                                </select>
+                            </div>
                         </div>
+                        </div><!-- /adv-acc-body-inner -->
                     </div>
                 </div>
 

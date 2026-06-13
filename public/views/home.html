@@ -1,6 +1,5 @@
 <div class="home-container">
     <div class="glass-hero">
-        <img src="images/rav4.png" alt="RAV4" class="hero-car-img hero-car-img--left">
         <h1 class="hero-title">
             <div class="hero-title-line1">
                 <span data-i18n-key="hero_let_your_next">Let your next</span>
@@ -51,7 +50,6 @@
                 <span class="text-gradient" data-i18n-key="hero_find_you">find you</span>
             </div>
         </h1>
-        <img src="images/glc.avif" alt="GLC" class="hero-car-img">
     </div>
 
     <div class="home-search-mode" id="homeSearchMode">
@@ -143,17 +141,22 @@
                     </div>
                 </div>
                 <div class="form-group" style="grid-column: span 3; flex-direction: row; align-items: flex-end; gap: 0.75rem;">
-                    <!-- Location Pill and its centered Label -->
-                    <div style="flex: 3.5; display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                        <label for="home-location" style="display: block; font-size: 0.8125rem; font-weight: 400; text-transform: none; letter-spacing: 0; margin-bottom: 0;" data-i18n-key="form_city_zip">Kraj ali poštna številka</label>
-                        <div class="pill-input-wrapper" style="width: 100%;">
-                            <input type="text" id="home-location" name="location" class="pill-input"
-                                placeholder="Enter city or ZIP code" data-i18n-key="placeholder_city_zip" data-i18n-target="placeholder">
-                            <i data-lucide="navigation" class="input-icon-right"></i>
+                    <!-- Country pill -->
+                    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                        <label for="home-country" style="display: block; font-size: 0.8125rem; font-weight: 400; text-transform: none; letter-spacing: 0; margin-bottom: 0;" data-i18n-key="cl_label_country">Država</label>
+                        <div class="pill-select-wrapper" style="width: 100%;">
+                            <select id="home-country" name="country" class="pill-input"></select>
+                        </div>
+                    </div>
+                    <!-- Region pill -->
+                    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                        <label for="home-region" style="display: block; font-size: 0.8125rem; font-weight: 400; text-transform: none; letter-spacing: 0; margin-bottom: 0;" data-i18n-key="cl_label_region">Regija</label>
+                        <div class="pill-select-wrapper" style="width: 100%;">
+                            <select id="home-region" name="region" class="pill-input" disabled></select>
                         </div>
                     </div>
                     <!-- Action buttons to the right -->
-                    <div class="home-action-btns" style="flex: 2.5; display: flex; gap: 0.4rem; align-items: center;">
+                    <div class="home-action-btns" style="flex: 2.5; display: flex; gap: 0.4rem; align-items: center; margin-left: 0.75rem;">
                         <button type="reset" class="pill-btn search-action-pill reset-pill" title="Reset filters">
                             <i data-lucide="refresh-cw"></i>
                             <span>Reset</span>
