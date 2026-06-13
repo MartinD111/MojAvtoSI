@@ -209,7 +209,7 @@ async function checkFavouriteStates() {
 }
 
 // ── Render Car Card ──────────────────────────────────────────
-function renderCarCard(car) {
+export function renderCarCard(car, auction = null) {
     const inCompare = isInCompare(car.id);
     // Display logic: 1st exterior and 1st interior if available, otherwise first 2 images
     let displayImages = [];
@@ -265,6 +265,11 @@ function renderCarCard(car) {
             
             ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
             ${car.condition ? `<span class="condition-overlay-badge" data-condition="${car.condition}">${car.condition}</span>` : ''}
+            
+            ${(auction || car.entryType === 'auction') ? `
+                <span class="drazba-card-timer" data-ends="${(auction?.endsAt || car.endsAt) ? new Date(auction?.endsAt || car.endsAt).getTime() : ''}">—</span>
+                ${(auction?.bidCount > 0) ? `<span class="drazba-card-live">● V ŽIVO</span>` : ''}
+            ` : ''}
 
             ${images.length > 1 ? `
                 <div class="listing-carousel-dots">
@@ -287,7 +292,7 @@ function renderCarCard(car) {
                         <span class="vehicle-title-make-model">${car.make || car.title} ${car.make ? (car.model || '') : ''}</span>
                         ${(car.make && car.variant) ? `<span class="vehicle-title-variant">${car.variant}</span>` : ''}
                     </h2>
-                    <span class="spec-pill condition-pill">${car.condition}</span>
+
                 </div>
                 
                 <div class="car-price-box">
@@ -436,10 +441,18 @@ window.showContactPopup = function (carId) {
 
 // ── Render All Listings ──────────────────────────────────────
 function renderListings(cars) {
+    if (_drazbeRenderOverride) {
+        _drazbeRenderOverride(cars);
+        return;
+    }
     const container = document.getElementById('carListingsContainer');
     if (!container) return;
-    container.innerHTML = cars.map(renderCarCard).join('');
+    container.innerHTML = cars.map(c => renderCarCard(c)).join('');
+    bindCardEvents(container, cars);
+}
 
+// ── Bind Card Events ─────────────────────────────────────────
+export function bindCardEvents(container, cars) {
     if (window.lucide) window.lucide.createIcons();
     applyPowerUnit(currentPowerUnit);
 
@@ -449,7 +462,14 @@ function renderListings(cars) {
             if (e.target.closest('.pill-btn') || e.target.closest('.action-pill-btn') ||
                 e.target.closest('.action-circle-btn') ||
                 e.target.closest('.carousel-btn') || e.target.closest('.carousel-dots')) return;
-            window.location.hash = `#/oglas?id=${card.getAttribute('data-car-id')}`;
+            
+            const carId = card.getAttribute('data-car-id');
+            const car = cars.find(c => c.id === carId);
+            if (car && car.entryType === 'auction') {
+                window.location.hash = `#/drazba?id=${carId}`;
+            } else {
+                window.location.hash = `#/oglas?id=${carId}`;
+            }
         });
     });
 
@@ -1748,6 +1768,143 @@ function prefillSidebarFromUrl() {
     setTimeout(() => {
         window._isPrefilling = false;
     }, 200);
+}
+
+// ── Dražbe sidebar integration ────────────────────────────────────────────────
+// Called by drazbe.js after it has fetched auction listings.
+// Seeds _allActiveListings with the auction set and wires up the full sidebar UI
+// (brand loading, year selects, accordions, events). onRender is called with the
+// filtered subset whenever the sidebar changes.
+let _drazbeRenderOverride = null;
+
+export function initDrazbeFilters(auctionListings, onRender) {
+    _allActiveListings = auctionListings;
+    _drazbeRenderOverride = onRender;
+
+    const makeSelect = document.getElementById('sidebarMake');
+    const yearFromSelect = document.getElementById('sidebarYearFrom');
+    const yearToSelect = document.getElementById('sidebarYearTo');
+    if (!makeSelect) return;
+
+    // Populate year selects
+    const currentYear = new Date().getFullYear();
+    if (yearFromSelect) {
+        yearFromSelect.innerHTML = '<option value="">Od</option>';
+        for (let y = currentYear; y >= 1980; y--) {
+            const o = document.createElement('option'); o.value = y; o.textContent = y;
+            yearFromSelect.appendChild(o);
+        }
+    }
+    if (yearToSelect) {
+        yearToSelect.innerHTML = '<option value="">Do</option>';
+        for (let y = currentYear; y >= 1980; y--) {
+            const o = document.createElement('option'); o.value = y; o.textContent = y;
+            yearToSelect.appendChild(o);
+        }
+    }
+
+    // Country + Region
+    const countrySelect = document.getElementById('sidebarCountry');
+    const regionSelect = document.getElementById('sidebarRegion');
+    if (countrySelect && regionSelect) {
+        COUNTRIES.forEach(c => {
+            const o = document.createElement('option'); o.value = c.code; o.textContent = c.label;
+            countrySelect.appendChild(o);
+        });
+        regionSelect.disabled = true;
+        countrySelect.addEventListener('change', () => {
+            const code = countrySelect.value;
+            regionSelect.innerHTML = '<option value="">Vse regije</option>';
+            if (code) {
+                getRegions(code).forEach(r => {
+                    const o = document.createElement('option'); o.value = r; o.textContent = r;
+                    regionSelect.appendChild(o);
+                });
+                regionSelect.disabled = false;
+            } else {
+                regionSelect.disabled = true;
+            }
+            applySidebarFilters();
+        });
+        regionSelect.addEventListener('change', () => applySidebarFilters());
+    }
+
+    // Load brands and wire everything
+    loadSidebarBrands('', () => {
+        initCustomSelects();
+        _wireDrazbeSidebarEvents();
+        applySidebarFilters();
+    });
+
+    // Mobile filter toggle
+    const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+    const oglasiSidebar = document.querySelector('.oglasi-sidebar');
+    if (mobileFilterToggle && oglasiSidebar) {
+        mobileFilterToggle.addEventListener('click', () => {
+            const open = oglasiSidebar.classList.toggle('filters-open');
+            mobileFilterToggle.classList.toggle('open', open);
+            mobileFilterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+    }
+
+    document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
+    bindSidebarAccordions();
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function _wireDrazbeSidebarEvents() {
+    const makeSelect = document.getElementById('sidebarMake');
+    const modelSelect = document.getElementById('sidebarModel');
+    const form = document.getElementById('sidebarFiltersForm');
+    const resetBtn = document.getElementById('sidebarResetBtn');
+
+    if (makeSelect) {
+        makeSelect.addEventListener('change', () => {
+            if (window._isPrefilling) return;
+            const brand = makeSelect.value;
+            const data = window._sidebarBrandModelData;
+            const modelSelect = document.getElementById('sidebarModel');
+            if (modelSelect) {
+                modelSelect.innerHTML = '<option value="">Vsi modeli</option>';
+                if (brand && data?.[brand]) {
+                    Object.keys(data[brand]).sort().forEach(m => {
+                        const o = document.createElement('option'); o.value = m; o.textContent = m;
+                        modelSelect.appendChild(o);
+                    });
+                    modelSelect.disabled = false;
+                } else {
+                    modelSelect.disabled = true;
+                }
+                initCustomSelects();
+            }
+            applySidebarFilters();
+        });
+    }
+
+    if (modelSelect) {
+        modelSelect.addEventListener('change', () => applySidebarFilters());
+    }
+
+    if (form) {
+        form.querySelectorAll('input, select').forEach(el => {
+            if (el === makeSelect || el === modelSelect) return;
+            el.addEventListener('change', () => applySidebarFilters());
+            el.addEventListener('input', () => applySidebarFilters());
+        });
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            if (form) form.reset();
+            const modelSelect = document.getElementById('sidebarModel');
+            if (modelSelect) { modelSelect.innerHTML = '<option value="">Vsi modeli</option>'; modelSelect.disabled = true; }
+            const countrySelect = document.getElementById('sidebarCountry');
+            const regionSelect = document.getElementById('sidebarRegion');
+            if (countrySelect) countrySelect.value = '';
+            if (regionSelect) { regionSelect.innerHTML = '<option value="">Vse regije</option>'; regionSelect.disabled = true; }
+            applySidebarFilters();
+        });
+    }
 }
 
 export function destroyOglasiPage() {

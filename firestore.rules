@@ -109,6 +109,11 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && uid() == userId;
     }
 
+    // ── Garage vehicles (personal car tracker) ────────────────────────────────
+    match /users/{userId}/vehicles/{vehicleId} {
+      allow read, write: if isSignedIn() && uid() == userId;
+    }
+
     // ── Garages (personal vehicle tracker) ───────────────────────────────────
     match /garages/{userId}/cars/{carId} {
       allow read: if resource.data.isPublic == true

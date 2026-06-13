@@ -24,7 +24,8 @@
       "Bash(grep -rl 'name=\"features\"' public/ src/)",
       "Bash(grep -rln 'adv-chip-group\\\\|data-eq-group\\\\|name=.features' public/views/)",
       "Bash(echo \"exit:$?\")",
-      "Bash(node --check src/data/equipment.js)"
+      "Bash(node --check src/data/equipment.js)",
+      "Bash(VITE_PLATFORM=navtika npx vite build)"
     ],
     "additionalDirectories": [
       "c:\\Users\\marti\\.claude\\projects\\c--Users-marti-AMS-d-o-o-MojAvto-si\\memory"

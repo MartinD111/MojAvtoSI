@@ -292,71 +292,9 @@
                     <span class="toggle-slider"></span>
                 </label>
             </div>
-            <div class="adv-acc-body" style="display:none; flex-direction:column; gap:1.25rem;">
-                <!-- Category 1: Navigacija in elektronika -->
-                <div>
-                    <p class="adv-sub-label" style="margin-bottom:0.5rem; font-weight:600;"><i data-lucide="compass" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Navigacija in elektronika</p>
-                    <div class="adv-chip-group">
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="gps_chartplotter"> GPS / Chartplotter</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="autopilot"> Avtopilot</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="radar"> Radar</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="vhf_radio"> VHF postaja</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="depth_sounder"> Globomer / Fishfinder</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="wind_instrument"> Merilec vetra</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="ais"> AIS sprejemnik</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="compass"> Kompas</label>
-                    </div>
-                </div>
-
-                <!-- Category 2: Palubna in sidrna oprema -->
-                <div>
-                    <p class="adv-sub-label" style="margin-bottom:0.5rem; font-weight:600;"><i data-lucide="anchor" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Palubna in sidrna oprema</p>
-                    <div class="adv-chip-group">
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="anchor_windlass"> Električni sidrni vitel</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="bow_thruster"> Premčni potisnik</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="stern_thruster"> Krmni potisnik</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="teak"> Teak paluba</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="bimini"> Bimini top</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="sprayhood"> Sprayhood</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="pasarela"> Pasarela</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="swim_platform"> Kopalna ploščad</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="stern_shower"> Tuš na krmi</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="davits"> Nosilci za pomožni čoln</label>
-                    </div>
-                </div>
-
-                <!-- Category 3: Udobje in notranjost -->
-                <div>
-                    <p class="adv-sub-label" style="margin-bottom:0.5rem; font-weight:600;"><i data-lucide="smile" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Udobje in notranjost</p>
-                    <div class="adv-chip-group">
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="refrigerator"> Hladilnik</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="freezer"> Zamrzovalnik</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="stove"> Štedilnik</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="oven"> Pečica</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="microwave"> Mikrovalovna pečica</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="tv"> TV sprejemnik</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="audio_system"> Avtoradio / Hifi</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="electric_toilet"> Električni WC</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="water_heater"> Grelnik vode / Bojler</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="watermaker"> Desalinizator</label>
-                    </div>
-                </div>
-
-                <!-- Category 4: Energija in varnost -->
-                <div>
-                    <p class="adv-sub-label" style="margin-bottom:0.5rem; font-weight:600;"><i data-lucide="zap" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Energija in varnost</p>
-                    <div class="adv-chip-group">
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="air_conditioning"> Klimatska naprava</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="heating"> Gretje</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="solar"> Solarni paneli</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="generator"> Generator</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="inverter"> Inverter</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="battery_charger"> Polnilec baterij</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="life_raft"> Rešilni splav</label>
-                        <label class="adv-chip"><input type="checkbox" name="extraEquipment" value="tender"> Pomožni čoln</label>
-                    </div>
-                </div>
-            </div>
+            <!-- Equipment chips — generated from equipment.js (renderEquipmentChipsHtml),
+                 keeps the search filter in lockstep with the listing form. -->
+            <div class="adv-acc-body" style="display:none; flex-direction:column; gap:1.25rem;" id="boat-equipment-chips"></div>
         </div>
 
         <!-- Actions -->

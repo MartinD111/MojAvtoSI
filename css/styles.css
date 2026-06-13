@@ -336,12 +336,14 @@ body {
 
 /* Objavi oglas — collapsed circle, expands on hover */
 .nav-actions a[href="#/novi-oglas"].pill-btn.primary {
-  width: 36px;
+  width: auto;
+  min-width: 36px;
+  max-width: 36px;
   height: 36px;
   padding: 0;
   overflow: hidden;
   white-space: nowrap;
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+  transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     gap 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s ease;
@@ -360,7 +362,7 @@ body {
 }
 
 .nav-actions a[href="#/novi-oglas"].pill-btn.primary:hover {
-  width: 172px;
+  max-width: 180px;
   padding: 0 16px 0 12px;
   gap: 8px;
 }
@@ -1535,13 +1537,13 @@ body.dark-mode .news-card-content p {
 
   /* Tighten spec pills */
   .spec-pill {
-    font-size: 0.68rem !important;
-    padding: 0.22rem 0.45rem !important;
+    font-size: 0.75rem !important;
+    padding: 0.32rem 0.65rem !important;
   }
 
   .spec-pill i {
-    width: 12px !important;
-    height: 12px !important;
+    width: 13px !important;
+    height: 13px !important;
   }
 
   .primary-specs {
@@ -8657,13 +8659,13 @@ body.dark-mode .catalog-offers-title {
   }
 
   .spec-pill {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.72rem !important;
+    padding: 0.38rem 0.7rem !important;
+    font-size: 0.78rem !important;
   }
 
   .spec-pill i {
-    width: 12px !important;
-    height: 12px !important;
+    width: 14px !important;
+    height: 14px !important;
     margin-right: 3px !important;
   }
 

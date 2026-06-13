@@ -11,6 +11,7 @@ import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js'
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { getModelVariants } from '../utils/bodyType.js';
 import { getApprovedProposalsForBrand } from '../services/adminService.js';
+import { renderEquipmentChipsHtml } from '../data/equipment.js';
 
 const ENGINE_CAT = 'izvenkrmni-motorji';
 
@@ -73,6 +74,7 @@ export function initNavtikaSearchPage() {
 
     setupRentalToggle(ctx);
     renderCategoryTabs(ctx);
+    populateEquipmentChips();
     applyCategory(ctx);
     bindAccordions();
     setupMultiVehicleSelector();
@@ -107,6 +109,22 @@ function parseHashParams() {
     const hash = window.location.hash.slice(1) || '/';
     const q = hash.indexOf('?');
     return q === -1 ? new URLSearchParams() : new URLSearchParams(hash.slice(q + 1));
+}
+
+// ── Equipment chips — generated from equipment.js so the navtika search filter and
+// the create-listing form stay in lockstep. All vessel categories share the same
+// equipment groups, so we render once. The 'all' groups (garancija/drugo) carry
+// car-oriented values, so they're skipped here. Field name 'extraEquipment' matches
+// the filter (readFilters → f.extraEquipment).
+function populateEquipmentChips() {
+    const el = document.getElementById('boat-equipment-chips');
+    if (!el || el.dataset.filled) return;
+    el.innerHTML = renderEquipmentChipsHtml('colni', t, {
+        name: 'extraEquipment',
+        skipGroups: ['garancija', 'drugo'],
+    });
+    el.dataset.filled = '1';
+    if (window.lucide) window.lucide.createIcons();
 }
 
 // ── Inline Prodaja / Najem toggle ───────────────────────────────────────────────

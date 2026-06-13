@@ -3,6 +3,79 @@
    Reuses the platform primary color tokens (--color-primary-start/-end).
    ════════════════════════════════════════════════════════════════════════════ */
 
+/* ── Auction info bar (inside listing card content area) ─────────────────────*/
+.auction-card-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.85rem;
+    margin: 0.25rem 0 0.1rem;
+    background: rgba(37,99,235,0.07);
+    border: 1px solid rgba(37,99,235,0.18);
+    border-radius: 0.75rem;
+    flex-wrap: wrap;
+}
+body.dark-mode .auction-card-info-bar {
+    background: rgba(37,99,235,0.13);
+    border-color: rgba(37,99,235,0.3);
+}
+.auction-card-timer-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #dc2626;
+    white-space: nowrap;
+}
+.auction-card-timer-wrap i { width: 15px; height: 15px; flex-shrink: 0; }
+.auction-card-timer-wrap .drazba-card-timer {
+    position: static;
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    padding: 0;
+    border-radius: 0;
+    backdrop-filter: none;
+}
+.auction-card-timer-wrap .drazba-card-timer.ending-soon { animation: drazbaPulse 1.4s infinite; }
+.auction-card-bid-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    flex: 1;
+    flex-wrap: wrap;
+}
+.auction-card-bid-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    white-space: nowrap;
+}
+body.dark-mode .auction-card-bid-label { color: #94a3b8; }
+.auction-card-bid-value {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-primary-start);
+    white-space: nowrap;
+}
+.auction-card-bid-count {
+    font-size: 0.72rem;
+    color: #64748b;
+    white-space: nowrap;
+}
+.drazba-card-live-inline {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    color: #fff;
+    background: rgba(220,38,38,0.92);
+    padding: 0.2rem 0.5rem;
+    border-radius: 99px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 /* ── Board page ──────────────────────────────────────────────────────────────*/
 .drazbe-page {
     max-width: 1200px;
@@ -75,7 +148,8 @@ body.dark-mode .drazba-card { background: #1e293b; border-color: rgba(255,255,25
 .drazba-card-timer {
     position: absolute;
     bottom: 0.6rem;
-    left: 0.6rem;
+    left: 50%;
+    transform: translateX(-50%);
     background: rgba(15,23,42,0.82);
     color: #fff;
     font-size: 0.78rem;
@@ -83,6 +157,7 @@ body.dark-mode .drazba-card { background: #1e293b; border-color: rgba(255,255,25
     padding: 0.3rem 0.65rem;
     border-radius: 99px;
     backdrop-filter: blur(4px);
+    white-space: nowrap;
 }
 .drazba-card-timer.ending-soon { background: rgba(220,38,38,0.92); animation: drazbaPulse 1.4s infinite; }
 .drazba-card-timer.ended { background: rgba(100,116,139,0.92); }

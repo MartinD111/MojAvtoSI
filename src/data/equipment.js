@@ -40,7 +40,7 @@ export const EQUIPMENT_GROUPS = [
             { value: 'Isofix',    label: 'eq_isofix', icon: 'baby' },
             { value: 'IsofixFront', label: 'eq_isofix_front', icon: 'baby' },
             { value: 'BeltReminderRear', label: 'eq_belt_reminder_rear', icon: 'user-check' },
-            { value: 'FireExtinguisher', label: 'eq_fire_extinguisher', icon: 'flame-kindling' },
+            { value: 'FireExtinguisher', label: 'eq_fire_extinguisher', icon: 'flame' },
         ],
     },
     {
@@ -123,7 +123,7 @@ export const EQUIPMENT_GROUPS = [
             { value: 'LeatherDash',    label: 'eq_leather_dash', icon: 'layers' },
             { value: 'AlcantaraRoof',  label: 'eq_alcantara_roof', icon: 'layers' },
             { value: 'VelourMats',     label: 'eq_velour_mats', icon: 'square' },
-            { value: 'CooledCupholder', label: 'eq_cooled_cupholder', icon: 'cup-soda' },
+            { value: 'CooledCupholder', label: 'eq_cooled_cupholder', icon: 'coffee' },
         ],
     },
     {
@@ -259,8 +259,8 @@ export const EQUIPMENT_GROUPS = [
             { value: 'RetarderC',       label: 'eq_retarder', icon: 'gauge' },
             { value: 'TailLift',        label: 'eq_tail_lift', icon: 'arrow-up-down' },
             { value: 'RefrigeratedBox', label: 'eq_refrigerated_box', icon: 'snowflake' },
-            { value: 'CraneC',          label: 'eq_crane_c', icon: 'crane' },
-            { value: 'TipperC',         label: 'eq_tipper', icon: 'dump-truck' },
+            { value: 'CraneC',          label: 'eq_crane_c', icon: 'construction' },
+            { value: 'TipperC',         label: 'eq_tipper', icon: 'truck' },
             { value: 'TowHitchC',       label: 'eq_tow_hitch_c', icon: 'anchor' },
             { value: 'SleeperCab',      label: 'eq_sleeper_cab', icon: 'bed' },
             { value: 'WebFridge',       label: 'eq_web_fridge', icon: 'refrigerator' },
@@ -288,7 +288,7 @@ export const EQUIPMENT_GROUPS = [
             { value: 'FrontHydraulics', label: 'eq_front_hydraulics', icon: 'arrow-up-down' },
             { value: 'QuickHitch',      label: 'eq_quick_hitch', icon: 'link' },
             { value: 'TowHitchM',       label: 'eq_tow_hitch_m', icon: 'anchor' },
-            { value: 'GPSGuidance',     label: 'eq_gps_guidance', icon: 'satellite' },
+            { value: 'GPSGuidance',     label: 'eq_gps_guidance', icon: 'radar' },
             { value: 'AutoSteer',       label: 'eq_auto_steer', icon: 'navigation' },
             { value: 'WorkLightsLED',   label: 'eq_work_lights_led', icon: 'sun' },
             { value: 'BeaconLight',     label: 'eq_beacon_light', icon: 'siren' },
@@ -460,7 +460,7 @@ export const EQUIPMENT_GROUPS = [
             { value: 'chain_counter', label: 'eq_chain_counter', icon: 'list-ordered' },
             { value: 'bow_thruster', label: 'eq_bow_thruster', icon: 'shuffle' },
             { value: 'stern_thruster', label: 'eq_stern_thruster', icon: 'shuffle' },
-            { value: 'joystick_control', label: 'eq_joystick_control', icon: 'gamepad-2' },
+            { value: 'joystick_control', label: 'eq_joystick_control', icon: 'gamepad' },
             { value: 'teak', label: 'eq_teak', icon: 'layers' },
             { value: 'teak_synthetic', label: 'eq_teak_synthetic', icon: 'layers' },
             { value: 'bimini', label: 'eq_bimini', icon: 'umbrella' },
@@ -472,7 +472,7 @@ export const EQUIPMENT_GROUPS = [
             { value: 'pasarela_hydraulic', label: 'eq_pasarela_hydraulic', icon: 'menu' },
             { value: 'swim_platform', label: 'eq_swim_platform', icon: 'layout' },
             { value: 'swim_platform_hydraulic', label: 'eq_swim_platform_hydraulic', icon: 'layout' },
-            { value: 'bathing_ladder', label: 'eq_bathing_ladder', icon: 'ladder' },
+            { value: 'bathing_ladder', label: 'eq_bathing_ladder', icon: 'chevrons-down' },
             { value: 'stern_shower', label: 'eq_stern_shower', icon: 'droplet' },
             { value: 'bow_shower', label: 'eq_bow_shower', icon: 'droplet' },
             { value: 'davits', label: 'eq_davits', icon: 'arrow-up-down' },
@@ -575,8 +575,8 @@ export const EQUIPMENT_GROUPS = [
             { value: 'ais_sart', label: 'eq_ais_sart', icon: 'radio' },
             { value: 'radar_reflector', label: 'eq_radar_reflector', icon: 'triangle' },
             { value: 'mob_system', label: 'eq_mob_system', icon: 'user-x' },
-            { value: 'fire_suppression', label: 'eq_fire_suppression', icon: 'flame-kindling' },
-            { value: 'fire_extinguishers', label: 'eq_fire_extinguishers', icon: 'flame-kindling' },
+            { value: 'fire_suppression', label: 'eq_fire_suppression', icon: 'flame' },
+            { value: 'fire_extinguishers', label: 'eq_fire_extinguishers', icon: 'flame' },
             { value: 'gas_detector', label: 'eq_gas_detector', icon: 'alert-triangle' },
             { value: 'smoke_detector', label: 'eq_smoke_detector', icon: 'alert-triangle' },
             { value: 'bilge_pump_auto', label: 'eq_bilge_pump_auto', icon: 'droplet' },
@@ -820,13 +820,14 @@ const _escEq = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '
 export function renderEquipmentChipsHtml(category, translate, opts = {}) {
     const t = typeof translate === 'function' ? translate : (k, f) => f || k;
     const exclude = opts.exclude instanceof Set ? opts.exclude : new Set(opts.exclude || []);
+    const fieldName = opts.name || 'features';
     const groups = getEquipmentForCategory(category)
         .filter(g => !(opts.skipGroups || []).includes(g.id));
 
     return groups.map(g => {
         const chips = g.items
             .filter(i => !exclude.has(i.value))
-            .map(i => `<label class="adv-chip"><input type="checkbox" name="features" value="${_escEq(i.value)}"> ${_escEq(t(i.label, i.value))}</label>`)
+            .map(i => `<label class="adv-chip"><input type="checkbox" name="${_escEq(fieldName)}" value="${_escEq(i.value)}"> ${_escEq(t(i.label, i.value))}</label>`)
             .join('\n');
         if (!chips) return '';
         return `<p class="adv-sub-label"><i data-lucide="${g.icon}"></i> ${_escEq(t(g.label, g.id))}</p>\n` +
