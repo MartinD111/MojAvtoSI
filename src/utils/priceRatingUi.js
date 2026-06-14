@@ -62,9 +62,9 @@ export function renderRatingBadgeCard(rating, title = '') {
 export function renderRatingBlockDetail(rating, opts = {}) {
     const { confidenceLabel = '', rareFeaturesLabel = 'Redka oprema' } = opts;
     return `
-        <div style="margin:0.75rem 0 0.25rem; padding:0.75rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:0.75rem;">
-            <div>${renderStarsHtml(rating.stars, 18)}</div>
-            <div style="font-size:0.9rem; font-weight:700; color:${STAR_COLOR}; margin-top:4px;">${escHtml(rating.label)}</div>
+        <div style="margin:0.5rem 0 0.25rem; padding:0.5rem 0.6rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:0.6rem;">
+            <div>${renderStarsHtml(rating.stars, 13)}</div>
+            <div style="font-size:0.78rem; font-weight:700; color:${STAR_COLOR}; margin-top:2px;">${escHtml(rating.label)}</div>
             ${rating.priceSignal ? `<div style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">${escHtml(rating.priceSignal)}</div>` : ''}
             ${rating.equipmentSignal ? `<div style="font-size:0.78rem; color:#64748b; margin-top:2px;">${escHtml(rareFeaturesLabel)}: ${escHtml(rating.equipmentSignal)}</div>` : ''}
             ${confidenceLabel ? `<div style="margin-top:6px;">

@@ -1,0 +1,617 @@
+<!-- Oglasna deska â€” MojAvto.si -->
+<div class="oglasi-layout">
+
+    <!-- â•â•â• SIDEBAR: Filtri â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <aside class="oglasi-sidebar">
+        <style>
+            #sidebarFiltersForm { gap: 0.6rem !important; }
+            #sidebarFiltersForm .form-group { display: flex; flex-direction: column; gap: 0.2rem; align-items: center; text-align: center; width: 100%; }
+            #sidebarFiltersForm .form-group > label:not(.adv-chip) { font-size: 0.8rem; font-weight: 600; color: var(--text-dark); text-align: center; width: 100% !important; display: block !important; margin-bottom: 0px !important; }
+            #sidebarFiltersForm select { text-align: center; text-align-last: center; width: 100%; height: 38px !important; }
+            #sidebarFiltersForm input:not([type="checkbox"]):not([type="radio"]) { text-align: center; width: 100%; }
+            #sidebarFiltersForm .adv-chip-group { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; width: 100%; }
+            #sidebarFiltersForm .adv-chip { width: auto !important; max-width: 100% !important; display: inline-flex !important; flex: none !important; }
+            #sidebarFiltersForm .remember-toggle { display: inline-flex; align-items: center; justify-content: center; }
+            #sidebarFiltersForm .custom-select-trigger { height: 38px !important; padding: 0 15px !important; font-size: 0.88rem !important; }
+            #sidebarFiltersForm .custom-select-trigger .select-icon { width: 16px !important; height: 16px !important; }
+            #sidebarFiltersForm .pill-input { height: 38px !important; padding: 0 15px !important; font-size: 0.88rem !important; border-radius: 9999px !important; }
+            #sidebarFiltersForm .sidebar-active-pills { margin-top: 0.2rem !important; gap: 0.25rem !important; }
+            #sidebarFiltersForm .sidebar-active-pill { padding: 0.15rem 0.45rem 0.15rem 0.55rem !important; font-size: 0.7rem !important; gap: 0.2rem !important; }
+            #sidebarFiltersForm .sidebar-pill-remove { font-size: 0.8rem !important; }
+            
+            /* Sidebar accordion specific overrides */
+            #sidebarFiltersForm {
+                gap: 0.5rem !important;
+            }
+            #sidebarFiltersForm .adv-accordion {
+                margin-bottom: 0.5rem !important;
+                border-radius: 0.75rem !important;
+                background: #f1f5f9 !important; /* Differentiate in light mode */
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+                overflow: hidden;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-accordion {
+                background: rgba(15, 23, 42, 0.6) !important;
+                border-color: rgba(255, 255, 255, 0.08) !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            }
+            #sidebarFiltersForm .adv-acc-trigger {
+                padding: 0.6rem 1rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.5rem !important;
+                text-align: center !important;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-trigger {
+                color: #ffffff !important;
+            }
+            #sidebarFiltersForm .adv-acc-trigger:hover {
+                background: rgba(0, 0, 0, 0.02) !important;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-trigger:hover {
+                background: rgba(255, 255, 255, 0.02) !important;
+            }
+            #sidebarFiltersForm .adv-acc-title {
+                font-size: 0.9rem !important;
+                font-weight: 700 !important;
+                color: #0f172a !important;
+                text-align: center !important;
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-title {
+                color: #ffffff !important;
+            }
+            #sidebarFiltersForm .adv-acc-body {
+                padding: 0.75rem 1rem 1rem 1rem !important;
+                padding-top: 0.5rem !important;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem !important; /* Minimal spacing between inputs */
+                border-top: 1px solid rgba(0, 0, 0, 0.04);
+            }
+            body.dark-mode #sidebarFiltersForm .adv-acc-body {
+                border-top-color: rgba(255, 255, 255, 0.04);
+            }
+            #sidebarFiltersForm .form-group {
+                gap: 0.15rem !important; /* Minimal spacing label-input */
+                margin-bottom: 0px !important;
+            }
+            #sidebarFiltersForm .form-group > label:not(.adv-chip) {
+                font-size: 0.78rem !important;
+                font-weight: 600 !important;
+                color: var(--text-dark) !important;
+                margin-bottom: 1px !important;
+            }
+            #sidebarFiltersForm .sidebar-active-pills:empty {
+                display: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 0 !important;
+            }
+            #sidebarFiltersForm .sidebar-active-pills {
+                margin-top: 0.2rem !important;
+                margin-bottom: 0.1rem !important;
+                gap: 0.2rem !important;
+            }
+            
+            /* Year select pills & dropdown optimizations */
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-container { width: 75px !important; min-width: 75px !important; flex: none !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger { justify-content: center !important; padding: 0 5px !important; text-align: center !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger .select-icon { display: none !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-value { font-weight: 700 !important; font-size: 0.95rem !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-option { justify-content: center !important; font-weight: 700 !important; font-size: 0.95rem !important; padding: 8px 10px !important; }
+            #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #111827 !important; }
+            body.dark-mode #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #ffffff !important; }
+            @media (min-width: 769px) {
+                #filtersCard {
+                    overflow: visible !important;
+                    max-height: none !important;
+                }
+                .filters-card-inner {
+                    overflow: visible !important;
+                }
+            }
+        </style>
+
+        <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
+        <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
+            <span class="mft-label"><i data-lucide="sliders-horizontal"></i> Filtri</span>
+            <span class="mft-active-pills" id="mftActivePills"></span>
+        </button>
+
+        <div class="oglasi-sidebar-card glass-card" id="filtersCard">
+            <div class="filters-card-inner" style="min-height: 0; overflow: hidden;">
+                <div class="sidebar-filters-header" style="display:flex; justify-content:center; align-items:center; margin-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.4rem; position: sticky; top: -1.5rem; background: var(--bg-glass, rgba(3, 27, 51, 0.96)); z-index: 10; margin-top: -1.5rem; padding-top: 1.5rem; width: 100%;">
+                    <h3 style="margin:0; font-size:1.1rem; font-weight:700;" data-i18n-key="sidebar_filters_title">Filtri</h3>
+                </div>
+
+                <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:0.6rem;">
+                
+                <!-- Osnovni podatki Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="true">
+                            <i data-lucide="anchor" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Osnovni podatki</span>
+                        </button>
+                    </div>
+                    <div class="adv-acc-body" style="display:flex;">
+                        <!-- Vessel Type — populated from MAIN_CATEGORIES taxonomy by JS -->
+                        <div class="form-group">
+                            <label>Tip plovila</label>
+                            <select id="sidebarBoatType" name="vtype" class="glass-select">
+                                <option value="">Vsi tipi</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeBoatType"></div>
+                        </div>
+
+                        <!-- Vrsta plovila (vehicle types — matches advanced search grid) -->
+                        <div class="form-group">
+                            <label>Vrsta plovila</label>
+                            <select id="sidebarBoatSubcat" name="boatSubcat" class="glass-select" disabled>
+                                <option value="">Vse vrste</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeBoatSubcat"></div>
+                        </div>
+
+                        <!-- Znamka -->
+                        <div class="form-group">
+                            <label data-i18n-key="make">Znamka</label>
+                            <select id="sidebarMake" name="make" class="glass-select">
+                                <option value="">Vse znamke</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeMake"></div>
+                        </div>
+
+                        <!-- Model -->
+                        <div class="form-group">
+                            <label data-i18n-key="model">Model</label>
+                            <select id="sidebarModel" name="model" class="glass-select" disabled>
+                                <option value="">Vsi modeli</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeModel"></div>
+                        </div>
+
+                        <!-- Različica -->
+                        <div class="form-group">
+                            <label>Različica</label>
+                            <select id="sidebarVariant" name="variant" class="glass-select" disabled>
+                                <option value="">Vse različice</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeVariant"></div>
+                        </div>
+
+                        <!-- Dolžina -->
+                        <div class="form-group">
+                            <label>Dolžina (m)</label>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                                <select id="sidebarLengthFrom" name="lengthFrom" class="glass-select">
+                                    <option value="">Od (m)</option>
+                                    <option value="3">3 m</option>
+                                    <option value="4">4 m</option>
+                                    <option value="5">5 m</option>
+                                    <option value="6">6 m</option>
+                                    <option value="7">7 m</option>
+                                    <option value="8">8 m</option>
+                                    <option value="10">10 m</option>
+                                    <option value="12">12 m</option>
+                                    <option value="15">15 m</option>
+                                    <option value="20">20 m</option>
+                                    <option value="25">25 m</option>
+                                </select>
+                                <select id="sidebarLengthTo" name="lengthTo" class="glass-select">
+                                    <option value="">Do (m)</option>
+                                    <option value="4">4 m</option>
+                                    <option value="5">5 m</option>
+                                    <option value="6">6 m</option>
+                                    <option value="7">7 m</option>
+                                    <option value="8">8 m</option>
+                                    <option value="10">10 m</option>
+                                    <option value="12">12 m</option>
+                                    <option value="15">15 m</option>
+                                    <option value="20">20 m</option>
+                                    <option value="25">25 m</option>
+                                    <option value="999">25+ m</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ležišča in kabine -->
+                        <div class="form-group">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                                <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
+                                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Min. ležišč</label>
+                                    <select id="sidebarBerthsFrom" name="berthsFrom" class="glass-select">
+                                        <option value="">Vsa</option>
+                                        <option value="1">1+</option>
+                                        <option value="2">2+</option>
+                                        <option value="4">4+</option>
+                                        <option value="6">6+</option>
+                                        <option value="8">8+</option>
+                                    </select>
+                                </div>
+                                <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
+                                    <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Min. kabin</label>
+                                    <select id="sidebarCabinsFrom" name="cabinsFrom" class="glass-select">
+                                        <option value="">Vse</option>
+                                        <option value="1">1+</option>
+                                        <option value="2">2+</option>
+                                        <option value="3">3+</option>
+                                        <option value="4">4+</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tip ponudbe: Prodaja / Najem -->
+                        <div class="form-group" style="margin-top:0.25rem;">
+                            <label>Tip ponudbe</label>
+                            <div style="display:flex; gap:1.5rem; justify-content:center; width:100%; margin-top:0.25rem;">
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+                                    <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Prodaja</span>
+                                    <label class="remember-toggle" title="Prodaja" style="padding:0;">
+                                        <input type="checkbox" class="remember-check" id="sidebarProdajaToggle" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+                                    <span style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Najem</span>
+                                    <label class="remember-toggle" title="Najem" style="padding:0;">
+                                        <input type="checkbox" class="remember-check" id="sidebarNajemToggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cena in letnik Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
+                            <i data-lucide="tag" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Cena in letnik</span>
+                        </button>
+                    </div>
+                    <div class="adv-acc-body" style="display:none;">
+                        <!-- Letnik od / do -->
+                        <div class="form-group">
+                            <label>Letnik</label>
+                            <div class="year-selects-wrapper" style="display:flex; gap:0.5rem; justify-content:center; width:100%;">
+                                <select id="sidebarYearFrom" name="yearFrom" class="glass-select">
+                                    <option value="">Od</option>
+                                </select>
+                                <select id="sidebarYearTo" name="yearTo" class="glass-select">
+                                    <option value="">Do</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Cena od / do -->
+                        <div class="form-group">
+                            <label>Cena (€)</label>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                                <select id="sidebarPriceFrom" name="priceFrom" class="glass-select">
+                                    <option value="">Od (€)</option>
+                                    <option value="500">500 €</option>
+                                    <option value="1000">1.000 €</option>
+                                    <option value="2000">2.000 €</option>
+                                    <option value="5000">5.000 €</option>
+                                    <option value="10000">10.000 €</option>
+                                    <option value="20000">20.000 €</option>
+                                    <option value="50000">50.000 €</option>
+                                    <option value="100000">100.000 €</option>
+                                </select>
+                                <select id="sidebarPriceTo" name="priceTo" class="glass-select">
+                                    <option value="">Do (€)</option>
+                                    <option value="1000">1.000 €</option>
+                                    <option value="2000">2.000 €</option>
+                                    <option value="5000">5.000 €</option>
+                                    <option value="10000">10.000 €</option>
+                                    <option value="20000">20.000 €</option>
+                                    <option value="50000">50.000 €</option>
+                                    <option value="100000">100.000 €</option>
+                                    <option value="999999">Brez omejitve</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motor in pogon Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
+                            <i data-lucide="cog" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Motor in pogon</span>
+                        </button>
+                    </div>
+                    <div class="adv-acc-body" style="display:none;">
+                        <!-- Moč motorja (KM) -->
+                        <div class="form-group">
+                            <label>Moč motorja (KM)</label>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%;">
+                                <select id="sidebarPowerFrom" name="powerFrom" class="glass-select">
+                                    <option value="">Od (KM)</option>
+                                    <option value="5">5 KM</option>
+                                    <option value="10">10 KM</option>
+                                    <option value="20">20 KM</option>
+                                    <option value="40">40 KM</option>
+                                    <option value="60">60 KM</option>
+                                    <option value="100">100 KM</option>
+                                    <option value="150">150 KM</option>
+                                    <option value="200">200 KM</option>
+                                    <option value="300">300 KM</option>
+                                    <option value="500">500 KM</option>
+                                </select>
+                                <select id="sidebarPowerTo" name="powerTo" class="glass-select">
+                                    <option value="">Do (KM)</option>
+                                    <option value="10">10 KM</option>
+                                    <option value="20">20 KM</option>
+                                    <option value="40">40 KM</option>
+                                    <option value="60">60 KM</option>
+                                    <option value="100">100 KM</option>
+                                    <option value="150">150 KM</option>
+                                    <option value="200">200 KM</option>
+                                    <option value="300">300 KM</option>
+                                    <option value="500">500 KM</option>
+                                    <option value="9999">500+ KM</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ure motorja -->
+                        <div class="form-group">
+                            <label>Ure motorja do</label>
+                            <select id="sidebarEngineHoursTo" name="engineHoursTo" class="glass-select">
+                                <option value="">Brez omejitve</option>
+                                <option value="100">do 100 ur</option>
+                                <option value="250">do 250 ur</option>
+                                <option value="500">do 500 ur</option>
+                                <option value="750">do 750 ur</option>
+                                <option value="1000">do 1.000 ur</option>
+                                <option value="2000">do 2.000 ur</option>
+                                <option value="3000">do 3.000 ur</option>
+                            </select>
+                        </div>
+
+                        <!-- Znamka motorja (Engine manufacturer) -->
+                        <div class="form-group">
+                            <label>Znamka motorja</label>
+                            <select id="sidebarEngineMake" name="engineMake" class="glass-select" data-no-chevron="true">
+                                <option value="">Vse znamke</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeEngineMake"></div>
+                        </div>
+
+                        <!-- Vrsta motorja -->
+                        <div class="form-group">
+                            <label>Vrsta motorja / pogona</label>
+                            <select id="sidebarEngineType" name="engineType" class="glass-select" data-no-chevron="true">
+                                <option value="">Vse vrste</option>
+                                <option value="Izvenkrmni">Izvenkrmni (outboard)</option>
+                                <option value="Notranji">Notranji (inboard)</option>
+                                <option value="Stern Drive">Stern drive</option>
+                                <option value="Potisnik">Potisnik (pod trup)</option>
+                                <option value="Električni">Električni motor</option>
+                                <option value="Jadra">Samo jadra</option>
+                            </select>
+                            <div class="sidebar-active-pills" id="activeEngineType"></div>
+                        </div>
+
+                        <!-- Tip motorja / pogona -->
+                        <div class="form-group">
+                            <label>Tip motorja / pogona</label>
+                            <select id="sidebarEngineMount" name="engineMount" class="glass-select">
+                                <option value="">Vsi tipi</option>
+                                <option value="izvenkrmni">Izvenkrmni</option>
+                                <option value="krmni">Krmni</option>
+                                <option value="notranji">Notranji</option>
+                                <option value="jadrni">Jadrni</option>
+                            </select>
+                        </div>
+
+                        <!-- Gorivo -->
+                        <div class="form-group">
+                            <label>Gorivo</label>
+                            <select id="sidebarFuel" name="fuel" class="glass-select">
+                                <option value="">Vsa goriva</option>
+                                <option value="Bencin">Bencin</option>
+                                <option value="Dizel">Dizel</option>
+                                <option value="Električni">Električni</option>
+                            </select>
+                        </div>
+
+                        <!-- Material trupa -->
+                        <div class="form-group">
+                            <label>Material trupa</label>
+                            <select id="sidebarHull" name="hull" class="glass-select">
+                                <option value="">Vsi materiali</option>
+                                <option value="Stekloplastika">Stekloplastika (GRP)</option>
+                                <option value="Aluminij">Aluminij</option>
+                                <option value="Jeklo">Jeklo</option>
+                                <option value="Les">Les</option>
+                                <option value="PVC">PVC / Hypalon</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prodajalec Accordion -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
+                            <i data-lucide="user" style="width: 16px; height: 16px;"></i>
+                            <span class="adv-acc-title">Prodajalec</span>
+                        </button>
+                    </div>
+                    <div class="adv-acc-body" style="display:none;">
+                        <!-- Tip prodajalca -->
+                        <div class="form-group">
+                            <label>Tip prodajalca</label>
+                            <select id="sidebarSellerType" name="sellerType" class="glass-select">
+                                <option value="">Vsi prodajalci</option>
+                                <option value="private">Fizična oseba (privat)</option>
+                                <option value="dealer">Trgovec (Avtohiša)</option>
+                            </select>
+                        </div>
+
+                        <!-- Lokacija (Regija) -->
+                        <div class="form-group">
+                            <label>Lokacija / Regija</label>
+                            <select id="sidebarRegion" name="region" class="glass-select">
+                                <option value="">Vse regije</option>
+                                <option value="Osrednjeslovenska">Osrednjeslovenska</option>
+                                <option value="Podravska">Podravska</option>
+                                <option value="Savinjska">Savinjska</option>
+                                <option value="Gorenjska">Gorenjska</option>
+                                <option value="Obalno-kraška">Obalno-kraška</option>
+                                <option value="Pomurska">Pomurska</option>
+                                <option value="Koroška">Koroška</option>
+                                <option value="Zasavska">Zasavska</option>
+                                <option value="Posavska">Posavska</option>
+                                <option value="Primorsko-notranjska">Primorsko-notranjska</option>
+                                <option value="Goriška">Goriška</option>
+                                <option value="Jugovzhodna Slovenija">Jugovzhodna Slovenija</option>
+                                <option value="Hrvaška">Hrvaška</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gumb za ponastavitev -->
+                <div style="display:flex; justify-content:center; margin-top:0.5rem; padding-bottom:1.5rem; width:100%;">
+                    <button type="button" id="sidebarResetBtn" class="pill-btn primary" style="background: linear-gradient(135deg, #f97316, #ea580c); border: none; color: white; width: 100%; justify-content: center; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3); gap: 0.5rem;">
+                        <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Počisti vse
+                    </button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- â•â•â• MAIN: Rezultati â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <main class="oglasi-main">
+        <div class="results-header">
+            <h1>Search Results <span>(1,471 vehicles)</span></h1>
+            <div class="sort-wrap">
+                <button class="legend-btn" id="legendBtn" title="Legenda ikon">
+                    <i data-lucide="help-circle"></i>
+                </button>
+                <span class="sort-label">Razvrsti:</span>
+                <div class="pill-select-wrapper">
+                    <select class="pill-input" id="sortSelect" data-no-search="true">
+                        <option value="">Privzeto</option>
+                        <option value="price-asc">Cena: najnižja</option>
+                        <option value="price-desc">Cena: najvišja</option>
+                        <option value="year-desc">Letnik: najnovejši</option>
+                        <option value="length-asc">Dolžina: najkrajša</option>
+                    </select>
+                </div>
+                <div class="view-toggle-group">
+                    <button class="view-toggle-btn" data-view="list" title="List view" aria-label="List view">
+                        <i data-lucide="list"></i>
+                    </button>
+                    <button class="view-toggle-btn" data-view="grid" title="Grid view" aria-label="Grid view">
+                        <i data-lucide="layout-grid"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="carListingsContainer">
+            <!-- Listings are dynamically generated via JS -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrap">
+            <div class="pagination">
+                <button class="page-btn page-btn-glass"><i data-lucide="chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <span class="page-dots">...</span>
+                <button class="page-btn">48</button>
+                <button class="page-btn page-btn-glass"><i data-lucide="chevron-right"></i></button>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+<!-- Legend popup (icons reference) -->
+<div class="legend-overlay" id="legendOverlay">
+    <div class="legend-card" style="max-width:320px;">
+        <div class="legend-card-header">
+            <h3 style="font-size:1rem;">Legenda ikon oglasa</h3>
+            <button class="legend-close-btn" id="legendCloseBtn" aria-label="Zapri">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Gorivo -->
+        <p class="legend-section-title">Gorivo</p>
+        <div class="legend-rows">
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-P"><i data-lucide="fuel" style="width:12px;height:12px;"></i> B</span>
+                <span class="legend-row-desc">Bencin</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-D"><i data-lucide="fuel" style="width:12px;height:12px;"></i> D</span>
+                <span class="legend-row-desc">Dizel</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo fuel-pill-E"><i data-lucide="zap" style="width:12px;height:12px;"></i> E</span>
+                <span class="legend-row-desc">Električni pogon</span>
+            </div>
+        </div>
+
+        <!-- Tehnični podatki -->
+        <p class="legend-section-title">Tehnični podatki</p>
+        <div class="legend-rows">
+            <div class="legend-row">
+                <span class="legend-pill-demo" style="background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);color:#4f46e5;">
+                    <i data-lucide="zap" style="width:13px;height:13px;"></i> kW
+                </span>
+                <span class="legend-row-desc">Moč motorja</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo" style="background:rgba(14,165,233,0.1);border-color:rgba(14,165,233,0.3);color:#0284c7;">
+                    <i data-lucide="move-horizontal" style="width:13px;height:13px;"></i> m
+                </span>
+                <span class="legend-row-desc">Dolžina plovila</span>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill-demo" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:#d97706;">
+                    <i data-lucide="clock" style="width:13px;height:13px;"></i> ur
+                </span>
+                <span class="legend-row-desc">Ure motorja</span>
+            </div>
+        </div>
+
+        <!-- Cena -->
+        <p class="legend-section-title">Cena</p>
+        <div class="legend-rows">
+            <div class="legend-row">
+                <span class="legend-pill-demo discount-tag-legend">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                    </svg>
+                </span>
+                <span class="legend-row-desc">Znižana cena — popust ali posebna ponudba</span>
+            </div>
+        </div>
+
+        <!-- Moc motorja toggle -->
+        <div class="power-unit-toggle" style="margin-top:1rem; padding-top:0.75rem; display:flex; align-items:center; border-top:1px solid rgba(255,255,255,0.08);">
+            <span class="legend-toggle-label" style="font-size:0.8rem; font-weight:600; margin-right:auto; color:#cbd5e1;">Prikaz moči:</span>
+            <button class="power-unit-btn active" data-unit="kw" id="puBtnKw">kW</button>
+            <button class="power-unit-btn" data-unit="km" id="puBtnKm">KM</button>
+        </div>
+    </div>
+</div>

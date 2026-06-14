@@ -106,6 +106,7 @@
 .booking-progress-track {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0;
     overflow-x: auto;
     padding-bottom: 4px;
@@ -143,8 +144,8 @@
     background: var(--color-primary-start);
     border-color: var(--color-primary-start);
     color: white;
-    box-shadow: 0 4px 12px rgba(37,99,235,0.3);
-    transform: scale(1.1);
+    box-shadow: none;
+    transform: none;
 }
 
 .booking-step-pill-btn.done {
@@ -538,6 +539,88 @@
 
 .glass-select:focus { border-color: var(--color-primary-start); }
 .glass-select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Custom dropdown ──────────────────────────────────────── */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown-btn {
+    width: 100%;
+    padding: 0.65rem 2.2rem 0.65rem 0.9rem;
+    border-radius: 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    background: #fff;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.18s;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.custom-dropdown-btn.placeholder { color: #94a3b8; }
+.custom-dropdown-btn.open,
+.custom-dropdown-btn:focus { border-color: var(--color-primary-start); }
+.custom-dropdown-btn.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+.custom-dropdown-btn .dd-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #94a3b8;
+    transition: transform 0.2s;
+}
+.custom-dropdown-btn.open .dd-arrow { transform: rotate(180deg); }
+
+.custom-dropdown-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 999;
+    display: none;
+}
+
+.custom-dropdown-list.open { display: block; }
+
+.custom-dropdown-option {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.custom-dropdown-option:hover { background: #f1f5f9; }
+.custom-dropdown-option.selected { background: #eff6ff; color: var(--color-primary-start); font-weight: 600; }
+.custom-dropdown-option.placeholder-opt { color: #94a3b8; }
+
+body.dark-mode .custom-dropdown-btn {
+    background: rgba(30,41,59,0.8);
+    border-color: rgba(255,255,255,0.1);
+    color: #f8fafc;
+}
+body.dark-mode .custom-dropdown-list {
+    background: #1e293b;
+    border-color: rgba(255,255,255,0.1);
+}
+body.dark-mode .custom-dropdown-option { color: #f8fafc; }
+body.dark-mode .custom-dropdown-option:hover { background: rgba(255,255,255,0.08); }
+body.dark-mode .custom-dropdown-option.selected { background: rgba(37,99,235,0.2); color: #93c5fd; }
 
 .btn-save-vehicle {
     grid-column: 1 / -1;

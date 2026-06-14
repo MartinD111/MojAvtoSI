@@ -383,6 +383,9 @@ function renderListing(l) {
 
                     <!-- Price Card (Pilled and Centered) -->
                     <div class="lp-sidebar-card lp-price-card centered">
+                        <!-- Price + rating block. On tablet this sits on the left,
+                             with the action row pushed to the right. -->
+                        <div class="lp-price-main">
                         <div class="lp-price-pill-container">
                             ${l.salePriceEur ? `
                             <div>
@@ -403,6 +406,7 @@ function renderListing(l) {
                         <button class="lp-leasing-btn" id="btnShowLeasing">
                             <i data-lucide="credit-card"></i> ${t('check_financing_options')}
                         </button>` : ''}
+                        </div>
 
                         <!-- Like + Compare actions -->
                         <div class="lp-action-row">
@@ -534,12 +538,21 @@ function renderListing(l) {
     }
 
     // Init icons
-    // Mobile layout: move price card right after gallery so order is
-    // gallery → price → specs/description/seller-note → TCO → seller card
-    if (window.innerWidth <= 900) {
-        const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
+    // Stacked layouts relocate the price card out of the sidebar:
+    //  • Tablet (769–900px): into the header, opposite the title (top-right).
+    //  • Phone (≤768px): right after the gallery.
+    const winW = window.innerWidth;
+    if (winW <= 900) {
         const priceCard = page.querySelector('.lp-price-card');
-        if (gallery && priceCard) gallery.insertAdjacentElement('afterend', priceCard);
+        if (priceCard) {
+            if (winW > 768) {
+                const header = page.querySelector('.lp-header');
+                if (header) header.appendChild(priceCard);
+            } else {
+                const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
+                if (gallery) gallery.insertAdjacentElement('afterend', priceCard);
+            }
+        }
     }
 
     if (window.lucide) window.lucide.createIcons();
@@ -583,7 +596,7 @@ function renderGalleryHtml(exteriorImages, interiorImages, condition) {
         <section class="lp-gallery">
             <div class="lp-gallery-main">
                 <img id="galleryMainImg" src="${escHtml(images[0])}" alt="${t('main_photo')}" />
-                ${condition ? `<span class="lp-condition-badge">${escHtml(condition)}</span>` : ''}
+                ${condition ? `<span class="condition-overlay-badge" data-condition="${escHtml(condition)}">${escHtml(condition)}</span>` : ''}
                 ${images.length > 1 ? `
                 <button class="lp-gallery-nav lp-gallery-prev" id="gallPrev">&#10094;</button>
                 <button class="lp-gallery-nav lp-gallery-next" id="gallNext">&#10095;</button>

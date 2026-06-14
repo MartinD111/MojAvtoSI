@@ -28,6 +28,7 @@ let peerListings = [];
 let catalogProducts = [];
 let tireBrands = [];
 let equipmentBrands = [];
+let partsBrands = {};   // keyed by part group value
 
 // ── Navtika equipment categories (for landing search UI) ──────────────────────
 const NAV_EQUIPMENT_CATS = [
@@ -52,16 +53,269 @@ export async function initGumeInDeliPage() {
     }
 
     state = { itemType: 'tire', vehicleCategory: 'avto', source: 'all', filters: {} };
-    renderShell(root);
-    initCustomSelects();
-    bindChrome();
+    renderMojAvtoLanding(root);
+}
 
-    fetch('json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; renderFilters(); }).catch(() => { });
-    fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => { });
+// ── MojAvto: landing search UI (pick what you're looking for, then search) ──────
+// Mirrors the navtika "Oprema za plovila" landing: vehicle category + item type +
+// category tiles + brand/price filters. Clicking "Išči" transitions to the
+// results shell (the advanced-filters view) that previously loaded immediately.
+function renderMojAvtoLanding(root) {
+    // Brand lists loaded lazily so dropdowns can populate after initial render.
+    fetch('json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; refreshLandingBrand(); }).catch(() => {});
+    fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; refreshLandingBrand(); }).catch(() => {});
+    fetch('json/parts_brands.json').then(r => r.json()).then(d => { partsBrands = d || {}; refreshLandingBrand(); }).catch(() => {});
 
-    await loadData();
-    renderFilters();
-    applyAndRender();
+    const tileGroups = () => {
+        if (state.itemType === 'tire') {
+            return [
+                { value: 'letne', label: 'Letne gume', icon: 'sun' },
+                { value: 'zimske', label: 'Zimske gume', icon: 'snowflake' },
+                { value: 'celoletne', label: 'Celoletne gume', icon: 'cloud-sun' },
+            ];
+        }
+        if (state.itemType === 'oprema') {
+            return getEquipmentGroups().map(g => ({ value: g.value, label: g.label, icon: g.icon || 'shield' }));
+        }
+        return getPartGroups(state.vehicleCategory).map(g => ({ value: g.value, label: g.label, icon: g.icon || 'wrench' }));
+    };
+
+    const brandList = () => {
+        if (state.itemType === 'tire') return tireBrands;
+        if (state.itemType === 'oprema') return equipmentBrands;
+        // parts — use the group-specific list from parts_brands.json
+        const group = state.filters.partGroup || '';
+        return partsBrands[group] || [];
+    };
+    const brandIsSelect = () => true; // always a select; falls back to empty list → text input
+
+    const vehTab = (vc) => `
+        <button type="button" class="tab-btn ${state.vehicleCategory === vc.value ? 'active' : ''}" data-vehcat="${vc.value}" title="${vc.label}">
+            <i data-lucide="${vc.icon}"></i>
+            <span class="hidden-md">${vc.label}</span>
+        </button>`;
+
+    const itemBtn = (type, icon, label) => `
+        <button type="button" class="gd-itemtype-btn ${state.itemType === type ? 'active' : ''}" data-item="${type}">
+            <i data-lucide="${icon}"></i> <span>${label}</span>
+        </button>`;
+
+    const render = () => {
+        const tilesLabel = state.itemType === 'tire'
+            ? t('gd_season', 'Sezona')
+            : state.itemType === 'oprema'
+                ? t('gd_eq_group', 'Sklop opreme')
+                : t('gd_part_group', 'Sklop');
+
+        // Sub-type dropdown — shown when a tile is selected (for parts/oprema)
+        const selectedGroup = state.itemType === 'oprema' ? state.filters.eqGroup : state.filters.partGroup;
+        const subTypes = state.itemType === 'tire' ? []
+            : state.itemType === 'oprema' ? (selectedGroup ? getEquipmentTypes(selectedGroup) : [])
+            : (selectedGroup ? getPartTypes(state.vehicleCategory, selectedGroup) : []);
+        const selectedSubType = state.itemType === 'oprema' ? state.filters.eqType : state.filters.partType;
+
+        const subTypeHtml = subTypes.length > 0 ? `
+            <div class="nh-row" id="gdLandSubTypeRow">
+                <div class="nh-field">
+                    <label>${t('gd_part_type', 'Vrsta')}</label>
+                    <div class="pill-select-wrapper">
+                        <select id="gdLandSubType" class="pill-input">
+                            <option value="">Vse vrste</option>
+                            ${subTypes.map(tp => `<option value="${escAttr(tp.value)}" ${selectedSubType === tp.value ? 'selected' : ''}>${escHtml(tp.label)}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            </div>` : '';
+
+        // Brand field — always a select dropdown
+        const brands = brandList();
+        const brandFieldHtml = `<div class="pill-select-wrapper">
+                   <select id="gdLandBrand" class="pill-input">
+                       <option value="">${t('all_brands', 'Vse znamke')}</option>
+                       ${brands.map(b => `<option value="${escAttr(b)}" ${state.filters.brand === b ? 'selected' : ''}>${escHtml(b)}</option>`).join('')}
+                   </select>
+               </div>`;
+
+        root.innerHTML = `
+        <div class="search-box-container" style="margin-top:2rem;margin-bottom:4rem;">
+            <form id="gdLandForm" class="search-box compact glass-card main-search-card card-squircle">
+                <style>
+                    #gdLandForm .nh-row { display:flex; gap:1rem; align-items:flex-end; margin-bottom:1.25rem; flex-wrap:wrap; justify-content:center; }
+                    #gdLandForm .nh-field { display:flex; flex-direction:column; gap:0.35rem; flex:1; min-width:140px; max-width:280px; }
+                    #gdLandForm .nh-field label { font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em; text-align:center; width:100%; }
+                    #gdLandForm .nh-section-label { font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em; text-align:center; margin-bottom:0.6rem; }
+                    #gdLandForm .nh-actions { display:flex; gap:1rem; align-items:center; justify-content:center; margin-top:0.75rem; flex-wrap:wrap; }
+                    #gdLandForm .nav-oprema-cat-grid { justify-content:center; }
+                    #gdLandForm .gd-itemtype-toggle { justify-content:center; }
+                    @media (max-width:600px) {
+                        #gdLandForm .nh-row { flex-direction:column; align-items:stretch; }
+                        #gdLandForm .pill-select-wrapper { width: 100% !important; }
+                    }
+                </style>
+
+                <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:1.25rem;">
+                    <i data-lucide="wrench" style="width:20px;height:20px;color:var(--color-primary,#2563eb);flex-shrink:0;"></i>
+                    <span style="font-size:1rem;font-weight:700;">${t('nav_parts', 'Gume in deli')}</span>
+                </div>
+
+                <!-- Vehicle category -->
+                <div style="margin-bottom:1.25rem;">
+                    <div class="glass-card rounded-pill tabs-glass" id="gdLandVehCat" style="width:fit-content; margin-inline:auto;">
+                        ${VEHICLE_CATEGORIES.map(vehTab).join('')}
+                    </div>
+                </div>
+
+                <!-- Item type -->
+                <div style="display:flex;justify-content:center;margin-bottom:1.25rem;">
+                    <div class="gd-itemtype-toggle" id="gdLandItemType">
+                        ${itemBtn('tire', 'disc-3', t('gd_item_tires', 'Gume'))}
+                        ${itemBtn('part', 'wrench', t('gd_item_parts', 'Deli'))}
+                        ${state.vehicleCategory === 'moto' ? itemBtn('oprema', 'shield', t('cl_sub_oprema', 'Moto oprema')) : ''}
+                    </div>
+                </div>
+
+                <!-- Category tiles -->
+                <div style="margin-bottom:1.25rem;">
+                    <div class="nh-section-label">${tilesLabel.toUpperCase()}</div>
+                    <div id="gdLandTiles" style="display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;max-width:600px;margin-inline:auto;">
+                        ${tileGroups().map(c => `
+                            <button type="button" class="nav-oprema-cat-btn ${isTileActive(c.value) ? 'active' : ''}" data-cat="${c.value}" style="flex:0 0 110px;min-width:110px;max-width:110px;">
+                                <i data-lucide="${c.icon}" style="width:26px;height:26px;margin-bottom:0.3rem;"></i>
+                                <span>${c.label}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Sub-type (appears when a tile is selected) -->
+                ${subTypeHtml}
+
+                <!-- Brand -->
+                <div class="nh-row">
+                    <div class="nh-field">
+                        <label>${t('gd_part_brand', 'Znamka')}</label>
+                        ${brandFieldHtml}
+                    </div>
+                </div>
+
+                <!-- Price range -->
+                <div class="nh-row">
+                    <div class="nh-field">
+                        <label>${t('gd_price_from', 'Cena od')} (€)</label>
+                        <input type="number" id="gdLandPriceFrom" class="pill-input" placeholder="0 €" min="0" inputmode="numeric" value="${escAttr(state.filters.priceFrom || '')}">
+                    </div>
+                    <div class="nh-field">
+                        <label>${t('gd_price_to', 'Cena do')} (€)</label>
+                        <input type="number" id="gdLandPriceTo" class="pill-input" placeholder="${t('gd_no_limit', 'Brez omejitve')}" min="0" inputmode="numeric" value="${escAttr(state.filters.priceTo || '')}">
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="nh-actions">
+                    <button type="button" class="pill-btn secondary" id="gdLandReset" style="flex:1;min-width:140px;max-width:220px;justify-content:center;gap:0.4rem;">
+                        <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> ${t('sidebar_reset', 'Ponastavi')}
+                    </button>
+                    <button type="button" class="pill-btn primary search-submit-btn" id="gdLandSearch" style="flex:1;min-width:140px;max-width:340px;justify-content:center;gap:0.5rem;">
+                        <i data-lucide="search" style="width:16px;height:16px;"></i> ${t('gd_search', 'Išči')}
+                    </button>
+                </div>
+            </form>
+        </div>`;
+
+        if (window.lucide) window.lucide.createIcons({ scope: root });
+        initCustomSelects();
+        bindLanding();
+    };
+
+    function isTileActive(value) {
+        if (state.itemType === 'tire') return (state.filters.seasons || []).includes(value);
+        if (state.itemType === 'oprema') return state.filters.eqGroup === value;
+        return state.filters.partGroup === value;
+    }
+
+    function refreshLandingBrand() {
+        const sel = document.getElementById('gdLandBrand');
+        if (!sel || sel.tagName !== 'SELECT') return;
+        sel.innerHTML = `<option value="">${t('all_brands', 'Vse znamke')}</option>` +
+            brandList().map(b => `<option value="${escAttr(b)}" ${state.filters.brand === b ? 'selected' : ''}>${escHtml(b)}</option>`).join('');
+    }
+
+    function bindLanding() {
+        // Vehicle category
+        document.getElementById('gdLandVehCat')?.addEventListener('click', (e) => {
+            const tab = e.target.closest('.tab-btn');
+            if (!tab) return;
+            state.vehicleCategory = tab.dataset.vehcat;
+            if (state.itemType === 'oprema' && state.vehicleCategory !== 'moto') state.itemType = 'tire';
+            state.filters = {};
+            render();
+        });
+
+        // Item type
+        document.getElementById('gdLandItemType')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.gd-itemtype-btn');
+            if (!btn) return;
+            state.itemType = btn.dataset.item;
+            state.filters = {};
+            render();
+        });
+
+        // Category tiles (multi-select for tire seasons, single for part/eq group)
+        // Re-renders to show/hide sub-type dropdown for parts/oprema
+        document.getElementById('gdLandTiles')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.nav-oprema-cat-btn');
+            if (!btn) return;
+            const val = btn.dataset.cat;
+            if (state.itemType === 'tire') {
+                const set = new Set(state.filters.seasons || []);
+                set.has(val) ? set.delete(val) : set.add(val);
+                state.filters.seasons = [...set];
+                // Tire tiles are multi-select — just toggle the active class, no full re-render needed
+                btn.classList.toggle('active');
+            } else {
+                const key = state.itemType === 'oprema' ? 'eqGroup' : 'partGroup';
+                const subKey = state.itemType === 'oprema' ? 'eqType' : 'partType';
+                const wasActive = btn.classList.contains('active');
+                state.filters[key] = wasActive ? '' : val;
+                state.filters[subKey] = '';
+                // Re-render to show sub-type dropdown
+                render();
+            }
+        });
+
+        // Sub-type select (injected after tile selection)
+        document.getElementById('gdLandSubType')?.addEventListener('change', (e) => {
+            const key = state.itemType === 'oprema' ? 'eqType' : 'partType';
+            state.filters[key] = e.target.value;
+        });
+
+        // Reset
+        document.getElementById('gdLandReset')?.addEventListener('click', () => {
+            state.filters = {};
+            render();
+        });
+
+        // Search → results shell (advanced-filters view)
+        document.getElementById('gdLandSearch')?.addEventListener('click', async () => {
+            const brandEl = document.getElementById('gdLandBrand');
+            if (brandEl) state.filters.brand = brandEl.value || '';
+            const pf = parseInt(document.getElementById('gdLandPriceFrom')?.value) || 0;
+            const pt = parseInt(document.getElementById('gdLandPriceTo')?.value) || 0;
+            state.filters.priceFrom = pf > 0 ? String(pf) : '';
+            state.filters.priceTo = pt > 0 ? String(pt) : '';
+
+            renderShell(root);
+            initCustomSelects();
+            bindChrome();
+            fetch('json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; renderFilters(); }).catch(() => {});
+            fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => {});
+            await loadData();
+            renderFilters();
+            applyAndRender();
+        });
+    }
+
+    render();
 }
 
 // ── Navtika: landing search UI ────────────────────────────────────────────────

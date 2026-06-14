@@ -25,7 +25,22 @@
       "Bash(grep -rln 'adv-chip-group\\\\|data-eq-group\\\\|name=.features' public/views/)",
       "Bash(echo \"exit:$?\")",
       "Bash(node --check src/data/equipment.js)",
-      "Bash(VITE_PLATFORM=navtika npx vite build)"
+      "Bash(VITE_PLATFORM=navtika npx vite build)",
+      "PowerShell(if \\(Test-Path \"package.json\"\\) { \\(Get-Content package.json | ConvertFrom-Json\\).scripts | Format-List })",
+      "Bash(node --check src/services/newsService.js)",
+      "Bash(node --check src/pages/news.js)",
+      "Bash(node --check src/pages/home.js)",
+      "PowerShell(npm run build:news 2>&1)",
+      "Bash(curl -s http://localhost:4178/ -o /dev/null -w \"home: %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:4178/json/navigation.news.json -o /dev/null -w \"nav: %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:4178/views/home.news.html -o /dev/null -w \"view: %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:4178/lang/sl.news.json -o /dev/null -w \"lang: %{http_code}\\\\n\")",
+      "Bash(kill %1)",
+      "Bash(node --check \"c:\\\\Users\\\\marti\\\\AMS d.o.o\\\\MojAvto.si\\\\src\\\\pages\\\\news.js\")",
+      "Bash(node --check \"c:\\\\Users\\\\marti\\\\AMS d.o.o\\\\MojAvto.si\\\\src\\\\pages\\\\home.news.js\")",
+      "Bash(node --check \"c:/Users/marti/AMS d.o.o/MojAvto.si/src/pages/gume-in-deli.js\")",
+      "Bash(PYTHONIOENCODING=utf-8 py scripts/build_prosti_cas_taxonomy.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python3 scripts/build_prosti_cas_taxonomy.py)"
     ],
     "additionalDirectories": [
       "c:\\Users\\marti\\.claude\\projects\\c--Users-marti-AMS-d-o-o-MojAvto-si\\memory"

@@ -561,6 +561,7 @@ const TAX_SOURCES_BY_PLATFORM = {
         avto:        { file: 'json/brands_models_global.json',     label: 'Avtomobili' },
         moto:        { file: 'json/brands_models_moto.json',       label: 'Motorji' },
         gospodarska: { file: 'json/brands_models_gospodarska.json', label: 'Gospodarska' },
+        prosti_cas:  { file: 'json/brands_models_prosti_cas.json', label: 'Prosti čas' },
     },
     navtika: {
         plovila:    { file: 'json/brands_models_plovila.json',    label: 'Plovila' },

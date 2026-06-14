@@ -1,0 +1,272 @@
+<div class="home-container">
+    <div class="glass-hero">
+        <h1 class="hero-title">
+            <div class="hero-title-line1">
+                <span data-i18n-key="hero_let_your_next">Let your next</span>
+            </div>
+            <div class="hero-word-slider">
+                <div class="hero-word-items">
+                    <span data-i18n-key="hero_word_car">car</span>
+                    <span data-i18n-key="hero_word_motorcycle">motorcycle</span>
+                    <span data-i18n-key="hero_word_truck">truck</span>
+                    <span data-i18n-key="hero_word_forklift">forklift</span>
+                    <span data-i18n-key="hero_word_jetski">jetski</span>
+                    <span data-i18n-key="hero_word_snowmobile">bager</span>
+                    <span data-i18n-key="hero_word_tractor">tractor</span>
+                    <span data-i18n-key="hero_word_bus">bus</span>
+                    <span data-i18n-key="hero_word_van">van</span>
+                    <span data-i18n-key="hero_word_rv">RV</span>
+                    <span data-i18n-key="hero_word_car_loop">car</span>
+                </div>
+            </div>
+
+<style>
+    .hero-word-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      animation: none;
+      transform: translateY(0);
+    }
+    .hero-word-items span {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 1.4em !important;
+      min-height: 1.4em !important;
+      max-height: 1.4em !important;
+      line-height: 1.4em !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      color: inherit !important;
+    }
+</style>
+            <div class="hero-title-line2">
+                <span class="text-gradient" data-i18n-key="hero_find_you">find you</span>
+            </div>
+        </h1>
+    </div>
+
+    <div class="home-search-mode" id="homeSearchMode">
+        <button type="button" class="home-search-mode-pill active" data-search-mode="oglasi">
+            <i data-lucide="search"></i>
+            <span data-i18n-key="search_mode_listings">Išči oglase</span>
+        </button>
+        <button type="button" class="home-search-mode-pill" data-search-mode="drazbe">
+            <i data-lucide="gavel"></i>
+            <span data-i18n-key="search_mode_auctions">Išči dražbe</span>
+        </button>
+    </div>
+
+    <div class="home-tabs-container">
+        <div class="glass-card rounded-pill tabs-glass">
+            <button type="button" class="tab-btn active" data-category="avto" title="Cars">
+                <i data-lucide="car"></i> 
+                <span class="hidden-md" data-i18n-key="cat_cars">Cars</span>
+            </button>
+            <button type="button" class="tab-btn" data-category="motor" title="Motorcycles">
+                <i data-lucide="bike"></i> 
+                <span class="hidden-md" data-i18n-key="cat_moto">Motorcycles</span>
+            </button>
+            <button type="button" class="tab-btn" data-category="gospodarska" title="Commercial Vehicles">
+                <i data-lucide="truck"></i> 
+                <span class="hidden-md" data-i18n-key="cat_commercial">Commercial</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Links (could be styled better or hidden, keeping for now) -->
+    <div class="quick-links-container" style="display:none;">
+        <a href="#/search-results" class="quick-link-btn" id="quick-link-new">
+            <i class="fas fa-star"></i>
+            <span>New Vehicles</span>
+        </a>
+    </div>
+
+    <div class="search-box-container">
+        <form id="homeSearchForm" class="search-box compact glass-card main-search-card card-squircle">
+            <div class="search-grid">
+                <!-- Row 1 -->
+                <div class="form-group">
+                    <label for="home-make" data-i18n-key="form_make">Make</label>
+                    <div class="pill-select-wrapper">
+                        <select id="home-make" name="make" class="pill-input">
+                            <option value="" data-i18n-key="all_brands">All makes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="group-home-model">
+                    <label for="home-model" data-i18n-key="form_model">Model</label>
+                    <div class="pill-select-wrapper">
+                        <select id="home-model" name="model" disabled class="pill-input">
+                            <option value="" data-i18n-key="all_models">All models</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="group-home-variant">
+                    <label for="home-variant" data-i18n-key="cl_trim_variant">Različica</label>
+                    <div class="pill-select-wrapper">
+                        <select id="home-variant" name="variant" disabled class="pill-input">
+                            <option value="" data-i18n-key="cl_trim_variant">Različica</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="form-group">
+                    <label for="home-mileage-to" data-i18n-key="form_mileage_to">Mileage (to)</label>
+                    <div class="pill-select-wrapper">
+                        <select id="home-mileage-to" name="mileageTo" class="pill-input">
+                            <option value="" data-i18n-key="unlimited_mileage">Unlimited</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="home-price-to" data-i18n-key="form_price_to">Price (up to)</label>
+                    <div class="pill-input-wrapper" style="width: 100%;">
+                        <input type="text" id="home-price-to" name="priceTo" class="pill-input js-format-number" placeholder="Brez omejitve" data-i18n-key="no_limit" data-i18n-target="placeholder" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="home-reg-from" data-i18n-key="form_year_from">Year (from)</label>
+                    <div class="pill-select-wrapper">
+                        <select id="home-reg-from" name="yearFrom" class="pill-input">
+                            <option value="" data-i18n-key="all_years">All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="grid-column: span 3; flex-direction: row; align-items: flex-end; gap: 0.75rem;">
+                    <!-- Country pill -->
+                    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                        <label for="home-country" style="display: block; font-size: 0.8125rem; font-weight: 400; text-transform: none; letter-spacing: 0; margin-bottom: 0;" data-i18n-key="cl_label_country">Država</label>
+                        <div class="pill-select-wrapper" style="width: 100%;">
+                            <select id="home-country" name="country" class="pill-input"></select>
+                        </div>
+                    </div>
+                    <!-- Region pill -->
+                    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                        <label for="home-region" style="display: block; font-size: 0.8125rem; font-weight: 400; text-transform: none; letter-spacing: 0; margin-bottom: 0;" data-i18n-key="cl_label_region">Regija</label>
+                        <div class="pill-select-wrapper" style="width: 100%;">
+                            <select id="home-region" name="region" class="pill-input" disabled></select>
+                        </div>
+                    </div>
+                    <!-- Action buttons to the right -->
+                    <div class="home-action-btns" style="flex: 2.5; display: flex; gap: 0.4rem; align-items: center; margin-left: 0.75rem;">
+                        <button type="reset" class="pill-btn search-action-pill reset-pill" title="Reset filters">
+                            <i data-lucide="refresh-cw"></i>
+                            <span>Reset</span>
+                        </button>
+                        <a href="#/iskanje?cat=avto" class="pill-btn search-action-pill filters-pill" id="homeAdvancedSearchLink" title="More filters">
+                            <i data-lucide="sliders-horizontal"></i>
+                            <span>Več filtrov</span>
+                        </a>
+                        <button type="submit" class="pill-btn primary search-submit-btn compact-search">
+                            <i data-lucide="search"></i>
+                            <span id="offer-count-text">1.4M</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="secondary-actions-container">
+            <a href="#/oceni-vrednost" class="footer-pill evaluation-pill pill-btn btn-sm" title="Evaluate my vehicle value">
+                <i data-lucide="calculator"></i>
+                <span data-i18n-key="evaluate_vehicle_btn">Evaluate my vehicle value</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="ad-banner-container rotating-ads-carousel">
+    <span class="sponsored-badge" data-i18n-key="sponsored_label">Sponsored</span>
+    <button class="carousel-btn prev" id="rot-prev-btn" aria-label="Previous">&#10094;</button>
+    <div class="rotating-ads-track-container">
+        <div class="rotating-ads-track" id="rotating-ads-container">
+            <!-- Mini cards will be rendered here -->
+        </div>
+    </div>
+    <button class="carousel-btn next" id="rot-next-btn" aria-label="Next">&#10095;</button>
+</div>
+
+
+<div class="page-container" style="margin-top: 2rem; flex-direction: column;">
+    <section id="featured-section" class="carousel-section auction-carousel-section" style="display: none;">
+        <h2 data-i18n-key="auction_listings_title">Oglasi iz dražbe</h2>
+        <div class="ad-banner-container rotating-ads-carousel featured-auto-carousel">
+            <div class="rotating-ads-track-container">
+                <div class="rotating-ads-track" id="featured-container">
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<div class="page-container" style="margin-top: 2rem; flex-direction: column;">
+    <section id="recently-viewed-section" class="carousel-section" style="display: none;">
+        <h2 data-i18n-key="recently_viewed_title">Recently Viewed</h2>
+        <div class="carousel-wrapper">
+            <button class="carousel-btn prev" id="recent-prev-btn" aria-label="Previous listing">&#10094;</button>
+            <div class="carousel-track-container">
+                <div class="carousel-track" id="recently-viewed-container">
+                </div>
+            </div>
+            <button class="carousel-btn next" id="recent-next-btn" aria-label="Next listing">&#10095;</button>
+        </div>
+    </section>
+</div>
+
+
+
+<div class="page-container" style="margin-top: 2rem; flex-direction: column;">
+    <section class="news-section">
+        <div class="news-section-head">
+            <h2 data-i18n-key="news_title">AutoHub News</h2>
+            <a href="#/novice" id="homeNewsSeeAll" class="news-see-all" data-i18n-key="news_see_all">Vse novice →</a>
+        </div>
+        <div class="news-grid" id="home-news-grid">
+            <a href="#/novice" class="news-card">
+                <div
+                    style="width: 100%; height: 200px; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="users" style="color:#6366f1; width:64px; height:64px;"></i>
+                </div>
+                <div class="news-card-content">
+                    <h3 data-i18n-key="news_1_title">How to Choose the Perfect Family Car?</h3>
+                    <p data-i18n-key="news_1_desc">Check out our guide for purchasing a family vehicle that meets all your needs and ensures the safety of your loved ones.</p>
+                    <span class="read-more-btn"><span data-i18n-key="read_more">Read more</span> <i data-lucide="arrow-right"
+                            style="width: 16px; height: 16px;"></i></span>
+                </div>
+            </a>
+            <a href="#/novice" class="news-card">
+                <div
+                    style="width: 100%; height: 200px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="battery-charging" style="color:#10b981; width:64px; height:64px;"></i>
+                </div>
+                <div class="news-card-content">
+                    <h3 data-i18n-key="news_2_title">Test: New Electric SUV</h3>
+                    <p data-i18n-key="news_2_desc">We tested the latest electric SUV on the market. See how it performs in the real world.</p>
+                    <span class="read-more-btn"><span data-i18n-key="read_more">Read more</span> <i data-lucide="arrow-right"
+                            style="width: 16px; height: 16px;"></i></span>
+                </div>
+            </a>
+            <a href="#/novice" class="news-card">
+                <div
+                    style="width: 100%; height: 200px; background: linear-gradient(135deg, #fef3c7, #fde68a); display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="wrench" style="color:#f59e0b; width:64px; height:64px;"></i>
+                </div>
+                <div class="news-card-content">
+                    <h3 data-i18n-key="news_3_title">5 Winter Maintenance Tips</h3>
+                    <p data-i18n-key="news_3_desc">Follow these simple steps to ensure your vehicle stays safe and reliable through the winter season.</p>
+                    <span class="read-more-btn"><span data-i18n-key="read_more">Read more</span> <i data-lucide="arrow-right"
+                            style="width: 16px; height: 16px;"></i></span>
+                </div>
+            </a>
+        </div>
+    </section>
+</div>

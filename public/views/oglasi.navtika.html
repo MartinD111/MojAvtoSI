@@ -105,8 +105,8 @@
             body.dark-mode #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #ffffff !important; }
             @media (min-width: 769px) {
                 #filtersCard {
-                    overflow: visible !important;
-                    max-height: none !important;
+                    overflow-y: auto !important;
+                    max-height: calc(100vh - 8rem) !important;
                 }
                 .filters-card-inner {
                     overflow: visible !important;

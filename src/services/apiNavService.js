@@ -2,9 +2,9 @@ import { PLATFORM } from '../config/platform.js';
 
 export class ApiNavService {
   static async fetchNavigation() {
-    const file = PLATFORM.id === 'navtika'
-      ? 'json/navigation.navtika.json'
-      : 'json/navigation.json';
+    const file = PLATFORM.id === 'avto'
+      ? 'json/navigation.json'
+      : `json/navigation.${PLATFORM.id}.json`;
     try {
       const response = await fetch(file);
       if (!response.ok) {

@@ -1,0 +1,61 @@
+{
+  "navItems": [
+    {
+      "id": "home",
+      "label": "Domov",
+      "i18nKey": "nav_home",
+      "icon": "home",
+      "href": "#/"
+    },
+    {
+      "id": "oglasi",
+      "label": "Oglasi",
+      "i18nKey": "header_listings",
+      "icon": "newspaper",
+      "children": [
+        { "id": "colni",            "label": "Čolni",                "i18nKey": "cat_boats",            "href": "#/iskanje?cat=colni",                "icon": "ship" },
+        { "id": "jadrnice",         "label": "Jadrnice",             "i18nKey": "cat_sailboats",        "href": "#/iskanje?cat=jadrnice",             "icon": "sailboat" },
+        { "id": "gumenjaki",        "label": "Gumenjaki",            "i18nKey": "cat_inflatables",      "href": "#/iskanje?cat=gumenjaki",            "icon": "waves" },
+        { "id": "jet-ski",          "label": "Jet-ski",              "i18nKey": "cat_jet_ski",          "href": "#/iskanje?cat=jet-ski",              "icon": "zap" },
+        { "id": "izvenkrmni",       "label": "Izvenkrmni motorji",   "i18nKey": "cat_outboard_engines", "href": "#/iskanje?cat=izvenkrmni-motorji",   "icon": "cog" }
+      ]
+    },
+    {
+      "id": "dealers",
+      "label": "Marine / Prodajalci",
+      "i18nKey": "nav_dealers",
+      "icon": "building-2",
+      "href": "#/zemljevid"
+    },
+    {
+      "id": "parts",
+      "label": "Oprema za plovila",
+      "i18nKey": "header_tires_parts",
+      "icon": "anchor",
+      "href": "#/gume-in-deli"
+    }
+  ],
+  "userNavItems": [
+    {
+      "id": "dashboard",
+      "label": "Nadzorna plošča",
+      "i18nKey": "dashboard_link",
+      "icon": "layout-dashboard",
+      "href": "#/dashboard"
+    },
+    {
+      "id": "profile",
+      "label": "Moj profil",
+      "i18nKey": "my_profile",
+      "icon": "user",
+      "href": "#/profil"
+    },
+    {
+      "id": "garage",
+      "label": "Moja garaža",
+      "i18nKey": "my_garage",
+      "icon": "warehouse",
+      "href": "#/garaža"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+.dashboard-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+.dashboard-container h1 { font-size: 2.5rem; margin-bottom: 2rem; }
+.tabs { display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 2rem; }
+.tab-link { background: none; border: none; padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.tab-link.active { color: #f97316; border-color: #f97316; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.empty-state { text-align: center; padding: 2rem; color: #6b7280; }
+.profile-form { max-width: 500px; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.profile-form .form-group { margin-bottom: 1.5rem; }
+.profile-form label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+.profile-form input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; }
+.btn-primary { background-color: #f97316; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; }
+
+/* ── Premium Layout Styles for Profile Page ── */
+.profile-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: var(--border-glass);
+    border-radius: 2rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-glass);
+    margin-bottom: 2rem;
+}
+
+.profile-card h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1e293b;
+    transition: color 0.3s ease;
+}
+
+.profile-vehicle-card {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    background: rgba(255, 255, 255, 0.75);
+    transition: all 0.2s ease;
+}
+
+.profile-vehicle-card:hover {
+    transform: scale(1.01);
+}
+
+.profile-vehicle-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1e293b;
+    transition: color 0.3s ease;
+}
+
+.profile-vehicle-card p {
+    margin: 0.2rem 0 0;
+    font-size: 0.82rem;
+    color: #64748b;
+    transition: color 0.3s ease;
+}
+
+/* Vehicle Form Wrapper and Fields */
+.profile-form-container {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1.5px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+}
+
+.profile-form-container h3 {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    transition: color 0.3s ease;
+}
+
+.profile-form-container label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #475569;
+    display: block;
+    margin-bottom: 4px;
+    transition: color 0.3s ease;
+}
+
+.profile-form-container input,
+.profile-form-container select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #ffffff;
+    color: #1e293b;
+    transition: all 0.3s ease;
+}
+
+/* ── Dark Mode Overrides for Profile Page ── */
+body.dark-mode .profile-card h2 {
+    color: #ffffff;
+}
+
+body.dark-mode .profile-vehicle-card {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(30, 41, 59, 0.45);
+}
+
+body.dark-mode .profile-vehicle-card h3 {
+    color: #ffffff;
+}
+
+body.dark-mode .profile-vehicle-card p {
+    color: #94a3b8;
+}
+
+body.dark-mode .profile-form-container {
+    background: rgba(30, 41, 59, 0.55);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .profile-form-container h3 {
+    color: #ffffff;
+}
+
+body.dark-mode .profile-form-container label {
+    color: #cbd5e1;
+}
+
+body.dark-mode .profile-form-container input,
+body.dark-mode .profile-form-container select {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+body.dark-mode .profile-back-link {
+    color: #60a5fa !important;
+}

@@ -16,7 +16,7 @@
         { "id": "avto", "label": "Avtomobili", "i18nKey": "cat_cars", "href": "#/iskanje?cat=avto", "icon": "car" },
         { "id": "moto", "label": "Motorji", "i18nKey": "cat_moto", "href": "#/iskanje?cat=moto", "icon": "bike" },
         { "id": "gospodarska", "label": "Gospodarska", "i18nKey": "cat_commercial", "href": "#/iskanje?cat=gospodarska", "icon": "truck" },
-        { "id": "kmetijska", "label": "Kmetijska", "i18nKey": "cat_agricultural", "href": "#/iskanje?cat=kmetijska", "icon": "tractor" }
+        { "id": "prosti-cas", "label": "Prosti čas", "i18nKey": "cat_recreation", "href": "#/iskanje?cat=prosti-cas", "icon": "tent-tree" }
       ]
     },
     {

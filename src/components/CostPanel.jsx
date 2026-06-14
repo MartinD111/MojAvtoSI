@@ -9,12 +9,12 @@ import './CostPanel.css';
 const MONTH_OPTIONS = [12, 24, 36, 48, 60, 72, 84];
 
 const CATEGORIES = [
-    { key: 'financing', labelKey: 'cp_cat_financing', icon: '🏦' },
-    { key: 'insurance', labelKey: 'cp_cat_insurance', icon: '🛡️' },
-    { key: 'energy', labelKey: 'cp_cat_energy', icon: '⛽' },
-    { key: 'maintenance', labelKey: 'cp_cat_maintenance', icon: '🔧' },
-    { key: 'taxes', labelKey: 'cp_cat_taxes', icon: '📋' },
-    { key: 'residual', labelKey: 'cp_cat_residual', icon: '♻️' }
+    { key: 'financing', label: 'Financiranje', icon: '🏦' },
+    { key: 'insurance', label: 'Zavarovanje', icon: '🛡️' },
+    { key: 'energy', label: 'Gorivo/Energija', icon: '⛽' },
+    { key: 'maintenance', label: 'Vzdrževanje', icon: '🔧' },
+    { key: 'taxes', label: 'Davki in dajatve', icon: '📋' },
+    { key: 'residual', label: 'Preostala vrednost', icon: '♻️' }
 ];
 
 // Display currency conversion (engine works in USD-derived base figures)

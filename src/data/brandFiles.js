@@ -18,5 +18,6 @@ export function brandsFileFor(category) {
     // avto platform
     if (category === 'motor' || category === 'moto') return 'json/brands_models_moto.json';
     if (category === 'gospodarska') return 'json/brands_models_gospodarska.json';
+    if (category === 'prosti-cas' || category === 'prosti_cas') return 'json/brands_models_prosti_cas.json';
     return 'json/brands_models_global.json';
 }

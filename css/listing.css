@@ -99,7 +99,7 @@ body.dark-mode .lp-title { color: #f1f5f9; }
 }
 
 .lp-price {
-    font-size: 1.85rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: #16a34a;
     letter-spacing: -0.03em;
@@ -123,7 +123,7 @@ body.dark-mode .lp-price {
 
 /* ── Sale / discount price ──────────────────────────────────────────────────*/
 .lp-sale-price {
-    font-size: 1.85rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: #16a34a;
     letter-spacing: -0.03em;
@@ -2006,3 +2006,63 @@ body.dark-mode .lp-owner-bar-label { color: #93c5fd; }
 }
 .lp-owner-bar-btn:hover { opacity: 0.88; }
 .lp-owner-bar-btn svg { width: 0.85rem; height: 0.85rem; }
+
+/* ── Tablet listing detail tweaks ──────────────────────────────────────────
+   Wrapper around the price/rating block. Transparent by default (children
+   flow inside the centered price card); becomes a column on tablet so the
+   price sits on the left and the action buttons on the right. */
+.lp-price-main {
+    display: contents;
+}
+
+@media (min-width: 769px) and (max-width: 900px) {
+    /* The price card is relocated into the header (JS), opposite the title.
+       Render it inline (no card chrome) with the buttons left of the price. */
+    .lp-header {
+        align-items: center;
+    }
+
+    .lp-header .lp-price-card.centered {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 1.25rem !important;
+        width: auto !important;
+        flex: 0 0 auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+
+    /* Price block → right edge */
+    .lp-header .lp-price-main {
+        order: 2;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        text-align: right !important;
+    }
+
+    /* Shrani / Primerjaj → left of the price */
+    .lp-header .lp-action-row {
+        order: 1;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: auto !important;
+        flex: 0 0 auto !important;
+        margin-top: 0 !important;
+    }
+
+    .lp-header .lp-action-btn {
+        flex: 0 0 auto !important;
+        white-space: nowrap;
+    }
+
+    /* More breathing room between Vse specifikacije, Opomba and Ogledi oglasa */
+    .lp-main > .lp-section {
+        margin-bottom: 1.5rem !important;
+    }
+}

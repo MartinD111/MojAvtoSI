@@ -15,6 +15,7 @@ import { t } from '../core/i18n.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
 import { brandsFileFor } from '../data/brandFiles.js';
+import { popularBrandsFor } from '../data/popularBrands.js';
 import { PLATFORM } from '../config/platform.js';
 
 let allListings = [];
@@ -310,6 +311,27 @@ function reloadBrands(category) {
             brandSelect.innerHTML = `<option value="">${t('all_brands', 'All makes')}</option>`;
             modelSelect.innerHTML = `<option value="">${t('all_models', 'All models')}</option>`;
             modelSelect.disabled = true;
+
+            // Surface the top-10 popular brands in a group at the top, mirroring
+            // the advanced-search make dropdown (customSelect styles/handles the
+            // data-popular* options).
+            const popular = popularBrandsFor(category).filter(b => brandModelData[b]);
+            if (popular.length) {
+                const lbl = document.createElement('option');
+                lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+                lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+                brandSelect.appendChild(lbl);
+                popular.forEach(brand => {
+                    const o = document.createElement('option');
+                    o.value = brand; o.textContent = brand;
+                    o.dataset.popular = 'true';
+                    brandSelect.appendChild(o);
+                });
+                const sep = document.createElement('option');
+                sep.value = ''; sep.textContent = '──────────────';
+                sep.disabled = true; sep.dataset.popularLabel = 'true';
+                brandSelect.appendChild(sep);
+            }
 
             Object.keys(brandModelData).sort().forEach(brand => {
                 const option = document.createElement("option");

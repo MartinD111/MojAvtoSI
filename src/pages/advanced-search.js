@@ -6,6 +6,7 @@ import { t } from '../core/i18n.js';
 import { resolveCategory, SEARCH_TYPE_OPTIONS } from '../data/categories.js';
 import { PLATFORM } from '../config/platform.js';
 import { brandsFileFor } from '../data/brandFiles.js';
+import { popularBrandsFor } from '../data/popularBrands.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
 import { getModelBodyType, getModelVariants } from '../utils/bodyType.js';
@@ -63,34 +64,36 @@ export function initAdvancedSearchPage() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Global Prodaja / Najem (sale / rental) toggle.
-// Only rendered on platforms where rental is first-class (MojaNavtika charter).
+// Prodaja / Najem (sale / rental) toggle — styled like the home Oglasi/Dražbe pill.
+// Rendered when rental is first-class for the platform (MojaNavtika charter) OR when
+// the resolved category supports rental (e.g. recreation / prosti-čas campers).
 // Sets the existing hiddenNajem field ('' = sale, '1' = rental) and re-runs search.
 // ═══════════════════════════════════════════════════════════════════════════════
 function injectRentalToggle(ctx) {
-    if (!PLATFORM.hasGlobalRentalToggle) return;
+    const resolved = ctx.cat ? resolveCategory(ctx.cat, ctx.sub) : null;
+    const categoryHasRental = !!(resolved && resolved.main && resolved.main.hasRentalToggle);
+    if (!PLATFORM.hasGlobalRentalToggle && !categoryHasRental) return;
     const container = document.querySelector('.search-container');
     if (!container || document.getElementById('rentalModeToggle')) return;
 
     const isRental = ctx.najem === '1';
     const bar = document.createElement('div');
     bar.id = 'rentalModeToggle';
-    bar.className = 'home-tabs-container';
-    bar.style.cssText = 'margin-bottom:1.5rem; display:flex; justify-content:center;';
+    bar.className = 'home-search-mode';
+    bar.setAttribute('role', 'tablist');
+    bar.setAttribute('aria-label', 'Prodaja ali najem');
     bar.innerHTML = `
-      <div class="glass-card rounded-pill tabs-glass" role="tablist" aria-label="Prodaja ali najem">
-        <button type="button" class="tab-btn ${isRental ? '' : 'active'}" data-mode="sale">
-          <i data-lucide="tag"></i><span>Prodaja</span>
+        <button type="button" class="home-search-mode-pill ${isRental ? '' : 'active'}" data-mode="sale">
+            <i data-lucide="tag"></i><span>Prodaja</span>
         </button>
-        <button type="button" class="tab-btn ${isRental ? 'active' : ''}" data-mode="rental">
-          <i data-lucide="calendar-clock"></i><span>Najem</span>
-        </button>
-      </div>`;
+        <button type="button" class="home-search-mode-pill ${isRental ? 'active' : ''}" data-mode="rental">
+            <i data-lucide="calendar-clock"></i><span>Najem</span>
+        </button>`;
     container.insertBefore(bar, container.firstChild);
 
-    bar.querySelectorAll('.tab-btn').forEach(btn => {
+    bar.querySelectorAll('.home-search-mode-pill').forEach(btn => {
         btn.addEventListener('click', () => {
-            bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            bar.querySelectorAll('.home-search-mode-pill').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const rental = btn.dataset.mode === 'rental';
             ctx.najem = rental ? '1' : '';
@@ -186,34 +189,37 @@ function applyCategoryContext(ctx) {
     }
 
     // ── Search-mode pills: Išči oglase / Išči dražbe ──
+    // Styled identically to the landing-page toggle (home-search-mode pill).
     if (searchTypePills) {
+        searchTypePills.className = 'home-search-mode';
         searchTypePills.style.display = 'flex';
         searchTypePills.innerHTML = `
-            <button type="button" class="search-type-pill ${searchMode === 'oglasi' ? 'active' : ''}" data-search-mode="oglasi">
-                🚗 ${t('search_mode_listings', 'Išči oglase')}
+            <button type="button" class="home-search-mode-pill ${searchMode === 'oglasi' ? 'active' : ''}" data-search-mode="oglasi">
+                <i data-lucide="search"></i><span>${t('search_mode_listings', 'Išči oglase')}</span>
             </button>
-            <button type="button" class="search-type-pill ${searchMode === 'drazbe' ? 'active' : ''}" data-search-mode="drazbe">
-                🔨 ${t('search_mode_auctions', 'Išči dražbe')}
+            <button type="button" class="home-search-mode-pill ${searchMode === 'drazbe' ? 'active' : ''}" data-search-mode="drazbe">
+                <i data-lucide="gavel"></i><span>${t('search_mode_auctions', 'Išči dražbe')}</span>
             </button>`;
-        searchTypePills.querySelectorAll('.search-type-pill').forEach(pill => {
+        searchTypePills.querySelectorAll('.home-search-mode-pill').forEach(pill => {
             pill.addEventListener('click', () => {
                 searchMode = pill.dataset.searchMode;
-                searchTypePills.querySelectorAll('.search-type-pill')
+                searchTypePills.querySelectorAll('.home-search-mode-pill')
                     .forEach(p => p.classList.toggle('active', p === pill));
             });
         });
+        if (window.lucide) window.lucide.createIcons();
     }
 
     // ── Pre-select vehicle type if specified ──
+    // Done synchronously (before bindSearchLogic runs) so the initial brand fetch
+    // already sees the active card and filters the leisure list by vrsta vozila.
     if (ctx.vtype) {
-        setTimeout(() => {
-            const card = document.querySelector(`.body-type-card[data-value="${ctx.vtype}"]`);
-            if (card) {
-                card.classList.add('active');
-                const bodyTypeHidden = document.getElementById('bodyTypeHidden');
-                if (bodyTypeHidden) bodyTypeHidden.value = ctx.vtype;
-            }
-        }, 50);
+        const card = document.querySelector(`.body-type-card[data-value="${ctx.vtype}"]`);
+        if (card) {
+            card.classList.add('active');
+            const bodyTypeHidden = document.getElementById('bodyTypeHidden');
+            if (bodyTypeHidden) bodyTypeHidden.value = ctx.vtype;
+        }
     }
 
     // ── Restore remembered search state ──
@@ -319,11 +325,39 @@ function bindSearchLogic(catContext) {
     let excludedVehicles = [];
     const MAX_VEHICLES = 3;
 
+    // ── Leisure (prosti-cas) field applicability ──
+    // Towed/static leisure vehicles have no engine; motorhomes & camper vans do.
+    // The exotic car engine configs (W12/W16/V10/V12) never apply to any of them.
+    const LEISURE_MOTORIZED = ['Avtodom', 'SnemljivBivalnik'];
+    // Drop supercar configs (W12/W16/V12); keep inline, V6/V8/V10 (Ford Triton V10
+    // was the standard motorhome engine for decades) and electric.
+    const LEISURE_ENGINE_CONFIGS = new Set(['I3', 'I4', 'I5', 'I6', 'V6', 'V8', 'V10', 'Electric']);
+    const LEISURE_FUELS = new Set(['Dizel', 'Petrol', 'Elektrika', 'Hibrid', 'LPG', 'CNG']);
+
+    function applyLeisureFieldVisibility() {
+        if (activeTab !== 'prosti-cas') return;
+        const types = getSelectedLeisureTypes();
+        // No card picked yet → assume a motorised vehicle so engine filters stay available.
+        const hasMotor = types.length === 0 || types.some(t => LEISURE_MOTORIZED.includes(t));
+
+        const engineAcc = document.getElementById('acc-engine');
+        if (engineAcc) engineAcc.style.display = hasMotor ? 'block' : 'none';
+
+        // Trim engine configs / fuels to what leisure vehicles actually use.
+        applyChipGroup('engineConfig', LEISURE_ENGINE_CONFIGS);
+        applyChipGroup('fuel', LEISURE_FUELS);
+
+        // "Število vrat" (2/3, 4/5…) is a passenger-car facet — not meaningful here.
+        const doorsField = document.getElementById('doorsField');
+        if (doorsField) doorsField.style.display = 'none';
+    }
+
     // ── Dynamic Field Visibility ──
     function toggleVehicleSpecificFields(tab) {
         const carFields = document.querySelectorAll('.car-only-field');
         const motoFields = document.querySelectorAll('.moto-only-field');
         const accInterior = document.getElementById('acc-interior');
+        const engineAcc = document.getElementById('acc-engine');
 
         if (tab === 'moto') {
             carFields.forEach(el => el.style.display = 'none');
@@ -341,6 +375,34 @@ function bindSearchLogic(catContext) {
             });
             motoFields.forEach(el => el.style.display = 'none');
             if (accInterior) accInterior.style.display = 'block';
+        }
+
+        if (tab === 'prosti-cas') {
+            applyLeisureFieldVisibility();
+        } else {
+            // Restore full car facets that the leisure pass may have narrowed/hidden.
+            if (engineAcc) engineAcc.style.display = 'block';
+            applyChipGroup('engineConfig', null);
+            applyChipGroup('fuel', null);
+        }
+
+        // The hybrid sub-groups are .car-only-field elements the loops above just
+        // revealed, but they must stay collapsed until "Hibrid" (and a hybrid type)
+        // is actually checked. Re-derive their state from the current selection.
+        syncHybridSubGroups();
+    }
+
+    // Collapse/expand the hybrid sub-option groups to match the live selection.
+    function syncHybridSubGroups() {
+        const hibridCheck = document.getElementById('fuelHibridCheck');
+        const typeGroup   = document.getElementById('hybridTypeGroup');
+        const engineGroup = document.getElementById('hybridEngineGroup');
+        if (typeGroup) typeGroup.style.display = (hibridCheck && hibridCheck.checked) ? 'block' : 'none';
+        if (engineGroup) {
+            const anyType = typeGroup
+                ? [...typeGroup.querySelectorAll('.hybrid-type-check')].some(c => c.checked)
+                : false;
+            engineGroup.style.display = anyType ? 'block' : 'none';
         }
     }
     toggleVehicleSpecificFields(activeTab);
@@ -461,6 +523,11 @@ function bindSearchLogic(catContext) {
             // Hide the whole "Vrsta goriva" group when the vrsta has no engine
             const fuelGroup = document.querySelector('input[name="fuel"]')?.closest('.adv-field-group');
             if (fuelGroup) fuelGroup.style.display = (allowed && visible === 0) ? 'none' : '';
+        } else if (activeTab === 'prosti-cas') {
+            // Leisure vehicles: keep the trimmed fuel list (don't restore car-only fuels).
+            applyChipGroup('fuel', LEISURE_FUELS);
+            const fuelGroup = document.querySelector('input[name="fuel"]')?.closest('.adv-field-group');
+            if (fuelGroup) fuelGroup.style.display = '';
         } else {
             // Any non-commercial tab: restore the full fuel list
             applyChipGroup('fuel', null);
@@ -533,11 +600,78 @@ function bindSearchLogic(catContext) {
         });
     }
 
-    // ── Popular brands per category ──
-    const POPULAR_BRANDS = {
-        avto: ['Audi','Dacia','Ford','Hyundai','Kia','Peugeot','Renault','Škoda','Toyota','Volkswagen'],
-        moto: ['BMW','CF Moto','Ducati','Honda','Husqvarna','Kawasaki','KTM','Piaggio','Suzuki','Yamaha'],
-    };
+    // ── Leisure (prosti-cas) type filtering ──
+    // The prosti-cas taxonomy bundles all 5 vrsta-vozila types in one file; each
+    // model carries a `type` matching the body-type-card data-value. Selecting a
+    // card narrows the brand/model lists to that type (union if several selected).
+    function getSelectedLeisureTypes() {
+        const grid = document.getElementById('grid-leisure');
+        if (!grid) return [];
+        return Array.from(grid.querySelectorAll('.body-type-card.active'))
+            .map(c => c.getAttribute('data-value'))
+            .filter(Boolean);
+    }
+
+    function filterLeisureData(data, types) {
+        if (!types || !types.length) return data;
+        const out = {};
+        for (const [brand, models] of Object.entries(data || {})) {
+            const kept = {};
+            for (const [model, info] of Object.entries(models || {})) {
+                if (info && types.includes(info.type)) kept[model] = info;
+            }
+            if (Object.keys(kept).length) out[brand] = kept;
+        }
+        return out;
+    }
+
+    // Build the make dropdown from a (possibly filtered) brand→model map.
+    function populateMakeSelect(data, category) {
+        const prevMake = makeSelect.value;
+        makeSelect.innerHTML = '<option value="">Znamka</option>';
+        const sorted = Object.keys(data).sort();
+
+        const popular = popularBrandsFor(category).filter(b => data[b]);
+        if (popular.length) {
+            const lbl = document.createElement('option');
+            lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+            lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+            makeSelect.appendChild(lbl);
+            popular.forEach(brand => {
+                const o = document.createElement('option');
+                o.value = brand; o.textContent = brand;
+                o.dataset.popular = 'true';
+                if (brand === prevMake) o.selected = true;
+                makeSelect.appendChild(o);
+            });
+            const sep = document.createElement('option');
+            sep.value = ''; sep.textContent = '──────────────';
+            sep.disabled = true; sep.dataset.popularLabel = 'true';
+            makeSelect.appendChild(sep);
+        }
+
+        sorted.forEach(brand => {
+            const o1 = document.createElement("option"); o1.value = brand; o1.textContent = brand;
+            if (brand === prevMake) o1.selected = true;
+            makeSelect.appendChild(o1);
+        });
+        if (!data[prevMake]) {
+            modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
+            variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
+        }
+        // The custom-select wrapper auto-syncs via its MutationObserver on <option> changes.
+    }
+
+    // Re-filter the already-loaded leisure brand data after a card toggle.
+    function refreshLeisureBrandFilter() {
+        if (activeTab !== 'prosti-cas') return;
+        const raw = window._brandModelDataRaw || {};
+        const view = filterLeisureData(raw, getSelectedLeisureTypes());
+        window._brandModelData = view;
+        populateMakeSelect(view, 'prosti-cas');
+        makeSelect.dispatchEvent(new Event('change'));
+        applyRelevance();
+    }
 
     // ── Dynamic Brand Data Loading ──
     function fetchBrandData(category) {
@@ -546,39 +680,12 @@ function bindSearchLogic(catContext) {
         return fetch(jsonFile)
             .then(r => r.ok ? r.json() : {})
             .then(data => {
+                window._brandModelDataRaw = data;
+                if (category === 'prosti-cas') {
+                    data = filterLeisureData(data, getSelectedLeisureTypes());
+                }
                 window._brandModelData = data;
-                const prevMake = makeSelect.value;
-                makeSelect.innerHTML = '<option value="">Znamka</option>';
-                const sorted = Object.keys(data).sort();
-
-                const popular = (POPULAR_BRANDS[category] || []).filter(b => data[b]);
-                if (popular.length) {
-                    const lbl = document.createElement('option');
-                    lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
-                    lbl.disabled = true; lbl.dataset.popularLabel = 'true';
-                    makeSelect.appendChild(lbl);
-                    popular.forEach(brand => {
-                        const o = document.createElement('option');
-                        o.value = brand; o.textContent = brand;
-                        o.dataset.popular = 'true';
-                        if (brand === prevMake) o.selected = true;
-                        makeSelect.appendChild(o);
-                    });
-                    const sep = document.createElement('option');
-                    sep.value = ''; sep.textContent = '──────────────';
-                    sep.disabled = true; sep.dataset.popularLabel = 'true';
-                    makeSelect.appendChild(sep);
-                }
-
-                sorted.forEach(brand => {
-                    const o1 = document.createElement("option"); o1.value = brand; o1.textContent = brand;
-                    if (brand === prevMake) o1.selected = true;
-                    makeSelect.appendChild(o1);
-                });
-                if (!data[prevMake]) {
-                    modelSelect.innerHTML = '<option value="">Model</option>'; modelSelect.disabled = true;
-                    variantSelect.innerHTML = '<option value="">Različica</option>'; variantSelect.disabled = true;
-                }
+                populateMakeSelect(data, category);
                 return data;
             });
     }
@@ -1119,6 +1226,12 @@ bindCardDrag(excludedVehicleCardsEl);
         card.classList.toggle('active');
         const activeValues = Array.from(allBodyTypeCards).filter(btn => btn.classList.contains('active')).map(btn => btn.getAttribute('data-value'));
         if (bodyTypeHidden) bodyTypeHidden.value = activeValues.join(',');
+        // Prosti-čas: the vrsta-vozila cards also narrow the brand/model lists by type
+        // and toggle engine-related fields (towed/static types have no motor).
+        if (activeTab === 'prosti-cas') {
+            refreshLeisureBrandFilter();
+            applyLeisureFieldVisibility();
+        }
         updateLiveCount();
     }));
 

@@ -36,6 +36,10 @@ function cleanup() {
 document.addEventListener('beforeRouteChange', cleanup);
 
 const fmtEur = n => (Number(n) || 0).toLocaleString('sl-SI') + ' €';
+// Parse digits out of the formatted bid input (e.g. "60.050 €" → 60050).
+const parseBid = v => Number(String(v).replace(/[^\d]/g, '')) || 0;
+// Format a numeric bid for display in the input (e.g. 60050 → "60.050 €").
+const fmtBidInput = n => n ? fmtEur(n) : '';
 
 export async function initAuctionListingPage() {
     console.log('[AuctionListing] init');
@@ -108,7 +112,7 @@ function injectAuctionUI(listing) {
 
         <form class="auction-bid-form" id="acBidForm">
             <div class="auction-bid-input-row">
-                <input type="number" class="auction-bid-input" id="acBidInput" inputmode="numeric" step="1" />
+                <input type="text" class="auction-bid-input" id="acBidInput" inputmode="numeric" />
                 <button type="submit" class="auction-bid-btn" id="acBidBtn">${t('auction_place_bid', 'Oddaj ponudbo')}</button>
             </div>
             <span class="auction-bid-hint" id="acBidHint"></span>
@@ -155,6 +159,14 @@ function injectAuctionUI(listing) {
     }
 
     document.getElementById('acBidForm').addEventListener('submit', onBidSubmit);
+    // Live-format the bid as the user types: "60050" → "60.050 €".
+    const bidInput = document.getElementById('acBidInput');
+    if (bidInput) {
+        bidInput.addEventListener('input', () => {
+            const n = parseBid(bidInput.value);
+            bidInput.value = fmtBidInput(n);
+        });
+    }
     if (window.lucide) window.lucide.createIcons();
 }
 
@@ -201,8 +213,7 @@ function updateAuctionUI(auction) {
     const hint = document.getElementById('acBidHint');
     const btn = document.getElementById('acBidBtn');
     if (input && hint && btn) {
-        input.min = String(min);
-        if (!input.value || Number(input.value) < min) input.value = min;
+        if (!input.value || parseBid(input.value) < min) input.value = fmtBidInput(min);
         hint.textContent = `${t('auction_min_next', 'Najnižja naslednja ponudba')}: ${fmtEur(min)} (korak ${fmtEur(MIN_BID_INCREMENT)})`;
         if (isOwn) disableBidding(t('auction_own', 'To je vaša dražba.'));
         else if (!active) disableBidding(t('auction_ended', 'Dražba je zaključena.'));
@@ -259,7 +270,7 @@ async function onBidSubmit(e) {
         showAuthGate();
         return;
     }
-    const amount = Number(document.getElementById('acBidInput').value);
+    const amount = parseBid(document.getElementById('acBidInput').value);
     const min = minNextBid(_auction);
     const status = document.getElementById('acBidStatus');
     if (!Number.isFinite(amount) || amount < min) {

@@ -265,9 +265,8 @@ function updateNavButtons() {
     backBtn.style.display = state.currentStep > 1 ? 'inline-flex' : 'none';
 
     const isLast = state.currentStep === state.totalSteps;
-    nextBtn.innerHTML = isLast
-        ? '<i data-lucide="check-circle"></i> Potrdi rezervacijo'
-        : 'Naprej <i data-lucide="chevron-right"></i>';
+    nextBtn.style.display = isLast ? 'none' : 'inline-flex';
+    nextBtn.innerHTML = 'Naprej <i data-lucide="chevron-right"></i>';
     if (window.lucide) window.lucide.createIcons();
 }
 
@@ -315,11 +314,14 @@ function buildStep1() {
         </div>`;
     }).join('');
 
-    const yearOptions = Array.from({ length: 26 }, (_, i) => 2025 - i)
-        .map(y => `<option value="${y}">${y}</option>`).join('');
+    const years = Array.from({ length: 26 }, (_, i) => 2025 - i);
 
-    const brandOptions = carBrands.map(b =>
-        `<option value="${b}">${b}</option>`
+    const brandOptionItems = carBrands.map(b =>
+        `<div class="custom-dropdown-option" data-value="${b}">${b}</div>`
+    ).join('');
+
+    const yearOptionItems = years.map(y =>
+        `<div class="custom-dropdown-option" data-value="${y}">${y}</div>`
     ).join('');
 
     return `
@@ -332,23 +334,33 @@ function buildStep1() {
         <div class="add-vehicle-form glass-card" id="addVehicleForm" style="display:none;">
             <div class="form-row">
                 <label>Znamka</label>
-                <select id="vBrand" class="glass-select">
-                    <option value="">Izberite znamko...</option>
-                    ${brandOptions}
-                </select>
+                <div class="custom-dropdown" id="ddBrand">
+                    <button type="button" class="custom-dropdown-btn placeholder" data-value="">
+                        <span class="dd-label">Izberite znamko...</span>
+                        <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="custom-dropdown-list">${brandOptionItems}</div>
+                </div>
             </div>
             <div class="form-row">
                 <label>Model</label>
-                <select id="vModel" class="glass-select" disabled>
-                    <option value="">Najprej izberite znamko</option>
-                </select>
+                <div class="custom-dropdown" id="ddModel">
+                    <button type="button" class="custom-dropdown-btn placeholder disabled" data-value="">
+                        <span class="dd-label">Najprej izberite znamko</span>
+                        <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="custom-dropdown-list"></div>
+                </div>
             </div>
             <div class="form-row">
                 <label>Letnik</label>
-                <select id="vYear" class="glass-select">
-                    <option value="">Letnik...</option>
-                    ${yearOptions}
-                </select>
+                <div class="custom-dropdown" id="ddYear">
+                    <button type="button" class="custom-dropdown-btn placeholder" data-value="">
+                        <span class="dd-label">Letnik...</span>
+                        <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="custom-dropdown-list">${yearOptionItems}</div>
+                </div>
             </div>
             <div class="form-row">
                 <label>Registrska številka</label>
@@ -377,22 +389,74 @@ function bindStep1() {
         if (form) form.style.display = form.style.display === 'none' ? 'grid' : 'none';
     });
 
-    // Cascading brand → model
-    document.getElementById('vBrand')?.addEventListener('change', function () {
-        const modelSel = document.getElementById('vModel');
-        if (!modelSel) return;
-        const models = carModels[this.value] || [];
-        modelSel.innerHTML = models.length
-            ? models.map(m => `<option value="${m}">${m}</option>`).join('')
-            : '<option value="">Ni modelov</option>';
-        modelSel.disabled = models.length === 0;
+    // Custom dropdown wiring
+    function initCustomDropdown(wrapperId, onChange) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+        const btn = wrapper.querySelector('.custom-dropdown-btn');
+        const list = wrapper.querySelector('.custom-dropdown-list');
+
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('disabled')) return;
+            const isOpen = list.classList.contains('open');
+            // close all others
+            document.querySelectorAll('.custom-dropdown-list.open').forEach(l => {
+                l.classList.remove('open');
+                l.closest('.custom-dropdown').querySelector('.custom-dropdown-btn').classList.remove('open');
+            });
+            if (!isOpen) { list.classList.add('open'); btn.classList.add('open'); }
+        });
+
+        list.addEventListener('click', e => {
+            const opt = e.target.closest('.custom-dropdown-option');
+            if (!opt) return;
+            const val = opt.dataset.value;
+            const label = opt.textContent;
+            btn.dataset.value = val;
+            btn.querySelector('.dd-label').textContent = label;
+            btn.classList.remove('placeholder');
+            list.querySelectorAll('.custom-dropdown-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            list.classList.remove('open');
+            btn.classList.remove('open');
+            if (onChange) onChange(val);
+        });
+    }
+
+    function setDropdownOptions(wrapperId, items, placeholder) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+        const btn = wrapper.querySelector('.custom-dropdown-btn');
+        const list = wrapper.querySelector('.custom-dropdown-list');
+        list.innerHTML = items.map(v => `<div class="custom-dropdown-option" data-value="${v}">${v}</div>`).join('');
+        btn.dataset.value = '';
+        btn.querySelector('.dd-label').textContent = placeholder;
+        btn.classList.add('placeholder');
+        if (items.length === 0) { btn.classList.add('disabled'); } else { btn.classList.remove('disabled'); }
+    }
+
+    initCustomDropdown('ddBrand', (brand) => {
+        const models = carModels[brand] || [];
+        setDropdownOptions('ddModel', models, models.length ? 'Izberite model...' : 'Ni modelov');
+        initCustomDropdown('ddModel');
     });
+    initCustomDropdown('ddYear');
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-dropdown')) {
+            document.querySelectorAll('.custom-dropdown-list.open').forEach(l => {
+                l.classList.remove('open');
+                l.closest('.custom-dropdown').querySelector('.custom-dropdown-btn').classList.remove('open');
+            });
+        }
+    }, { capture: true });
 
     // Save vehicle
     document.getElementById('saveVehicleBtn')?.addEventListener('click', () => {
-        const brand = document.getElementById('vBrand')?.value;
-        const model = document.getElementById('vModel')?.value;
-        const year = parseInt(document.getElementById('vYear')?.value);
+        const brand = document.getElementById('ddBrand')?.querySelector('.custom-dropdown-btn')?.dataset.value;
+        const model = document.getElementById('ddModel')?.querySelector('.custom-dropdown-btn')?.dataset.value;
+        const year = parseInt(document.getElementById('ddYear')?.querySelector('.custom-dropdown-btn')?.dataset.value);
         const plate = document.getElementById('vPlate')?.value.trim();
 
         if (!brand || !model || !year) {

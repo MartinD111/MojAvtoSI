@@ -1,0 +1,4137 @@
+{
+  "Adria": {
+    "300": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "300"
+        }
+      ]
+    },
+    "400": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "400"
+        }
+      ]
+    },
+    "450": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "450"
+        }
+      ]
+    },
+    "500": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "550": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "550"
+        }
+      ]
+    },
+    "600": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "600"
+        }
+      ]
+    },
+    "650": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "650"
+        }
+      ]
+    },
+    "700": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "700"
+        }
+      ]
+    },
+    "750": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "750"
+        }
+      ]
+    },
+    "Action": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Action"
+        }
+      ]
+    },
+    "Adiva": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Adiva"
+        }
+      ]
+    },
+    "Adora": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Adora 612"
+        },
+        {
+          "trim": "Adora 542"
+        },
+        {
+          "trim": "Adora 613"
+        }
+      ]
+    },
+    "Altea": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Altea"
+        },
+        {
+          "trim": "Altea 501"
+        },
+        {
+          "trim": "Altea 542"
+        },
+        {
+          "trim": "Altea 402"
+        },
+        {
+          "trim": "Altea 502"
+        },
+        {
+          "trim": "Altea 502 LD"
+        },
+        {
+          "trim": "Altea 522"
+        }
+      ]
+    },
+    "Astella": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Astella"
+        },
+        {
+          "trim": "Astella 613"
+        }
+      ]
+    },
+    "Compact": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Compact"
+        }
+      ]
+    },
+    "Coral": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Coral"
+        },
+        {
+          "trim": "Coral Compact"
+        },
+        {
+          "trim": "Coral S-Class"
+        },
+        {
+          "trim": "Coral XL"
+        },
+        {
+          "trim": "Coral SLS"
+        }
+      ]
+    },
+    "Matrix": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Matrix"
+        },
+        {
+          "trim": "Matrix Plus"
+        },
+        {
+          "trim": "Matrix Supreme"
+        }
+      ]
+    },
+    "Optima": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Optima"
+        }
+      ]
+    },
+    "Sonic": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Sonic"
+        },
+        {
+          "trim": "Sonic Plus"
+        }
+      ]
+    },
+    "Supreme": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Supreme"
+        }
+      ]
+    },
+    "Twin": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Twin"
+        },
+        {
+          "trim": "Twin SP"
+        },
+        {
+          "trim": "Twin Max"
+        },
+        {
+          "trim": "Twin 600"
+        },
+        {
+          "trim": "Twin 600 SP"
+        },
+        {
+          "trim": "Twin 640"
+        },
+        {
+          "trim": "Twin 640 SP"
+        },
+        {
+          "trim": "Twin 640 Max"
+        }
+      ]
+    },
+    "Twin Max": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Twin Max"
+        }
+      ]
+    },
+    "Twin Sport": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Twin Sport"
+        },
+        {
+          "trim": "Twin Sport 600"
+        }
+      ]
+    }
+  },
+  "Adria Home": {
+    "Adria Mobil": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Adria Mobil"
+        },
+        {
+          "trim": "Adria Mobil Superior"
+        },
+        {
+          "trim": "Adria Mobil 502"
+        },
+        {
+          "trim": "Adria Mobil 602"
+        },
+        {
+          "trim": "Adria Mobil 702"
+        },
+        {
+          "trim": "Adria Mobil 752"
+        }
+      ]
+    },
+    "Alpina": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Alpina"
+        },
+        {
+          "trim": "Alpina Elegance"
+        },
+        {
+          "trim": "Alpina 652"
+        },
+        {
+          "trim": "Alpina 662"
+        },
+        {
+          "trim": "Alpina 672"
+        }
+      ]
+    },
+    "Holiday": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Holiday"
+        }
+      ]
+    },
+    "Superior": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Superior 632"
+        }
+      ]
+    }
+  },
+  "Airstream": {
+    "190": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "190 Class B"
+        }
+      ]
+    },
+    "230": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "230 Class B"
+        }
+      ]
+    },
+    "310": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "310 Class A"
+        }
+      ]
+    },
+    "325": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "325 Class A"
+        }
+      ]
+    },
+    "345": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "345 Class A"
+        }
+      ]
+    },
+    "Ambassador": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Ambassador"
+        }
+      ]
+    },
+    "Atlas": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Atlas"
+        },
+        {
+          "trim": "Atlas 25'"
+        },
+        {
+          "trim": "Atlas 30'"
+        }
+      ]
+    },
+    "B190": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "B190"
+        }
+      ]
+    },
+    "Bambi": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Bambi"
+        },
+        {
+          "trim": "Bambi 16'"
+        },
+        {
+          "trim": "Bambi 22'"
+        },
+        {
+          "trim": "Bambi 22"
+        }
+      ]
+    },
+    "Classic": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Classic"
+        },
+        {
+          "trim": "Classic 33"
+        }
+      ]
+    },
+    "Excella": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Excella"
+        },
+        {
+          "trim": "Excella 1000"
+        }
+      ]
+    },
+    "Flying Cloud": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Flying Cloud"
+        },
+        {
+          "trim": "Flying Cloud 23FB"
+        },
+        {
+          "trim": "Flying Cloud 25RB"
+        }
+      ]
+    },
+    "International": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "International"
+        },
+        {
+          "trim": "International CCD"
+        }
+      ]
+    },
+    "Interstate": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Interstate"
+        },
+        {
+          "trim": "Interstate Grand Tour"
+        },
+        {
+          "trim": "Interstate Lounge Ext"
+        },
+        {
+          "trim": "Interstate 19"
+        },
+        {
+          "trim": "Interstate 24"
+        },
+        {
+          "trim": "Interstate 27"
+        }
+      ]
+    },
+    "Land Yacht": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Land Yacht 350"
+        },
+        {
+          "trim": "Land Yacht 360"
+        },
+        {
+          "trim": "Land Yacht"
+        }
+      ]
+    },
+    "Panoramic": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Panoramic"
+        }
+      ]
+    },
+    "Rangeline": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Rangeline"
+        }
+      ]
+    },
+    "Safari": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Safari"
+        }
+      ]
+    },
+    "Sovereign": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Sovereign"
+        }
+      ]
+    },
+    "Sport": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Sport"
+        }
+      ]
+    }
+  },
+  "Aliner": {
+    "Ascape": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Ascape"
+        },
+        {
+          "trim": "Ascape XL"
+        }
+      ]
+    },
+    "Classic": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Classic"
+        }
+      ]
+    },
+    "Expedition": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Expedition"
+        },
+        {
+          "trim": "Expedition 2.0"
+        },
+        {
+          "trim": "Expedition 4"
+        }
+      ]
+    },
+    "Family": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Family"
+        }
+      ]
+    },
+    "Ranger": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Ranger"
+        },
+        {
+          "trim": "Ranger 10"
+        }
+      ]
+    },
+    "Scout": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Scout"
+        }
+      ]
+    }
+  },
+  "Bailey": {
+    "Discovery": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Discovery"
+        }
+      ]
+    },
+    "Pageant": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Pageant"
+        }
+      ]
+    },
+    "Pegasus": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Pegasus Bologna"
+        },
+        {
+          "trim": "Pegasus Grande"
+        }
+      ]
+    },
+    "Phoenix": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Phoenix"
+        }
+      ]
+    },
+    "Pursuit": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Pursuit"
+        }
+      ]
+    },
+    "Ranger": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Ranger"
+        },
+        {
+          "trim": "Ranger GT60"
+        }
+      ]
+    },
+    "Senator": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Senator"
+        },
+        {
+          "trim": "Senator Carolina"
+        }
+      ]
+    },
+    "Unicorn": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Unicorn Barcelona"
+        },
+        {
+          "trim": "Unicorn Cadiz"
+        },
+        {
+          "trim": "Unicorn 4"
+        },
+        {
+          "trim": "Unicorn 5"
+        },
+        {
+          "trim": "Unicorn 6"
+        }
+      ]
+    }
+  },
+  "Beauer": {
+    "2X": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "2X"
+        },
+        {
+          "trim": "2X Pro"
+        }
+      ]
+    },
+    "3X": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "3X"
+        },
+        {
+          "trim": "3X Plus"
+        }
+      ]
+    }
+  },
+  "Bürstner": {
+    "380": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "380"
+        }
+      ]
+    },
+    "420": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "420"
+        }
+      ]
+    },
+    "460": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "460"
+        }
+      ]
+    },
+    "500": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "540": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "540"
+        }
+      ]
+    },
+    "560": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "560"
+        }
+      ]
+    },
+    "580": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "580"
+        }
+      ]
+    },
+    "610": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "610"
+        }
+      ]
+    },
+    "Argos": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Argos"
+        }
+      ]
+    },
+    "Averso": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Averso"
+        },
+        {
+          "trim": "Averso Plus"
+        },
+        {
+          "trim": "Averso 600"
+        }
+      ]
+    },
+    "Aviano": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Aviano"
+        },
+        {
+          "trim": "Aviano i"
+        }
+      ]
+    },
+    "Delfin": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Delfin"
+        }
+      ]
+    },
+    "Elegance": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Elegance"
+        }
+      ]
+    },
+    "Harmony": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Harmony"
+        },
+        {
+          "trim": "Harmony Line"
+        }
+      ]
+    },
+    "Ixeo": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Ixeo"
+        },
+        {
+          "trim": "Ixeo Plus"
+        }
+      ]
+    },
+    "Lyseo": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Lyseo"
+        },
+        {
+          "trim": "Lyseo Gallery"
+        }
+      ]
+    },
+    "Panorama": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Panorama"
+        }
+      ]
+    },
+    "Premio": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Premio"
+        },
+        {
+          "trim": "Premio Life"
+        },
+        {
+          "trim": "Premio 560"
+        }
+      ]
+    },
+    "Solano": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Solano"
+        }
+      ]
+    }
+  },
+  "Camp-let": {
+    "Apollo": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Apollo"
+        },
+        {
+          "trim": "Apollo 4"
+        }
+      ]
+    },
+    "Classic": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Classic"
+        }
+      ]
+    },
+    "Combi": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Combi"
+        }
+      ]
+    },
+    "GT": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "GT"
+        },
+        {
+          "trim": "GT 2000"
+        },
+        {
+          "trim": "GT 320"
+        },
+        {
+          "trim": "GT 4"
+        },
+        {
+          "trim": "GT 4 plus"
+        }
+      ]
+    },
+    "Passion": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Passion"
+        },
+        {
+          "trim": "Passion 4"
+        },
+        {
+          "trim": "Passion 5"
+        }
+      ]
+    },
+    "Royal": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Royal"
+        },
+        {
+          "trim": "Royal 360"
+        }
+      ]
+    }
+  },
+  "Carthago": {
+    "C-Line": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "C-Line"
+        },
+        {
+          "trim": "C-Line I"
+        }
+      ]
+    },
+    "C-Tourer": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "C-Tourer"
+        }
+      ]
+    },
+    "Chic": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Chic"
+        },
+        {
+          "trim": "Chic S"
+        },
+        {
+          "trim": "Chic I"
+        },
+        {
+          "trim": "Chic E"
+        }
+      ]
+    },
+    "Compact": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Compact"
+        }
+      ]
+    },
+    "E-Line": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "E-Line"
+        }
+      ]
+    },
+    "Highlander": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Highlander"
+        }
+      ]
+    },
+    "Liner": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Liner"
+        },
+        {
+          "trim": "Liner i"
+        },
+        {
+          "trim": "Liner i 2022"
+        }
+      ]
+    }
+  },
+  "Cavco": {
+    "14": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "14"
+        }
+      ]
+    },
+    "24": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "24"
+        }
+      ]
+    },
+    "28": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "28"
+        }
+      ]
+    },
+    "Fairmont": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Fairmont"
+        }
+      ]
+    },
+    "Fleetwood": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Fleetwood"
+        }
+      ]
+    },
+    "Franklin": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Franklin"
+        },
+        {
+          "trim": "Franklin 36"
+        }
+      ]
+    },
+    "Indio": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Indio"
+        }
+      ]
+    },
+    "Newport": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Newport"
+        },
+        {
+          "trim": "Newport 32"
+        }
+      ]
+    },
+    "Palm Harbor": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Palm Harbor"
+        }
+      ]
+    },
+    "Silvercrest": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Silvercrest"
+        }
+      ]
+    }
+  },
+  "Chausson": {
+    "Flash": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Flash"
+        },
+        {
+          "trim": "Flash 10"
+        },
+        {
+          "trim": "Flash 12"
+        },
+        {
+          "trim": "Flash 16"
+        }
+      ]
+    },
+    "Odyssée": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Odyssée 4000"
+        },
+        {
+          "trim": "Odyssée 5000"
+        }
+      ]
+    },
+    "Titanium": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Titanium"
+        },
+        {
+          "trim": "Titanium 740"
+        },
+        {
+          "trim": "Titanium 750"
+        },
+        {
+          "trim": "Titanium 780"
+        }
+      ]
+    },
+    "Welcome": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Welcome"
+        },
+        {
+          "trim": "Welcome 83"
+        },
+        {
+          "trim": "Welcome 85"
+        },
+        {
+          "trim": "Welcome 93"
+        },
+        {
+          "trim": "Welcome 717"
+        },
+        {
+          "trim": "Welcome 787"
+        },
+        {
+          "trim": "Welcome 817"
+        }
+      ]
+    }
+  },
+  "Clayton": {
+    "24": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "24"
+        }
+      ]
+    },
+    "28": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "28"
+        }
+      ]
+    },
+    "32": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "32"
+        }
+      ]
+    },
+    "CrossMod": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "CrossMod"
+        }
+      ]
+    },
+    "Doublewide": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Doublewide"
+        }
+      ]
+    },
+    "Energy Smart": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Energy Smart"
+        }
+      ]
+    },
+    "i-house": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "i-house"
+        }
+      ]
+    },
+    "Stillwater": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Stillwater"
+        }
+      ]
+    },
+    "Tiny": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Tiny Homes"
+        },
+        {
+          "trim": "Tiny Series"
+        }
+      ]
+    },
+    "Triplewide": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Triplewide"
+        }
+      ]
+    },
+    "TruMH": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "TruMH"
+        }
+      ]
+    }
+  },
+  "Coachman": {
+    "Laser": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Laser"
+        },
+        {
+          "trim": "Laser 650"
+        },
+        {
+          "trim": "Laser 630"
+        },
+        {
+          "trim": "Laser 675"
+        }
+      ]
+    },
+    "Pastiche": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Pastiche"
+        },
+        {
+          "trim": "Pastiche 550"
+        },
+        {
+          "trim": "Pastiche 575"
+        },
+        {
+          "trim": "Pastiche 565"
+        }
+      ]
+    },
+    "VIP": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "VIP"
+        },
+        {
+          "trim": "VIP 575"
+        },
+        {
+          "trim": "VIP 650"
+        }
+      ]
+    }
+  },
+  "Coleman": {
+    "17B": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "17B"
+        }
+      ]
+    },
+    "17R": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "17R"
+        }
+      ]
+    },
+    "Chesapeake": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Chesapeake"
+        }
+      ]
+    },
+    "Cheyenne": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Cheyenne"
+        }
+      ]
+    },
+    "Classic": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Classic"
+        }
+      ]
+    },
+    "Cobalt": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Cobalt"
+        }
+      ]
+    },
+    "Columbia": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Columbia"
+        }
+      ]
+    },
+    "E1": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "E1"
+        }
+      ]
+    },
+    "Evolution": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Evolution"
+        }
+      ]
+    },
+    "Lantern": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Lantern"
+        }
+      ]
+    },
+    "Niagara": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Niagara"
+        }
+      ]
+    },
+    "Rubicon": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Rubicon"
+        }
+      ]
+    },
+    "Shenandoah": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Shenandoah"
+        }
+      ]
+    },
+    "Sun Valley": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Sun Valley"
+        }
+      ]
+    },
+    "Taos": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Taos"
+        }
+      ]
+    }
+  },
+  "Comanche": {
+    "FreeStander": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "FreeStander"
+        },
+        {
+          "trim": "FreeStander 2"
+        },
+        {
+          "trim": "FreeStander 3"
+        },
+        {
+          "trim": "FreeStander 400"
+        },
+        {
+          "trim": "FreeStander 500"
+        }
+      ]
+    },
+    "Mc Camp": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Mc Camp"
+        },
+        {
+          "trim": "Mc Camp 2"
+        },
+        {
+          "trim": "Mc Camp 200"
+        },
+        {
+          "trim": "Mc Camp 250"
+        }
+      ]
+    }
+  },
+  "Dethleffs": {
+    "Advantage": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Advantage"
+        }
+      ]
+    },
+    "Beduin": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Beduin"
+        },
+        {
+          "trim": "Beduin 420"
+        },
+        {
+          "trim": "Beduin 470"
+        },
+        {
+          "trim": "Beduin 540"
+        },
+        {
+          "trim": "Beduin 550"
+        },
+        {
+          "trim": "Beduin 560"
+        }
+      ]
+    },
+    "C'go": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "C'go"
+        },
+        {
+          "trim": "C'go 520"
+        }
+      ]
+    },
+    "Camper": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Camper"
+        },
+        {
+          "trim": "Camper 500"
+        },
+        {
+          "trim": "Camper 520"
+        }
+      ]
+    },
+    "Caribic": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Caribic"
+        }
+      ]
+    },
+    "Esprit": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Esprit"
+        }
+      ]
+    },
+    "Globebus": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Globebus"
+        },
+        {
+          "trim": "Globebus G"
+        }
+      ]
+    },
+    "Globetrail": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Globetrail"
+        }
+      ]
+    },
+    "Globetrotter": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Globetrotter"
+        },
+        {
+          "trim": "Globetrotter XLT"
+        }
+      ]
+    },
+    "Globevan": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Globevan"
+        }
+      ]
+    },
+    "Just": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Just"
+        }
+      ]
+    },
+    "Pirat": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Pirat D"
+        },
+        {
+          "trim": "Pirat DU"
+        },
+        {
+          "trim": "Pirat 510"
+        }
+      ]
+    },
+    "Pulse": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Pulse"
+        },
+        {
+          "trim": "Pulse Classic"
+        }
+      ]
+    },
+    "Pulso": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Pulso"
+        }
+      ]
+    },
+    "Trend": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Trend"
+        }
+      ]
+    }
+  },
+  "Eriba": {
+    "Feeling": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Feeling"
+        },
+        {
+          "trim": "Feeling 530"
+        }
+      ]
+    },
+    "Futura": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Futura"
+        }
+      ]
+    },
+    "Nova": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Nova"
+        },
+        {
+          "trim": "Nova 550"
+        }
+      ]
+    },
+    "Touring": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Touring"
+        },
+        {
+          "trim": "Touring 320"
+        },
+        {
+          "trim": "Touring 540"
+        },
+        {
+          "trim": "Touring 542"
+        },
+        {
+          "trim": "Touring 545"
+        }
+      ]
+    }
+  },
+  "Fendt": {
+    "400": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "400"
+        }
+      ]
+    },
+    "500": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "600": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "600"
+        }
+      ]
+    },
+    "Bianco": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Bianco"
+        },
+        {
+          "trim": "Bianco 550"
+        },
+        {
+          "trim": "Bianco 560"
+        },
+        {
+          "trim": "Bianco 520"
+        }
+      ]
+    },
+    "Karisma": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Karisma"
+        }
+      ]
+    },
+    "Saphir": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Saphir"
+        },
+        {
+          "trim": "Saphir 530"
+        },
+        {
+          "trim": "Saphir 560"
+        },
+        {
+          "trim": "Saphir 550"
+        },
+        {
+          "trim": "Saphir 540"
+        }
+      ]
+    },
+    "Tendenza": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Tendenza"
+        },
+        {
+          "trim": "Tendenza 530"
+        }
+      ]
+    }
+  },
+  "Ford": {
+    "Custom Nugget": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Custom Nugget"
+        }
+      ]
+    },
+    "Tourneo": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Tourneo"
+        }
+      ]
+    },
+    "Transit": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Transit Camper"
+        }
+      ]
+    },
+    "Transit Nugget": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Transit Nugget"
+        },
+        {
+          "trim": "Transit Nugget 2022"
+        }
+      ]
+    },
+    "Transit Trail": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Transit Trail"
+        }
+      ]
+    }
+  },
+  "Forest River": {
+    "Berkshire": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Berkshire"
+        },
+        {
+          "trim": "Berkshire XLT"
+        },
+        {
+          "trim": "Berkshire 45"
+        }
+      ]
+    },
+    "Flagstaff": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Flagstaff"
+        },
+        {
+          "trim": "Flagstaff 26"
+        },
+        {
+          "trim": "Flagstaff 29"
+        },
+        {
+          "trim": "Flagstaff 27"
+        },
+        {
+          "trim": "Flagstaff 176"
+        },
+        {
+          "trim": "Flagstaff MAC"
+        },
+        {
+          "trim": "Flagstaff 228D"
+        }
+      ]
+    },
+    "Forester": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Forester"
+        }
+      ]
+    },
+    "Georgetown": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Georgetown"
+        },
+        {
+          "trim": "Georgetown XL"
+        },
+        {
+          "trim": "Georgetown 5 Series"
+        }
+      ]
+    },
+    "Rockwood": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Rockwood"
+        },
+        {
+          "trim": "Rockwood 2504"
+        },
+        {
+          "trim": "Rockwood 2604"
+        },
+        {
+          "trim": "Rockwood 2608"
+        },
+        {
+          "trim": "Rockwood Tent 1640"
+        },
+        {
+          "trim": "Rockwood Tent 1940"
+        },
+        {
+          "trim": "Rockwood Premier 2318"
+        },
+        {
+          "trim": "Rockwood Premier 2516"
+        },
+        {
+          "trim": "Rockwood High Wall 2516"
+        }
+      ]
+    },
+    "Salem": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Salem"
+        },
+        {
+          "trim": "Salem 30"
+        },
+        {
+          "trim": "Salem 32"
+        }
+      ]
+    },
+    "Sunseeker": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Sunseeker"
+        },
+        {
+          "trim": "Sunseeker LE"
+        },
+        {
+          "trim": "Sunseeker 2400"
+        }
+      ]
+    }
+  },
+  "Frankia": {
+    "500": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "600": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "600"
+        }
+      ]
+    },
+    "700": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "700"
+        }
+      ]
+    },
+    "A-Class": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "A-Class"
+        },
+        {
+          "trim": "A 8000"
+        },
+        {
+          "trim": "A 9000"
+        }
+      ]
+    },
+    "Gold": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Gold"
+        }
+      ]
+    },
+    "iSmove": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "iSmove"
+        },
+        {
+          "trim": "iSmove 4x4"
+        }
+      ]
+    },
+    "M": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "M 8000"
+        }
+      ]
+    },
+    "Platin": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Platin"
+        },
+        {
+          "trim": "Platin i"
+        },
+        {
+          "trim": "Platin 2"
+        }
+      ]
+    },
+    "Royal": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Royal"
+        }
+      ]
+    }
+  },
+  "Grand Design": {
+    "Imagine": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Imagine 2250"
+        },
+        {
+          "trim": "Imagine 2500RL"
+        }
+      ]
+    },
+    "Reflection": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Reflection 303"
+        },
+        {
+          "trim": "Reflection 337"
+        },
+        {
+          "trim": "Reflection 150"
+        },
+        {
+          "trim": "Reflection 315"
+        }
+      ]
+    },
+    "Solitude": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Solitude 310"
+        },
+        {
+          "trim": "Solitude 375"
+        },
+        {
+          "trim": "Solitude 380"
+        },
+        {
+          "trim": "Solitude 391"
+        }
+      ]
+    }
+  },
+  "Hobby": {
+    "400": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "400"
+        }
+      ]
+    },
+    "500": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "600": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "600"
+        }
+      ]
+    },
+    "De Luxe": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "De Luxe 700"
+        },
+        {
+          "trim": "De Luxe 550"
+        },
+        {
+          "trim": "De Luxe 650"
+        },
+        {
+          "trim": "De Luxe 450"
+        },
+        {
+          "trim": "De Luxe 540"
+        }
+      ]
+    },
+    "Excellent": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Excellent 560"
+        },
+        {
+          "trim": "Excellent 660"
+        },
+        {
+          "trim": "Excellent 560 Fh"
+        }
+      ]
+    },
+    "Prestige": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Prestige 560"
+        },
+        {
+          "trim": "Prestige 660"
+        },
+        {
+          "trim": "Prestige 500"
+        },
+        {
+          "trim": "Prestige 650"
+        }
+      ]
+    }
+  },
+  "Holtkamper": {
+    "Flyer": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Flyer"
+        },
+        {
+          "trim": "Flyer 450"
+        },
+        {
+          "trim": "Flyer 460"
+        },
+        {
+          "trim": "Flyer 480"
+        }
+      ]
+    },
+    "Kyte": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Kyte"
+        },
+        {
+          "trim": "Kyte 350"
+        },
+        {
+          "trim": "Kyte 370"
+        },
+        {
+          "trim": "Kyte 380"
+        },
+        {
+          "trim": "Kyte 400"
+        }
+      ]
+    },
+    "Wind": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Wind"
+        },
+        {
+          "trim": "Wind 400"
+        }
+      ]
+    }
+  },
+  "Hymer": {
+    "B-Class": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "B-Class"
+        },
+        {
+          "trim": "B-Class ML"
+        },
+        {
+          "trim": "B-Class ML-T"
+        },
+        {
+          "trim": "B-Class ML-T 570"
+        },
+        {
+          "trim": "B-Class ML-T 580"
+        },
+        {
+          "trim": "B-Class ML-T 660"
+        },
+        {
+          "trim": "B-Class ML-T 680"
+        }
+      ]
+    },
+    "Camp": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Camp 51"
+        }
+      ]
+    },
+    "Eriba": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Eriba"
+        }
+      ]
+    },
+    "Exsis": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Exsis"
+        },
+        {
+          "trim": "Exsis-i"
+        },
+        {
+          "trim": "Exsis-i 504"
+        },
+        {
+          "trim": "Exsis-i 588"
+        },
+        {
+          "trim": "Exsis-i 604"
+        }
+      ]
+    },
+    "Free S": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Free S"
+        },
+        {
+          "trim": "Free S 500"
+        },
+        {
+          "trim": "Free S 540"
+        },
+        {
+          "trim": "Free S 600"
+        },
+        {
+          "trim": "Free S 630"
+        }
+      ]
+    },
+    "Grand Canyon": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Grand Canyon S"
+        },
+        {
+          "trim": "Grand Canyon X"
+        }
+      ]
+    },
+    "M-Class": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "M-Class"
+        }
+      ]
+    },
+    "S-Class": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "S-Class"
+        },
+        {
+          "trim": "S-Class SL"
+        },
+        {
+          "trim": "S-Class S"
+        }
+      ]
+    },
+    "Van": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Van 512"
+        },
+        {
+          "trim": "Van"
+        },
+        {
+          "trim": "Van 514"
+        },
+        {
+          "trim": "Van 524"
+        },
+        {
+          "trim": "Van 532"
+        }
+      ]
+    }
+  },
+  "Jayco": {
+    "Baja": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Baja"
+        },
+        {
+          "trim": "Baja 10"
+        }
+      ]
+    },
+    "Cardinal": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Cardinal"
+        }
+      ]
+    },
+    "Eagle": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Eagle"
+        },
+        {
+          "trim": "Eagle 278"
+        },
+        {
+          "trim": "Eagle Super Lite"
+        },
+        {
+          "trim": "Eagle 10"
+        },
+        {
+          "trim": "Eagle 12"
+        }
+      ]
+    },
+    "Jay Flight": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Jay Flight"
+        },
+        {
+          "trim": "Jay Flight 27"
+        },
+        {
+          "trim": "Jay Flight 29"
+        },
+        {
+          "trim": "Jay Flight G2"
+        },
+        {
+          "trim": "Jay Flight SLX"
+        },
+        {
+          "trim": "Jay Flight 265RLS"
+        }
+      ]
+    },
+    "Jay Series": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Jay Series 806"
+        },
+        {
+          "trim": "Jay Series 1008"
+        },
+        {
+          "trim": "Jay Series 1207"
+        }
+      ]
+    },
+    "Jay Sport": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Sport 8"
+        },
+        {
+          "trim": "Jay Sport 8"
+        },
+        {
+          "trim": "Jay Sport 10"
+        },
+        {
+          "trim": "Jay Sport 8HD"
+        }
+      ]
+    },
+    "North Point": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "North Point"
+        },
+        {
+          "trim": "North Point 377"
+        }
+      ]
+    },
+    "Select": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Select 12"
+        },
+        {
+          "trim": "Select 14"
+        }
+      ]
+    },
+    "White Hawk": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "White Hawk"
+        },
+        {
+          "trim": "White Hawk 30FL"
+        }
+      ]
+    }
+  },
+  "Karmod": {
+    "20": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "20"
+        }
+      ]
+    },
+    "30": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "30"
+        }
+      ]
+    },
+    "40": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "40"
+        }
+      ]
+    },
+    "Container Home": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Container Home"
+        }
+      ]
+    },
+    "Premium": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Premium"
+        }
+      ]
+    },
+    "Prestige": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Prestige"
+        }
+      ]
+    },
+    "Tiny": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Tiny"
+        }
+      ]
+    },
+    "Villa": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Villa"
+        }
+      ]
+    }
+  },
+  "Keystone": {
+    "Cougar": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Cougar"
+        },
+        {
+          "trim": "Cougar 29"
+        },
+        {
+          "trim": "Cougar 31"
+        },
+        {
+          "trim": "Cougar 29RL"
+        }
+      ]
+    },
+    "Montana": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Montana"
+        },
+        {
+          "trim": "Montana High Country"
+        },
+        {
+          "trim": "Montana 385FL"
+        }
+      ]
+    },
+    "Springdale": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Springdale"
+        },
+        {
+          "trim": "Springdale 202"
+        }
+      ]
+    }
+  },
+  "Knaus": {
+    "200": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "200"
+        }
+      ]
+    },
+    "300": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "300"
+        }
+      ]
+    },
+    "400": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "400"
+        }
+      ]
+    },
+    "500": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "600": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "600"
+        }
+      ]
+    },
+    "700": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "700"
+        }
+      ]
+    },
+    "Boxlife": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Boxlife"
+        },
+        {
+          "trim": "Boxlife 600"
+        },
+        {
+          "trim": "Boxlife 500"
+        }
+      ]
+    },
+    "Boxstar": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Boxstar"
+        },
+        {
+          "trim": "Boxstar 500"
+        }
+      ]
+    },
+    "Sky": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Sky"
+        }
+      ]
+    },
+    "Sport": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Sport"
+        },
+        {
+          "trim": "Sport 500"
+        },
+        {
+          "trim": "Sport 550"
+        },
+        {
+          "trim": "Sport 600"
+        },
+        {
+          "trim": "Sport 650"
+        }
+      ]
+    },
+    "Sun": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Sun"
+        },
+        {
+          "trim": "Sun TI"
+        },
+        {
+          "trim": "Sun i"
+        },
+        {
+          "trim": "Sun 650"
+        }
+      ]
+    },
+    "Südwind": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Südwind"
+        },
+        {
+          "trim": "Südwind 550"
+        },
+        {
+          "trim": "Südwind 600"
+        },
+        {
+          "trim": "Südwind 650"
+        },
+        {
+          "trim": "Südwind 700"
+        }
+      ]
+    },
+    "Van": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Van"
+        },
+        {
+          "trim": "Van TI 500"
+        },
+        {
+          "trim": "Van TI Plus"
+        },
+        {
+          "trim": "Van TI 700"
+        }
+      ]
+    }
+  },
+  "Laika": {
+    "400": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "400"
+        }
+      ]
+    },
+    "500": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "600": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "600"
+        }
+      ]
+    },
+    "Ecovip": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Ecovip"
+        },
+        {
+          "trim": "Ecovip 7"
+        },
+        {
+          "trim": "Ecovip 8"
+        },
+        {
+          "trim": "Ecovip 9"
+        },
+        {
+          "trim": "Ecovip F63"
+        },
+        {
+          "trim": "Ecovip 7S"
+        }
+      ]
+    },
+    "Kosmo": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Kosmo"
+        },
+        {
+          "trim": "Kosmo K45"
+        },
+        {
+          "trim": "Kosmo K55"
+        },
+        {
+          "trim": "Kosmo K50"
+        },
+        {
+          "trim": "Kosmo 9"
+        }
+      ]
+    },
+    "Kreos": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Kreos"
+        },
+        {
+          "trim": "Kreos 9"
+        }
+      ]
+    }
+  },
+  "Morelo": {
+    "Empire": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Empire"
+        },
+        {
+          "trim": "Empire 2"
+        }
+      ]
+    },
+    "Grand Palace": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Grand Palace"
+        }
+      ]
+    },
+    "Loft": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Loft"
+        },
+        {
+          "trim": "Loft 2"
+        }
+      ]
+    },
+    "Palace": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Palace"
+        },
+        {
+          "trim": "Palace 2"
+        },
+        {
+          "trim": "Palace 3"
+        }
+      ]
+    }
+  },
+  "Niesmann+Bischoff": {
+    "Arto": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Arto"
+        },
+        {
+          "trim": "Arto 600"
+        },
+        {
+          "trim": "Arto 700"
+        },
+        {
+          "trim": "Arto 800"
+        },
+        {
+          "trim": "Arto 900"
+        }
+      ]
+    },
+    "Flair": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Flair"
+        },
+        {
+          "trim": "Flair 600"
+        },
+        {
+          "trim": "Flair 700"
+        },
+        {
+          "trim": "Flair 800"
+        },
+        {
+          "trim": "Flair 900"
+        }
+      ]
+    },
+    "iSmove": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "iSmove"
+        }
+      ]
+    },
+    "Venture": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Venture"
+        },
+        {
+          "trim": "Venture 2"
+        }
+      ]
+    }
+  },
+  "Pilote": {
+    "400": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "400"
+        }
+      ]
+    },
+    "500": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "500"
+        }
+      ]
+    },
+    "600": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "600"
+        }
+      ]
+    },
+    "700": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "700"
+        }
+      ]
+    },
+    "C": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "C740"
+        },
+        {
+          "trim": "C735"
+        },
+        {
+          "trim": "C740 (evo)"
+        }
+      ]
+    },
+    "G": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "G740"
+        },
+        {
+          "trim": "G741"
+        },
+        {
+          "trim": "G746"
+        }
+      ]
+    },
+    "P": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "P696"
+        },
+        {
+          "trim": "P711"
+        },
+        {
+          "trim": "P724"
+        }
+      ]
+    },
+    "R": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "R740"
+        },
+        {
+          "trim": "R750"
+        }
+      ]
+    }
+  },
+  "Pleasure-Way": {
+    "Ascent": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Ascent"
+        },
+        {
+          "trim": "Ascent 4x4"
+        }
+      ]
+    },
+    "Excel": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Excel"
+        }
+      ]
+    },
+    "Lexor": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "M/S Lexor"
+        }
+      ]
+    },
+    "Ontour": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Ontour"
+        }
+      ]
+    },
+    "Plateau": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Plateau"
+        },
+        {
+          "trim": "Plateau TS"
+        },
+        {
+          "trim": "Plateau TS FL"
+        },
+        {
+          "trim": "Plateau 4x4"
+        }
+      ]
+    }
+  },
+  "Pössl": {
+    "Campster": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Campster"
+        },
+        {
+          "trim": "Campster 540"
+        }
+      ]
+    },
+    "Roadcruiser": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Roadcruiser"
+        },
+        {
+          "trim": "Roadcruiser 600"
+        },
+        {
+          "trim": "Roadcruiser 4x4"
+        }
+      ]
+    },
+    "Summit": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Summit"
+        },
+        {
+          "trim": "Summit 600"
+        },
+        {
+          "trim": "Summit 640"
+        },
+        {
+          "trim": "Summit 600 4x4"
+        }
+      ]
+    },
+    "Van": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Van"
+        },
+        {
+          "trim": "Van 2Win"
+        },
+        {
+          "trim": "Van Summit"
+        }
+      ]
+    }
+  },
+  "Rapido": {
+    "700": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "700"
+        }
+      ]
+    },
+    "800": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "800"
+        }
+      ]
+    },
+    "80dF": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "80dF"
+        }
+      ]
+    },
+    "8F": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "8F"
+        }
+      ]
+    },
+    "900": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "900"
+        }
+      ]
+    },
+    "90dF": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "90dF"
+        }
+      ]
+    },
+    "910": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "910"
+        }
+      ]
+    },
+    "990": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "990"
+        }
+      ]
+    },
+    "9F": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "9F"
+        }
+      ]
+    },
+    "M": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "M"
+        },
+        {
+          "trim": "M 70"
+        },
+        {
+          "trim": "M 80"
+        },
+        {
+          "trim": "M 100"
+        }
+      ]
+    },
+    "Randonneur": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Randonneur 410"
+        },
+        {
+          "trim": "Randonneur 510"
+        },
+        {
+          "trim": "Randonneur 610"
+        }
+      ]
+    },
+    "Série 10": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Série 10"
+        }
+      ]
+    }
+  },
+  "Roadtrek": {
+    "190": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "190"
+        }
+      ]
+    },
+    "200": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "200"
+        }
+      ]
+    },
+    "Agile": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Agile"
+        }
+      ]
+    },
+    "Chase": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Chase"
+        }
+      ]
+    },
+    "RS Adventurous": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "RS Adventurous"
+        }
+      ]
+    },
+    "Simplicity": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Simplicity"
+        }
+      ]
+    },
+    "Zion": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Zion"
+        },
+        {
+          "trim": "Zion SRT"
+        },
+        {
+          "trim": "Zion 2"
+        }
+      ]
+    }
+  },
+  "Sunlight": {
+    "A": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "A 65"
+        },
+        {
+          "trim": "A 75"
+        }
+      ]
+    },
+    "A-Class": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "A-Class"
+        }
+      ]
+    },
+    "Cliff": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Cliff"
+        },
+        {
+          "trim": "Cliff 600"
+        }
+      ]
+    },
+    "T": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "T 68"
+        },
+        {
+          "trim": "T 70"
+        },
+        {
+          "trim": "T 70 4x4"
+        }
+      ]
+    }
+  },
+  "Swift": {
+    "Basecamp": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Basecamp"
+        }
+      ]
+    },
+    "Challenger": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Challenger"
+        },
+        {
+          "trim": "Challenger 480"
+        },
+        {
+          "trim": "Challenger 540"
+        },
+        {
+          "trim": "Challenger 570"
+        },
+        {
+          "trim": "Challenger 590"
+        },
+        {
+          "trim": "Challenger 580"
+        }
+      ]
+    },
+    "Champion": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Champion"
+        }
+      ]
+    },
+    "Conqueror": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Conqueror"
+        },
+        {
+          "trim": "Conqueror 645"
+        }
+      ]
+    },
+    "Corniche": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Corniche"
+        }
+      ]
+    },
+    "Danette": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Danette"
+        }
+      ]
+    },
+    "Elegance": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Elegance"
+        },
+        {
+          "trim": "Elegance 665"
+        },
+        {
+          "trim": "Elegance 650"
+        }
+      ]
+    }
+  },
+  "Tabbert": {
+    "Cellini": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Cellini"
+        },
+        {
+          "trim": "Cellini 550"
+        }
+      ]
+    },
+    "Comtesse": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Comtesse"
+        },
+        {
+          "trim": "Comtesse 550"
+        },
+        {
+          "trim": "Comtesse 560"
+        },
+        {
+          "trim": "Comtesse 600"
+        },
+        {
+          "trim": "Comtesse 650"
+        }
+      ]
+    },
+    "Da Vinci": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Da Vinci"
+        }
+      ]
+    },
+    "Puccini": {
+      "type": "PocitniiskaPrikolica",
+      "variants": [
+        {
+          "trim": "Puccini"
+        },
+        {
+          "trim": "Puccini 500"
+        },
+        {
+          "trim": "Puccini 540"
+        }
+      ]
+    }
+  },
+  "Thor Motor Coach": {
+    "Axis": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Axis"
+        }
+      ]
+    },
+    "Chateau": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Chateau"
+        },
+        {
+          "trim": "Chateau 30"
+        },
+        {
+          "trim": "Chateau 25"
+        }
+      ]
+    },
+    "Four Winds": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Four Winds"
+        },
+        {
+          "trim": "Four Winds 5000"
+        }
+      ]
+    },
+    "Hurricane": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Hurricane"
+        },
+        {
+          "trim": "Hurricane 32"
+        },
+        {
+          "trim": "Hurricane 35"
+        },
+        {
+          "trim": "Hurricane 36"
+        }
+      ]
+    },
+    "Sanctuary": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Sanctuary"
+        }
+      ]
+    },
+    "Vegas": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Vegas"
+        }
+      ]
+    }
+  },
+  "Tiffin": {
+    "Allegro": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Allegro"
+        },
+        {
+          "trim": "Allegro Bus"
+        },
+        {
+          "trim": "Allegro Bay"
+        },
+        {
+          "trim": "Allegro RED"
+        },
+        {
+          "trim": "Allegro Open Road"
+        }
+      ]
+    },
+    "Phaeton": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Phaeton"
+        },
+        {
+          "trim": "Phaeton 40"
+        },
+        {
+          "trim": "Phaeton 38"
+        }
+      ]
+    },
+    "Zephyr": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Zephyr"
+        },
+        {
+          "trim": "Zephyr 45"
+        },
+        {
+          "trim": "Zephyr 44"
+        }
+      ]
+    }
+  },
+  "Trigano": {
+    "Camplair": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Camplair 400"
+        },
+        {
+          "trim": "Camplair 500"
+        },
+        {
+          "trim": "Camplair Odyssey"
+        },
+        {
+          "trim": "Camplair 450"
+        },
+        {
+          "trim": "Camplair 550"
+        },
+        {
+          "trim": "Camplair 470"
+        },
+        {
+          "trim": "Camplair 570"
+        },
+        {
+          "trim": "Camplair 520"
+        },
+        {
+          "trim": "Camplair 620"
+        }
+      ]
+    },
+    "COCO": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "COCO (Cocoon)"
+        },
+        {
+          "trim": "COCO 2"
+        }
+      ]
+    },
+    "Galleon": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Galleon"
+        },
+        {
+          "trim": "Galleon 600"
+        },
+        {
+          "trim": "Galleon 650"
+        }
+      ]
+    },
+    "IRM": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "IRM 300"
+        },
+        {
+          "trim": "IRM 400"
+        },
+        {
+          "trim": "IRM 450"
+        },
+        {
+          "trim": "IRM 500"
+        }
+      ]
+    },
+    "O'HARA": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "O'HARA"
+        },
+        {
+          "trim": "O'HARA 520"
+        },
+        {
+          "trim": "O'HARA 600"
+        }
+      ]
+    },
+    "Odyssey": {
+      "type": "SotorskaPrikolica",
+      "variants": [
+        {
+          "trim": "Odyssey"
+        },
+        {
+          "trim": "Odyssey 5"
+        }
+      ]
+    }
+  },
+  "Volkswagen": {
+    "Caddy California": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Caddy California"
+        }
+      ]
+    },
+    "Grand California": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Grand California 600"
+        },
+        {
+          "trim": "Grand California 680"
+        }
+      ]
+    },
+    "T3 California": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "T3 California"
+        }
+      ]
+    },
+    "T4 California": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "T4 California Coach"
+        },
+        {
+          "trim": "T4 California Exclusive"
+        }
+      ]
+    },
+    "T5 California": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "T5 California Beach"
+        },
+        {
+          "trim": "T5 California Comfortline"
+        },
+        {
+          "trim": "T5 California Ocean"
+        }
+      ]
+    },
+    "T6 California": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "T6 California Beach"
+        },
+        {
+          "trim": "T6 California Ocean"
+        },
+        {
+          "trim": "T6 California Coast"
+        }
+      ]
+    },
+    "T6.1 California": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "T6.1 California Beach"
+        },
+        {
+          "trim": "T6.1 California Ocean"
+        }
+      ]
+    },
+    "Westfalia": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Westfalia Joker"
+        },
+        {
+          "trim": "Westfalia Campmobile"
+        },
+        {
+          "trim": "Westfalia Columbus"
+        },
+        {
+          "trim": "Westfalia Amundsen"
+        }
+      ]
+    }
+  },
+  "Westfalia": {
+    "Amundsen": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Amundsen"
+        }
+      ]
+    },
+    "Columbus": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Columbus"
+        }
+      ]
+    },
+    "James Cook": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "James Cook"
+        }
+      ]
+    },
+    "Kepler": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Kepler 60"
+        }
+      ]
+    },
+    "Sven Hedin": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Sven Hedin"
+        }
+      ]
+    }
+  },
+  "Willerby": {
+    "Aspen": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Aspen"
+        },
+        {
+          "trim": "Aspen 36"
+        }
+      ]
+    },
+    "Avon": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Avon"
+        },
+        {
+          "trim": "Avon 35"
+        }
+      ]
+    },
+    "Granada": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Granada"
+        }
+      ]
+    },
+    "Malvern": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Malvern"
+        }
+      ]
+    },
+    "Melrose": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Melrose"
+        }
+      ]
+    },
+    "Sandpiper": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Sandpiper"
+        }
+      ]
+    },
+    "Sheraton": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Sheraton"
+        },
+        {
+          "trim": "Sheraton 2"
+        },
+        {
+          "trim": "Sheraton 38"
+        },
+        {
+          "trim": "Sheraton 42"
+        }
+      ]
+    },
+    "Vogue": {
+      "type": "MobilnaHisica",
+      "variants": [
+        {
+          "trim": "Vogue"
+        },
+        {
+          "trim": "Vogue 40"
+        },
+        {
+          "trim": "Vogue 44"
+        }
+      ]
+    }
+  },
+  "Winnebago": {
+    "Adventurer": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Adventurer"
+        }
+      ]
+    },
+    "Aspect": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Aspect"
+        }
+      ]
+    },
+    "Brave": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Brave"
+        }
+      ]
+    },
+    "Chieftain": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Chieftain"
+        }
+      ]
+    },
+    "Ekko": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Ekko"
+        },
+        {
+          "trim": "Ekko 22A"
+        }
+      ]
+    },
+    "Elandan": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Elandan"
+        }
+      ]
+    },
+    "Forza": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Forza"
+        }
+      ]
+    },
+    "Journey": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Journey"
+        }
+      ]
+    },
+    "LeSharo": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "LeSharo"
+        }
+      ]
+    },
+    "Minnie Winnie": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Minnie Winnie"
+        }
+      ]
+    },
+    "Revel": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Revel"
+        },
+        {
+          "trim": "Revel 4x4"
+        },
+        {
+          "trim": "Revel 44E"
+        }
+      ]
+    },
+    "Rialta": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Rialta"
+        }
+      ]
+    },
+    "Sightseer": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Sightseer"
+        }
+      ]
+    },
+    "Solei": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Solei"
+        }
+      ]
+    },
+    "Solis": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Solis"
+        },
+        {
+          "trim": "Solis 59PX"
+        }
+      ]
+    },
+    "Travato": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Travato"
+        },
+        {
+          "trim": "Travato 59G"
+        },
+        {
+          "trim": "Travato 59K"
+        }
+      ]
+    },
+    "Vectra": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Vectra"
+        }
+      ]
+    },
+    "View": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "View"
+        }
+      ]
+    },
+    "Vista": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Vista"
+        }
+      ]
+    },
+    "Vita": {
+      "type": "Avtodom",
+      "variants": [
+        {
+          "trim": "Vita"
+        }
+      ]
+    },
+    "Warrior": {
+      "type": "SnemljivBivalnik",
+      "variants": [
+        {
+          "trim": "Warrior"
+        }
+      ]
+    }
+  }
+}

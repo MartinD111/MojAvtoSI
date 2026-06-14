@@ -87,6 +87,14 @@ service cloud.firestore {
       allow write: if isEditor();
     }
 
+    // ── AutoHub News (articles) ───────────────────────────────────────────────
+    // Public read (the page filters to published client-side); editors/admins
+    // manage articles from the admin panel.
+    match /news/{articleId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
     // ── Payments ──────────────────────────────────────────────────────────────
     match /payments/{paymentId} {
       // Users read their own payments; admins read all

@@ -111,10 +111,10 @@
             #sidebarFiltersForm .year-selects-wrapper .custom-select-option { justify-content: center !important; font-weight: 700 !important; font-size: 0.95rem !important; padding: 8px 10px !important; }
             #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #111827 !important; }
             body.dark-mode #sidebarFiltersForm .year-selects-wrapper .custom-select-option:not(.selected) { color: #ffffff !important; }
-            @media (min-width: 769px) {
+            @media (min-width: 1025px) {
                 #filtersCard {
-                    overflow: visible !important;
-                    max-height: none !important;
+                    overflow-y: auto !important;
+                    max-height: calc(100vh - 8rem) !important;
                 }
                 .filters-card-inner {
                     overflow: visible !important;

@@ -1,0 +1,311 @@
+<div class="search-container" style="max-width:1060px; margin:3rem auto; padding:0 1rem;">
+
+    <!-- Category tabs (filled from platform taxonomy by JS) -->
+    <div class="home-tabs-container" style="margin-bottom:2rem; width:100%;">
+        <div id="boatCategoryTabs" class="glass-card rounded-pill tabs-glass" style="width:100%; display:flex;"></div>
+    </div>
+
+    <!-- Prodaja / Najem Toggles -->
+    <div style="display:flex; justify-content:center; margin:0 auto 1.5rem; width:100%;">
+        <div id="rentalModeToggle" style="display:flex; flex-direction:row; flex-wrap:nowrap; gap:2rem; align-items:center;">
+            <label style="display:inline-flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" class="remember-check" id="searchProdajaToggle" checked style="display:none;">
+                <span class="toggle-slider" style="width:32px; height:18px; flex-shrink:0;"></span>
+                <span style="font-size:0.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;">Prodaja</span>
+            </label>
+            <label style="display:inline-flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" class="remember-check" id="searchNajemToggle" style="display:none;">
+                <span class="toggle-slider" style="width:32px; height:18px; flex-shrink:0;"></span>
+                <span style="font-size:0.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;">Najem</span>
+            </label>
+        </div>
+    </div>
+
+    <form id="advancedSearchForm" data-v="1-navtika">
+        <input type="hidden" id="hiddenCat" name="cat" value="">
+        <input type="hidden" id="hiddenSub" name="sub" value="">
+        <input type="hidden" id="hiddenSearchType" name="searchType" value="">
+        <input type="hidden" id="hiddenVType" name="vtype" value="">
+        <input type="hidden" id="hiddenNajem" name="najem" value="">
+        <input type="hidden" id="hiddenProdaja" name="prodaja" value="">
+        <input type="hidden" id="bodyTypeHidden" name="bodyType" value="">
+
+        <!-- ══ 1. OSNOVNI PODATKI ══ -->
+        <div class="adv-accordion glass-card persistent-open" style="border-radius:2rem; margin-bottom:1rem;">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="true" style="flex:1;">
+                    <span class="adv-acc-title" id="searchAccordionTitle"><i data-lucide="sailboat" id="searchAccordionIcon"></i> Osnovni podatki</span>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
+                </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="navtika_osnovni" id="searchOsnovniRememberToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="adv-acc-body" style="display:flex; flex-direction:column;">
+                <!-- Vessel type grid (filled by JS from the active category) -->
+                <div class="adv-field-group" id="group-bodyType" style="text-align:center;">
+                    <label class="adv-label" id="bodyTypeLabel">Vrsta plovila</label>
+                    <div class="body-type-grid" id="boatTypeGrid"></div>
+                </div>
+
+                <!-- Vessel Selector (Brands, Models, Variants, Add/Exclude functionality) -->
+                <div class="adv-field-group">
+                    <div id="vehicleSelectorRow" class="search-grid" style="margin-bottom:1.5rem; display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+                        <div class="form-group" style="flex:1; max-width:240px; min-width:180px;">
+                            <label for="make" class="adv-label" style="text-align:center;">Znamka</label>
+                            <div class="pill-select-wrapper">
+                                <select id="make" name="make" class="pill-input">
+                                    <option value="">Znamka</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="flex:1; max-width:240px; min-width:180px;">
+                            <label for="model" class="adv-label" style="text-align:center;">Model</label>
+                            <div class="pill-select-wrapper">
+                                <select id="model" name="model" disabled class="pill-input">
+                                    <option value="">Model</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="flex:1; max-width:240px; min-width:180px;">
+                            <label for="variant" class="adv-label" style="text-align:center;">Različica</label>
+                            <div class="pill-select-wrapper">
+                                <select id="variant" name="variant" disabled class="pill-input">
+                                    <option value="">Različica</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="add-exclude-row" style="display:flex; justify-content:flex-start; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <button type="button" id="addVehicleBtn" class="pill-btn primary"
+                            style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px;">
+                            <i data-lucide="plus" style="width:14px;height:14px;"></i> Dodaj
+                        </button>
+                        <button type="button" id="excludeVehicleBtn" class="pill-btn"
+                            style="height:28px; padding:0 1.2rem; font-size:0.75rem; width:fit-content; border-radius:99px; background:rgba(239,68,68,0.12); color:#ef4444; border:1px solid rgba(239,68,68,0.3);">
+                            <i data-lucide="minus-circle" style="width:14px;height:14px;"></i> Izloči
+                        </button>
+                        <p class="brand-limit-note" id="brandLimitNote" style="margin:0; text-align:left;"></p>
+                    </div>
+                    <div id="vehicleCards" class="vehicle-drop-zone" data-zone="include" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                    </div>
+                    <div id="excludedVehiclesSection" style="display:none; margin-top:1.25rem; margin-bottom:0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                            <i data-lucide="ban" style="width:13px;height:13px;color:#ef4444;"></i>
+                            <span style="font-size:0.75rem; font-weight:700; color:#ef4444; text-transform:uppercase; letter-spacing:0.05em;">Izločena plovila</span>
+                        </div>
+                        <div id="excludedVehicleCards" class="vehicle-drop-zone" data-zone="exclude" style="display:flex; justify-content:flex-start; flex-wrap:wrap; gap:0.5rem; padding:0.25rem 0; align-items:center;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div class="adv-grid-2">
+                    <div class="adv-field-group">
+                        <label class="adv-label">Cena od (€)</label>
+                        <input type="text" name="priceFrom" placeholder="0 €" class="adv-input js-format-number" inputmode="numeric">
+                    </div>
+                    <div class="adv-field-group">
+                        <label class="adv-label">Cena do (€)</label>
+                        <input type="text" name="priceTo" placeholder="Brez omejitve" class="adv-input js-format-number" inputmode="numeric">
+                    </div>
+                </div>
+
+                <!-- Year -->
+                <div class="adv-grid-2">
+                    <div class="adv-field-group">
+                        <label class="adv-label">Leto izdelave od</label>
+                        <input type="number" name="yearFrom" placeholder="npr. 2010" class="adv-input">
+                    </div>
+                    <div class="adv-field-group">
+                        <label class="adv-label">Leto izdelave do</label>
+                        <input type="number" name="yearTo" placeholder="Vse" class="adv-input">
+                    </div>
+                </div>
+
+                <!-- Length (m) — vessels only -->
+                <div class="adv-grid-2 boat-only-field">
+                    <div class="adv-field-group">
+                        <label class="adv-label">Dolžina od (m)</label>
+                        <input type="number" step="0.1" name="lengthFrom" placeholder="npr. 6" class="adv-input">
+                    </div>
+                    <div class="adv-field-group">
+                        <label class="adv-label">Dolžina do (m)</label>
+                        <input type="number" step="0.1" name="lengthTo" placeholder="Vse" class="adv-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ 2. MOTOR & POGON ══ -->
+        <div class="adv-accordion glass-card" style="border-radius:2rem; margin-bottom:1rem;">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
+                    <span class="adv-acc-title"><i data-lucide="cog"></i> Motor in pogon</span>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
+                </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="navtika_motor">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="adv-acc-body" style="display:none; flex-direction:column;">
+                <div class="adv-grid-2">
+                    <div class="adv-field-group">
+                        <label class="adv-label">Moč motorja od (KM)</label>
+                        <input type="number" name="powerFrom" placeholder="0" class="adv-input">
+                    </div>
+                    <div class="adv-field-group">
+                        <label class="adv-label">Moč motorja do (KM)</label>
+                        <input type="number" name="powerTo" placeholder="Brez omejitve" class="adv-input">
+                    </div>
+                </div>
+
+                <div class="adv-field-group boat-only-field">
+                    <label class="adv-label">Ure motorja do</label>
+                    <input type="number" name="engineHoursTo" placeholder="npr. 500" class="adv-input">
+                </div>
+
+                <div class="adv-field-group boat-only-field">
+                    <label class="adv-label">Znamka motorja</label>
+                    <div class="pill-select-wrapper">
+                        <select name="engineMake" id="advEngineMake" class="pill-input" data-no-chevron="true">
+                            <option value="">Vse znamke</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="adv-field-group boat-only-field">
+                    <label class="adv-label">Vrsta motorja / pogona</label>
+                    <div class="pill-select-wrapper">
+                        <select name="engineType" id="advEngineType" class="pill-input" data-no-chevron="true">
+                            <option value="">Vse vrste</option>
+                            <option value="Izvenkrmni">Izvenkrmni (outboard)</option>
+                            <option value="Notranji">Notranji (inboard)</option>
+                            <option value="Stern Drive">Stern drive</option>
+                            <option value="Potisnik">Potisnik (pod trup)</option>
+                            <option value="Električni">Električni motor</option>
+                            <option value="Jadra">Samo jadra</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="adv-field-group">
+                    <label class="adv-label">Gorivo</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Bencin"> Bencin</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
+                        <label class="adv-chip"><input type="checkbox" name="fuel" value="Električni"> Električni</label>
+                    </div>
+                </div>
+
+                <!-- Engine mount — vessels only -->
+                <div class="adv-field-group boat-only-field">
+                    <label class="adv-label">Tip motorja / pogona</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="engineMount" value="izvenkrmni"> Izvenkrmni</label>
+                        <label class="adv-chip"><input type="checkbox" name="engineMount" value="krmni"> Krmni (IO)</label>
+                        <label class="adv-chip"><input type="checkbox" name="engineMount" value="notranji"> Notranji (inboard)</label>
+                        <label class="adv-chip"><input type="checkbox" name="engineMount" value="jadrni"> Jadrni</label>
+                    </div>
+                </div>
+
+                <!-- Engine-only: stroke + shaft (shown for izvenkrmni-motorji category) -->
+                <div class="adv-field-group engine-only-field" style="display:none;">
+                    <label class="adv-label">Takt motorja</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="stroke" value="2-taktni"> 2-taktni</label>
+                        <label class="adv-chip"><input type="checkbox" name="stroke" value="4-taktni"> 4-taktni</label>
+                        <label class="adv-chip"><input type="checkbox" name="stroke" value="električni"> Električni</label>
+                    </div>
+                </div>
+                <div class="adv-field-group engine-only-field" style="display:none;">
+                    <label class="adv-label">Dolžina noge</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="shaft" value="S"> Kratka (S / 15")</label>
+                        <label class="adv-chip"><input type="checkbox" name="shaft" value="L"> Dolga (L / 20")</label>
+                        <label class="adv-chip"><input type="checkbox" name="shaft" value="XL"> Ekstra dolga (XL / 25")</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ 3. TRUP & UDOBJE ══ (vessels only) -->
+        <div class="adv-accordion glass-card boat-only-field" style="border-radius:2rem; margin-bottom:1rem;">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
+                    <span class="adv-acc-title"><i data-lucide="anchor"></i> Trup in udobje</span>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
+                </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="navtika_trup">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="adv-acc-body" style="display:none; flex-direction:column;">
+                <div class="adv-field-group">
+                    <label class="adv-label">Material trupa</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="hull" value="Stekloplastika"> Stekloplastika (GRP)</label>
+                        <label class="adv-chip"><input type="checkbox" name="hull" value="Aluminij"> Aluminij</label>
+                        <label class="adv-chip"><input type="checkbox" name="hull" value="Jeklo"> Jeklo</label>
+                        <label class="adv-chip"><input type="checkbox" name="hull" value="Les"> Les</label>
+                        <label class="adv-chip"><input type="checkbox" name="hull" value="PVC"> PVC / Hypalon</label>
+                    </div>
+                </div>
+                <div class="adv-field-group">
+                    <label class="adv-label">CE kategorija</label>
+                    <div class="adv-chip-group">
+                        <label class="adv-chip"><input type="checkbox" name="ce" value="A"> A (ocean)</label>
+                        <label class="adv-chip"><input type="checkbox" name="ce" value="B"> B (offshore)</label>
+                        <label class="adv-chip"><input type="checkbox" name="ce" value="C"> C (priobalno)</label>
+                        <label class="adv-chip"><input type="checkbox" name="ce" value="D"> D (zaščitene vode)</label>
+                    </div>
+                </div>
+                <div class="adv-grid-2">
+                    <div class="adv-field-group">
+                        <label class="adv-label">Št. ležišč od</label>
+                        <input type="number" name="berthsFrom" placeholder="0" class="adv-input">
+                    </div>
+                    <div class="adv-field-group">
+                        <label class="adv-label">Št. kabin od</label>
+                        <input type="number" name="cabinsFrom" placeholder="0" class="adv-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ 4. DODATNA OPREMA ══ (vessels only) -->
+        <div class="adv-accordion glass-card boat-only-field" style="border-radius:2rem; margin-bottom:1rem;">
+            <div class="adv-acc-header" style="display:flex; align-items:center; gap:0.75rem;">
+                <button type="button" class="adv-acc-trigger" aria-expanded="false" style="flex:1;">
+                    <span class="adv-acc-title"><i data-lucide="star"></i> Dodatna oprema</span>
+                    <i data-lucide="chevron-down" class="adv-acc-chevron" style="display:none;"></i>
+                </button>
+                <label class="remember-toggle" title="Zapomni si izbiro" onclick="event.stopPropagation()" style="flex-shrink:0;">
+                    <span class="toggle-label">Zapomni</span>
+                    <input type="checkbox" class="remember-check" data-category="navtika_oprema">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <!-- Equipment chips — generated from equipment.js (renderEquipmentChipsHtml),
+                 keeps the search filter in lockstep with the listing form. -->
+            <div class="adv-acc-body" style="display:none; flex-direction:column; gap:1.25rem;" id="boat-equipment-chips"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="search-actions" style="display:flex; justify-content:flex-end; gap:1rem; padding-top:0.5rem;">
+            <button type="reset" class="pill-btn secondary" style="padding:0.875rem 2.5rem;">
+                <i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i> Ponastavi
+            </button>
+            <button type="submit" class="pill-btn primary search-submit-btn" id="searchBtn"
+                style="padding:0.875rem 3rem; font-size:1.05rem; font-weight:700;">
+                <i data-lucide="search"></i> <span id="searchBtnText">Prikaži rezultate</span>
+            </button>
+        </div>
+    </form>
+</div>

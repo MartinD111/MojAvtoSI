@@ -488,7 +488,7 @@ body {
   transform: translateX(-50%);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   .desktop-links {
     display: flex;
   }
@@ -850,16 +850,67 @@ body.dark-mode .home-lang-dropdown li a:hover {
   background: rgba(37, 99, 235, 0.08);
 }
 
-/* Mobile profile dropdown: SL | EN side by side */
-.dropdown-lang-row {
-  display: flex;
-  gap: 6px;
-  padding: 4px;
+/* Language nested submenu */
+.dropdown-submenu-wrapper {
+  position: relative;
 }
 
-.dropdown-lang-row .lang-option {
-  justify-content: center;
-  padding: 8px 10px;
+.dropdown-submenu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  font-family: inherit;
+}
+
+.dropdown-submenu-trigger:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.submenu-caret {
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s;
+}
+
+.dropdown-submenu {
+  display: none;
+  flex-direction: column;
+  background: var(--md-sys-color-surface-container-high, #f0f0f0);
+  border-radius: 8px;
+  margin: 2px 8px 4px;
+  overflow: hidden;
+}
+
+.dropdown-submenu.open {
+  display: flex;
+}
+
+.dropdown-submenu .lang-option {
+  padding: 9px 16px;
+  border-radius: 0;
+}
+
+body.dark-mode .dropdown-submenu-trigger {
+  color: #e5e7eb;
+}
+
+body.dark-mode .dropdown-submenu-trigger:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode .dropdown-submenu {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 body.dark-mode .lang-option {
@@ -868,6 +919,30 @@ body.dark-mode .lang-option {
 
 body.dark-mode .lang-option:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+.lang-dropdown {
+  min-width: 180px;
+  right: 50%;
+  left: auto;
+  transform: translateX(50%);
+}
+
+.lang-flag-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  background: rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+body.dark-mode .lang-flag-circle {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-login {
@@ -958,7 +1033,7 @@ body.dark-mode .lang-option:hover {
   display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   .burger-btn {
     display: none;
   }
@@ -991,7 +1066,7 @@ body.dark-mode .lang-option:hover {
   height: 18px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .nav-avatar-mobile {
     display: flex;
   }
@@ -1610,7 +1685,7 @@ body.dark-mode .page-container p {
   display: none;
 }
 
-@media (min-width: 769px) and (max-width: 1100px) {
+@media (min-width: 1025px) and (max-width: 1100px) {
   /* Show "Objavi oglas" inside dropdown */
   .dropdown-publish-listing {
     display: flex !important;
@@ -1622,7 +1697,9 @@ body.dark-mode .page-container p {
   }
 }
 
-@media (max-width: 768px) {
+/* Navbar switches to the mobile (burger + centered logo + profile) layout up to
+   tablet width — phones and tablets share the same compact navbar. */
+@media (max-width: 1024px) {
   .burger {
     display: block;
   }
@@ -2258,6 +2335,234 @@ body.dark-mode .home-search-mode {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* ── AutoHub News ──────────────────────────────────────────────────────────── */
+.news-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.news-see-all {
+  font-weight: 600;
+  color: var(--color-primary-start);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.news-see-all:hover { text-decoration: underline; }
+
+.news-page-hero {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+
+.news-page-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  background: var(--brand-gradient, linear-gradient(135deg, #6366f1, #8b5cf6));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.news-page-subtitle {
+  color: #6b7280;
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.news-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.news-filter-pill {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: var(--bg-glass, #f1f5f9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  color: #374151;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.news-filter-pill:hover { background: #e5e7eb; }
+.news-filter-pill.active {
+  background: var(--color-primary-start, #6366f1);
+  color: #fff;
+  border-color: transparent;
+}
+
+.news-card-cat {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-primary-start, #6366f1);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+
+/* Single article */
+.news-article {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+  width: 100%;
+}
+
+.news-article-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.news-article-back:hover { color: var(--color-primary-start, #6366f1); }
+
+.news-article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.news-article-title {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+  color: #111827;
+}
+
+.news-article-lead {
+  font-size: 1.2rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.news-article-cover {
+  width: 100%;
+  height: auto;
+  max-height: 440px;
+  object-fit: cover;
+  border-radius: 1rem;
+  margin: 0 0 1.75rem;
+}
+
+.news-article-body {
+  font-size: 1.08rem;
+  line-height: 1.8;
+  color: #374151;
+}
+.news-article-body p { margin: 0 0 1.25rem; }
+
+/* ── Block-based article renderer ── */
+.news-article-body .nb-article-heading { margin: 2rem 0 .75rem; font-weight: 700; line-height: 1.25; color: #111827; }
+.news-article-body h2.nb-article-heading { font-size: 1.55rem; }
+.news-article-body h3.nb-article-heading { font-size: 1.25rem; }
+.news-article-body h4.nb-article-heading { font-size: 1.05rem; }
+.news-article-body .nb-article-figure { margin: 1.75rem 0; text-align: center; }
+.news-article-body .nb-article-img { width: 100%; max-height: 480px; object-fit: cover; border-radius: .75rem; }
+.news-article-body .nb-article-caption { margin-top: .5rem; font-size: .82rem; color: #6b7280; font-style: italic; display: flex; align-items: center; justify-content: center; gap: .5rem; flex-wrap: wrap; }
+.news-article-body .nb-article-source { background: #f3f4f6; border-radius: .25rem; padding: .1rem .45rem; font-style: normal; font-size: .75rem; color: #374151; }
+.news-article-body .nb-article-list { margin: 0 0 1.25rem 1.5rem; padding: 0; }
+.news-article-body .nb-article-list li { margin-bottom: .45rem; }
+.news-article-body .nb-article-quote { border-left: 4px solid #6366f1; margin: 1.75rem 0; padding: .75rem 1.25rem; background: #f5f3ff; border-radius: 0 .5rem .5rem 0; }
+.news-article-body .nb-article-quote p { margin: 0 0 .4rem; font-size: 1.1rem; font-style: italic; }
+.news-article-body .nb-article-quote cite { font-size: .82rem; color: #6b7280; font-style: normal; }
+.news-article-body .nb-article-divider { border: none; border-top: 2px solid #e5e7eb; margin: 2rem 0; }
+
+body.dark-mode .news-article-title { color: #f1f5f9; }
+body.dark-mode .news-article-lead { color: #cbd5e1; }
+body.dark-mode .news-article-body { color: #cbd5e1; }
+body.dark-mode .news-filter-pill { background: rgba(255, 255, 255, 0.06); color: #cbd5e1; }
+
+/* ── AutoHub News portal homepage (magazine) ───────────────────────────────── */
+.news-home {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  width: 100%;
+}
+
+.news-home-hero { margin-bottom: 2.5rem; }
+
+.news-hero-card {
+  position: relative;
+  display: block;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  text-decoration: none;
+  color: #fff;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35);
+}
+.news-hero-card img,
+.news-hero-card > div:first-child { display: block; }
+
+.news-hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.3) 45%, rgba(0, 0, 0, 0) 75%);
+}
+.news-hero-overlay .news-card-cat {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.news-hero-title {
+  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0.5rem 0 0.5rem;
+  max-width: 760px;
+}
+
+.news-hero-excerpt {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 0.6rem;
+  max-width: 640px;
+  color: rgba(255, 255, 255, 0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-hero-meta {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .news-hero-overlay { padding: 1.25rem; }
 }
 
 /* Carousel Section */
@@ -4166,7 +4471,7 @@ body.dark-mode .sponsored-mini-card:hover {
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 0.65rem;
+  gap: 0.15rem;
   align-items: center;
   justify-content: center;
   padding: 0;
@@ -4699,6 +5004,12 @@ body.dark-mode .spec-pill.type-pill {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Footer wrapper is transparent by default — children flow as if direct
+   children of .listing-card-content. It only becomes a flex row on tablet. */
+.listing-card-footer {
+  display: contents;
 }
 
 .note-contact-row {
@@ -5552,8 +5863,11 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
   display: none;
 }
 
-/* ── Oglasi: stack to single column on phones ──────────────────────── */
-@media (max-width: 768px) {
+/* ── Oglasi: stack to single column on phones and tablets ──────────────
+   Up to tablet width the filter sidebar collapses into the same mobile
+   filter toggle used on phones; the listing cards keep their desktop
+   horizontal layout (that restyle stays at max-width: 768px below). */
+@media (max-width: 1024px) {
   .oglasi-layout {
     flex-direction: column;
     margin: 1rem auto;
@@ -6267,7 +6581,7 @@ body.dark-mode .icon-only-mode .icon-only-circle:hover {
 
 .search-action-pill {
   flex: 1;
-  height: 44px !important;
+  height: 52px !important;
   width: auto !important;
   padding: 0 1rem !important;
   font-size: 0.82rem !important;
@@ -6335,7 +6649,7 @@ body.dark-mode .filters-pill:hover {
 .compact-search {
   flex: 1;
   width: auto !important;
-  height: 44px !important;
+  height: 52px !important;
   padding: 0 1rem !important;
   font-size: 0.82rem !important;
   font-weight: 700 !important;
@@ -7470,6 +7784,16 @@ body.dark-mode .results-header h1 span {
   display: none !important;
 }
 
+/* Grid view uses .listing-card-actions as its single cluster, so the
+   tablet-only bottom-actions row and footer wrapper are neutralised here. */
+#carListingsContainer.grid-layout .listing-card-bottom-actions {
+  display: none !important;
+}
+
+#carListingsContainer.grid-layout .listing-card-footer {
+  display: contents !important;
+}
+
 #carListingsContainer.grid-layout .grid-contact-btn {
   display: flex !important;
   margin: 0 !important;
@@ -8601,6 +8925,62 @@ body.dark-mode .catalog-offers-title {
   }
 }
 
+/* ── Tablet list view: keep the horizontal header so the price sits in the
+   upper-right corner (overrides the column stacking from the 992px block). ── */
+@media (min-width: 769px) and (max-width: 992px) {
+  .listing-card-header {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 1rem !important;
+  }
+
+  .car-price-box {
+    align-items: flex-end !important;
+    text-align: right !important;
+  }
+}
+
+/* ── Tablet list view: single bottom bar.
+   Left  → contact + location.   Right → favourite + compare. ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .listing-card-footer {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 1rem !important;
+    margin-top: 0.6rem !important;
+  }
+
+  /* Left group: contact button followed by the location pill */
+  .listing-card-footer .note-contact-row {
+    order: 1;
+    width: auto !important;
+    flex: 0 1 auto !important;
+    justify-content: flex-start !important;
+    gap: 0.6rem !important;
+    margin-top: 0 !important;
+  }
+
+  .listing-card-footer .note-contact-row .list-contact-btn {
+    order: -1; /* contact before location */
+  }
+
+  /* Re-show the location pill (hidden on compact desktop cards) */
+  .listing-card-footer .seller-note-card {
+    display: inline-flex !important;
+  }
+
+  /* Right group: favourite + compare */
+  .listing-card-footer .listing-card-bottom-actions {
+    order: 2;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+  }
+}
+
 @media (max-width: 768px) {
   /* ── Card layout: image on top, centered info below ── */
   .listing-card {
@@ -9418,3 +9798,22 @@ body.dark-mode .nav-oprema-cat-btn.active {
 
 .bi-done-actions { display: flex; gap: .75rem; margin-top: 1.5rem; flex-wrap: wrap; }
 
+
+/* ── Block-based article renderer (nb-article-*) ── */
+.news-article-body .nb-article-heading { margin: 2rem 0 .75rem; font-weight: 700; line-height: 1.25; color: #111827; }
+.news-article-body h2.nb-article-heading { font-size: 1.55rem; }
+.news-article-body h3.nb-article-heading { font-size: 1.25rem; }
+.news-article-body h4.nb-article-heading { font-size: 1.05rem; }
+.news-article-body .nb-article-figure { margin: 1.75rem 0; text-align: center; }
+.news-article-body .nb-article-img { width: 100%; max-height: 480px; object-fit: cover; border-radius: .75rem; }
+.news-article-body .nb-article-caption { margin-top: .5rem; font-size: .82rem; color: #6b7280; font-style: italic; display: flex; align-items: center; justify-content: center; gap: .5rem; flex-wrap: wrap; }
+.news-article-body .nb-article-source { background: #f3f4f6; border-radius: .25rem; padding: .1rem .45rem; font-style: normal; font-size: .75rem; color: #374151; }
+.news-article-body .nb-article-list { margin: 0 0 1.25rem 1.5rem; padding: 0; }
+.news-article-body .nb-article-list li { margin-bottom: .45rem; }
+.news-article-body .nb-article-quote { border-left: 4px solid #6366f1; margin: 1.75rem 0; padding: .75rem 1.25rem; background: #f5f3ff; border-radius: 0 .5rem .5rem 0; }
+.news-article-body .nb-article-quote p { margin: 0 0 .4rem; font-size: 1.1rem; font-style: italic; }
+.news-article-body .nb-article-quote cite { font-size: .82rem; color: #6b7280; font-style: normal; }
+.news-article-body .nb-article-divider { border: none; border-top: 2px solid #e5e7eb; margin: 2rem 0; }
+body.dark-mode .news-article-body .nb-article-heading { color: #f1f5f9; }
+body.dark-mode .news-article-body .nb-article-quote { background: #1a1830; }
+body.dark-mode .news-article-body .nb-article-source { background: #374151; color: #e5e7eb; }

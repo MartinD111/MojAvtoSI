@@ -64,7 +64,7 @@
             #sidebarFiltersForm .form-group > label { color: var(--text-dark) !important; }
             body.dark-mode #sidebarFiltersForm .form-group > label { color: #e2e8f0 !important; }
             @media (min-width: 769px) {
-                #filtersCard { overflow: visible !important; max-height: none !important; }
+                #filtersCard { overflow-y: auto !important; max-height: calc(100vh - 8rem) !important; }
                 .filters-card-inner { overflow: visible !important; }
             }
         </style>

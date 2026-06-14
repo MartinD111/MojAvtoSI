@@ -12,6 +12,17 @@ service firebase.storage {
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
+    // AutoHub News cover images — public read; any signed-in user may upload an
+    // image (the admin editor is the only client that writes here, and the news
+    // doc that references it is editor/admin-gated in Firestore).
+    match /news/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.resource.size < 15 * 1024 * 1024   // 15 MB per file
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null;
+    }
+
     // Deny everything else
     match /{allPaths=**} {
       allow read, write: if false;

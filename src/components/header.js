@@ -6,6 +6,36 @@ import { PLATFORM } from '../config/platform.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { ApiNavService } from '../services/apiNavService.js';
 
+const FLAG_SL = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+  <rect width="100" height="33.3" fill="#ffffff"/>
+  <rect y="33.3" width="100" height="33.3" fill="#00009c"/>
+  <rect y="66.6" width="100" height="33.4" fill="#c8102e"/>
+  <g transform="translate(38, 20.3)">
+    <path d="M 0,0 L 24,0 L 24,14 A 12,12 0 0 1 0,14 Z" fill="#00009c" stroke="#c8102e" stroke-width="2.5"/>
+    <path d="M 3.5,15.5 L 7,10.5 L 9.5,13 L 12,8 L 14.5,13 L 17,10.5 L 20.5,15.5 Z" fill="#ffffff"/>
+    <path d="M 5,19.5 Q 8.5,18 12,19.5 T 19,19.5" fill="none" stroke="#00009c" stroke-width="1.5"/>
+    <path d="M 5,22 Q 8.5,20.5 12,22 T 19,22" fill="none" stroke="#00009c" stroke-width="1.5"/>
+    <polygon points="8.5,1 9.8,3.25 7.2,3.25" fill="#f1c40f"/>
+    <polygon points="8.5,4 9.8,1.75 7.2,1.75" fill="#f1c40f"/>
+    <polygon points="15.5,1 16.8,3.25 14.2,3.25" fill="#f1c40f"/>
+    <polygon points="15.5,4 16.8,1.75 14.2,1.75" fill="#f1c40f"/>
+    <polygon points="12,4 13.3,6.25 10.7,6.25" fill="#f1c40f"/>
+    <polygon points="12,7 13.3,4.75 10.7,4.75" fill="#f1c40f"/>
+  </g>
+</svg>
+`;
+
+const FLAG_GB = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+  <rect width="100" height="100" fill="#012169"/>
+  <path d="M0,0 L100,100 M100,0 L0,100" stroke="#ffffff" stroke-width="20"/>
+  <path d="M0,6 L44,50 M100,94 L56,50 M94,0 L50,44 M6,100 L50,56" stroke="#c8102e" stroke-width="12"/>
+  <path d="M50,0 v100 M0,50 h100" stroke="#ffffff" stroke-width="33"/>
+  <path d="M50,0 v100 M0,50 h100" stroke="#c8102e" stroke-width="20"/>
+</svg>
+`;
+
 export function initHeader() {
   const headerEl = document.getElementById('header');
 
@@ -76,7 +106,11 @@ export function initHeader() {
 
             <!-- RIGHT: actions (desktop) / profile (mobile) -->
             <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
-              ${user ? `
+              ${PLATFORM.id === 'news' ? `
+                <a href="${PLATFORM.siblingUrl}" class="pill-btn secondary btn-sm desktop-only-action" target="_blank" rel="noopener" style="border-radius: var(--md-sys-shape-corner-large);">
+                  <i data-lucide="external-link"></i><span> ${PLATFORM.siblingName}</span>
+                </a>
+              ` : user ? `
                 <a href="#/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);"><i data-lucide="plus"></i><span> ${t('publish_listing')}</span></a>
                 <div id="userMenu" class="relative desktop-only-action">
                   <button id="userMenuBtn" class="pill-btn secondary user-btn" style="border-radius: var(--md-sys-shape-corner-large);">
@@ -96,11 +130,6 @@ export function initHeader() {
                         <span id="compareBadgeDropdown" class="compare-badge-small" style="display: none; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: 800;">0</span>
                     </a>
                     <div class="dropdown-divider"></div>
-                    <div class="dropdown-lang-row">
-                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">🇸🇮 SL</button>
-                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">🇬🇧 EN</button>
-                    </div>
-                    <div class="dropdown-divider"></div>
                     <button id="logoutBtn" class="dropdown-logout"><i data-lucide="log-out"></i> ${t('logout')}</button>
                     <a href="#/admin" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
                   </div>
@@ -114,7 +143,24 @@ export function initHeader() {
                 </a>
               `}
 
-<button class="pill-btn secondary btn-icon desktop-only-action" id="themeToggleBtn" aria-label="Preklopi temo" style="border-radius: 50%;">
+              <!-- Language switcher — always visible, next to sibling link -->
+              <div class="relative desktop-only-action" id="langMenuWrapper">
+                <button type="button" class="pill-btn secondary btn-sm" id="langMenuBtn" style="border-radius: var(--md-sys-shape-corner-large); gap:6px;">
+                  <span class="lang-flag-circle">${getCurrentLang() === 'sl' ? FLAG_SL : FLAG_GB}</span>
+                  ${getCurrentLang() === 'sl' ? 'SL' : 'EN'}
+                  <i data-lucide="chevron-down" style="width:14px;height:14px;"></i>
+                </button>
+                <div id="langDropdown" class="glass-dropdown lang-dropdown">
+                  <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">
+                    <span class="lang-flag-circle">${FLAG_SL}</span> Slovenščina
+                  </button>
+                  <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">
+                    <span class="lang-flag-circle">${FLAG_GB}</span> English
+                  </button>
+                </div>
+              </div>
+
+              <button class="pill-btn secondary btn-icon desktop-only-action" id="themeToggleBtn" aria-label="Preklopi temo" style="border-radius: 50%;">
                 <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
               </button>
 
@@ -140,8 +186,12 @@ export function initHeader() {
                     </button>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-lang-row">
-                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">🇸🇮 SL</button>
-                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">🇬🇧 EN</button>
+                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">
+                        <span class="lang-flag-circle">${FLAG_SL}</span> SL
+                      </button>
+                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">
+                        <span class="lang-flag-circle">${FLAG_GB}</span> EN
+                      </button>
                     </div>
                     <div class="dropdown-divider"></div>
                     <button class="dropdown-logout" id="mobileProfileLogoutBtn"><i data-lucide="log-out"></i> ${t('logout')}</button>
@@ -154,8 +204,12 @@ export function initHeader() {
                     </button>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-lang-row">
-                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">🇸🇮 SL</button>
-                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">🇬🇧 EN</button>
+                      <button type="button" class="lang-option ${getCurrentLang() === 'sl' ? 'active' : ''}" data-lang="sl">
+                        <span class="lang-flag-circle">${FLAG_SL}</span> SL
+                      </button>
+                      <button type="button" class="lang-option ${getCurrentLang() === 'en' ? 'active' : ''}" data-lang="en">
+                        <span class="lang-flag-circle">${FLAG_GB}</span> EN
+                      </button>
                     </div>
                   `}
                 </div>
@@ -168,6 +222,17 @@ export function initHeader() {
     `;
 
     if (window.lucide) window.lucide.createIcons();
+
+    // ── Language dropdown ──
+    const langMenuBtn = document.getElementById('langMenuBtn');
+    const langDropdown = document.getElementById('langDropdown');
+    if (langMenuBtn && langDropdown) {
+      langMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        langDropdown.classList.toggle('open');
+      });
+      document.addEventListener('click', () => langDropdown.classList.remove('open'), { capture: true });
+    }
 
     // ── Theme Toggle ──
     document.getElementById('themeToggleBtn')?.addEventListener('click', () => {

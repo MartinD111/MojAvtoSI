@@ -1,0 +1,1 @@
+var e=()=>window.matchMedia(`(max-width: 767px)`).matches;function t(t={top:0,behavior:`smooth`}){e()&&window.scrollTo(t)}function n(t,n){t&&e()&&t.scrollIntoView(n)}export{t as n,n as t};
