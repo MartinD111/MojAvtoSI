@@ -126,7 +126,7 @@ export function initHeader() {
                     <a href="#/profil"><i data-lucide="user"></i> ${t('my_profile')}</a>
                     <a href="#/garaža"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
                     <a href="#/primerjava" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span><i data-lucide="scale"></i> ${t('compare_corner')}</span>
+                        <span><i data-lucide="scale"></i> ${t('compare_btn')}</span>
                         <span id="compareBadgeDropdown" class="compare-badge-small" style="display: none; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: 800;">0</span>
                     </a>
                     <div class="dropdown-divider"></div>
@@ -178,7 +178,10 @@ export function initHeader() {
                     <a href="#/dashboard"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
                     <a href="#/profil"><i data-lucide="user"></i> ${t('my_profile')}</a>
                     <a href="#/garaža"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
-                    <a href="#/primerjava"><i data-lucide="scale"></i> ${t('compare_corner')}</a>
+                    <a href="#/primerjava" style="display:flex;align-items:center;justify-content:space-between;">
+                      <span><i data-lucide="scale"></i> ${t('compare_btn')}</span>
+                      <span id="compareBadgeMobile" class="compare-badge-small" style="display:none;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:0.65rem;align-items:center;justify-content:center;font-weight:800;">0</span>
+                    </a>
                     <div class="dropdown-divider"></div>
                     <button type="button" class="dropdown-theme-toggle" id="themeToggleMobileProfileBtn">
                       <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
@@ -196,6 +199,8 @@ export function initHeader() {
                     <div class="dropdown-divider"></div>
                     <button class="dropdown-logout" id="mobileProfileLogoutBtn"><i data-lucide="log-out"></i> ${t('logout')}</button>
                   ` : `
+                    <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
+                    <div class="dropdown-divider dropdown-publish-listing"></div>
                     <a href="#/prijava"><i data-lucide="log-in"></i> ${t('login')}</a>
                     <div class="dropdown-divider"></div>
                     <button type="button" class="dropdown-theme-toggle" id="themeToggleMobileProfileBtn">
@@ -405,12 +410,12 @@ export function initHeader() {
 
   window.updateHeaderCompare = () => {
     const compareList = JSON.parse(localStorage.getItem(lsKey('compare')) || '[]');
-    const badge = document.getElementById('compareBadgeDropdown');
-
-    if (badge) {
-      badge.innerText = compareList.length;
-      badge.style.display = compareList.length > 0 ? 'flex' : 'none';
-    }
+    const count = compareList.length;
+    [document.getElementById('compareBadgeDropdown'), document.getElementById('compareBadgeMobile')].forEach(badge => {
+      if (!badge) return;
+      badge.innerText = count;
+      badge.style.display = count > 0 ? 'flex' : 'none';
+    });
   };
 
   // First render triggers API fetch

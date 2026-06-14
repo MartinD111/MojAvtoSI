@@ -437,10 +437,10 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.18);
     transition: transform 0.2s;
 }
-.cfe-checkbox:checked + .cfe-toggle {
+.cfe-field-row:has(.cfe-checkbox:checked) .cfe-toggle {
     background: var(--color-primary-start, #2563eb);
 }
-.cfe-checkbox:checked + .cfe-toggle::after {
+.cfe-field-row:has(.cfe-checkbox:checked) .cfe-toggle::after {
     transform: translateX(16px);
 }
 

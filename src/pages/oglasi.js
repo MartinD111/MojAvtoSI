@@ -16,6 +16,7 @@ import { addToFavourites, removeFromFavourites, isFavourite, getFavourites } fro
 import { getListings, getListingsPaged } from '../services/listingService.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 import { getCurrentLang } from '../core/i18n.js';
+import { showCompareLimitToast } from '../utils/listingUtils.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { brandsFileFor } from '../data/brandFiles.js';
 
@@ -102,7 +103,7 @@ function isInCompare(carId) {
 
 function addToCompare(car) {
     if (compareList.length >= MAX_COMPARE) {
-        alert(`Lahko primerjate največ ${MAX_COMPARE} vozila naenkrat.`);
+        showCompareLimitToast();
         return false;
     }
     if (isInCompare(car.id)) return false;

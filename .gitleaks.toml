@@ -1,0 +1,37 @@
+# Gitleaks config (#3). Extends the default ruleset and adds project-specific
+# patterns for the services we use. Run locally before committing:
+#   gitleaks detect --config .gitleaks.toml
+#   gitleaks protect --staged --config .gitleaks.toml   # pre-commit
+[extend]
+useDefault = true
+
+[[rules]]
+id = "supabase-service-role"
+description = "Supabase service_role JWT"
+regex = '''eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}'''
+keywords = ["service_role", "supabase"]
+
+[[rules]]
+id = "upstash-token"
+description = "Upstash Redis REST token"
+regex = '''(?i)upstash[_-]?redis[_-]?rest[_-]?token['"=:\s]+[A-Za-z0-9_=-]{20,}'''
+keywords = ["upstash"]
+
+[[rules]]
+id = "typesense-key"
+description = "Typesense API key"
+regex = '''(?i)typesense[_-]?(admin|api)[_-]?key['"=:\s]+[A-Za-z0-9]{16,}'''
+keywords = ["typesense"]
+
+[[rules]]
+id = "resend-key"
+description = "Resend API key"
+regex = '''re_[A-Za-z0-9_]{16,}'''
+keywords = ["resend", "re_"]
+
+[allowlist]
+description = "Ignore examples and lockfiles"
+paths = [
+  '''\.env\.example$''',
+  '''package-lock\.json$''',
+]

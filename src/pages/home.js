@@ -62,7 +62,7 @@ function updateHomeCategory(category) {
     // Filter featured listings for this category
     const categoryListings = allListings.filter(l => l.category === category);
     const featured = categoryListings.filter(l => {
-        if (!l.isPremium && l.promotion?.tier !== 'homepage') return false;
+        if (!l.isPremium && l.promotion?.tier !== 'homepage' && l.promotion?.tier !== 'sponsored') return false;
         const exp = l.promotion?.expiresAt;
         if (!exp) return true;
         const ms = exp?.toMillis?.() ?? (typeof exp === 'number' ? exp : null);

@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { getListingById, recordListingView, getListingViewStats, formatPrice, getListings } from '../services/listingService.js';
-import { kmToMiles, kwToHp, l100kmToMpg, formatDisplacement } from '../utils/listingUtils.js';
+import { kmToMiles, kwToHp, l100kmToMpg, formatDisplacement, showCompareLimitToast } from '../utils/listingUtils.js';
 import { getVehicleRating } from '../utils/valuationScore.js';
 import { renderRatingBlockDetail } from '../utils/priceRatingUi.js';
 import { getEquipmentLabel, EQUIPMENT_GROUPS } from '../data/equipment.js';
@@ -76,7 +76,7 @@ async function injectServiceHistory(listing) {
     };
 
     const items = records.map(r => {
-        const dateStr = r.date ? new Date(r.date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+        const dateStr = r.date ? new Date(r.date).toLocaleDateString('sl-SI', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
         const km = r.mileage ? new Intl.NumberFormat('sl-SI').format(r.mileage) + ' km' : null;
         const typeLabel = typeLabels[r.serviceType] || r.serviceType || t('other');
         return `
@@ -133,7 +133,7 @@ function injectRating(listing, allListings) {
 // ── View statistics card ──────────────────────────────────────────────────────
 function renderViewStatsHtml(l) {
     const stats = getListingViewStats(l);
-    const fmt = n => new Intl.NumberFormat(getCurrentLang() === 'sl' ? 'sl-SI' : 'en-US').format(n);
+    const fmt = n => new Intl.NumberFormat('sl-SI').format(n);
 
     const cell = (num, label) => `
         <div class="lp-view-stat">
@@ -285,7 +285,7 @@ function initCompareBtn(l) {
         }
 
         if (list.length >= 3) {
-            alert(t('compare_limit_3'));
+            showCompareLimitToast();
             return;
         }
 
@@ -978,8 +978,7 @@ function fmtKm(n) {
 function formatDate(ts) {
     const d = ts?.toDate ? ts.toDate() : new Date(ts?.seconds * 1000 || ts);
     const lang = getCurrentLang();
-    const locale = lang === 'sl' ? 'sl-SI' : 'en-US';
-    return d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+    return d.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 function escHtml(str) {

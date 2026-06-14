@@ -8752,6 +8752,7 @@ body.dark-mode .adv-chip:focus-visible {
   #gdFilters.open {
     display: block;
   }
+
 }
 
 /* Dark mode */
@@ -9550,6 +9551,19 @@ body.dark-mode .gd-itemtype-btn.active {
   background: rgba(30,41,59,1);
   color: white;
 }
+
+@media (max-width: 767px) {
+  .gd-itemtype-btn {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .gd-itemtype-btn i {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 /* Custom Vehicle Icons (Two-Tone) */
 .custom-v-icon {
     width: 24px;

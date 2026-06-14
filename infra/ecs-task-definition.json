@@ -1,0 +1,66 @@
+{
+  "_comment": "ECS Fargate task definition for the API. Replace <ACCOUNT_ID>, <REGION>, secret ARNs, and the ECR image tag before registering: `aws ecs register-task-definition --cli-input-json file://infra/ecs-task-definition.json`. All credentials are injected from AWS Secrets Manager — none are baked into the image.",
+  "family": "mojavto-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/mojavto-ecs-execution",
+  "taskRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/mojavto-ecs-task",
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/mojavto-api:latest",
+      "essential": true,
+      "portMappings": [{ "containerPort": 8080, "protocol": "tcp" }],
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "PORT", "value": "8080" },
+        { "name": "CORS_ORIGINS", "value": "https://mojavto.si,https://mojanavtika.si" },
+        { "name": "AWS_REGION", "value": "<REGION>" },
+        { "name": "POSTHOG_HOST", "value": "https://eu.i.posthog.com" }
+      ],
+      "secrets": [
+        { "name": "SUPABASE_URL", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:SUPABASE_URL::" },
+        { "name": "SUPABASE_SERVICE_ROLE_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:SUPABASE_SERVICE_ROLE_KEY::" },
+        { "name": "SUPABASE_ANON_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:SUPABASE_ANON_KEY::" },
+        { "name": "UPSTASH_REDIS_REST_URL", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:UPSTASH_REDIS_REST_URL::" },
+        { "name": "UPSTASH_REDIS_REST_TOKEN", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:UPSTASH_REDIS_REST_TOKEN::" },
+        { "name": "R2_ACCOUNT_ID", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:R2_ACCOUNT_ID::" },
+        { "name": "R2_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:R2_ACCESS_KEY_ID::" },
+        { "name": "R2_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:R2_SECRET_ACCESS_KEY::" },
+        { "name": "R2_BUCKET", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:R2_BUCKET::" },
+        { "name": "R2_PUBLIC_BASE_URL", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:R2_PUBLIC_BASE_URL::" },
+        { "name": "AWS_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:AWS_ACCESS_KEY_ID::" },
+        { "name": "AWS_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:AWS_SECRET_ACCESS_KEY::" },
+        { "name": "S3_BUCKET", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:S3_BUCKET::" },
+        { "name": "TYPESENSE_HOST", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:TYPESENSE_HOST::" },
+        { "name": "TYPESENSE_ADMIN_API_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:TYPESENSE_ADMIN_API_KEY::" },
+        { "name": "TYPESENSE_SEARCH_ONLY_API_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:TYPESENSE_SEARCH_ONLY_API_KEY::" },
+        { "name": "RESEND_API_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:RESEND_API_KEY::" },
+        { "name": "SENTRY_DSN", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:SENTRY_DSN::" },
+        { "name": "POSTHOG_API_KEY", "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:mojavto/api:POSTHOG_API_KEY::" }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 15
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/mojavto-api",
+          "awslogs-region": "<REGION>",
+          "awslogs-stream-prefix": "api",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}

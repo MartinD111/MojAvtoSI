@@ -22,6 +22,34 @@ import { openAiImportOverlay } from '../utils/aiListingImport.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
+const PHOTO_KEY = 'cl_draft_photos';
+
+function encodeFilesToSession(extFiles, intFiles) {
+    if (!extFiles.length && !intFiles.length) return;
+    const encodeAll = (files) => Promise.all(files.map(f => new Promise(res => {
+        const r = new FileReader();
+        r.onload = e => res({ name: f.name, type: f.type, data: e.target.result });
+        r.readAsDataURL(f);
+    })));
+    Promise.all([encodeAll(extFiles), encodeAll(intFiles)]).then(([ext, int]) => {
+        try { sessionStorage.setItem(PHOTO_KEY, JSON.stringify({ ext, int })); } catch (_) {}
+    });
+}
+
+function restoreFilesFromSession() {
+    try {
+        const raw = sessionStorage.getItem(PHOTO_KEY);
+        if (!raw) return;
+        sessionStorage.removeItem(PHOTO_KEY);
+        const { ext, int } = JSON.parse(raw);
+        const toFile = ({ name, type, data }) => {
+            const arr = Uint8Array.from(atob(data.split(',')[1]), c => c.charCodeAt(0));
+            return new File([arr], name, { type });
+        };
+        state._exteriorFiles = ext.map(toFile);
+        state._interiorFiles = int.map(toFile);
+    } catch (_) {}
+}
 
 function saveDraft(state) {
     try {
@@ -31,6 +59,8 @@ function saveDraft(state) {
         delete toSave._interiorFiles;
         delete toSave._interiorUrls;
         sessionStorage.setItem(DRAFT_KEY, JSON.stringify(toSave));
+        // Encode current File objects as base64 so they survive the auth redirect
+        encodeFilesToSession(state._exteriorFiles, state._interiorFiles);
     } catch { /* quota exceeded — ignore */ }
 }
 
@@ -43,6 +73,7 @@ function loadDraft() {
 
 function clearDraft() {
     sessionStorage.removeItem(DRAFT_KEY);
+    sessionStorage.removeItem(PHOTO_KEY);
 }
 
 // Formatter functions removed in favor of import from inputFormatters.js
@@ -4308,7 +4339,7 @@ function reviewEquipmentSection() {
 }
 
 function renderReviewStep() {
-    const fmt = n => new Intl.NumberFormat(getCurrentLang() === 'sl' ? 'sl-SI' : 'en-US').format(n);
+    const fmt = n => new Intl.NumberFormat('sl-SI').format(n);
     const tierLabels = { free: t('cl_tier_free'), homepage: t('cl_tier_featured'), sponsored: t('cl_tier_sponsored') };
 
     const imgPreview = state._exteriorUrls.length > 0
@@ -4615,6 +4646,7 @@ function renderAuthStep() {
         state._exteriorFiles.length > 0 || state._exteriorUrls.length > 0;
 
     const afterAuth = async (user) => {
+        restoreFilesFromSession();
         if (!hasPhotos()) {
             // Photos were lost when sessionStorage was saved — File objects can't be serialised.
             // Send the user back to the media step with an explanatory notice.

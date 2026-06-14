@@ -237,13 +237,13 @@ export function formatDisplacement(cc, unit, lang = 'sl') {
         const rounded = Number(liters.toFixed(1));
         const formatted = lang === 'sl'
             ? rounded.toLocaleString('sl-SI', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-            : rounded.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+            : rounded.toLocaleString('sl-SI', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
         return formatted + 'L';
     } else {
         // cc format
         const formatted = lang === 'sl'
             ? new Intl.NumberFormat('sl-SI').format(cc)
-            : new Intl.NumberFormat('en-US').format(cc);
+            : new Intl.NumberFormat('sl-SI').format(cc);
         return formatted + (lang === 'sl' ? ' cc' : ' cc'); // Slovenians usually write 'cc' or 'ccm' (let's use cc for standard)
     }
 }
@@ -257,4 +257,34 @@ export function getDisplacementPill(engineCc) {
         <i data-lucide="cog"></i>
         <span class="displacement-val">${formatted}</span>
     </div>`;
+}
+
+export function showCompareLimitToast() {
+    const existing = document.getElementById('compare-limit-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'compare-limit-toast';
+    toast.style.cssText = [
+        'position:fixed', 'bottom:24px', 'left:50%', 'transform:translateX(-50%)',
+        'background:#1e293b', 'color:#fff', 'padding:14px 20px', 'border-radius:12px',
+        'box-shadow:0 8px 32px rgba(0,0,0,0.28)', 'display:flex', 'align-items:center',
+        'gap:12px', 'z-index:9999', 'font-size:0.9rem', 'max-width:90vw',
+        'font-family:Inter,sans-serif',
+    ].join(';');
+    toast.innerHTML = `
+        <span style="font-size:1.1rem;flex-shrink:0">⚖️</span>
+        <span>Primerjaš lahko največ <strong>3</strong> vozila naenkrat.</span>
+        <a href="#/primerjava" style="background:#2563eb;color:#fff;border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;">Primerjalni kotiček →</a>
+        <button onclick="this.closest('#compare-limit-toast').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:2px;flex-shrink:0;font-size:1rem;line-height:1;">✕</button>
+    `;
+    document.body.appendChild(toast);
+
+    const timer = setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 320);
+    }, 5000);
+
+    toast.querySelector('a').addEventListener('click', () => clearTimeout(timer));
 }

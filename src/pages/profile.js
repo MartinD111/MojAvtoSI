@@ -527,7 +527,5 @@ function fuelText(fuel) {
 }
 
 function formatNumber(num) {
-    const lang = localStorage.getItem(lsKey('lang')) || 'en';
-    const locale = lang === 'sl' ? 'sl-SI' : 'en-US';
-    return new Intl.NumberFormat(locale).format(num);
+    return new Intl.NumberFormat('sl-SI').format(num);
 }

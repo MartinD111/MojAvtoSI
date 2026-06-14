@@ -235,7 +235,7 @@ function bindSearch() {
         setTimeout(() => {
             if (sliderFrom && sliderTo) {
                 sliderFrom.value = 3;
-                sliderTo.value = 30;
+                sliderTo.value = 50;
                 sliderFrom.dispatchEvent(new Event('input'));
             }
         }, 0);

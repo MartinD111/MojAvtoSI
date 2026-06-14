@@ -1,0 +1,43 @@
+# Local development dependencies. Lets you run Typesense + Redis locally instead
+# of the cloud services. Supabase has its own CLI (`supabase start`) — see
+# supabase/README.md. The API itself runs with `cd server && npm run dev`.
+#
+#   docker compose up -d
+#
+services:
+  typesense:
+    image: typesense/typesense:27.1
+    restart: unless-stopped
+    ports:
+      - "8108:8108"
+    volumes:
+      - typesense-data:/data
+    command: "--data-dir /data --api-key=dev_typesense_key --enable-cors"
+
+  # Local stand-in for Upstash Redis. Use the Upstash REST shim below if you want
+  # the same REST interface the app expects; otherwise point UPSTASH_* at a real
+  # (free-tier) Upstash DB during dev.
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  # Serverless-Redis HTTP proxy so @upstash/redis (REST) works against local redis.
+  serverless-redis-http:
+    image: hiett/serverless-redis-http:latest
+    restart: unless-stopped
+    ports:
+      - "8079:80"
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: dev_upstash_token
+      SRH_CONNECTION_STRING: "redis://redis:6379"
+    depends_on:
+      - redis
+
+volumes:
+  typesense-data:
+  redis-data:

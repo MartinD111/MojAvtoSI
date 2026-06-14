@@ -1,0 +1,16 @@
+{
+  "name": "listings",
+  "default_sorting_field": "createdAt",
+  "fields": [
+    { "name": "platform", "type": "string", "facet": true },
+    { "name": "itemType", "type": "string", "facet": true },
+    { "name": "title", "type": "string" },
+    { "name": "description", "type": "string", "optional": true },
+    { "name": "brand", "type": "string", "facet": true, "optional": true },
+    { "name": "model", "type": "string", "facet": true, "optional": true },
+    { "name": "year", "type": "int32", "facet": true, "optional": true },
+    { "name": "price", "type": "int64", "facet": true, "optional": true },
+    { "name": "status", "type": "string", "facet": true },
+    { "name": "createdAt", "type": "int64" }
+  ]
+}

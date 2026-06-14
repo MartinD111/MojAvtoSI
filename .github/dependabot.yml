@@ -1,0 +1,25 @@
+# Automated dependency updates + vulnerability PRs (#1 supply-chain).
+# Covers the frontend (root), the API (server/), and CI actions themselves.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 10
+    versioning-strategy: increase-if-necessary
+    groups:
+      frontend-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: "/server"
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 10
+    versioning-strategy: increase-if-necessary
+    groups:
+      server-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: weekly }
