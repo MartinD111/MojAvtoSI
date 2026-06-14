@@ -31,7 +31,7 @@
     "posthog-node": "^4.2.1",
     "resend": "^4.0.1",
     "typesense": "^1.8.2",
-    "zod": "^3.23.8"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
