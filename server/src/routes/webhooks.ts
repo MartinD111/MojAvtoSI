@@ -2,7 +2,7 @@
 // (config.rawBody) so the signature verifies over exact bytes, and are anonymous
 // (no JWT) — trust comes from the cryptographic signature, nothing else.
 import type { FastifyPluginAsync } from 'fastify';
-import { verifySvixSignature } from '../lib/webhooks.js';
+import { verifySvixSignature, verifyStripeSignature } from '../lib/webhooks.js';
 import { env } from '../config/env.js';
 
 export const webhookRoutes: FastifyPluginAsync = async (app) => {
@@ -25,6 +25,38 @@ export const webhookRoutes: FastifyPluginAsync = async (app) => {
     const event = JSON.parse((req.rawBody as Buffer).toString('utf8')) as { type?: string };
     req.log.info({ type: event.type }, 'resend webhook');
     // TODO: update delivery status (bounce → flag email, complaint → suppress).
+    return reply.code(200).send({ received: true });
+  });
+
+  // Stripe payments — PATTERN ONLY (wire up when payments are integrated). The
+  // webhook is the SINGLE source of truth that grants a paid boost: verify the
+  // signature, then in a DB transaction set listing.promotion + paid_amount.
+  app.post('/stripe', { config: { rawBody: true } }, async (req, reply) => {
+    const secret = env.STRIPE_WEBHOOK_SECRET;
+    if (!secret) {
+      return reply.code(503).send({ error: 'Stripe not configured', statusCode: 503 });
+    }
+    const ok = verifyStripeSignature(
+      secret,
+      req.headers['stripe-signature'] as string | undefined,
+      (req.rawBody as Buffer) ?? Buffer.from(''),
+    );
+    if (!ok) return reply.code(401).send({ error: 'Invalid signature', statusCode: 401 });
+
+    const event = JSON.parse((req.rawBody as Buffer).toString('utf8')) as {
+      type?: string;
+      data?: { object?: { metadata?: { listingId?: string; tier?: string } } };
+    };
+    req.log.info({ type: event.type }, 'stripe webhook');
+
+    if (event.type === 'checkout.session.completed') {
+      const meta = event.data?.object?.metadata;
+      // TODO: grant the boost ONLY here, idempotently (use the Stripe event id as
+      // the idempotency key), inside a transaction:
+      //   update listings set promotion = { tier, expiresAt: now()+duration },
+      //          paid_amount = ..., payment_ref = <session id>  where id = listingId
+      void meta;
+    }
     return reply.code(200).send({ received: true });
   });
 };

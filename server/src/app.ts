@@ -15,6 +15,7 @@ import { healthRoutes } from './routes/health.js';
 import { uploadRoutes } from './routes/uploads.js';
 import { searchRoutes } from './routes/search.js';
 import { listingRoutes } from './routes/listings.js';
+import { leadRoutes } from './routes/leads.js';
 import { emailRoutes } from './routes/emails.js';
 import { webhookRoutes } from './routes/webhooks.js';
 
@@ -96,6 +97,7 @@ export async function buildApp() {
       await api.register(uploadRoutes);
       await api.register(searchRoutes);
       await api.register(listingRoutes);
+      await api.register(leadRoutes);
       await api.register(emailRoutes);
     },
     { prefix: '/api' },
@@ -115,9 +117,10 @@ export async function buildApp() {
     }
 
     const status = (error as { statusCode?: number }).statusCode ?? 500;
+    const message = error instanceof Error ? error.message : 'Napaka';
     if (status < 500) {
       // Expected client errors (401/403/404/429): safe message, no UUID noise.
-      return reply.code(status).send({ error: error.message, statusCode: status });
+      return reply.code(status).send({ error: message, statusCode: status });
     }
 
     const errorId = randomUUID();

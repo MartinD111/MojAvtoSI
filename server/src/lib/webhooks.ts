@@ -41,3 +41,30 @@ export function verifySvixSignature(
     .map((part) => part.split(',')[1] ?? part)
     .some((sig) => timingSafeEqual(sig, expected));
 }
+
+/**
+ * Verify a Stripe webhook signature (the `Stripe-Signature` header). Same shape
+ * as Stripe's SDK does internally: HMAC-SHA256 of `${t}.${body}` keyed by the
+ * `whsec_...` endpoint secret, constant-time compared, with a replay window.
+ * (Use this in the Stripe payments webhook when payments land — see
+ * routes/webhooks.ts. Avoids pulling the full Stripe SDK just to verify.)
+ */
+export function verifyStripeSignature(
+  secret: string,
+  header: string | undefined,
+  rawBody: Buffer | string,
+  toleranceSeconds = 300,
+): boolean {
+  if (!secret || !header) return false;
+  const parts = Object.fromEntries(
+    header.split(',').map((kv) => kv.split('=') as [string, string]),
+  );
+  const t = Number(parts.t);
+  const v1 = parts.v1;
+  if (!Number.isFinite(t) || !v1) return false;
+  if (Math.abs(Date.now() / 1000 - t) > toleranceSeconds) return false;
+
+  const body = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
+  const expected = crypto.createHmac('sha256', secret).update(`${t}.${body}`).digest('hex');
+  return timingSafeEqual(v1, expected);
+}

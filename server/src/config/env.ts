@@ -67,6 +67,7 @@ const schema = z.object({
 
   // ── Webhook signing secrets ───────────────────────────────────────────
   RESEND_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
 });
 
 function load() {

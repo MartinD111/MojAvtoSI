@@ -5,6 +5,7 @@ import fp from 'fastify-plugin';
 import type { FastifyPluginAsync } from 'fastify';
 import { Ratelimit } from '@upstash/ratelimit';
 import { redis } from '../lib/redis.js';
+import { isBanned } from '../lib/honeypot.js';
 import { isProd } from '../config/env.js';
 
 // Global default limiter. Tighter per-route limiters can be created the same way
@@ -66,6 +67,10 @@ const plugin: FastifyPluginAsync = async (app) => {
 
   app.addHook('onRequest', async (req, reply) => {
     if (req.url === '/healthz' || req.url === '/readyz') return;
+    // Honeypot-banned IPs are blocked cheaply before any further work.
+    if (await isBanned(req.ip)) {
+      return reply.code(403).send({ error: 'Forbidden', statusCode: 403 });
+    }
     const { success, limit, remaining, reset } = await globalLimiter.limit(clientKey(req));
     reply.header('X-RateLimit-Limit', limit);
     reply.header('X-RateLimit-Remaining', remaining);

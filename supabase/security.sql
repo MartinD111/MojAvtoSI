@@ -65,6 +65,70 @@ $$;
 revoke all on function public.place_bid(uuid, numeric) from public, anon;
 grant execute on function public.place_bid(uuid, numeric) to authenticated;
 
+-- ── Ad budget / credit wallet — atomic debit (race-safe) ─────────────────────
+-- Prevents credit-exhaustion races: two simultaneous "promote" requests can't
+-- both read the same balance and overspend. The debit locks the wallet row.
+create table if not exists public.wallets (
+  owner_id   uuid primary key references public.profiles(id) on delete cascade,
+  balance    numeric(12,2) not null default 0 check (balance >= 0),
+  updated_at timestamptz not null default now()
+);
+alter table public.wallets enable row level security;
+create policy wallets_owner_read on public.wallets for select
+  using (auth.uid() = owner_id or public.is_admin());
+-- No client write policy: balances change ONLY through debit/credit functions
+-- (service role) — never a direct client UPDATE.
+
+create table if not exists public.wallet_ledger (
+  id         uuid primary key default gen_random_uuid(),
+  owner_id   uuid not null references public.profiles(id) on delete cascade,
+  delta      numeric(12,2) not null,
+  reason     text not null,
+  ref        text,
+  created_at timestamptz not null default now()
+);
+alter table public.wallet_ledger enable row level security;
+create policy ledger_owner_read on public.wallet_ledger for select
+  using (auth.uid() = owner_id or public.is_admin());
+
+-- Atomically debit a wallet. Raises if insufficient funds. SECURITY DEFINER so
+-- it can write the wallet the client cannot touch directly; pinned search_path.
+create or replace function public.debit_wallet(p_owner uuid, p_amount numeric, p_reason text, p_ref text)
+  returns numeric
+  language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  w public.wallets;
+begin
+  if p_amount <= 0 then raise exception 'Znesek mora biti pozitiven'; end if;
+  select * into w from public.wallets where owner_id = p_owner for update; -- row lock
+  if not found then raise exception 'Denarnica ne obstaja'; end if;
+  if w.balance < p_amount then raise exception 'Nezadostno stanje' using errcode = 'P0001'; end if;
+
+  update public.wallets set balance = balance - p_amount, updated_at = now() where owner_id = p_owner;
+  insert into public.wallet_ledger(owner_id, delta, reason, ref) values (p_owner, -p_amount, p_reason, p_ref);
+  return w.balance - p_amount;
+end;
+$$;
+revoke all on function public.debit_wallet(uuid, numeric, text, text) from public, anon, authenticated;
+-- (Server calls this with the service role only.)
+
+-- ── B2B API keys (hashed, never plaintext) + static-IP allow-list ─────────────
+create table if not exists public.b2b_api_keys (
+  id          uuid primary key default gen_random_uuid(),
+  owner_id    uuid not null references public.profiles(id) on delete cascade,
+  key_hash    text not null unique,        -- SHA-256 hex of the raw key
+  last4       text not null,
+  ip_allowlist text[],                      -- null/empty = no restriction
+  revoked     boolean not null default false,
+  created_at  timestamptz not null default now(),
+  last_used_at timestamptz
+);
+alter table public.b2b_api_keys enable row level security;
+-- Owner can see metadata (never the hash is useful anyway); writes via server only.
+create policy b2b_keys_owner_read on public.b2b_api_keys for select
+  using (auth.uid() = owner_id or public.is_admin());
+create index if not exists idx_b2b_keys_hash on public.b2b_api_keys(key_hash) where revoked = false;
+
 -- ── Least-privilege defaults for future objects in public ────────────────────
 -- New tables shouldn't silently become world-accessible; grant deliberately.
 alter default privileges in schema public revoke all on tables from anon;
