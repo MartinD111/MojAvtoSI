@@ -87,7 +87,7 @@ function fmtEur(n) {
 }
 
 function roleLabel(r) {
-    return { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer' }[r] || r;
+    return { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer', tuner: 'Tuning center', detailing: 'Avto detajling', carwash: 'Avtopralnica' }[r] || r;
 }
 
 function esc(s) {

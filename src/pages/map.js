@@ -110,10 +110,9 @@ function highlightMarker(bizId, on) {
 // ── Build marker icon ─────────────────────────────────────────
 function createMarkerIcon(business) {
     const typeInfo = getBusinessTypeInfo(business);
-    const iconMap = { marker_dealer: '🏢', marker_service: '🔧', marker_vulcanizer: '🛞', marker_multi: '⭐' };
-    const icon = business.businessTypes.length > 1 ? '⭐' :
-        business.businessTypes[0] === 'dealer' ? '🏢' :
-        business.businessTypes[0] === 'service' ? '🔧' : '🛞';
+    const iconMap = { marker_dealer: '🏢', marker_service: '🔧', marker_vulcanizer: '🛞', marker_tuner: '⚡', marker_detailing: '✨', marker_carwash: '💧', marker_multi: '⭐' };
+    const typeIconMap = { dealer: '🏢', service: '🔧', vulcanizer: '🛞', tuner: '⚡', detailing: '✨', carwash: '💧' };
+    const icon = business.businessTypes.length > 1 ? '⭐' : (typeIconMap[business.businessTypes[0]] || '🏢');
 
     return window.L.divIcon({
         className: '',
@@ -364,7 +363,7 @@ function setupFilters() {
 
 // ── Reset all filters ─────────────────────────────────────────
 function resetFilters() {
-    store.updateFilters({ types: ['dealer', 'service', 'vulcanizer'], brands: [], authorized: false, leasing: false, tyreStorage: false, dryStorage: false, minRating: 0, radius: 20 });
+    store.updateFilters({ types: ['dealer', 'service', 'vulcanizer', 'tuner', 'detailing', 'carwash'], brands: [], authorized: false, leasing: false, tyreStorage: false, dryStorage: false, minRating: 0, radius: 20 });
 
     document.querySelectorAll('.type-pill').forEach(p => p.classList.add('active'));
     // Reset brand dropdown pills

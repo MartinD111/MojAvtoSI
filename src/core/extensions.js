@@ -70,4 +70,13 @@ export function registerDefaultExtensions() {
 
     // Dealer — bulk import (verified business only; gated inside the page itself)
     registerExtension({ id: 'b2b-bulk-import', name: 'Skupinski uvoz', icon: 'file-json', role: 'dealer', route: '/b2b/bulk-import', order: 55 });
+
+    // Tuner
+    registerExtension({ id: 'b2b-tuning', name: 'Tuning projekti', icon: 'gauge', role: 'tuner', route: '/b2b/tuning', order: 40 });
+
+    // Detailing
+    registerExtension({ id: 'b2b-detailing', name: 'Detajling termini', icon: 'sparkles', role: 'detailing', route: '/b2b/detajling', order: 40 });
+
+    // Carwash
+    registerExtension({ id: 'b2b-carwash', name: 'Pranje termini', icon: 'droplets', role: 'carwash', route: '/b2b/pralnica', order: 40 });
 }

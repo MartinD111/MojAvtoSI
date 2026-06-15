@@ -125,7 +125,7 @@ export function filterBusinesses(businesses, filters, userLocation) {
 // Platform-specific business-type display labels.
 const TYPE_LABELS = PLATFORM.id === 'navtika'
     ? { dealer: 'Prodajalec plovil', service: 'Servis plovil', vulcanizer: 'Marina / privez' }
-    : { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
+    : { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer', tuner: 'Tuning center', detailing: 'Avto detajling', carwash: 'Avtopralnica' };
 
 export function getBusinessTypeInfo(business) {
     const types = business.businessTypes;
@@ -134,6 +134,9 @@ export function getBusinessTypeInfo(business) {
         case 'dealer': return { color: '#2563eb', label: TYPE_LABELS.dealer, markerClass: 'marker-dealer' };
         case 'service': return { color: '#16a34a', label: TYPE_LABELS.service, markerClass: 'marker-service' };
         case 'vulcanizer': return { color: '#ea580c', label: TYPE_LABELS.vulcanizer, markerClass: 'marker-vulcanizer' };
+        case 'tuner': return { color: '#9333ea', label: TYPE_LABELS.tuner, markerClass: 'marker-tuner' };
+        case 'detailing': return { color: '#0891b2', label: TYPE_LABELS.detailing, markerClass: 'marker-detailing' };
+        case 'carwash': return { color: '#0ea5e9', label: TYPE_LABELS.carwash, markerClass: 'marker-carwash' };
         default: return { color: '#64748b', label: 'Podjetje', markerClass: 'marker-other' };
     }
 }

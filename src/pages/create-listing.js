@@ -115,7 +115,8 @@ let state = {
     currentStep: 0,
     entryType: 'classic',           // 'classic' | 'auction' (dražba)
     // Auction (dražba) setup
-    auctionPackageId: 'auction3w',  // 'auction3w' (3 tedne/4,99€) | 'auction6w' (6 tednov/9,99€)
+    auctionPackageId: 'auctionFree', // 'auctionFree' (21 dni/brezplačno) | 'auction45d' (45 dni/2,99€)
+    auctionType: 'regular',          // 'regular' | 'silent'
     auctionDurationWeeks: 3,
     startPriceEur: '',
     reservePriceEur: '',
@@ -661,7 +662,7 @@ function listingModePillsHtml() {
                 </button>
             </div>
             <p class="cl-mode-hint">${state.entryType === 'auction'
-                ? t('cl_mode_auction_hint', 'Dražba: 3 tedne 4,99 € ali 6 tednov 9,99 €. Na voljo le za vozila.')
+                ? t('cl_mode_auction_hint', 'Dražba je brezplačna (21 dni). Opcijsko podaljšanje na 45 dni za 2,99 €. Provizija ob uspešni prodaji: 1 % (max. 5.000 €).')
                 : t('cl_mode_listing_hint', 'Standardni oglas s fiksno ali pogajalno ceno.')}</p>
         </div>`;
 }
@@ -3517,27 +3518,65 @@ let _sellerContractGetter = null;
 
 function renderAuctionSetupStep() {
     const packages = [
-        { ...AUCTION_PACKAGES.auction3w, label: t('cl_auction_pkg_3w', '3 tedne'), desc: t('cl_auction_pkg_3w_desc', 'Dražba traja 3 tedne') },
-        { ...AUCTION_PACKAGES.auction6w, label: t('cl_auction_pkg_6w', '6 tednov'), desc: t('cl_auction_pkg_6w_desc', 'Dražba traja 6 tednov') },
+        {
+            ...AUCTION_PACKAGES.auctionFree,
+            label: t('cl_auction_pkg_free', 'Standardna (21 dni)'),
+            desc: t('cl_auction_pkg_free_desc', 'Brezplačna objava. Plačate le provizijo ob prodaji.'),
+            icon: '🔨',
+        },
+        {
+            ...AUCTION_PACKAGES.auction45d,
+            label: t('cl_auction_pkg_45d', 'Razširjena (45 dni)'),
+            desc: t('cl_auction_pkg_45d_desc', 'Daljša vidljivost za večjo prodajno priložnost.'),
+            icon: '⚡',
+        },
     ];
 
-    const cards = packages.map(p => `
-        <div class="cl-promo-card ${state.auctionPackageId === p.id ? 'selected' : ''}" data-pkg="${p.id}" data-weeks="${p.weeks}">
-            <span class="cl-promo-icon">🔨</span>
+    const pkgCards = packages.map(p => `
+        <div class="cl-promo-card ${state.auctionPackageId === p.id ? 'selected' : ''}" data-pkg="${p.id}" data-days="${p.days}" data-weeks="${p.weeks}">
+            <span class="cl-promo-icon">${p.icon}</span>
             <p class="cl-promo-name">${p.label}</p>
-            <p class="cl-promo-price">${p.price.toLocaleString('sl-SI', { minimumFractionDigits: 2 })} €</p>
+            <p class="cl-promo-price">${p.price === 0 ? t('cl_auction_free', 'Brezplačno') : p.price.toLocaleString('sl-SI', { minimumFractionDigits: 2 }) + ' €'}</p>
             <p class="cl-promo-desc">${p.desc}</p>
+        </div>`).join('');
+
+    const typeCards = [
+        {
+            id: 'regular',
+            icon: '👁',
+            label: t('cl_auction_type_regular', 'Odprta dražba'),
+            desc: t('cl_auction_type_regular_desc', 'Vsi ponudniki vidijo trenutno najvišjo ponudbo v realnem času.'),
+        },
+        {
+            id: 'silent',
+            icon: '🔒',
+            label: t('cl_auction_type_silent', 'Zaprta dražba'),
+            desc: t('cl_auction_type_silent_desc', 'Ponudbeni zneski so skriti do zaključka. Vidno je le število ponudb.'),
+        },
+    ].map(tp => `
+        <div class="cl-promo-card ${state.auctionType === tp.id ? 'selected' : ''}" data-type="${tp.id}">
+            <span class="cl-promo-icon">${tp.icon}</span>
+            <p class="cl-promo-name">${tp.label}</p>
+            <p class="cl-promo-desc">${tp.desc}</p>
         </div>`).join('');
 
     setHtml(`
         <div class="cl-card">
-            <h2 class="cl-step-title">${t('cl_auction_title', 'Dražba')}</h2>
-            <p class="cl-step-sub">${t('cl_auction_sub', 'Izberite trajanje, začetno ceno in podpišite zavezo k prodaji.')}</p>
+            <h2 class="cl-step-title">${t('cl_auction_title', 'Nastavitev dražbe')}</h2>
+            <p class="cl-step-sub">${t('cl_auction_sub', 'Izberite trajanje, vrsto, začetno ceno in podpišite zavezo k prodaji.')}</p>
 
-            <label class="cl-label">${t('cl_auction_package', 'Trajanje dražbe')} <span class="req">*</span></label>
-            <div class="cl-promo-grid">${cards}</div>
+            <div class="cl-auction-policy-badge">
+                <span>🛡</span>
+                <span>${t('cl_auction_antisnip_badge', 'Zaščita pred sniperji: ponudba v zadnjih 3 minutah samodejno podaljša dražbo za 5 minut.')}</span>
+            </div>
 
-            <div class="cl-field">
+            <label class="cl-label" style="margin-top:1.25rem;">${t('cl_auction_package', 'Trajanje dražbe')} <span class="req">*</span></label>
+            <div class="cl-promo-grid" id="clPkgGrid">${pkgCards}</div>
+
+            <label class="cl-label" style="margin-top:1.25rem;">${t('cl_auction_type_label', 'Vrsta dražbe')} <span class="req">*</span></label>
+            <div class="cl-promo-grid" id="clTypeGrid">${typeCards}</div>
+
+            <div class="cl-field" style="margin-top:1.25rem;">
                 <label class="cl-label">${t('cl_auction_start_price', 'Začetna cena')} <span class="req">*</span></label>
                 <div class="cl-price-wrap">
                     <input class="cl-input" id="fStartPrice" type="text" inputmode="numeric"
@@ -3561,6 +3600,11 @@ function renderAuctionSetupStep() {
                 </div>
             </div>
 
+            <div class="cl-auction-fee-note">
+                <span>💡</span>
+                <span>${t('cl_auction_fee_note', 'Provizija ob uspešni prodaji: <strong>1 % končne cene</strong>, največ <strong>5.000 €</strong>. Plačate samo, če vozilo prodate.')}</span>
+            </div>
+
             <hr style="border:none;border-top:1px solid rgba(0,0,0,0.07);margin:1.25rem 0;" />
 
             ${contractWidgetHtml({
@@ -3568,8 +3612,6 @@ function renderAuctionSetupStep() {
                 title: t('cl_auction_seller_contract_title', 'Zaveza k prodaji'),
                 body: t('cl_auction_seller_contract_body', 'S podpisom se zavezujete, da boste vozilo prodali kupcu po končni (zadnji) ponujeni ceni ob zaključku dražbe.'),
             })}
-
-            <p class="cl-promo-note" style="margin-top:1rem;">${t('cl_auction_note', 'Plačilo paketa se izvede po objavi. Trenutno je beleženo kot namera (test).')}</p>
 
             <div class="cl-nav">
                 <button class="cl-btn cl-btn--ghost" id="btnAucBack">${t('cl_btn_back')}</button>
@@ -3579,12 +3621,21 @@ function renderAuctionSetupStep() {
     `);
 
     // Package selection
-    document.querySelectorAll('.cl-promo-card').forEach(card => {
+    document.querySelectorAll('#clPkgGrid .cl-promo-card').forEach(card => {
         card.addEventListener('click', () => {
-            document.querySelectorAll('.cl-promo-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('#clPkgGrid .cl-promo-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             state.auctionPackageId = card.dataset.pkg;
             state.auctionDurationWeeks = Number(card.dataset.weeks);
+        });
+    });
+
+    // Auction type selection
+    document.querySelectorAll('#clTypeGrid .cl-promo-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('#clTypeGrid .cl-promo-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            state.auctionType = card.dataset.type;
         });
     });
 
@@ -4473,8 +4524,9 @@ function renderReviewStep() {
 
             ${state.entryType === 'auction' ? section(t('cl_auction_title', 'Dražba'), 'auctionSetup', [
         [t('cl_auction_start_price', 'Začetna cena'), state.startPriceEur ? fmt(state.startPriceEur) + ' €' : ''],
-        [t('cl_auction_package', 'Trajanje dražbe'), `${state.auctionDurationWeeks} ${state.auctionDurationWeeks === 1 ? 'teden' : (state.auctionDurationWeeks < 5 ? 'tedne' : 'tednov')} (${(AUCTION_PACKAGES[state.auctionPackageId]?.price || 0).toLocaleString('sl-SI', { minimumFractionDigits: 2 })} €)`],
-        [t('cl_auction_reserve_toggle', 'Minimalna cena'), state.reservePriceEur ? fmt(state.reservePriceEur) + ' €' : ''],
+        [t('cl_auction_package', 'Trajanje'), (() => { const pkg = AUCTION_PACKAGES[state.auctionPackageId] || AUCTION_PACKAGES.auctionFree; return `${pkg.days} dni${pkg.price > 0 ? ' — ' + pkg.price.toLocaleString('sl-SI', { minimumFractionDigits: 2 }) + ' €' : ' — Brezplačno'}`; })()],
+        [t('cl_auction_type_label', 'Vrsta dražbe'), state.auctionType === 'silent' ? '🔒 Zaprta' : '👁 Odprta'],
+        [t('cl_auction_reserve_toggle', 'Minimalna cena'), state.reservePriceEur ? fmt(state.reservePriceEur) + ' €' : '—'],
         [t('cl_auction_seller_contract_title', 'Zaveza k prodaji'), state.sellerContract ? (state.sellerContract.type === 'sign' ? '✓ Podpisano' : '✓ PDF potrjen') : ''],
     ]) : section(t('cl_section_price'), 'price', [
         [t('cl_section_price'), state.callForPrice ? t('cl_label_call_for_price') : (state.priceEur ? (getCurrentLang() === 'sl' ? fmt(state.priceEur) + ' €' : '$' + fmt(state.priceEur)) : '')],

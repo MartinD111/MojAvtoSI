@@ -39,12 +39,14 @@ export function isEndingSoon(endMs, now = Date.now()) {
 export function startCountdown(el, endMs, onTick) {
     if (!el) return () => {};
     const update = () => {
-        const text = formatCountdown(endMs);
+        const now = Date.now();
+        const remainingMs = endMs != null ? endMs - now : null;
+        const text = formatCountdown(endMs, now);
         el.textContent = text;
-        const ended = endMs != null && endMs - Date.now() <= 0;
-        el.classList.toggle('ending-soon', isEndingSoon(endMs));
+        const ended = remainingMs != null && remainingMs <= 0;
+        el.classList.toggle('ending-soon', isEndingSoon(endMs, now));
         el.classList.toggle('ended', ended);
-        if (onTick) onTick(text, { ended, endingSoon: isEndingSoon(endMs) });
+        if (onTick) onTick(text, { ended, endingSoon: isEndingSoon(endMs, now), remainingMs });
         if (ended) { clearInterval(timer); }
     };
     update();

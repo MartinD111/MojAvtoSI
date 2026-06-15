@@ -265,22 +265,24 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
 
     // ── Auction (dražba) ──────────────────────────────────────────────────────
     // Create the sibling auctions/{listingId} doc and mirror endsAt back onto the
-    // listing so boards can sort/filter by deadline. Payment for the package
-    // (4,99 € / 9,99 €) is a stub here — TODO(backend): confirm via Stripe webhook.
+    // listing so boards can sort/filter by deadline. The standard package is free;
+    // the 45-day extended package (2,99 €) is a stub — TODO(backend): confirm via
+    // Stripe webhook before actually charging.
     if (draft.entryType === 'auction') {
-        const pkg = AUCTION_PACKAGES[draft.auctionPackageId] || AUCTION_PACKAGES.auction3w;
-        const weeks = Number(draft.auctionDurationWeeks) || pkg.weeks;
+        const pkg = AUCTION_PACKAGES[draft.auctionPackageId] || AUCTION_PACKAGES.auctionFree;
+        const days = pkg.days || 21;
         try {
             await createAuction(newDoc.id, {
                 sellerId: user.uid,
                 startPriceEur: listing.startPriceEur,
-                durationWeeks: weeks,
+                durationDays: days,
+                auctionType: draft.auctionType || 'regular',
                 reservePriceEur: draft.reservePriceEur ? Number(draft.reservePriceEur) : null,
                 sellerContract: draft.sellerContract || null,
                 packageId: pkg.id,
                 paidAmount: pkg.price,
             });
-            const endsAtMs = Date.now() + weeks * 7 * 24 * 60 * 60 * 1000;
+            const endsAtMs = Date.now() + days * 24 * 60 * 60 * 1000;
             await updateDoc(newDoc, { endsAt: new Date(endsAtMs) });
         } catch (err) {
             console.error('[listingService] auction creation failed', err);

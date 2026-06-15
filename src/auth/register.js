@@ -198,6 +198,9 @@ export function initRegisterPage() {
             dealer: { icon: 'fa-tags', label: 'Neomejena objava avtomobilskih oglasov' },
             mechanic: { icon: 'fa-book', label: 'Dostop do Digitalne servisne knjižice' },
             vulcanizer: { icon: 'fa-circle', label: 'Upravljanje pnevmatičnih storitev in terminov' },
+            tuner: { icon: 'fa-bolt', label: 'Upravljanje tuning projektov in terminov' },
+            detailing: { icon: 'fa-magic', label: 'Upravljanje detajling terminov in cenika' },
+            carwash: { icon: 'fa-tint', label: 'Upravljanje pralniških terminov in kapacitet' },
         };
         const container = document.getElementById('unlockedFeatures');
         container.innerHTML = '<p class="unlocked-title"><i class="fas fa-unlock-alt"></i> Odklenjene funkcije:</p>' +

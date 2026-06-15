@@ -364,3 +364,160 @@ body.dark-mode .auction-modal { background: #1e293b; }
     .auction-bid-input-row { flex-direction: column; }
     .auction-bid-btn { width: 100%; }
 }
+
+/* ── Anti-snip badge (detail sidebar) ───────────────────────────────────────*/
+.auction-snip-badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    margin-top: 1rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(37,99,235,0.06);
+    border: 1px solid rgba(37,99,235,0.18);
+    border-radius: 0.75rem;
+    font-size: 0.78rem;
+    color: #1d4ed8;
+    line-height: 1.4;
+}
+body.dark-mode .auction-snip-badge {
+    background: rgba(37,99,235,0.14);
+    border-color: rgba(37,99,235,0.32);
+    color: #93c5fd;
+}
+
+/* Flash when auction is inside the anti-snip window */
+.auction-countdown-label.snip-active {
+    color: #dc2626 !important;
+    font-weight: 700 !important;
+    animation: drazbaPulse 1.4s infinite;
+}
+
+/* ── Silent auction type badge ───────────────────────────────────────────────*/
+.auction-type-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.75rem;
+    margin-bottom: 0.75rem;
+    background: rgba(100,116,139,0.08);
+    border: 1px solid rgba(100,116,139,0.22);
+    border-radius: 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+}
+body.dark-mode .auction-type-badge {
+    background: rgba(100,116,139,0.15);
+    border-color: rgba(100,116,139,0.35);
+    color: #94a3b8;
+}
+
+/* ── Proxy (pre-bid) section ─────────────────────────────────────────────────*/
+.auction-proxy-section {
+    border: 1px dashed rgba(37,99,235,0.3);
+    border-radius: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    background: rgba(37,99,235,0.03);
+}
+body.dark-mode .auction-proxy-section {
+    background: rgba(37,99,235,0.07);
+    border-color: rgba(37,99,235,0.35);
+}
+.auction-proxy-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1d4ed8;
+}
+body.dark-mode .auction-proxy-label { color: #93c5fd; }
+.auction-proxy-row { display: flex; gap: 0.5rem; }
+.auction-proxy-input { font-size: 0.95rem !important; height: 40px !important; text-align: left !important; }
+.auction-proxy-hint { font-size: 0.72rem; color: #94a3b8; line-height: 1.4; }
+
+/* Proxy tag inside bid history */
+.bid-proxy-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(37,99,235,0.1);
+    color: #2563eb;
+    border-radius: 99px;
+    padding: 0.1rem 0.45rem;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+body.dark-mode .bid-proxy-tag { background: rgba(37,99,235,0.2); color: #93c5fd; }
+
+/* Hidden bid amounts in silent auctions */
+.bid-amount--hidden {
+    color: #cbd5e1 !important;
+    letter-spacing: 0.15em;
+}
+
+/* ── Success fee info strip ──────────────────────────────────────────────────*/
+.auction-fee-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    margin-top: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    background: rgba(22,163,74,0.06);
+    border: 1px solid rgba(22,163,74,0.2);
+    border-radius: 0.65rem;
+    font-size: 0.78rem;
+    color: #15803d;
+    line-height: 1.4;
+}
+body.dark-mode .auction-fee-info {
+    background: rgba(22,163,74,0.1);
+    border-color: rgba(22,163,74,0.3);
+    color: #4ade80;
+}
+.auction-fee-note { color: #94a3b8; margin-left: 0.25rem; }
+
+/* ── Create-listing: auction policy badge ────────────────────────────────────*/
+.cl-auction-policy-badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    background: rgba(37,99,235,0.06);
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 0.75rem;
+    font-size: 0.82rem;
+    color: #1d4ed8;
+    line-height: 1.5;
+    margin-bottom: 0.25rem;
+}
+body.dark-mode .cl-auction-policy-badge {
+    background: rgba(37,99,235,0.12);
+    border-color: rgba(37,99,235,0.3);
+    color: #93c5fd;
+}
+
+/* ── Create-listing: success fee note ───────────────────────────────────────*/
+.cl-auction-fee-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    background: rgba(22,163,74,0.05);
+    border: 1px solid rgba(22,163,74,0.18);
+    border-radius: 0.75rem;
+    font-size: 0.82rem;
+    color: #15803d;
+    line-height: 1.5;
+    margin-top: 0.5rem;
+}
+body.dark-mode .cl-auction-fee-note {
+    background: rgba(22,163,74,0.1);
+    border-color: rgba(22,163,74,0.28);
+    color: #4ade80;
+}

@@ -114,7 +114,7 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
 function roleLabel(r) {
     // Platform-specific role names (avto: Avtohiša/Servis/Vulkanizer, navtika: vessel roles)
     return (PLATFORM.b2bRoleLabels && PLATFORM.b2bRoleLabels[r])
-        || { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer' }[r]
+        || { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer', tuner: 'Tuning center', detailing: 'Avto detajling', carwash: 'Avtopralnica' }[r]
         || r;
 }
 

@@ -14,7 +14,7 @@ function getStars(rating) {
 }
 
 function getTypeColor(type) {
-    return { dealer: '#2563eb', service: '#16a34a', vulcanizer: '#ea580c' }[type] || '#7c3aed';
+    return { dealer: '#2563eb', service: '#16a34a', vulcanizer: '#ea580c', tuner: '#9333ea', detailing: '#0891b2', carwash: '#0ea5e9' }[type] || '#7c3aed';
 }
 
 // ── Build Hero ────────────────────────────────────────────────
@@ -32,8 +32,9 @@ function buildHero(biz) {
     const badges = [];
     // Type badges
     biz.businessTypes.forEach(t => {
-        const labels = { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer' };
-        badges.push(`<span class="biz-badge ${t}"><i data-lucide="${t === 'dealer' ? 'building-2' : t === 'service' ? 'wrench' : 'circle'}"></i>${labels[t]}</span>`);
+        const labels = { dealer: 'Avto hiša', service: 'Servis', vulcanizer: 'Vulkanizer', tuner: 'Tuning center', detailing: 'Avto detajling', carwash: 'Avtopralnica' };
+        const icons = { dealer: 'building-2', service: 'wrench', vulcanizer: 'circle', tuner: 'gauge', detailing: 'sparkles', carwash: 'droplets' };
+        badges.push(`<span class="biz-badge ${t}"><i data-lucide="${icons[t] || 'store'}"></i>${labels[t] || t}</span>`);
     });
     if (biz.verified) badges.push(`<span class="biz-badge verified"><i data-lucide="badge-check"></i>Verificirano</span>`);
     if (biz.authorizedBrands.length) badges.push(`<span class="biz-badge authorized"><i data-lucide="award"></i>Pooblaščen servis</span>`);
@@ -45,7 +46,7 @@ function buildHero(biz) {
     // CTA buttons
     const actions = [];
     actions.push(`<a href="tel:${biz.contact.phone}" class="biz-cta-btn primary"><i data-lucide="phone"></i>Kontaktiraj</a>`);
-    if (biz.businessTypes.includes('service') || biz.businessTypes.includes('vulcanizer')) {
+    if (['service', 'vulcanizer', 'detailing', 'carwash', 'tuner'].some(t => biz.businessTypes.includes(t))) {
         actions.push(`<button class="biz-cta-btn outline" id="bookingHeroBtn"><i data-lucide="calendar"></i>Rezerviraj termin</button>`);
     }
     if (biz.businessTypes.includes('dealer')) {

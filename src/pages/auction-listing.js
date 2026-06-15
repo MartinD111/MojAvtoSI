@@ -12,7 +12,8 @@
 
 import { getListingById, getListings } from '../services/listingService.js';
 import {
-    subscribeAuction, subscribeBids, placeBid, minNextBid, isAuctionActive, MIN_BID_INCREMENT,
+    subscribeAuction, subscribeBids, placeBid, minNextBid, isAuctionActive,
+    MIN_BID_INCREMENT, calcSuccessFee, ANTI_SNIP_WINDOW_MS,
 } from '../services/auctionService.js';
 import { auth } from '../firebase.js';
 import { PLATFORM } from '../config/platform.js';
@@ -99,7 +100,9 @@ function injectAuctionUI(listing) {
         </div>
         <p class="auction-countdown-label" id="acTimerLabel">${t('auction_time_left', 'do zaključka dražbe')}</p>
 
-        <div class="auction-current">
+        <div class="auction-type-badge" id="acTypeBadge" style="display:none;"></div>
+
+        <div class="auction-current" id="acCurrentWrap">
             <span class="auction-current-label">${t('auction_current_bid', 'Trenutna ponudba')}</span>
             <span class="auction-current-value" id="acCurrent">—</span>
         </div>
@@ -116,6 +119,18 @@ function injectAuctionUI(listing) {
                 <button type="submit" class="auction-bid-btn" id="acBidBtn">${t('auction_place_bid', 'Oddaj ponudbo')}</button>
             </div>
             <span class="auction-bid-hint" id="acBidHint"></span>
+
+            <div class="auction-proxy-section" id="acProxySection">
+                <label class="auction-proxy-label">
+                    <i data-lucide="zap" style="width:14px;height:14px;"></i>
+                    ${t('auction_proxy_label', 'Predponudba — samodejno licitiranje do:')}
+                </label>
+                <div class="auction-proxy-row">
+                    <input type="text" class="auction-bid-input auction-proxy-input" id="acProxyInput" inputmode="numeric" placeholder="${t('auction_proxy_placeholder', 'Maks. znesek (neobvezno)')}" />
+                </div>
+                <span class="auction-proxy-hint">${t('auction_proxy_hint', 'Sistem bo samodejno licitiral za vas do tega zneska, ko vas nekdo prehiti.')}</span>
+            </div>
+
             <label class="auction-bid-notify">
                 <input type="checkbox" id="acNotifyOutbid" checked />
                 ${t('auction_notify_outbid', 'Obvesti me po e-pošti, ko me nekdo prehiti')}
@@ -126,6 +141,13 @@ function injectAuctionUI(listing) {
             </label>
             <span class="auction-bid-status" id="acBidStatus"></span>
         </form>
+
+        <div class="auction-snip-badge">
+            <i data-lucide="shield-check" style="width:14px;height:14px;flex-shrink:0;"></i>
+            <span>${t('auction_antisnip', 'Zaščita pred sniperji: ponudba v zadnjih 3 minutah podaljša dražbo za 5 minut.')}</span>
+        </div>
+
+        <div class="auction-fee-info" id="acFeeInfo" style="display:none;"></div>
     `;
     priceCard.replaceWith(box);
 
@@ -159,12 +181,19 @@ function injectAuctionUI(listing) {
     }
 
     document.getElementById('acBidForm').addEventListener('submit', onBidSubmit);
-    // Live-format the bid as the user types: "60050" → "60.050 €".
+    // Live-format both bid inputs as the user types.
     const bidInput = document.getElementById('acBidInput');
     if (bidInput) {
         bidInput.addEventListener('input', () => {
             const n = parseBid(bidInput.value);
             bidInput.value = fmtBidInput(n);
+        });
+    }
+    const proxyInput = document.getElementById('acProxyInput');
+    if (proxyInput) {
+        proxyInput.addEventListener('input', () => {
+            const raw = proxyInput.value.replace(/[^\d]/g, '');
+            if (raw) proxyInput.value = fmtBidInput(Number(raw));
         });
     }
     if (window.lucide) window.lucide.createIcons();
@@ -174,11 +203,28 @@ function injectAuctionUI(listing) {
 function updateAuctionUI(auction) {
     if (!auction) return;
     const isOwn = auth.currentUser && auth.currentUser.uid === auction.sellerId;
+    const isSilent = auction.auctionType === 'silent';
     const active = isAuctionActive(auction);
     const min = minNextBid(auction);
 
     const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    setText('acCurrent', fmtEur(auction.currentBidEur ?? auction.startPriceEur));
+
+    // Silent auction: hide the current bid value from non-sellers until ended.
+    const currentWrap = document.getElementById('acCurrentWrap');
+    if (isSilent && !isOwn && active) {
+        if (currentWrap) currentWrap.style.display = 'none';
+    } else {
+        if (currentWrap) currentWrap.style.display = '';
+        setText('acCurrent', fmtEur(auction.currentBidEur ?? auction.startPriceEur));
+    }
+
+    // Silent/type badge
+    const typeBadge = document.getElementById('acTypeBadge');
+    if (typeBadge && isSilent) {
+        typeBadge.style.display = 'flex';
+        typeBadge.textContent = `🔒 ${t('auction_type_silent', 'Zaprta dražba — ponudbe so skrite do zaključka')}`;
+    }
+
     setText('acBidCount', auction.bidCount || 0);
     setText('acBidderCount', auction.bidderCount || 0);
     setText('acStartPrice', `${t('auction_start', 'Izklicna')}: ${fmtEur(auction.startPriceEur)}`);
@@ -198,13 +244,45 @@ function updateAuctionUI(auction) {
         }
     }
 
-    // Countdown
+    // Success fee info (show to seller or after auction ends)
+    const feeEl = document.getElementById('acFeeInfo');
+    if (feeEl && (isOwn || !active)) {
+        const finalBid = auction.currentBidEur ?? auction.startPriceEur ?? 0;
+        if (finalBid > 0) {
+            const fee = calcSuccessFee(finalBid);
+            feeEl.style.display = 'flex';
+            feeEl.innerHTML = `<i data-lucide="info" style="width:14px;height:14px;flex-shrink:0;"></i>
+                <span>${t('auction_fee_info', 'Provizija ob uspešni prodaji')}: <strong>${fmtEur(fee)}</strong>
+                <span class="auction-fee-note">(1% končne cene, max. 5.000 €)</span></span>`;
+            if (window.lucide) window.lucide.createIcons({ context: feeEl });
+        }
+    }
+
+    // Countdown — restart whenever endsAt changes (anti-snip extensions update it).
     const timerEl = document.getElementById('acTimer');
     const endMs = endsAtMillis(auction.endsAt);
     if (_stopCountdown) { _stopCountdown(); _stopCountdown = null; }
     if (timerEl && endMs) {
-        _stopCountdown = startCountdown(timerEl, endMs, (_txt, { ended }) => {
-            if (ended) disableBidding(t('auction_ended', 'Dražba je zaključena.'));
+        _stopCountdown = startCountdown(timerEl, endMs, (_txt, { ended, remainingMs }) => {
+            if (ended) {
+                disableBidding(t('auction_ended', 'Dražba je zaključena.'));
+                // Reveal final price on silent auctions once ended.
+                if (isSilent && currentWrap) {
+                    currentWrap.style.display = '';
+                    setText('acCurrent', fmtEur(auction.currentBidEur ?? auction.startPriceEur));
+                }
+            }
+            // Flash a notice when we're inside the anti-snip window.
+            const label = document.getElementById('acTimerLabel');
+            if (label && remainingMs > 0 && remainingMs < ANTI_SNIP_WINDOW_MS) {
+                label.textContent = t('auction_antisnip_active', '⚡ Zadnje minute — vsaka ponudba podaljša dražbo za 5 min!');
+                label.style.color = '#dc2626';
+                label.style.fontWeight = '700';
+            } else if (label) {
+                label.textContent = t('auction_time_left', 'do zaključka dražbe');
+                label.style.color = '';
+                label.style.fontWeight = '';
+            }
         });
     }
 
@@ -250,13 +328,23 @@ function renderBidHistory(bids) {
         wrap.innerHTML = `<p style="color:#94a3b8;font-size:0.85rem;">${t('auction_no_bids', 'Še ni ponudb. Bodite prvi!')}</p>`;
         return;
     }
+    const isSilent = _auction?.auctionType === 'silent';
+    const isOwn = auth.currentUser && auth.currentUser.uid === _auction?.sellerId;
+    const auctionEnded = _auction && !isAuctionActive(_auction);
+    // In a silent auction hide amounts from everyone except the seller until it ends.
+    const hideBidAmounts = isSilent && !isOwn && !auctionEnded;
+
     wrap.innerHTML = bids.map(b => {
         const when = b.createdAt?.toDate ? b.createdAt.toDate() : null;
         const time = when ? when.toLocaleString('sl-SI', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
         const name = (b.bidderName || 'Ponudnik').replace(/(.{2}).*/, '$1***');
+        const amountHtml = hideBidAmounts
+            ? `<span class="bid-amount bid-amount--hidden">• • •</span>`
+            : `<span class="bid-amount">${fmtEur(b.amountEur)}</span>`;
+        const proxyTag = b.isProxy ? `<span class="bid-proxy-tag">${t('auction_proxy_tag', 'predponudba')}</span>` : '';
         return `<div class="bid-row">
-            <span class="bid-name">${name}</span>
-            <span class="bid-amount">${fmtEur(b.amountEur)}</span>
+            <span class="bid-name">${name}${proxyTag}</span>
+            ${amountHtml}
             <span class="bid-time">${time}</span>
         </div>`;
     }).join('');
@@ -278,14 +366,21 @@ async function onBidSubmit(e) {
         status.className = 'auction-bid-status err';
         return;
     }
+    const proxyRaw = parseBid(document.getElementById('acProxyInput')?.value || '');
+    const maxBidEur = proxyRaw > amount ? proxyRaw : null;
+    if (maxBidEur && maxBidEur <= amount) {
+        status.textContent = t('auction_err_proxy_low', 'Maksimalna predponudba mora biti višja od vaše ponudbe.');
+        status.className = 'auction-bid-status err';
+        return;
+    }
     const notify = {
         onOutbid: document.getElementById('acNotifyOutbid')?.checked || false,
         thresholdEur: Number(document.getElementById('acNotifyThreshold')?.value) || null,
     };
-    openContractModal(amount, notify);
+    openContractModal(amount, notify, maxBidEur);
 }
 
-function openContractModal(amount, notify) {
+function openContractModal(amount, notify, maxBidEur = null) {
     const overlay = document.createElement('div');
     overlay.className = 'auction-modal-overlay';
     overlay.innerHTML = `
@@ -334,10 +429,17 @@ function openContractModal(amount, notify) {
         confirmBtn.disabled = true;
         const status = document.getElementById('acBidStatus');
         try {
-            await placeBid(_listing.id, amount, auth.currentUser,
-                { type: contract.type, signatureData: contract.signatureData }, notify);
-            status.textContent = t('auction_bid_ok', '✓ Ponudba oddana!');
-            status.className = 'auction-bid-status ok';
+            const result = await placeBid(
+                _listing.id, amount, auth.currentUser,
+                { type: contract.type, signatureData: contract.signatureData },
+                notify,
+                maxBidEur,
+            );
+            let msg = t('auction_bid_ok', '✓ Ponudba oddana!');
+            if (result.antiSnipExtended) msg += ' ' + t('auction_antisnip_extended', '⏱ Dražba podaljšana za 5 minut.');
+            if (result.proxyClaimed) msg = t('auction_proxy_claimed', '✓ Predponudba soponudnika je samodejno preseglaa vašo ponudbo.');
+            status.textContent = msg;
+            status.className = result.proxyClaimed ? 'auction-bid-status err' : 'auction-bid-status ok';
             close();
         } catch (err) {
             status.textContent = err.message;

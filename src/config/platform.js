@@ -36,7 +36,7 @@ const PLATFORMS = {
             email: 'info@mojavto.si',
         },
         // B2B role labels (dealer/mechanic/vulcanizer roles defined in core/extensions.js)
-        b2bRoleLabels: { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer' },
+        b2bRoleLabels: { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer', tuner: 'Tuning center', detailing: 'Avto detajling', carwash: 'Avtopralnica' },
     },
 
     navtika: {

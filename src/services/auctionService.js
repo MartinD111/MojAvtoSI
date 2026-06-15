@@ -26,12 +26,32 @@ function sampleAuction(listingId) {
 }
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const DAY_MS  = 24 * 60 * 60 * 1000;
 
-// Auction package pricing (EUR). Mirrors create-listing package picker.
+// ── Packages ─────────────────────────────────────────────────────────────────
+// Standard auction is free (21 days). Optional 45-day extended visibility costs
+// 2.99 €. No upfront payment is required to list.
 export const AUCTION_PACKAGES = {
-    auction3w: { id: 'auction3w', weeks: 3, price: 4.99 },
-    auction6w: { id: 'auction6w', weeks: 6, price: 9.99 },
+    auctionFree: { id: 'auctionFree', days: 21, weeks: 3, price: 0 },
+    auction45d:  { id: 'auction45d',  days: 45, weeks: 7, price: 2.99 },
 };
+
+// ── Success fee ───────────────────────────────────────────────────────────────
+// 1 % of the final winning bid, capped at 5 000 €. Charged to the seller after
+// a successful sale. TODO(backend): trigger via Stripe on auction close.
+export const AUCTION_SUCCESS_FEE_PCT = 0.01;
+export const AUCTION_SUCCESS_FEE_MAX = 5000;
+
+/** Compute the platform success fee for a given final price (EUR). */
+export function calcSuccessFee(finalBidEur) {
+    return Math.min(Number(finalBidEur) * AUCTION_SUCCESS_FEE_PCT, AUCTION_SUCCESS_FEE_MAX);
+}
+
+// ── Anti-sniping ──────────────────────────────────────────────────────────────
+// If a bid lands in the last 3 minutes the auction is extended by 5 minutes.
+// Repeated sniping keeps extending until 5 full minutes pass without a new bid.
+export const ANTI_SNIP_WINDOW_MS = 3 * 60 * 1000;  // 3 min
+export const ANTI_SNIP_EXTEND_MS = 5 * 60 * 1000;  // +5 min per trigger
 
 // Minimum bid increment in EUR. Bids must beat the current price by at least this.
 export const MIN_BID_INCREMENT = 50;
@@ -64,31 +84,42 @@ function toMillis(ts) {
  * Creates the auction state doc for a listing. Called by listingService after
  * the listing doc exists.
  * @param {string} listingId
- * @param {Object} opts { sellerId, startPriceEur, durationWeeks, reservePriceEur, sellerContract, paidAmount, packageId }
+ * @param {Object} opts {
+ *   sellerId, startPriceEur, durationDays?, durationWeeks?,
+ *   reservePriceEur, auctionType, sellerContract, packageId, paidAmount
+ * }
  */
 export async function createAuction(listingId, opts) {
-    const weeks = Number(opts.durationWeeks) || 3;
+    const pkg = AUCTION_PACKAGES[opts.packageId] || AUCTION_PACKAGES.auctionFree;
+    const days = Number(opts.durationDays) || pkg.days || 21;
+    const weeks = Math.ceil(days / 7);
     const startsAt = Date.now();
-    const endsAt = startsAt + weeks * WEEK_MS;
+    const endsAt = startsAt + days * DAY_MS;
     const startPrice = Number(opts.startPriceEur) || 0;
 
     const auction = {
         listingId,
         sellerId: opts.sellerId,
         status: 'active',                       // active | paused | ended | cancelled
+        // 'regular' = open bidding; 'silent' = bid counts shown, amounts hidden until end.
+        auctionType: opts.auctionType || 'regular',
         startPriceEur: startPrice,
         reservePriceEur: opts.reservePriceEur ? Number(opts.reservePriceEur) : null,
         currentBidEur: startPrice,
         currentBidderId: null,
+        // Proxy bidding: the current leader's declared maximum, used for auto-escalation.
+        proxyMaxEur: null,
         bidCount: 0,
         bidderCount: 0,
+        antiSnipExtensions: 0,
+        durationDays: days,
         durationWeeks: weeks,
         startsAt: Timestamp.fromMillis(startsAt),
         endsAt: Timestamp.fromMillis(endsAt),
         // Seller's commitment to sell at the final price (signed at create time).
         sellerContract: opts.sellerContract || { type: null, signatureData: null, signedAt: null },
         // Payment stub — TODO(backend): set via Stripe webhook.
-        packageId: opts.packageId || null,
+        packageId: pkg.id,
         paidAmount: opts.paidAmount ?? null,
         paymentRef: null,
         // Denormalized series for the price-over-time chart on the detail page.
@@ -148,21 +179,36 @@ export async function getBids(listingId) {
 // ── Bid ─────────────────────────────────────────────────────────────────────
 /**
  * Place a bid. Best-effort client-side validation inside a transaction.
+ *
+ * Anti-sniping: if the bid lands in the last ANTI_SNIP_WINDOW_MS the auction
+ * endsAt is extended by ANTI_SNIP_EXTEND_MS.
+ *
+ * Proxy bidding: pass maxBidEur > amountEur to register a proxy. If the
+ * previous leader had a proxy that beats this bid, the system auto-escalates
+ * on their behalf up to their registered maximum.
+ *
  * @param {string} listingId
- * @param {number} amountEur
+ * @param {number} amountEur   The explicit bid (must meet minNextBid).
  * @param {Object} user        Firebase Auth user
  * @param {Object} contract    { type:'sign'|'print', signatureData:string|null }
  * @param {Object} notifyPref  { onOutbid:boolean, thresholdEur:number|null }
- * @returns {Promise<{bidId:string}>}
+ * @param {number|null} maxBidEur  Optional proxy maximum. Stored on the auction
+ *   doc as proxyMaxEur when this user becomes the leader. Cleared when outbid.
+ * @returns {Promise<{bidId:string, antiSnipExtended:boolean, proxyClaimed:boolean}>}
  */
-export async function placeBid(listingId, amountEur, user, contract = {}, notifyPref = {}) {
+export async function placeBid(listingId, amountEur, user, contract = {}, notifyPref = {}, maxBidEur = null) {
     if (!user) throw new Error('Za oddajo ponudbe se morate prijaviti.');
     if (sampleAuction(listingId)) throw new Error('To je predstavitvena dražba — ponudb ni mogoče oddati.');
     const amount = Number(amountEur);
     if (!Number.isFinite(amount) || amount <= 0) throw new Error('Neveljaven znesek ponudbe.');
+    const proxyMax = maxBidEur && Number.isFinite(Number(maxBidEur)) && Number(maxBidEur) > amount
+        ? Number(maxBidEur) : null;
 
     const auctionRef = doc(db, 'auctions', listingId);
     const bidRef = doc(collection(db, 'auctions', listingId, 'bids'));
+
+    let antiSnipExtended = false;
+    let proxyClaimed = false;
 
     await runTransaction(db, async (tx) => {
         const aSnap = await tx.get(auctionRef);
@@ -173,44 +219,116 @@ export async function placeBid(listingId, amountEur, user, contract = {}, notify
         if (!isAuctionActive(a)) throw new Error('Dražba je zaključena.');
 
         const min = minNextBid({ ...a, bidCount: a.bidCount });
+
+        // ── Proxy check: can the current leader auto-escalate to beat this bid? ──
+        const prevProxy = (a.currentBidderId && a.currentBidderId !== user.uid)
+            ? (Number(a.proxyMaxEur) || 0) : 0;
+        if (prevProxy >= min && prevProxy >= amount) {
+            // Leader's proxy beats the incoming bid — auto-raise to the minimum
+            // needed to stay ahead, capped at their proxy max.
+            const autoAmount = Math.min(prevProxy, amount + MIN_BID_INCREMENT);
+            // The incoming bid is still valid (it meets the current minimum), so
+            // we record it first, then immediately record the proxy counter-bid.
+            if (amount < min) throw new Error(`Ponudba mora biti vsaj ${min.toLocaleString('sl-SI')} €.`);
+
+            const now = Date.now();
+            const isNewBidder = a.currentBidderId !== user.uid;
+            const newBidderCount = (a.bidderCount || 0) + (isNewBidder ? 1 : 0);
+            const series = Array.isArray(a.priceSeries) ? a.priceSeries.slice(-197) : [];
+            series.push({ t: now, amount, bidders: newBidderCount });
+            series.push({ t: now + 1, amount: autoAmount, bidders: newBidderCount });
+
+            // Incoming bid doc
+            tx.set(bidRef, buildBidDoc(user, amount, contract, notifyPref, false));
+            // Proxy counter-bid doc
+            const proxyBidRef = doc(collection(db, 'auctions', listingId, 'bids'));
+            tx.set(proxyBidRef, {
+                bidderId: a.currentBidderId,
+                bidderName: 'Avtomatska ponudba (predponudba)',
+                amountEur: autoAmount,
+                isProxy: true,
+                contract: { type: null, signatureData: null, signedAt: null },
+                notify: { onOutbid: false, thresholdEur: null },
+                createdAt: serverTimestamp(),
+            });
+
+            // Anti-snip check on the proxy counter as well
+            const endsAtMs = toMillis(a.endsAt);
+            const timeLeft = endsAtMs - now;
+            const newEndsAt = (timeLeft > 0 && timeLeft < ANTI_SNIP_WINDOW_MS)
+                ? Timestamp.fromMillis(endsAtMs + ANTI_SNIP_EXTEND_MS) : a.endsAt;
+            antiSnipExtended = (newEndsAt !== a.endsAt);
+
+            tx.update(auctionRef, {
+                currentBidEur: autoAmount,
+                // Leader stays the same; their proxyMaxEur remains until outbid.
+                bidCount: (a.bidCount || 0) + 2,
+                bidderCount: newBidderCount,
+                antiSnipExtensions: (a.antiSnipExtensions || 0) + (antiSnipExtended ? 1 : 0),
+                endsAt: newEndsAt,
+                priceSeries: series,
+                updatedAt: serverTimestamp(),
+            });
+            proxyClaimed = true;
+            return;
+        }
+
         if (amount < min) {
             throw new Error(`Ponudba mora biti vsaj ${min.toLocaleString('sl-SI')} €.`);
         }
 
+        // ── Normal bid path ────────────────────────────────────────────────────
+        const now = Date.now();
         const isNewBidder = a.currentBidderId !== user.uid;
         const newBidderCount = (a.bidderCount || 0) + (a.bidCount === 0 || isNewBidder ? 1 : 0);
         const series = Array.isArray(a.priceSeries) ? a.priceSeries.slice(-199) : [];
-        series.push({ t: Date.now(), amount, bidders: newBidderCount });
+        series.push({ t: now, amount, bidders: newBidderCount });
 
-        tx.set(bidRef, {
-            bidderId: user.uid,
-            bidderName: user.displayName || 'Anonimni ponudnik',
-            amountEur: amount,
-            // Buyer's commitment to buy if they win. Pruned at auction end — see handoff.
-            contract: {
-                type: contract.type || null,
-                signatureData: contract.signatureData || null,
-                signedAt: contract.type ? serverTimestamp() : null,
-            },
-            // TODO(backend): the email function reads these to send outbid/threshold alerts.
-            notify: {
-                onOutbid: !!notifyPref.onOutbid,
-                thresholdEur: notifyPref.thresholdEur ? Number(notifyPref.thresholdEur) : null,
-            },
-            createdAt: serverTimestamp(),
-        });
+        // Anti-sniping extension
+        const endsAtMs = toMillis(a.endsAt);
+        const timeLeft = endsAtMs - now;
+        const newEndsAt = (timeLeft > 0 && timeLeft < ANTI_SNIP_WINDOW_MS)
+            ? Timestamp.fromMillis(endsAtMs + ANTI_SNIP_EXTEND_MS) : a.endsAt;
+        antiSnipExtended = (newEndsAt !== a.endsAt);
+
+        tx.set(bidRef, buildBidDoc(user, amount, contract, notifyPref, false));
 
         tx.update(auctionRef, {
             currentBidEur: amount,
             currentBidderId: user.uid,
+            // Store new leader's proxy max (null if none given).
+            proxyMaxEur: proxyMax,
             bidCount: (a.bidCount || 0) + 1,
             bidderCount: newBidderCount,
+            antiSnipExtensions: (a.antiSnipExtensions || 0) + (antiSnipExtended ? 1 : 0),
+            endsAt: newEndsAt,
             priceSeries: series,
             updatedAt: serverTimestamp(),
         });
     });
 
-    return { bidId: bidRef.id };
+    return { bidId: bidRef.id, antiSnipExtended, proxyClaimed };
+}
+
+function buildBidDoc(user, amount, contract, notifyPref, isProxy) {
+    return {
+        bidderId: user.uid,
+        bidderName: user.displayName || 'Anonimni ponudnik',
+        amountEur: amount,
+        isProxy: isProxy || false,
+        // Buyer's commitment to buy if they win. Pruned at auction end — see handoff.
+        contract: {
+            type: contract.type || null,
+            signatureData: contract.signatureData || null,
+            signedAt: contract.type ? serverTimestamp() : null,
+        },
+        // TODO(backend): the email function reads these to send outbid/threshold alerts.
+        notify: {
+            onOutbid: !!notifyPref.onOutbid,
+            thresholdEur: notifyPref.thresholdEur ? Number(notifyPref.thresholdEur) : null,
+        },
+        createdAt: serverTimestamp(),
+    };
 }
 
 // ── Seller / admin status changes ─────────────────────────────────────────────
