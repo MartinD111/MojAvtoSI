@@ -210,6 +210,25 @@ async function checkFavouriteStates() {
 }
 
 // ── Render Car Card ──────────────────────────────────────────
+// Auction facet badges for a listing card (type + binding sale + cash). Reads the
+// live auction state when present, else the denormalized fields on the listing.
+function auctionCardBadges(car, auction) {
+    if (!(auction || car.entryType === 'auction')) return '';
+    let type = auction?.auctionType ?? car.auctionType ?? 'live';
+    if (type === 'regular') type = 'live'; // legacy
+    const binding = auction?.bindingContract ?? car.auctionBinding ?? false;
+    const cash = auction?.cashAllowed ?? car.auctionCash ?? false;
+    const meta = ({
+        silent: { icon: '🔒', label: 'Tiha' },
+        prebid: { icon: '⏱', label: 'Pred-dražba' },
+        live:   { icon: '👁', label: 'Živa' },
+    })[type] || { icon: '👁', label: 'Živa' };
+    const badges = [`<span class="drazba-badge drazba-badge--type">${meta.icon} ${meta.label}</span>`];
+    if (binding) badges.push('<span class="drazba-badge drazba-badge--binding">✓ Obvezna prodaja</span>');
+    if (cash) badges.push('<span class="drazba-badge drazba-badge--cash">💶 Gotovina</span>');
+    return `<div class="drazba-badges">${badges.join('')}</div>`;
+}
+
 export function renderCarCard(car, auction = null) {
     const inCompare = isInCompare(car.id);
     // Display logic: 1st exterior and 1st interior if available, otherwise first 2 images
@@ -310,6 +329,8 @@ export function renderCarCard(car, auction = null) {
                     ${renderRatingBadgeCard(starRating, ratingTitle)}
                 </div>
             </div>
+
+            ${auctionCardBadges(car, auction)}
 
             <div class="listing-card-action-bar">
                 <div class="primary-specs">
@@ -1292,6 +1313,12 @@ function applySidebarFilters() {
     const country = document.getElementById("sidebarCountry")?.value || '';
     const region = document.getElementById("sidebarRegion")?.value || '';
 
+    // Auction-board facets (present only on #/drazbe).
+    const aucType = document.getElementById("sidebarAucType")?.value || '';
+    const aucStatus = document.getElementById("sidebarAucStatus")?.value || '';
+    const aucBinding = document.getElementById("sidebarAucBinding")?.value || '';
+    const aucCash = document.getElementById("sidebarAucCash")?.value || '';
+
     const onlySale = document.getElementById("sidebarOnlySale")?.checked || false;
     const showNoPrice = document.getElementById("sidebarShowNoPrice")?.checked ?? true;
 
@@ -1474,6 +1501,24 @@ function applySidebarFilters() {
         if (!showNoPrice) {
             const hasPrice = (car.priceRaw && car.priceRaw > 0) || (car.priceEur && car.priceEur > 0) || (car.price && car.price.toLowerCase() !== 'po dogovoru' && !car.callForPrice);
             if (!hasPrice) return false;
+        }
+
+        // ── Auction facets (type / status / binding sale / cash) ──
+        if (car.entryType === 'auction' && (aucType || aucStatus || aucBinding || aucCash)) {
+            let type = car.auctionType || 'live';
+            if (type === 'regular') type = 'live'; // legacy
+            if (aucType && type !== aucType) return false;
+            if (aucBinding === 'yes' && !car.auctionBinding) return false;
+            if (aucBinding === 'no' && car.auctionBinding) return false;
+            if (aucCash === 'yes' && !car.auctionCash) return false;
+            if (aucCash === 'no' && car.auctionCash) return false;
+            if (aucStatus) {
+                const endMs = car.endsAt ? new Date(car.endsAt).getTime() : Infinity;
+                const ended = endMs <= Date.now();
+                if (aucStatus === 'active' && ended) return false;
+                if (aucStatus === 'ended' && !ended) return false;
+                if (aucStatus === 'upcoming' && !(type === 'prebid' && !ended)) return false;
+            }
         }
 
         return true;

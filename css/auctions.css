@@ -521,3 +521,70 @@ body.dark-mode .cl-auction-fee-note {
     border-color: rgba(22,163,74,0.28);
     color: #4ade80;
 }
+
+/* ── "Kmalu na voljo" (coming soon) disclosure ─────────────────────────────── */
+.cl-auction-soon {
+    margin-top: 1.1rem;
+    border: 1px dashed rgba(100,116,139,0.35);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.9rem;
+    background: rgba(148,163,184,0.06);
+}
+.cl-auction-soon > summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #475569;
+    list-style: none;
+}
+.cl-auction-soon > summary::-webkit-details-marker { display: none; }
+.cl-soon-list {
+    list-style: none;
+    margin: 0.6rem 0 0.2rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.cl-soon-list li {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.45;
+}
+.cl-soon-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.12rem 0.4rem;
+    margin-right: 0.4rem;
+    border-radius: 9999px;
+    background: rgba(148,163,184,0.25);
+    color: #475569;
+    vertical-align: middle;
+}
+body.dark-mode .cl-auction-soon { border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.08); }
+body.dark-mode .cl-auction-soon > summary { color: #cbd5e1; }
+body.dark-mode .cl-soon-list li { color: #94a3b8; }
+body.dark-mode .cl-soon-badge { background: rgba(148,163,184,0.2); color: #cbd5e1; }
+
+/* ── Auction-type / commercial badges on listing cards ─────────────────────── */
+.drazba-badges { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
+.drazba-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    padding: 0.16rem 0.46rem;
+    border-radius: 9999px;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+.drazba-badge--type    { background: rgba(37,99,235,0.12);  color: #1d4ed8; }
+.drazba-badge--binding { background: rgba(22,163,74,0.14);  color: #15803d; }
+.drazba-badge--cash    { background: rgba(202,138,4,0.16);  color: #a16207; }
+body.dark-mode .drazba-badge--type    { background: rgba(37,99,235,0.22);  color: #93c5fd; }
+body.dark-mode .drazba-badge--binding { background: rgba(22,163,74,0.22);  color: #4ade80; }
+body.dark-mode .drazba-badge--cash    { background: rgba(202,138,4,0.24);  color: #fcd34d; }

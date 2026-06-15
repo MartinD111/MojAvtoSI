@@ -15,9 +15,11 @@ import { healthRoutes } from './routes/health.js';
 import { uploadRoutes } from './routes/uploads.js';
 import { searchRoutes } from './routes/search.js';
 import { listingRoutes } from './routes/listings.js';
+import { auctionRoutes } from './routes/auctions.js';
 import { leadRoutes } from './routes/leads.js';
 import { emailRoutes } from './routes/emails.js';
 import { webhookRoutes } from './routes/webhooks.js';
+import { internalRoutes } from './routes/internal.js';
 
 // (#4) Secure defaults for any cookie we set. Sessions are Bearer-token based,
 // but anything cookie-borne (CSRF token, SSR session) MUST carry these.
@@ -92,11 +94,13 @@ export async function buildApp() {
   // ── Routes ───────────────────────────────────────────────────────────
   await app.register(healthRoutes); // /healthz, /readyz — unprefixed for the ALB
   await app.register(webhookRoutes, { prefix: '/webhooks' }); // raw-body, signed
+  await app.register(internalRoutes, { prefix: '/internal' }); // cron-secret guarded
   await app.register(
     async (api) => {
       await api.register(uploadRoutes);
       await api.register(searchRoutes);
       await api.register(listingRoutes);
+      await api.register(auctionRoutes);
       await api.register(leadRoutes);
       await api.register(emailRoutes);
     },

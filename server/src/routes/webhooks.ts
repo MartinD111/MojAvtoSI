@@ -4,6 +4,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { verifySvixSignature, verifyStripeSignature } from '../lib/webhooks.js';
 import { env } from '../config/env.js';
+import { supabaseAdmin } from '../lib/supabase.js';
 
 export const webhookRoutes: FastifyPluginAsync = async (app) => {
   // Resend delivery/bounce/complaint events.
@@ -44,19 +45,69 @@ export const webhookRoutes: FastifyPluginAsync = async (app) => {
     if (!ok) return reply.code(401).send({ error: 'Invalid signature', statusCode: 401 });
 
     const event = JSON.parse((req.rawBody as Buffer).toString('utf8')) as {
+      id?: string;
       type?: string;
-      data?: { object?: { metadata?: { listingId?: string; tier?: string } } };
+      data?: {
+        object?: {
+          id?: string;
+          payment_intent?: string;
+          metadata?: { kind?: string; auctionId?: string; listingId?: string; tier?: string };
+        };
+      };
     };
-    req.log.info({ type: event.type }, 'stripe webhook');
+    req.log.info({ type: event.type, id: event.id }, 'stripe webhook');
+    const obj = event.data?.object;
+    const meta = obj?.metadata;
 
-    if (event.type === 'checkout.session.completed') {
-      const meta = event.data?.object?.metadata;
-      // TODO: grant the boost ONLY here, idempotently (use the Stripe event id as
-      // the idempotency key), inside a transaction:
-      //   update listings set promotion = { tier, expiresAt: now()+duration },
-      //          paid_amount = ..., payment_ref = <session id>  where id = listingId
-      void meta;
+    // ── Auction buyer payment succeeded → start the 48 h escrow hold ──────────
+    // The webhook is the ONLY writer that flips a payment to 'paid'. Idempotent
+    // on the Stripe event id (auction_payments.stripe_event_id is unique).
+    if (event.type === 'payment_intent.succeeded' && meta?.kind === 'auction' && obj?.id) {
+      const releaseAt = new Date(Date.now() + env.AUCTION_ESCROW_HOURS * 3600 * 1000).toISOString();
+      await supabaseAdmin
+        .from('auction_payments')
+        .update({
+          status: 'paid',
+          paid_at: new Date().toISOString(),
+          stripe_event_id: event.id ?? null,
+          escrow_release_at: releaseAt,
+        })
+        .eq('payment_intent_id', obj.id)
+        .neq('status', 'paid'); // idempotent: don't re-pay
+      if (meta.auctionId) {
+        await supabaseAdmin
+          .from('auctions')
+          .update({ escrow_release_at: releaseAt })
+          .eq('id', meta.auctionId);
+      }
     }
+
+    // Seller listing fee paid (10-day upgrade / binding contract).
+    if (event.type === 'payment_intent.succeeded' && meta?.kind === 'auction_listing_fee' && meta.auctionId) {
+      await supabaseAdmin
+        .from('auctions')
+        .update({ listing_fee_paid: true, payment_ref: obj?.id ?? null })
+        .eq('id', meta.auctionId);
+    }
+
+    // ── Dispute opened → freeze the escrow auto-release ───────────────────────
+    // The platform does NOT arbitrate; we only stop the automatic payout.
+    if (event.type === 'charge.dispute.created' && obj?.payment_intent) {
+      const nowIso = new Date().toISOString();
+      const { data: pay } = await supabaseAdmin
+        .from('auction_payments')
+        .select('id, auction_id')
+        .eq('payment_intent_id', obj.payment_intent)
+        .maybeSingle();
+      if (pay) {
+        await supabaseAdmin
+          .from('auction_payments')
+          .update({ status: 'disputed', dispute_opened_at: nowIso })
+          .eq('id', pay.id);
+        await supabaseAdmin.from('auctions').update({ dispute_opened_at: nowIso }).eq('id', pay.auction_id);
+      }
+    }
+
     return reply.code(200).send({ received: true });
   });
 };

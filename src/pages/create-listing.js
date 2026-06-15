@@ -16,8 +16,14 @@ import { getEquipmentGroups, getEquipmentTypes, getEquipmentTypeLabel, getEquipm
 import { PLATFORM } from '../config/platform.js';
 import { scrollToTopOnMobile } from '../utils/viewport.js';
 import { COUNTRIES, getRegions } from '../data/locationData.js';
-import { AUCTION_PACKAGES } from '../services/auctionService.js';
-import { contractWidgetHtml, mountContractWidget, isContractComplete } from '../utils/auctionContract.js';
+import {
+    AUCTION_DURATIONS, EXTENDED_DURATION_FEE, BINDING_CONTRACT_FEE,
+    BUYER_PREMIUM_PCT, calcListingFee,
+} from '../services/auctionService.js';
+import {
+    contractWidgetHtml, mountContractWidget, isContractComplete,
+    buildAuctionContract, contractScenario,
+} from '../utils/auctionContract.js';
 import { openAiImportOverlay } from '../utils/aiListingImport.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
@@ -114,12 +120,13 @@ const STEPS = [
 let state = {
     currentStep: 0,
     entryType: 'classic',           // 'classic' | 'auction' (dražba)
-    // Auction (dražba) setup
-    auctionPackageId: 'auctionFree', // 'auctionFree' (21 dni/brezplačno) | 'auction45d' (45 dni/2,99€)
-    auctionType: 'regular',          // 'regular' | 'silent'
-    auctionDurationWeeks: 3,
+    // Auction (dražba) setup — AutoHub model
+    auctionType: 'live',            // 'silent' | 'prebid' | 'live'
+    durationDays: 7,                // 7 (free) | 10 (4,99 €)
+    bindingContract: false,         // "Obvezna prodaja" (49,99 €)
+    cashAllowed: false,             // gotovinsko plačilo ob prevzemu (samo z obvezno prodajo)
     startPriceEur: '',
-    reservePriceEur: '',
+    reservePriceEur: '',            // samo pri tihi (silent) dražbi
     sellerContract: null,           // { type:'sign'|'print', signatureData:string|null }
     category: 'avto',
     subcategory: '',
@@ -3517,42 +3524,24 @@ function renderDescriptionStep() {
 let _sellerContractGetter = null;
 
 function renderAuctionSetupStep() {
-    const packages = [
-        {
-            ...AUCTION_PACKAGES.auctionFree,
-            label: t('cl_auction_pkg_free', 'Standardna (21 dni)'),
-            desc: t('cl_auction_pkg_free_desc', 'Brezplačna objava. Plačate le provizijo ob prodaji.'),
-            icon: '🔨',
-        },
-        {
-            ...AUCTION_PACKAGES.auction45d,
-            label: t('cl_auction_pkg_45d', 'Razširjena (45 dni)'),
-            desc: t('cl_auction_pkg_45d_desc', 'Daljša vidljivost za večjo prodajno priložnost.'),
-            icon: '⚡',
-        },
+    // ── Duration (7 dni brezplačno · 10 dni 4,99 €) ──
+    const durations = [
+        { ...AUCTION_DURATIONS.d7,  label: t('cl_auction_dur_7',  'Standardna (7 dni)'),   desc: t('cl_auction_dur_7_desc', 'Brezplačna objava dražbe.'), icon: '🔨' },
+        { ...AUCTION_DURATIONS.d10, label: t('cl_auction_dur_10', 'Razširjena (10 dni)'),  desc: t('cl_auction_dur_10_desc', 'Daljša vidljivost za večjo prodajno priložnost.'), icon: '⚡' },
     ];
-
-    const pkgCards = packages.map(p => `
-        <div class="cl-promo-card ${state.auctionPackageId === p.id ? 'selected' : ''}" data-pkg="${p.id}" data-days="${p.days}" data-weeks="${p.weeks}">
+    const durCards = durations.map(p => `
+        <div class="cl-promo-card ${state.durationDays === p.days ? 'selected' : ''}" data-days="${p.days}">
             <span class="cl-promo-icon">${p.icon}</span>
             <p class="cl-promo-name">${p.label}</p>
             <p class="cl-promo-price">${p.price === 0 ? t('cl_auction_free', 'Brezplačno') : p.price.toLocaleString('sl-SI', { minimumFractionDigits: 2 }) + ' €'}</p>
             <p class="cl-promo-desc">${p.desc}</p>
         </div>`).join('');
 
+    // ── Type (Tiha · Pred-dražba · Živa) ──
     const typeCards = [
-        {
-            id: 'regular',
-            icon: '👁',
-            label: t('cl_auction_type_regular', 'Odprta dražba'),
-            desc: t('cl_auction_type_regular_desc', 'Vsi ponudniki vidijo trenutno najvišjo ponudbo v realnem času.'),
-        },
-        {
-            id: 'silent',
-            icon: '🔒',
-            label: t('cl_auction_type_silent', 'Zaprta dražba'),
-            desc: t('cl_auction_type_silent_desc', 'Ponudbeni zneski so skriti do zaključka. Vidno je le število ponudb.'),
-        },
+        { id: 'live',   icon: '👁', label: t('cl_auction_type_live', 'Živa dražba'),       desc: t('cl_auction_type_live_desc', 'Klasična dražba v realnem času. Vse ponudbe so javno vidne.') },
+        { id: 'prebid', icon: '⏱', label: t('cl_auction_type_prebid', 'Pred-dražba'),     desc: t('cl_auction_type_prebid_desc', 'Najprej javne predhodne ponudbe, nato preide v živo dražbo.') },
+        { id: 'silent', icon: '🔒', label: t('cl_auction_type_silent', 'Tiha dražba'),     desc: t('cl_auction_type_silent_desc', 'Ponudbe so skrite do zaključka. Možna je skrita minimalna (rezervna) cena.') },
     ].map(tp => `
         <div class="cl-promo-card ${state.auctionType === tp.id ? 'selected' : ''}" data-type="${tp.id}">
             <span class="cl-promo-icon">${tp.icon}</span>
@@ -3563,15 +3552,15 @@ function renderAuctionSetupStep() {
     setHtml(`
         <div class="cl-card">
             <h2 class="cl-step-title">${t('cl_auction_title', 'Nastavitev dražbe')}</h2>
-            <p class="cl-step-sub">${t('cl_auction_sub', 'Izberite trajanje, vrsto, začetno ceno in podpišite zavezo k prodaji.')}</p>
+            <p class="cl-step-sub">${t('cl_auction_sub', 'Izberite trajanje, vrsto in začetno ceno.')}</p>
 
             <div class="cl-auction-policy-badge">
                 <span>🛡</span>
-                <span>${t('cl_auction_antisnip_badge', 'Zaščita pred sniperji: ponudba v zadnjih 3 minutah samodejno podaljša dražbo za 5 minut.')}</span>
+                <span>${t('cl_auction_antisnip_badge', 'Zaščita pred sniperji: ponudba v zadnjih 2 minutah samodejno podaljša dražbo za 2 minuti.')}</span>
             </div>
 
-            <label class="cl-label" style="margin-top:1.25rem;">${t('cl_auction_package', 'Trajanje dražbe')} <span class="req">*</span></label>
-            <div class="cl-promo-grid" id="clPkgGrid">${pkgCards}</div>
+            <label class="cl-label" style="margin-top:1.25rem;">${t('cl_auction_duration', 'Trajanje dražbe')} <span class="req">*</span></label>
+            <div class="cl-promo-grid" id="clDurGrid">${durCards}</div>
 
             <label class="cl-label" style="margin-top:1.25rem;">${t('cl_auction_type_label', 'Vrsta dražbe')} <span class="req">*</span></label>
             <div class="cl-promo-grid" id="clTypeGrid">${typeCards}</div>
@@ -3586,10 +3575,10 @@ function renderAuctionSetupStep() {
                 <span style="font-size:0.75rem;color:#94a3b8;">${t('cl_auction_start_price_hint', 'Izhodiščna cena, od katere se začne licitiranje.')}</span>
             </div>
 
-            <div class="cl-field">
+            <div class="cl-field" id="reserveField" style="display:${state.auctionType === 'silent' ? 'block' : 'none'};">
                 <label class="cl-checkbox-label" style="margin-bottom:0.5rem;">
                     <input type="checkbox" id="fHasReserve" ${state.reservePriceEur ? 'checked' : ''} />
-                    ${t('cl_auction_reserve_toggle', 'Dodaj minimalno ceno (reserve)')}
+                    ${t('cl_auction_reserve_toggle', 'Dodaj skrito minimalno ceno (reserve) — samo tiha dražba')}
                 </label>
                 <div id="reserveWrap" style="display:${state.reservePriceEur ? 'flex' : 'none'};">
                     <div class="cl-price-wrap">
@@ -3600,18 +3589,51 @@ function renderAuctionSetupStep() {
                 </div>
             </div>
 
-            <div class="cl-auction-fee-note">
-                <span>💡</span>
-                <span>${t('cl_auction_fee_note', 'Provizija ob uspešni prodaji: <strong>1 % končne cene</strong>, največ <strong>5.000 €</strong>. Plačate samo, če vozilo prodate.')}</span>
+            <hr style="border:none;border-top:1px solid rgba(0,0,0,0.07);margin:1.25rem 0;" />
+
+            <label class="cl-label">${t('cl_auction_binding_label', 'Obvezna prodaja in plačilo')}</label>
+
+            <div class="cl-field">
+                <label class="cl-checkbox-label" style="align-items:flex-start;gap:0.6rem;">
+                    <input type="checkbox" id="fBinding" ${state.bindingContract ? 'checked' : ''} style="margin-top:3px;" />
+                    <span>
+                        <strong>${t('cl_auction_binding_toggle', 'Pogodba o obvezni prodaji')} (+${BINDING_CONTRACT_FEE.toLocaleString('sl-SI', { minimumFractionDigits: 2 })} €)</strong><br>
+                        <span style="font-size:0.8rem;color:#64748b;">${t('cl_auction_binding_desc', 'Kupec in prodajalec ob zaključku digitalno podpišeta pravno zavezujočo pogodbo. Brez te opcije je dokument zgolj informativen.')}</span>
+                    </span>
+                </label>
             </div>
+
+            <div class="cl-field" id="cashField" style="display:${state.bindingContract ? 'block' : 'none'};padding-left:1.6rem;">
+                <label class="cl-checkbox-label" style="align-items:flex-start;gap:0.6rem;">
+                    <input type="checkbox" id="fCash" ${state.cashAllowed ? 'checked' : ''} style="margin-top:3px;" />
+                    <span>
+                        <strong>${t('cl_auction_cash_toggle', 'Dovoli gotovinsko plačilo ob prevzemu')}</strong><br>
+                        <span style="font-size:0.8rem;color:#64748b;">${t('cl_auction_cash_desc', 'Kupnino za vozilo uredita stranki sami. Kupčeva premija 3 % se kljub temu poravna prek platforme. Na voljo samo z obvezno prodajo.')}</span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="cl-auction-fee-note" id="clAucFeeSummary"></div>
 
             <hr style="border:none;border-top:1px solid rgba(0,0,0,0.07);margin:1.25rem 0;" />
 
-            ${contractWidgetHtml({
-                party: 'seller',
-                title: t('cl_auction_seller_contract_title', 'Zaveza k prodaji'),
-                body: t('cl_auction_seller_contract_body', 'S podpisom se zavezujete, da boste vozilo prodali kupcu po končni (zadnji) ponujeni ceni ob zaključku dražbe.'),
-            })}
+            <div id="sellerContractWrap">
+                ${contractWidgetHtml({
+                    party: 'seller',
+                    title: t('cl_auction_seller_contract_title', 'Zaveza k prodaji'),
+                    body: t('cl_auction_seller_contract_body', 'S podpisom potrdite zavezo k prodaji vozila najvišjemu ponudniku po končni ceni.'),
+                })}
+            </div>
+
+            <details class="cl-auction-soon">
+                <summary>${t('cl_auction_soon_title', '🔜 Kmalu na voljo')}</summary>
+                <ul class="cl-soon-list">
+                    <li><span class="cl-soon-badge">Coming soon</span> ${t('cl_soon_verify', 'Verifikacija identitete uporabnikov (osebni dokument, telefon, e-pošta).')}</li>
+                    <li><span class="cl-soon-badge">Coming soon</span> ${t('cl_soon_curated', 'Ročna kurirana objava — ekipa AutoHub pregleda in napiše oglas.')}</li>
+                    <li><span class="cl-soon-badge">Coming soon</span> ${t('cl_soon_escrow', 'Daljše zadržanje denarja (escrow do potrditve prevzema).')}</li>
+                    <li><span class="cl-soon-badge">Coming soon</span> ${t('cl_soon_mediation', 'Mediacija v primeru sporov (plačljiva dodatna storitev).')}</li>
+                </ul>
+            </details>
 
             <div class="cl-nav">
                 <button class="cl-btn cl-btn--ghost" id="btnAucBack">${t('cl_btn_back')}</button>
@@ -3620,67 +3642,105 @@ function renderAuctionSetupStep() {
         </div>
     `);
 
-    // Package selection
-    document.querySelectorAll('#clPkgGrid .cl-promo-card').forEach(card => {
+    const startInput = document.getElementById('fStartPrice');
+    setupNumericFormatter(startInput);
+    const reserveInput = document.getElementById('fReserve');
+    setupNumericFormatter(reserveInput);
+
+    // Live fee summary: listing fee (up front) + 3 % buyer premium (buyer pays).
+    function updateFeeSummary() {
+        const fee = calcListingFee({ durationDays: state.durationDays, bindingContract: state.bindingContract });
+        const el = document.getElementById('clAucFeeSummary');
+        if (!el) return;
+        const feeTxt = fee === 0
+            ? t('cl_auction_fee_free', 'Objava je brezplačna.')
+            : `${t('cl_auction_fee_total', 'Strošek objave')}: <strong>${fee.toLocaleString('sl-SI', { minimumFractionDigits: 2 })} €</strong>`;
+        el.innerHTML = `<span>💡</span><span>${feeTxt} · ${t('cl_auction_premium_note', 'Ob prodaji kupec plača')} <strong>${BUYER_PREMIUM_PCT * 100} % ${t('cl_auction_premium_note2', 'premijo platformi')}</strong>.</span>`;
+    }
+
+    // Duration selection
+    document.querySelectorAll('#clDurGrid .cl-promo-card').forEach(card => {
         card.addEventListener('click', () => {
-            document.querySelectorAll('#clPkgGrid .cl-promo-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('#clDurGrid .cl-promo-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
-            state.auctionPackageId = card.dataset.pkg;
-            state.auctionDurationWeeks = Number(card.dataset.weeks);
+            state.durationDays = Number(card.dataset.days);
+            updateFeeSummary();
         });
     });
 
-    // Auction type selection
+    // Auction type selection — reserve price is silent-only.
     document.querySelectorAll('#clTypeGrid .cl-promo-card').forEach(card => {
         card.addEventListener('click', () => {
             document.querySelectorAll('#clTypeGrid .cl-promo-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             state.auctionType = card.dataset.type;
+            const rf = document.getElementById('reserveField');
+            if (rf) rf.style.display = state.auctionType === 'silent' ? 'block' : 'none';
+            if (state.auctionType !== 'silent') {
+                state.reservePriceEur = '';
+                const cb = document.getElementById('fHasReserve');
+                if (cb) cb.checked = false;
+                const rw = document.getElementById('reserveWrap');
+                if (rw) rw.style.display = 'none';
+            }
         });
     });
-
-    const startInput = document.getElementById('fStartPrice');
-    setupNumericFormatter(startInput);
-    const reserveInput = document.getElementById('fReserve');
-    setupNumericFormatter(reserveInput);
 
     document.getElementById('fHasReserve').addEventListener('change', (e) => {
         document.getElementById('reserveWrap').style.display = e.target.checked ? 'flex' : 'none';
         if (!e.target.checked) { state.reservePriceEur = ''; reserveInput.value = ''; }
     });
 
-    // Seller contract widget
+    // Binding contract → reveals cash option + bumps the fee.
+    document.getElementById('fBinding').addEventListener('change', (e) => {
+        state.bindingContract = e.target.checked;
+        const cf = document.getElementById('cashField');
+        if (cf) cf.style.display = state.bindingContract ? 'block' : 'none';
+        if (!state.bindingContract) {
+            state.cashAllowed = false;
+            const cc = document.getElementById('fCash');
+            if (cc) cc.checked = false;
+        }
+        updateFeeSummary();
+    });
+    document.getElementById('fCash').addEventListener('change', (e) => {
+        state.cashAllowed = e.target.checked && state.bindingContract;
+    });
+
+    updateFeeSummary();
+
+    // Seller contract widget. PDF text is built lazily from current state so the
+    // right scenario (informative / binding / cash) and disclaimer are stamped.
     const contractRoot = document.querySelector('.ac-contract');
-    mountContractWidget(contractRoot, {
-        title: 'Zaveza k prodaji na dražbi — MojAvto.si',
-        fileName: 'zaveza-prodaja-drazba',
-        lines: [
-            'Prodajalec se s tem dokumentom zavezuje, da bo predmet dražbe (vozilo) prodal',
-            'kupcu, ki ob zaključku dražbe odda najvišjo veljavno ponudbo, in sicer po tej',
-            'končni ceni.',
-            '',
-            'Prodajalec potrjuje, da je navedena začetna cena resnična in zavezujoča.',
-            '',
-            'Ta dokument se hrani le do zaključka dražbe.',
-        ],
+    mountContractWidget(contractRoot, () => {
+        const scenario = contractScenario({ bindingContract: state.bindingContract, cashAllowed: state.cashAllowed });
+        return buildAuctionContract({
+            scenario,
+            party: 'seller',
+            vehicle: { title: state.title || [state.make, state.model].filter(Boolean).join(' '), year: state.year, vin: state.vin },
+        });
     }).then(getter => { _sellerContractGetter = getter; });
 
     document.getElementById('btnAucBack').addEventListener('click', goPrev);
     document.getElementById('btnAucNext').addEventListener('click', () => {
         state.startPriceEur = parseFormattedNumber(startInput.value) || '';
-        state.reservePriceEur = document.getElementById('fHasReserve').checked
+        state.reservePriceEur = (state.auctionType === 'silent' && document.getElementById('fHasReserve').checked)
             ? (parseFormattedNumber(reserveInput.value) || '') : '';
 
         if (!state.startPriceEur || Number(state.startPriceEur) <= 0) {
             alert(t('cl_auction_err_start_price', 'Vnesite veljavno začetno ceno.'));
             return;
         }
+        // A signature is mandatory only when the sale is binding (binding/cash).
+        const signatureRequired = state.bindingContract || state.cashAllowed;
         const contract = _sellerContractGetter && _sellerContractGetter();
-        if (!isContractComplete(contract)) {
-            alert(t('cl_auction_err_contract', 'Podpišite zavezo k prodaji ali prenesite in potrdite PDF pogodbo.'));
+        if (signatureRequired && !isContractComplete(contract)) {
+            alert(t('cl_auction_err_contract', 'Pri obvezni prodaji podpišite pogodbo ali prenesite in potrdite PDF.'));
             return;
         }
-        state.sellerContract = { type: contract.type, signatureData: contract.signatureData || null };
+        state.sellerContract = contract && contract.type
+            ? { type: contract.type, signatureData: contract.signatureData || null }
+            : null;
         // Mirror starting price into priceEur so downstream review/cards work.
         state.priceEur = state.startPriceEur;
         goNext();
@@ -4524,10 +4584,12 @@ function renderReviewStep() {
 
             ${state.entryType === 'auction' ? section(t('cl_auction_title', 'Dražba'), 'auctionSetup', [
         [t('cl_auction_start_price', 'Začetna cena'), state.startPriceEur ? fmt(state.startPriceEur) + ' €' : ''],
-        [t('cl_auction_package', 'Trajanje'), (() => { const pkg = AUCTION_PACKAGES[state.auctionPackageId] || AUCTION_PACKAGES.auctionFree; return `${pkg.days} dni${pkg.price > 0 ? ' — ' + pkg.price.toLocaleString('sl-SI', { minimumFractionDigits: 2 }) + ' €' : ' — Brezplačno'}`; })()],
-        [t('cl_auction_type_label', 'Vrsta dražbe'), state.auctionType === 'silent' ? '🔒 Zaprta' : '👁 Odprta'],
-        [t('cl_auction_reserve_toggle', 'Minimalna cena'), state.reservePriceEur ? fmt(state.reservePriceEur) + ' €' : '—'],
-        [t('cl_auction_seller_contract_title', 'Zaveza k prodaji'), state.sellerContract ? (state.sellerContract.type === 'sign' ? '✓ Podpisano' : '✓ PDF potrjen') : ''],
+        [t('cl_auction_duration', 'Trajanje'), (() => { const days = Number(state.durationDays) === 10 ? 10 : 7; const fee = calcListingFee({ durationDays: days, bindingContract: state.bindingContract }); return `${days} dni${fee > 0 ? ' — ' + fee.toLocaleString('sl-SI', { minimumFractionDigits: 2 }) + ' €' : ' — Brezplačno'}`; })()],
+        [t('cl_auction_type_label', 'Vrsta dražbe'), state.auctionType === 'silent' ? '🔒 Tiha' : (state.auctionType === 'prebid' ? '⏱ Pred-dražba' : '👁 Živa')],
+        [t('cl_auction_binding_toggle', 'Obvezna prodaja'), state.bindingContract ? '✓ Da (49,99 €)' : '—'],
+        [t('cl_auction_cash_toggle', 'Gotovinsko plačilo'), state.cashAllowed ? '✓ Da' : '—'],
+        ...(state.auctionType === 'silent' ? [[t('cl_auction_reserve_toggle', 'Minimalna cena'), state.reservePriceEur ? fmt(state.reservePriceEur) + ' €' : '—']] : []),
+        [t('cl_auction_seller_contract_title', 'Pogodba'), state.sellerContract ? (state.sellerContract.type === 'sign' ? '✓ Podpisano' : '✓ PDF potrjen') : (state.bindingContract ? '' : 'informativno')],
     ]) : section(t('cl_section_price'), 'price', [
         [t('cl_section_price'), state.callForPrice ? t('cl_label_call_for_price') : (state.priceEur ? (getCurrentLang() === 'sl' ? fmt(state.priceEur) + ' €' : '$' + fmt(state.priceEur)) : '')],
         [t('cl_label_negotiable'), state.priceNegotiable ? t('cl_val_yes') : t('cl_val_no')],

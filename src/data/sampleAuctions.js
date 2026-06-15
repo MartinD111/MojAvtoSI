@@ -40,9 +40,17 @@ function buildAuction(listing, {
     endsInDays,
     bids = [],            // [{ name, amount, hoursAgo }] oldest → newest
     sellerId = 'demo-seller',
+    // AutoHub model facets (demo variety for the board badges + filters).
+    auctionType = 'live', // 'silent' | 'prebid' | 'live'
+    bindingContract = false,
+    cashAllowed = false,
 }) {
     const startsAt = NOW - (durationWeeks * 7 * DAY - endsInDays * DAY);
     const endsAt = NOW + endsInDays * DAY;
+    // Reserve is silent-only in the AutoHub model.
+    const reserve = auctionType === 'silent' ? reservePrice : null;
+    const durationDays = durationWeeks >= 6 ? 10 : 7;
+    const cash = bindingContract && cashAllowed;
 
     // Price series starts at the opening price, then one point per bid.
     const series = [{ t: startsAt, amount: startPrice, bidders: 0 }];
@@ -74,28 +82,44 @@ function buildAuction(listing, {
         listingId: listing.id,
         sellerId,
         status: 'active',
+        auctionType,
+        currentPhase: auctionType === 'prebid' ? 'live' : null,
         startPriceEur: startPrice,
-        reservePriceEur: reservePrice,
+        reservePriceEur: reserve,
         currentBidEur,
         currentBidderId: last ? `demo-bidder-${last.name}` : null,
+        proxyMaxEur: null,
         bidCount: bids.length,
         bidderCount,
+        antiSnipExtensions: 0,
+        durationDays,
         durationWeeks,
+        bindingContract,
+        cashAllowed: cash,
+        signatureRequired: bindingContract || cash,
+        buyerPremiumPercent: 3,
+        listingFee: (durationDays >= 10 ? 4.99 : 0) + (bindingContract ? 49.99 : 0),
         startsAt: new Date(startsAt),
         endsAt: new Date(endsAt),
+        prebidEndsAt: null,
         sellerContract: { type: 'sign', signatureData: null, signedAt: tsAt(startsAt) },
-        packageId: durationWeeks >= 6 ? 'auction6w' : 'auction3w',
-        paidAmount: durationWeeks >= 6 ? 9.99 : 4.99,
+        listingFeePaid: true,
         paymentRef: null,
-        priceSeries: series,
         winnerId: null,
+        finalPriceEur: null,
+        sold: null,
+        buyerPremiumEur: null,
+        priceSeries: series,
     };
 
-    // Listing-doc auction mirror fields (read by cards + price display).
+    // Listing-doc auction mirror fields (read by cards + price display + filters).
     const listingDoc = {
         ...listing,
         entryType: 'auction',
         auctionDurationWeeks: durationWeeks,
+        auctionType,
+        auctionBinding: bindingContract,
+        auctionCash: cash,
         startPriceEur: startPrice,
         endsAt: new Date(endsAt),
         priceEur: currentBidEur,
@@ -533,8 +557,19 @@ const BOAT_DEFS = [
 ];
 
 // ── Build ───────────────────────────────────────────────────────────────────
-const _carBuilt = CAR_DEFS.map(([listing, opts]) => buildAuction(listing, opts));
-const _boatBuilt = BOAT_DEFS.map(([listing, opts]) => buildAuction(listing, opts));
+// Spread the three auction types + binding/cash flags across the demo set so the
+// board badges and the type/binding/cash filters all have something to show.
+const _TYPE_CYCLE = ['live', 'silent', 'prebid'];
+function _withFacets(opts, i) {
+    return {
+        ...opts,
+        auctionType: opts.auctionType || _TYPE_CYCLE[i % _TYPE_CYCLE.length],
+        bindingContract: opts.bindingContract ?? (i % 2 === 0),
+        cashAllowed: opts.cashAllowed ?? (i % 3 === 0),
+    };
+}
+const _carBuilt = CAR_DEFS.map(([listing, opts], i) => buildAuction(listing, _withFacets(opts, i)));
+const _boatBuilt = BOAT_DEFS.map(([listing, opts], i) => buildAuction(listing, _withFacets(opts, i)));
 
 /** Auction listing docs (entryType: 'auction') — merged into getListings(). */
 export const sampleAuctionCars = _carBuilt.map(b => b.listing);

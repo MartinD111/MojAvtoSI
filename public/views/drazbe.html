@@ -83,6 +83,55 @@
 
                 <form id="sidebarFiltersForm" style="display:flex; flex-direction:column; gap:0.6rem;">
 
+                <!-- Dražba (tip / status / obvezna prodaja / gotovina) -->
+                <div class="adv-accordion">
+                    <div class="adv-acc-header">
+                        <button class="adv-acc-trigger" type="button" aria-expanded="false">
+                            <i data-lucide="gavel" style="width:16px; height:16px;"></i>
+                            <span class="adv-acc-title">Dražba</span>
+                            <span class="acc-filter-summary" id="summaryDrazba" style="display:none;"></span>
+                        </button>
+                    </div>
+                    <div class="adv-acc-body" style="display:flex;">
+                        <div class="adv-acc-body-inner">
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label>Tip dražbe</label>
+                                <select id="sidebarAucType" name="aucType" class="glass-select">
+                                    <option value="">Vse</option>
+                                    <option value="silent">🔒 Tiha</option>
+                                    <option value="prebid">⏱ Pred-dražba</option>
+                                    <option value="live">👁 Živa</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label>Status</label>
+                                <select id="sidebarAucStatus" name="aucStatus" class="glass-select">
+                                    <option value="active">Aktivne</option>
+                                    <option value="upcoming">Prihajajoče</option>
+                                    <option value="ended">Končane</option>
+                                    <option value="">Vse</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label>Obvezna prodaja</label>
+                                <select id="sidebarAucBinding" name="aucBinding" class="glass-select">
+                                    <option value="">Vse</option>
+                                    <option value="yes">Da</option>
+                                    <option value="no">Ne</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
+                                <label>Gotovinsko plačilo</label>
+                                <select id="sidebarAucCash" name="aucCash" class="glass-select">
+                                    <option value="">Vse</option>
+                                    <option value="yes">Da</option>
+                                    <option value="no">Ne</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Osnovni podatki -->
                 <div class="adv-accordion">
                     <div class="adv-acc-header">

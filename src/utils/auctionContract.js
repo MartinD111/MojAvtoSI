@@ -13,6 +13,92 @@
 
 let _signaturePad = null;
 
+// ── AutoHub legal exemption ────────────────────────────────────────────────────
+// These clauses are embedded in EVERY auction contract (informative, binding and
+// cash). They implement the "izvzetje iz sporov" architecture: AutoHub is only a
+// technical intermediary, is not a party to the sale, does not arbitrate disputes,
+// and the 3 % is a platform-usage fee — not a brokerage commission. The 48-hour
+// escrow auto-release makes "money goes to the seller" the default so the platform
+// never has to decide who is right.
+export const BUYER_PREMIUM_PCT_DISPLAY = 3;
+export const ESCROW_AUTO_RELEASE_HOURS = 48;
+
+export const AUTOHUB_DISCLAIMER_LINES = [
+    '— Določila o vlogi platforme AutoHub —',
+    '1. AutoHub je zgolj tehnična platforma, ki povezuje prodajalce in kupce. AutoHub NI pogodbena stranka te pogodbe in ne odgovarja za njeno izpolnitev.',
+    '2. Prodajna pogodba je sklenjena neposredno med prodajalcem in kupcem. AutoHub vozila ne pregleduje in ne jamči za njegovo stanje, dokumentacijo, homologacijo ali za sposobnost strank, da izpolnijo svoje obveznosti.',
+    '3. Reševanje sporov: morebitne spore stranki rešujeta neposredno med seboj oziroma po sodni poti. AutoHub pri reševanju sporov ne sodeluje, ne nudi mediacije in ne odloča o vračilih.',
+    `4. Provizija (kupčeva premija ${BUYER_PREMIUM_PCT_DISPLAY} % končne cene) je plačilo za uporabo tehnične platforme in NE plačilo za posredovanje pri prodaji.`,
+    `5. Denarni tok: kupnina se ob plačilu zadrži na varnem računu (escrow) in se ${ESCROW_AUTO_RELEASE_HOURS} ur po plačilu samodejno sprosti prodajalcu, razen če kupec v tem času sproži uradni postopek (prijava policiji ali odvetniški dopis). S sprožitvijo spora pravica do vračila prek platforme ugasne — od tedaj je stvar med strankama in njunimi odvetniki.`,
+    '6. Kupec potrjuje, da je imel možnost pregleda vozila (ali se tej pravici odreka) in da vse jamčevalne zahtevke naslavlja izključno na prodajalca.',
+];
+
+/** Pick the contract scenario from the auction's commercial flags. */
+export function contractScenario({ bindingContract = false, cashAllowed = false } = {}) {
+    if (bindingContract && cashAllowed) return 'cash';
+    if (bindingContract) return 'binding';
+    return 'informative';
+}
+
+/**
+ * Build the full contract document (title + body lines + metadata) for one of the
+ * three scenarios. Every variant appends the AutoHub disclaimer above.
+ * @param {Object} o
+ * @param {'informative'|'binding'|'cash'} o.scenario
+ * @param {'seller'|'buyer'} [o.party='buyer']
+ * @param {Object} [o.vehicle]            { title, vin, year }
+ * @param {number} [o.finalPriceEur]      known final/winning price (optional)
+ * @param {number} [o.paymentDeadlineDays=7]
+ * @returns {{ title:string, fileName:string, lines:string[], binding:boolean }}
+ */
+export function buildAuctionContract(o = {}) {
+    const scenario = o.scenario || 'informative';
+    const party = o.party === 'seller' ? 'seller' : 'buyer';
+    const v = o.vehicle || {};
+    const vehicleLine = [v.title, v.year ? `(${v.year})` : '', v.vin ? `VIN: ${v.vin}` : '']
+        .filter(Boolean).join(' ') || '(vozilo iz oglasa dražbe)';
+    const priceLine = o.finalPriceEur
+        ? `Dosežena (končna) cena: ${Number(o.finalPriceEur).toLocaleString('sl-SI')} €.`
+        : 'Končna cena se določi ob zaključku dražbe kot najvišja veljavna ponudba.';
+    const deadline = Number(o.paymentDeadlineDays) || 7;
+
+    const binding = scenario !== 'informative';
+    const lines = [];
+
+    lines.push(`Predmet: ${vehicleLine}.`);
+    lines.push(priceLine);
+    lines.push('');
+
+    if (scenario === 'informative') {
+        lines.push('Ta dokument je INFORMATIVNE narave in ni pravno zavezujoč. Služi kot zapis namere strank ob zaključku dražbe.');
+        if (party === 'seller') {
+            lines.push('Prodajalec izraža namero prodati zgoraj navedeno vozilo najvišjemu ponudniku po končni ceni.');
+        } else {
+            lines.push('Kupec izraža namero kupiti zgoraj navedeno vozilo po končni ceni, če ob zaključku dražbe zmaga.');
+        }
+    } else {
+        lines.push('Ta pogodba je PRAVNO ZAVEZUJOČA za obe stranki (opcija "Obvezna prodaja").');
+        lines.push(`Prodajalec se zavezuje prodati, kupec pa kupiti zgoraj navedeno vozilo po doseženi končni ceni. Rok za plačilo in prevzem: ${deadline} dni od zaključka dražbe.`);
+        if (scenario === 'cash') {
+            lines.push('NAČIN PLAČILA — GOTOVINA OB PREVZEMU: kupnino za vozilo kupec poravna neposredno prodajalcu v gotovini ob prevzemu. AutoHub v tem denarnem toku ne sodeluje in zanj ne odgovarja.');
+            lines.push(`Kupčeva premija (${BUYER_PREMIUM_PCT_DISPLAY} % končne cene) se kljub gotovinskemu plačilu poravna AutoHubu ločeno prek Stripe.`);
+        }
+        lines.push('Če kupec ne podpiše te pogodbe ali ne izpolni obveznosti, se vozilo lahko ponudi naslednjemu najvišjemu ponudniku.');
+    }
+
+    lines.push('');
+    lines.push(...AUTOHUB_DISCLAIMER_LINES);
+
+    const titles = {
+        informative: 'Informativni zapis o zaključku dražbe — AutoHub',
+        binding: 'Pogodba o obvezni prodaji na dražbi — AutoHub',
+        cash: 'Pogodba o obvezni prodaji (gotovinsko plačilo) — AutoHub',
+    };
+    const files = { informative: 'informativni-zapis-drazba', binding: 'pogodba-obvezna-prodaja', cash: 'pogodba-obvezna-prodaja-gotovina' };
+
+    return { title: titles[scenario], fileName: files[scenario], lines, binding };
+}
+
 /**
  * Markup for an inline contract block. Caller injects this where needed and then
  * calls mountContractWidget(rootEl, opts).
@@ -53,9 +139,11 @@ export function contractWidgetHtml(o = {}) {
 /**
  * Wires up the widget. Returns a getter for the resulting contract object:
  *   { type:'sign'|'print', signatureData:string|null }
- * @param {HTMLElement} root    the .ac-contract element
- * @param {Object} pdf          { title, lines:[], party, meta:{} } for the PDF
- * @param {Function} onChange   optional callback(contract) when state changes
+ * @param {HTMLElement} root      the .ac-contract element
+ * @param {Object|Function} pdf   { title, lines:[], binding } — or a function
+ *                                returning that object (evaluated lazily at print
+ *                                time, so it can reflect current form state).
+ * @param {Function} onChange     optional callback(contract) when state changes
  */
 export async function mountContractWidget(root, pdf = {}, onChange) {
     if (!root) return () => null;
@@ -101,7 +189,7 @@ export async function mountContractWidget(root, pdf = {}, onChange) {
 
     const printBtn = root.querySelector('.ac-print-btn');
     if (printBtn) printBtn.addEventListener('click', async () => {
-        await generateContractPdf(pdf);
+        await generateContractPdf(typeof pdf === 'function' ? pdf() : pdf);
         printed = true;
         onChange && onChange(getContract());
     });
@@ -135,8 +223,17 @@ async function generateContractPdf(pdf = {}) {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
-    doc.text(pdf.title || 'Pogodba o dražbi — MojAvto.si', margin, y);
-    y += 28;
+    doc.text(pdf.title || 'Pogodba o dražbi — AutoHub', margin, y);
+    y += 22;
+
+    // Legal-weight banner so the reader instantly sees whether this binds them.
+    if (pdf.binding != null) {
+        doc.setFontSize(10);
+        doc.setTextColor(pdf.binding ? 180 : 100, pdf.binding ? 30 : 100, 30);
+        doc.text(pdf.binding ? 'PRAVNO ZAVEZUJOČA POGODBA' : 'INFORMATIVNI DOKUMENT (ni zavezujoč)', margin, y);
+        doc.setTextColor(0, 0, 0);
+        y += 18;
+    }
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(11);

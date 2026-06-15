@@ -6,7 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase.js';
 import { ALL_EQUIPMENT_VALUES } from '../data/equipment.js';
 import { key as lsKey } from '../config/storageKeys.js';
-import { createAuction, AUCTION_PACKAGES } from './auctionService.js';
+import { createAuction, normalizeAuctionType } from './auctionService.js';
 
 // ── Image upload ──────────────────────────────────────────────────────────────
 export async function uploadImages(files, userId) {
@@ -69,7 +69,12 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
         // Auction (dražba) — denormalized onto the listing so cards/boards can read
         // the deadline without a second fetch. Full auction state lives in
         // auctions/{listingId} (see auctionService). Null for non-auction listings.
-        auctionDurationWeeks: draft.entryType === 'auction' ? (Number(draft.auctionDurationWeeks) || 3) : null,
+        auctionDurationWeeks: draft.entryType === 'auction' ? (Number(draft.auctionDurationWeeks) || 1) : null,
+        // Denormalized auction facets so the /drazbe board can filter without a
+        // second fetch (mirror of the auctions doc — see auctionService).
+        auctionType:    draft.entryType === 'auction' ? normalizeAuctionType(draft.auctionType) : null,
+        auctionBinding: draft.entryType === 'auction' ? !!draft.bindingContract : null,
+        auctionCash:    draft.entryType === 'auction' ? (!!draft.bindingContract && !!draft.cashAllowed) : null,
         startPriceEur: draft.entryType === 'auction' ? (Number(draft.startPriceEur) || Number(draft.priceEur) || 0) : null,
         endsAt: null, // set below once we know the timestamp (mirrors auctions doc)
 
@@ -269,18 +274,17 @@ export async function createListing(draft, exteriorFiles, interiorFiles, user) {
     // the 45-day extended package (2,99 €) is a stub — TODO(backend): confirm via
     // Stripe webhook before actually charging.
     if (draft.entryType === 'auction') {
-        const pkg = AUCTION_PACKAGES[draft.auctionPackageId] || AUCTION_PACKAGES.auctionFree;
-        const days = pkg.days || 21;
+        const days = Number(draft.durationDays) === 10 ? 10 : 7;
         try {
             await createAuction(newDoc.id, {
                 sellerId: user.uid,
                 startPriceEur: listing.startPriceEur,
                 durationDays: days,
-                auctionType: draft.auctionType || 'regular',
+                auctionType: draft.auctionType || 'live',
                 reservePriceEur: draft.reservePriceEur ? Number(draft.reservePriceEur) : null,
+                bindingContract: !!draft.bindingContract,
+                cashAllowed: !!draft.cashAllowed,
                 sellerContract: draft.sellerContract || null,
-                packageId: pkg.id,
-                paidAmount: pkg.price,
             });
             const endsAtMs = Date.now() + days * 24 * 60 * 60 * 1000;
             await updateDoc(newDoc, { endsAt: new Date(endsAtMs) });

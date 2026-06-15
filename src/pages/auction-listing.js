@@ -13,7 +13,7 @@
 import { getListingById, getListings } from '../services/listingService.js';
 import {
     subscribeAuction, subscribeBids, placeBid, minNextBid, isAuctionActive,
-    MIN_BID_INCREMENT, calcSuccessFee, ANTI_SNIP_WINDOW_MS,
+    MIN_BID_INCREMENT, calcBuyerPremium, BUYER_PREMIUM_PCT, ANTI_SNIP_WINDOW_MS,
 } from '../services/auctionService.js';
 import { auth } from '../firebase.js';
 import { PLATFORM } from '../config/platform.js';
@@ -244,17 +244,23 @@ function updateAuctionUI(auction) {
         }
     }
 
-    // Success fee info (show to seller or after auction ends)
+    // Buyer's premium info. Shown to bidders (it's what THEY pay on top of the
+    // winning price) — not a seller fee. Hidden on silent auctions while live so
+    // the current price doesn't leak.
     const feeEl = document.getElementById('acFeeInfo');
-    if (feeEl && (isOwn || !active)) {
+    if (feeEl) {
         const finalBid = auction.currentBidEur ?? auction.startPriceEur ?? 0;
-        if (finalBid > 0) {
-            const fee = calcSuccessFee(finalBid);
+        const hideForSilent = isSilent && !isOwn && active;
+        if (finalBid > 0 && !hideForSilent) {
+            const premium = calcBuyerPremium(finalBid);
+            const pct = BUYER_PREMIUM_PCT * 100;
             feeEl.style.display = 'flex';
             feeEl.innerHTML = `<i data-lucide="info" style="width:14px;height:14px;flex-shrink:0;"></i>
-                <span>${t('auction_fee_info', 'Provizija ob uspešni prodaji')}: <strong>${fmtEur(fee)}</strong>
-                <span class="auction-fee-note">(1% končne cene, max. 5.000 €)</span></span>`;
+                <span>${t('auction_premium_info', 'Kupčeva premija ob zmagi')}: <strong>${fmtEur(premium)}</strong>
+                <span class="auction-fee-note">(${pct} % končne cene — plačilo za uporabo platforme)</span></span>`;
             if (window.lucide) window.lucide.createIcons({ context: feeEl });
+        } else {
+            feeEl.style.display = 'none';
         }
     }
 
@@ -275,7 +281,7 @@ function updateAuctionUI(auction) {
             // Flash a notice when we're inside the anti-snip window.
             const label = document.getElementById('acTimerLabel');
             if (label && remainingMs > 0 && remainingMs < ANTI_SNIP_WINDOW_MS) {
-                label.textContent = t('auction_antisnip_active', '⚡ Zadnje minute — vsaka ponudba podaljša dražbo za 5 min!');
+                label.textContent = t('auction_antisnip_active', '⚡ Zadnje minute — vsaka ponudba podaljša dražbo za 2 min!');
                 label.style.color = '#dc2626';
                 label.style.fontWeight = '700';
             } else if (label) {

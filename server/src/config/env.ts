@@ -68,6 +68,19 @@ const schema = z.object({
   // ── Webhook signing secrets ───────────────────────────────────────────
   RESEND_WEBHOOK_SECRET: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+
+  // ── Stripe (payments + Connect for auction escrow) ────────────────────
+  // Secret API key (sk_...). Unset → payment endpoints return 503 (dev).
+  STRIPE_SECRET_KEY: z.string().optional(),
+  // Buyer's premium charged on the winning price (fraction). Default 3 %.
+  AUCTION_BUYER_PREMIUM: z.coerce.number().min(0).max(1).default(0.03),
+  // Hours the buyer's payment is held in escrow before auto-release to seller.
+  AUCTION_ESCROW_HOURS: z.coerce.number().int().min(0).default(48),
+
+  // ── Internal cron auth ────────────────────────────────────────────────
+  // Shared secret the scheduler (EventBridge / Cloudflare cron) sends as
+  // `X-Cron-Secret` to POST /internal/cron/*. Unset → those routes 503.
+  CRON_SECRET: z.string().optional(),
 });
 
 function load() {

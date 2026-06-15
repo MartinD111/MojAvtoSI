@@ -8,6 +8,72 @@ Datum: 2026-06-09 · Avtor konteksta: Claude (MojAvto.si)
 
 ---
 
+## 0. POSODOBITEV 2026-06-15 — model AutoHub + strežniška logika
+
+> Ta razdelek **nadgrajuje** vse spodaj. Ekonomika in tipi dražb so spremenjeni (zamenjava, ne
+> dodatek), backend pa zdaj **obstaja** v `server/` (Supabase + Fastify + Stripe Connect) — ni več
+> samo Firestore stub. Razdelki 1–4 spodaj so zgodovinski kontekst (stari Firestore model).
+
+### 0.1 Poslovni model (AutoHub)
+- **Trajanje**: 7 dni brezplačno (privzeto) ali 10 dni za **4,99 €**.
+- **Obvezna prodaja** (pravno zavezujoča pogodba): doplačilo **49,99 €** — na voljo pri vseh tipih.
+- **Gotovinsko plačilo ob prevzemu**: samo skupaj z obvezno prodajo; platforma ne sodeluje v denarnem toku za ceno vozila.
+- **Kupčeva premija**: **3 % končne cene**, ki jo plača **kupec** (ne prodajalec) — plačilo za uporabo
+  tehnične platforme, ne provizija za posredovanje. (Staro 1 % prodajalčevo provizijo smo **odstranili**.)
+- **Tipi dražb**: `silent` (tiha, skrite ponudbe + skrita rezervna cena), `prebid` (pred-dražba → živa
+  faza), `live` (živa). Stari `regular` → `live`.
+- **Anti-sniping**: ponudba v zadnjih **2 min** podaljša dražbo za **2 min** (prej 3/5). Velja le v živi fazi.
+
+### 0.2 Izvzetje iz sporov (A/B/C)
+- **A — Pogodba o obvezni prodaji** (med kupcem in prodajalcem): AutoHub ni stranka, spori se rešujejo
+  neposredno/po sodni poti. Generira jo `src/utils/auctionContract.js → buildAuctionContract()` v 3
+  scenarijih (`informative` / `binding` / `cash`); klavzula o neodgovornosti (`AUTOHUB_DISCLAIMER_LINES`)
+  je v **vseh**.
+- **B — Pogoji uporabe**: AutoHub = tehnična platforma, ne pregleduje/verificira/jamči, ni stranka,
+  3 % = plačilo za platformo. (Besedilo ToS je še TODO — pravni pregled.)
+- **C — Denarni tok (escrow + 48 h)**: kupec plača (cena + 3 %) → drži se na platformi (escrow) → po
+  **48 h** se cena samodejno sprosti prodajalcu, razen če kupec sproži uradni spor (zamrzne sprostitev).
+  Platforma nikoli ne razsoja. Privzeto stanje = "denar gre prodajalcu".
+
+### 0.3 Kaj je ZDAJ implementirano (server/ + supabase/)
+- **Podatkovni model**: `supabase/auctions_autohub.sql` razširi `public.auctions` (auction_type,
+  current_phase, reserve_price, binding_contract, cash_allowed, signature_required,
+  buyer_premium_percent, listing_fee, duration_days, prebid_ends_at, escrow_release_at, sold, …),
+  doda **`public.auction_payments`** (escrow knjiga) in `profiles.stripe_account_id`. **Zaženi zadnjega.**
+- **F5 — strežniška validacija ponudb**: `place_bid(uuid, numeric)` (zamenja osnovnega iz `security.sql`)
+  — row-lock `FOR UPDATE`, pravila po tipu, +2 min anti-snip, identiteta iz `auth.uid()`.
+  Route: `POST /api/auctions/:id/bids` (`server/src/routes/auctions.ts`, kliče kot prijavljeni uporabnik).
+- **F1 — samodejno zaprtje**: `server/src/jobs/closeAuctions.ts` (`runCloseDueAuctions`) — pre-bid→live
+  prehod (+2 h), določitev zmagovalca po tipu (silent preveri rezervo), ustvari Stripe **PaymentIntent**
+  (`application` na platformo; pri gotovini samo 3 % premija) in vrstico v `auction_payments`.
+- **Escrow 48 h**: `server/src/jobs/releaseEscrow.ts` (`runReleaseDueEscrow`) — sprosti ceno na
+  prodajalčev Connect račun (`stripe.transfers`), 3 % ostane platformi; preskoči sporne vrstice.
+- **Stripe Connect**: `server/src/lib/stripe.ts` — `createAuctionPaymentIntent`, `releasePriceToSeller`,
+  `createListingFeePaymentIntent` (vse v centih, idempotentni ključi).
+- **Webhook**: `server/src/routes/webhooks.ts` — `payment_intent.succeeded` (kind=`auction` → status
+  `paid` + začne 48 h okno; kind=`auction_listing_fee` → listing_fee_paid), `charge.dispute.created`
+  (zamrzne escrow). Edini pisec statusa `paid` (idempotenten na Stripe event id).
+- **Cron**: `POST /internal/cron/close-auctions` in `/internal/cron/release-escrow`, zaščiteni z
+  `X-Cron-Secret` (env `CRON_SECRET`). Sproži ju zunanji razporejevalnik (EventBridge / Cloudflare cron).
+- **Frontend**: model usklajen — `src/services/auctionService.js` (BUYER_PREMIUM_PCT, calcListingFee,
+  normalizeAuctionType, resolveAuctionOutcome, advancePrebidPhase, 2 min anti-snip), create-listing korak
+  (3 tipi, obvezna prodaja/gotovina, 7/10 dni, "Kmalu na voljo" značke), `/drazbe` filtri (tip/status/
+  obvezna prodaja/gotovina) + značke na karticah, demo podatki v `src/data/sampleAuctions.js`.
+
+### 0.4 Kaj še manjka (kredenciali + dokončanje migracije)
+1. **Zagnati `supabase/auctions_autohub.sql`** na hosted projektu (za `schema→policies→security`).
+2. **Stripe**: nastaviti `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`; onboarding prodajalcev v Stripe
+   **Connect** (Express) → shraniti `profiles.stripe_account_id` (sicer escrow ostane "pending" do onboardinga).
+3. **Razporejevalnik**: EventBridge/Cloudflare cron → POST na oba `/internal/cron/*` z `CRON_SECRET`
+   (priporočeno na ~1 min za close, ~5 min za escrow).
+4. **Frontend bidding migracija**: `auction-listing.js` še oddaja ponudbe prek Firestore; preklopiti na
+   `POST /api/auctions/:id/bids` (in branje na Supabase realtime), ko bo migracija aktivna.
+5. **E-pošta** (outbid / prag / kmalu konec / zmagovalec) prek Resend (F2 spodaj) — še TODO.
+6. **Brisanje podpisov** ob zaprtju (zasebnost, F4) — še TODO.
+7. **ToS besedilo** (razdelek B) — pravni pregled.
+
+---
+
 ## 1. Stanje
 
 Frontend dražb je **v celoti zgrajen** in deluje na obeh platformah (avto + navtika):
