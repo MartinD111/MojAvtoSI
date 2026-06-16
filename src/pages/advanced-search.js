@@ -70,11 +70,27 @@ export function initAdvancedSearchPage() {
 // Sets the existing hiddenNajem field ('' = sale, '1' = rental) and re-runs search.
 // ═══════════════════════════════════════════════════════════════════════════════
 function injectRentalToggle(ctx) {
-    const resolved = ctx.cat ? resolveCategory(ctx.cat, ctx.sub) : null;
+    // Empty cat == the default active tab (Avtomobili), so the toggle shows on
+    // first load too, not only after a tab click.
+    const catSlug = ctx.cat || 'avto';
+    const resolved = resolveCategory(catSlug, ctx.sub);
     const categoryHasRental = !!(resolved && resolved.main && resolved.main.hasRentalToggle);
-    if (!PLATFORM.hasGlobalRentalToggle && !categoryHasRental) return;
+    const shouldShow = PLATFORM.hasGlobalRentalToggle || categoryHasRental;
+    const existing = document.getElementById('rentalModeToggle');
+
+    // Re-evaluated on every tab switch: if the newly selected category doesn't
+    // support rental, drop the toggle and fall back to sale so a stale ?najem=1
+    // can't leak across tabs.
+    if (!shouldShow) {
+        if (existing) existing.remove();
+        ctx.najem = '';
+        const hiddenNajem = document.getElementById('hiddenNajem');
+        if (hiddenNajem) hiddenNajem.value = '';
+        return;
+    }
+
     const container = document.querySelector('.search-container');
-    if (!container || document.getElementById('rentalModeToggle')) return;
+    if (!container || existing) return;
 
     const isRental = ctx.najem === '1';
     const bar = document.createElement('div');
@@ -89,7 +105,11 @@ function injectRentalToggle(ctx) {
         <button type="button" class="home-search-mode-pill ${isRental ? 'active' : ''}" data-mode="rental">
             <i data-lucide="calendar-clock"></i><span>Najem</span>
         </button>`;
-    container.insertBefore(bar, container.firstChild);
+    // Sits under the vehicle-type tabs, directly above "Osnovni podatki".
+    const form = document.getElementById('advancedSearchForm');
+    if (form) container.insertBefore(bar, form);
+    else container.insertBefore(bar, container.firstChild);
+    bar.style.marginBottom = '1.5rem';
 
     bar.querySelectorAll('.home-search-mode-pill').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -99,9 +119,6 @@ function injectRentalToggle(ctx) {
             ctx.najem = rental ? '1' : '';
             const hiddenNajem = document.getElementById('hiddenNajem');
             if (hiddenNajem) hiddenNajem.value = ctx.najem;
-            // Re-run the search through the existing form submit pipeline.
-            document.getElementById('advancedSearchForm')
-                ?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
         });
     });
 
@@ -704,6 +721,13 @@ function bindSearchLogic(catContext) {
             toggleVehicleSpecificFields(activeTab);
             if (activeTab !== 'moto') populateEquipmentChips(activeTab);
             fetchBrandData(activeTab).then(applyRelevance);
+
+            // Re-evaluate the Prodaja/Najem toggle for the newly selected tab:
+            // it's inserted for rental-capable categories (e.g. Prosti čas) and
+            // removed for the rest. The tab data-tab values match category slugs.
+            catContext.cat = activeTab;
+            catContext.sub = '';
+            injectRentalToggle(catContext);
 
             // Reset the search form to default
             searchForm.reset();

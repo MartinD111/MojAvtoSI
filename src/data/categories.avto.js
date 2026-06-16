@@ -9,6 +9,7 @@ export const MAIN_CATEGORIES = {
         label: 'cat_cars',
         icon: 'car',
         slug: 'avto',
+        hasRentalToggle: true,
         // Cars goes directly to advanced search (existing flow)
         directSearch: true,
     },
@@ -16,6 +17,7 @@ export const MAIN_CATEGORIES = {
         label: 'cat_moto',
         icon: 'bike',
         slug: 'moto',
+        hasRentalToggle: true,
         subcategories: {
             motorno_kolo: {
                 label: 'cat_motorcycle',
@@ -69,6 +71,7 @@ export const MAIN_CATEGORIES = {
         label: 'cat_commercial',
         icon: 'truck',
         slug: 'gospodarska',
+        hasRentalToggle: true,
         subcategories: {
             dostavna: {
                 label: 'cat_vans',
