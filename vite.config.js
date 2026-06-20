@@ -51,7 +51,7 @@ function copyCssFolder() {
 }
 
 export default defineConfig({
-  base: './',
+  base: '/',
   root: '.',
   define: {
     // Statically inject the active platform so src/config/platform.js can read it.

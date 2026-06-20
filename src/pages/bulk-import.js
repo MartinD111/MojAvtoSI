@@ -5,7 +5,7 @@ import { mountB2BShell } from '../layouts/b2b-layout.js';
 import { isVerifiedBusiness } from '../core/b2bContext.js';
 import { createListing } from '../services/listingService.js';
 import { ALL_EQUIPMENT_VALUES } from '../data/equipment.js';
-import { auth } from '../firebase.js';
+import { currentUser } from '../lib/currentUser.js';
 import { t } from '../core/i18n.js';
 
 const REQUIRED_FORMAT = 'mojavto-bulk-v1';
@@ -231,7 +231,7 @@ function updateSelCount(rows) {
 // ── Step 3: import execution ──────────────────────────────────────────────────
 
 async function runImport(main, drafts) {
-    const user = auth.currentUser;
+    const user = currentUser();
     if (!user) {
         alert(t('bi_err_auth', 'Niste prijavljeni. Prosimo, prijavite se in poskusite znova.'));
         return;

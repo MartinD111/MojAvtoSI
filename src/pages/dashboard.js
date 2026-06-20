@@ -2,6 +2,7 @@
 // Shows after login — user's listings, stats, quick actions
 import QRCode from 'qrcode';
 import { getUserListings, deleteListing } from '../services/listingService.js';
+import { navigateTo } from '../router.js';
 import {
     getBookingsForUser,
     formatBookingDate,
@@ -24,12 +25,12 @@ export async function initDashboardPage() {
 
   const user = window.__currentUser;
   if (!user) {
-    window.location.hash = '/prijava';
+    navigateTo('/prijava');
     return;
   }
 
-  const userPhoto = user.photoURL
-    ? "<img src='" + user.photoURL + "' style='width:56px;height:56px;border-radius:50%;object-fit:cover;' />"
+  const userPhoto = user.user_metadata?.avatar_url
+    ? "<img src='" + user.user_metadata.avatar_url + "' style='width:56px;height:56px;border-radius:50%;object-fit:cover;' />"
     : "<div style='width:56px;height:56px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:1.5rem;'>👤</div>";
 
   container.innerHTML = `

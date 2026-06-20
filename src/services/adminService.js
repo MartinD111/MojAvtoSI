@@ -1,268 +1,169 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Admin Service — MojAvto.si
-// All Firebase/Firestore operations for the admin panel
-// Requires the logged-in user to have role: 'admin' in users/{uid}
+// Admin Service — MojAvto.si (Supabase)
+// All operations require the logged-in user to have is_admin = true in profiles.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import {
-    collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc,
-    query, orderBy, where, limit, serverTimestamp, writeBatch,
-    getCountFromServer, startAfter,
-} from 'firebase/firestore';
-import { ref, deleteObject, listAll } from 'firebase/storage';
-import { db, storage } from '../firebase.js';
+import { supabase } from '../lib/supabase.js';
 
 // ── Admin guard ───────────────────────────────────────────────────────────────
 
 export async function checkAdminRole(uid) {
     if (!uid) return false;
     try {
-        const snap = await getDoc(doc(db, 'users', uid));
-        if (!snap.exists()) return false;
-        const data = snap.data();
-        return data.role === 'admin' || data.role === 'moderator' || data.role === 'editor';
-    } catch {
-        return false;
-    }
+        const { data } = await supabase.from('profiles').select('is_admin, prefs').eq('id', uid).single();
+        return !!(data?.is_admin || data?.prefs?.role === 'admin' || data?.prefs?.role === 'moderator');
+    } catch { return false; }
 }
 
 export async function getUserRole(uid) {
     if (!uid) return null;
     try {
-        const snap = await getDoc(doc(db, 'users', uid));
-        if (!snap.exists()) return 'user';
-        return snap.data().role || 'user';
-    } catch {
-        return null;
-    }
+        const { data } = await supabase.from('profiles').select('is_admin, prefs').eq('id', uid).single();
+        if (!data) return 'user';
+        if (data.is_admin) return 'admin';
+        return data.prefs?.role || 'user';
+    } catch { return null; }
 }
 
 // ── Audit log ─────────────────────────────────────────────────────────────────
 
 export async function addAuditLog(adminUid, adminName, action, target, details = {}) {
     try {
-        await addDoc(collection(db, 'auditLog'), {
-            adminUid,
-            adminName,
-            action,
-            target,
-            details,
-            createdAt: serverTimestamp(),
-        });
-    } catch (e) {
-        console.warn('[Admin] AuditLog write failed:', e);
-    }
+        await supabase.from('audit_log').insert({ admin_id: adminUid, admin_name: adminName, action, target, details });
+    } catch (e) { console.warn('[Admin] AuditLog write failed:', e); }
 }
 
 export async function getAuditLogs(limitN = 100) {
-    const q = query(collection(db, 'auditLog'), orderBy('createdAt', 'desc'), limit(limitN));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const { data } = await supabase.from('audit_log').select('*').order('created_at', { ascending: false }).limit(limitN);
+    return data || [];
 }
 
 // ── Dashboard stats ───────────────────────────────────────────────────────────
 
 export async function getDashboardStats() {
-    const [listingsSnap, usersSnap, brandsSnap] = await Promise.allSettled([
-        getCountFromServer(collection(db, 'listings')),
-        getCountFromServer(collection(db, 'users')),
-        getCountFromServer(collection(db, 'brands')),
-    ]);
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+    const [{ count: totalListings }, { count: totalUsers }, recentResult] = await Promise.allSettled([
+        supabase.from('listings').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('listings').select('status, created_at, promotion').order('created_at', { ascending: false }).limit(50),
+    ]).then(r => r.map(p => p.status === 'fulfilled' ? p.value : { count: 0, data: [] }));
 
-    const totalListings = listingsSnap.status === 'fulfilled' ? listingsSnap.value.data().count : 0;
-    const totalUsers = usersSnap.status === 'fulfilled' ? usersSnap.value.data().count : 0;
-    const totalBrands = brandsSnap.status === 'fulfilled' ? brandsSnap.value.data().count : 0;
+    const recentListings = recentResult.data || [];
+    const pendingCount = recentListings.filter(l => l.status === 'pending').length;
+    const activeCount = recentListings.filter(l => l.status === 'active').length;
+    const revenueTotal = recentListings.filter(l => l.promotion?.tier !== 'free' && l.promotion?.paidAmount).reduce((s, l) => s + (l.promotion.paidAmount || 0), 0);
+    const newToday = recentListings.filter(l => l.created_at && new Date(l.created_at) >= todayStart).length;
 
-    // Pending listings
-    let pendingCount = 0;
-    let activeCount = 0;
-    let revenueTotal = 0;
-    try {
-        const pendingQ = query(collection(db, 'listings'), where('status', '==', 'pending'));
-        const pendingSnap = await getCountFromServer(pendingQ);
-        pendingCount = pendingSnap.data().count;
-
-        const activeQ = query(collection(db, 'listings'), where('status', '==', 'active'));
-        const activeSnap = await getCountFromServer(activeQ);
-        activeCount = activeSnap.data().count;
-    } catch { /* rules might block count */ }
-
-    // Recent listings for revenue estimate
-    let recentListings = [];
-    try {
-        const recentQ = query(collection(db, 'listings'), orderBy('createdAt', 'desc'), limit(50));
-        const recentSnap = await getDocs(recentQ);
-        recentListings = recentSnap.docs.map(d => d.data());
-        revenueTotal = recentListings
-            .filter(l => l.promotion?.tier !== 'free' && l.promotion?.paidAmount)
-            .reduce((sum, l) => sum + (l.promotion.paidAmount || 0), 0);
-    } catch { /* ignore */ }
-
-    // New listings today
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const newToday = recentListings.filter(l => {
-        const ts = l.createdAt?.toDate?.();
-        return ts && ts >= todayStart;
-    }).length;
-
-    return {
-        totalListings,
-        totalUsers,
-        totalBrands,
-        pendingCount,
-        activeCount,
-        revenueTotal,
-        newToday,
-    };
+    return { totalListings: totalListings || 0, totalUsers: totalUsers || 0, totalBrands: 0, pendingCount, activeCount, revenueTotal, newToday };
 }
 
 export async function getRecentListings(limitN = 10) {
-    const q = query(collection(db, 'listings'), orderBy('createdAt', 'desc'), limit(limitN));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false }).limit(limitN);
+    return (data || []).map(r => ({ id: r.id, ...r.data, status: r.status, createdAt: { toMillis: () => new Date(r.created_at).getTime() } }));
 }
 
 // ── Listings management ───────────────────────────────────────────────────────
 
 export async function getAllListings(filters = {}, limitN = 50, lastDoc = null) {
-    let constraints = [orderBy('createdAt', 'desc'), limit(limitN)];
-
-    if (filters.status) {
-        constraints.unshift(where('status', '==', filters.status));
-    }
-    if (filters.category) {
-        constraints.unshift(where('category', '==', filters.category));
-    }
-    if (lastDoc) {
-        constraints.push(startAfter(lastDoc));
-    }
-
-    const q = query(collection(db, 'listings'), ...constraints);
-    const snap = await getDocs(q);
-    const docs = snap.docs.map(d => ({ id: d.id, _doc: d, ...d.data() }));
-    return { docs, lastDoc: snap.docs[snap.docs.length - 1] || null };
+    const from = typeof lastDoc === 'number' ? lastDoc : 0;
+    let q = supabase.from('listings').select('*').order('created_at', { ascending: false }).range(from, from + limitN - 1);
+    if (filters.status) q = q.eq('status', filters.status);
+    const { data } = await q;
+    const docs = (data || []).map(r => ({ id: r.id, _doc: r, ...r.data, status: r.status, createdAt: { toMillis: () => new Date(r.created_at).getTime() } }));
+    return { docs, lastDoc: from + docs.length };
 }
 
 export async function adminUpdateListingStatus(listingId, status, note = '') {
-    await updateDoc(doc(db, 'listings', listingId), {
+    const { data: row } = await supabase.from('listings').select('data').eq('id', listingId).single();
+    await supabase.from('listings').update({
         status,
-        moderationNote: note,
-        moderatedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-    });
+        data: { ...(row?.data || {}), moderationNote: note, moderatedAt: new Date().toISOString() },
+        updated_at: new Date().toISOString(),
+    }).eq('id', listingId);
 }
 
 export async function adminDeleteListing(listingId) {
-    await deleteDoc(doc(db, 'listings', listingId));
+    await supabase.from('listings').delete().eq('id', listingId);
 }
 
 export async function adminSetFeatured(listingId, tier, durationDays) {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + durationDays);
-
-    await updateDoc(doc(db, 'listings', listingId), {
-        'promotion.tier': tier,
-        'promotion.activatedAt': serverTimestamp(),
-        'promotion.expiresAt': expiresAt,
-        updatedAt: serverTimestamp(),
-    });
+    const { data: row } = await supabase.from('listings').select('promotion').eq('id', listingId).single();
+    await supabase.from('listings').update({
+        promotion: { ...(row?.promotion || {}), tier, activatedAt: new Date().toISOString(), expiresAt: expiresAt.toISOString() },
+        updated_at: new Date().toISOString(),
+    }).eq('id', listingId);
 }
 
 // ── Users management ──────────────────────────────────────────────────────────
 
 export async function getAllUsers(limitN = 100) {
-    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(limitN));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const { data } = await supabase.from('profiles').select('*').order('created_at', { ascending: false }).limit(limitN);
+    return (data || []).map(r => ({ id: r.id, uid: r.id, email: r.email, displayName: r.display_name, ...r.prefs }));
 }
 
 export async function adminUpdateUserRole(uid, role) {
-    await updateDoc(doc(db, 'users', uid), { role, updatedAt: serverTimestamp() });
+    const { data } = await supabase.from('profiles').select('prefs').eq('id', uid).single();
+    await supabase.from('profiles').update({ prefs: { ...(data?.prefs || {}), role }, updated_at: new Date().toISOString() }).eq('id', uid);
 }
 
 export async function adminBanUser(uid, banned = true) {
-    await updateDoc(doc(db, 'users', uid), {
-        status: banned ? 'banned' : 'active',
-        bannedAt: banned ? serverTimestamp() : null,
-        updatedAt: serverTimestamp(),
-    });
+    const { data } = await supabase.from('profiles').select('prefs').eq('id', uid).single();
+    await supabase.from('profiles').update({ prefs: { ...(data?.prefs || {}), status: banned ? 'banned' : 'active', bannedAt: banned ? new Date().toISOString() : null } }).eq('id', uid);
 }
 
 export async function getUserListingsCount(uid) {
     try {
-        const q = query(collection(db, 'listings'), where('authorId', '==', uid));
-        const snap = await getCountFromServer(q);
-        return snap.data().count;
+        const { count } = await supabase.from('listings').select('*', { count: 'exact', head: true }).eq('owner_id', uid);
+        return count || 0;
     } catch { return 0; }
 }
 
 // ── Taxonomy: Brands ──────────────────────────────────────────────────────────
 
 export async function getBrands(categoryFilter = null) {
-    let q;
-    if (categoryFilter) {
-        q = query(collection(db, 'brands'), where('category', '==', categoryFilter));
-    } else {
-        q = query(collection(db, 'brands'));
-    }
-    const snap = await getDocs(q);
-    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    return docs.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+    let q = supabase.from('brands').select('*');
+    if (categoryFilter) q = q.eq('category', categoryFilter);
+    const { data } = await q;
+    return (data || []).sort((a, b) => a.name.localeCompare(b.name, 'en'));
 }
 
 export async function createBrand(data) {
-    const docRef = await addDoc(collection(db, 'brands'), {
-        name: data.name.trim(),
-        slug: data.slug || slugify(data.name),
-        category: data.category || 'avto',
-        logoUrl: data.logoUrl || '',
-        createdAt: serverTimestamp(),
-    });
-    return docRef.id;
+    const { data: row, error } = await supabase.from('brands').insert({ name: data.name.trim(), slug: data.slug || slugify(data.name), category: data.category || 'avto', logo_url: data.logoUrl || '' }).select('id').single();
+    if (error) throw new Error(error.message);
+    return row.id;
 }
 
 export async function updateBrand(id, data) {
-    await updateDoc(doc(db, 'brands', id), { ...data, updatedAt: serverTimestamp() });
+    await supabase.from('brands').update({ ...data, updated_at: new Date().toISOString() }).eq('id', id);
 }
 
 export async function deleteBrand(id) {
-    await deleteDoc(doc(db, 'brands', id));
+    await supabase.from('brands').delete().eq('id', id);
 }
 
 // ── Taxonomy: Models ──────────────────────────────────────────────────────────
 
 export async function getModels(brandId = null) {
-    let q;
-    if (brandId) {
-        q = query(collection(db, 'models'), where('brandId', '==', brandId));
-    } else {
-        q = query(collection(db, 'models'));
-    }
-    const snap = await getDocs(q);
-    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    return docs.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+    let q = supabase.from('models').select('*');
+    if (brandId) q = q.eq('brand_id', brandId);
+    const { data } = await q;
+    return (data || []).sort((a, b) => a.name.localeCompare(b.name, 'en'));
 }
 
 export async function createModel(data) {
-    const docRef = await addDoc(collection(db, 'models'), {
-        name: data.name.trim(),
-        slug: data.slug || slugify(data.name),
-        brandId: data.brandId,
-        brandName: data.brandName || '',
-        category: data.category || 'avto',
-        subcategory: data.subcategory || '',
-        createdAt: serverTimestamp(),
-    });
-    return docRef.id;
+    const { data: row, error } = await supabase.from('models').insert({ name: data.name.trim(), slug: data.slug || slugify(data.name), brand_id: data.brandId, brand_name: data.brandName || '', category: data.category || 'avto', subcategory: data.subcategory || '' }).select('id').single();
+    if (error) throw new Error(error.message);
+    return row.id;
 }
 
 export async function updateModel(id, data) {
-    await updateDoc(doc(db, 'models', id), { ...data, updatedAt: serverTimestamp() });
+    await supabase.from('models').update({ ...data, updated_at: new Date().toISOString() }).eq('id', id);
 }
 
 export async function deleteModel(id) {
-    await deleteDoc(doc(db, 'models', id));
+    await supabase.from('models').delete().eq('id', id);
 }
 
 // ── Excel/Bulk import ─────────────────────────────────────────────────────────
@@ -270,659 +171,322 @@ export async function deleteModel(id) {
 const ALLOWED_FUEL_TYPES    = ['Petrol','Diesel','Electric','Hybrid','Plug-in Hybrid','LPG','CNG','Hydrogen','Steam'];
 const ALLOWED_ENGINE_TYPES  = ['4-stroke','2-stroke','Electric','Rotary'];
 const ALLOWED_ENGINE_CONFIGS = ['Single','Parallel Twin','V-Twin','Triple','Inline-4','Boxer','V4'];
-// Moto (v2) allowed values — Slovenian, produced by the moto template/parser
 const ALLOWED_MOTO_STROKE     = ['2T','4T','Električni','Wankel'];
 const ALLOWED_MOTO_DRIVETRAIN = ['veriga','zobati jermen','jekleni jermen','kardan'];
 
-/**
- * Validates tech spec fields from an import row per D-10.
- * Returns { valid: boolean, specs: object, errors: string[] }
- * specs contains only the fields that are present and valid.
- */
 function validateTrimSpecs(row, rowLabel) {
     const errs = [];
     const specs = {};
-
-    // ── Navtika branches: plovila (vessels) + izvenkrmni (outboard motors) ────
     const navCat = (row.category || '').toLowerCase();
     if (navCat === 'plovila') {
-        // Vessels carry body-type (Vrsta), subcategory (Kategorija) + variant; no engine specs.
-        if (row.vrsta)      specs.vrsta      = String(row.vrsta);
+        if (row.vrsta) specs.vrsta = String(row.vrsta);
         if (row.kategorija) specs.kategorija = String(row.kategorija);
         return { valid: true, specs, errors: errs };
     }
     if (navCat === 'izvenkrmni') {
-        // Outboard motors: horsepower (KM) integer 1–2000, or empty (electric).
         if (row.horsepower_km !== '' && row.horsepower_km != null) {
             const km = parseInt(row.horsepower_km, 10);
-            if (isNaN(km) || km < 1 || km > 2000) {
-                errs.push(`${rowLabel}: KM "${row.horsepower_km}" mora biti celo število 1–2000 (ali prazno)`);
-            } else { specs.horsepower_km = km; }
+            if (isNaN(km) || km < 1 || km > 2000) errs.push(`${rowLabel}: KM "${row.horsepower_km}" mora biti celo število 1–2000 (ali prazno)`);
+            else specs.horsepower_km = km;
         }
         return { valid: errs.length === 0, specs, errors: errs };
     }
-
-    // ── Moto (v2) branch: SL fields produced by the moto template/parser ──────
     if ((row.category || '').toLowerCase() === 'moto') {
         if (row.displacement_cc !== '' && row.displacement_cc != null) {
             const cc = parseInt(row.displacement_cc, 10);
-            if (isNaN(cc) || cc < 50 || cc > 3000) {
-                errs.push(`${rowLabel}: prostornina "${row.displacement_cc}" mora biti celo število 50–3000 (ali prazno za električne)`);
-            } else { specs.displacement_cc = cc; }
+            if (isNaN(cc) || cc < 50 || cc > 3000) errs.push(`${rowLabel}: prostornina "${row.displacement_cc}" mora biti 50–3000`);
+            else specs.displacement_cc = cc;
         }
-        if (row.stroke) {
-            if (!ALLOWED_MOTO_STROKE.includes(row.stroke)) errs.push(`${rowLabel}: takt "${row.stroke}" ni veljaven (${ALLOWED_MOTO_STROKE.join(', ')})`);
-            else specs.stroke = row.stroke;
-        }
-        if (row.drivetrain) {
-            if (!ALLOWED_MOTO_DRIVETRAIN.includes(row.drivetrain)) errs.push(`${rowLabel}: prenos moči "${row.drivetrain}" ni veljaven (${ALLOWED_MOTO_DRIVETRAIN.join(', ')})`);
-            else specs.drivetrain = row.drivetrain;
-        }
-        if (row.engine_type)     specs.engine_type     = String(row.engine_type);        // friendly group
-        if (row.engine_code)     specs.engine_code     = String(row.engine_code);        // raw code
-        if (row.cylinders)       specs.cylinders       = String(row.cylinders);
+        if (row.stroke) { if (!ALLOWED_MOTO_STROKE.includes(row.stroke)) errs.push(`${rowLabel}: takt "${row.stroke}" ni veljaven`); else specs.stroke = row.stroke; }
+        if (row.drivetrain) { if (!ALLOWED_MOTO_DRIVETRAIN.includes(row.drivetrain)) errs.push(`${rowLabel}: prenos "${row.drivetrain}" ni veljaven`); else specs.drivetrain = row.drivetrain; }
+        if (row.engine_type) specs.engine_type = String(row.engine_type);
+        if (row.engine_code) specs.engine_code = String(row.engine_code);
+        if (row.cylinders) specs.cylinders = String(row.cylinders);
         if (row.cylinder_layout) specs.cylinder_layout = String(row.cylinder_layout);
-        if (row.sub_type)        specs.sub_type        = String(row.sub_type);
+        if (row.sub_type) specs.sub_type = String(row.sub_type);
         return { valid: errs.length === 0, specs, errors: errs };
     }
-
-    // engine_capacity_cc: integer 50–10000 or empty
     if (row.engine_capacity_cc !== '' && row.engine_capacity_cc != null) {
         const cc = parseInt(row.engine_capacity_cc, 10);
-        if (isNaN(cc) || cc < 50 || cc > 10000) {
-            errs.push(`${rowLabel}: engine_capacity_cc "${row.engine_capacity_cc}" must be integer 50–10000`);
-        } else {
-            specs.engine_capacity_cc = cc;
-        }
+        if (isNaN(cc) || cc < 50 || cc > 10000) errs.push(`${rowLabel}: engine_capacity_cc must be 50–10000`);
+        else specs.engine_capacity_cc = cc;
     }
-
-    // fuel_type: must be in allowed list or empty
-    if (row.fuel_type) {
-        if (!ALLOWED_FUEL_TYPES.includes(row.fuel_type)) {
-            errs.push(`${rowLabel}: fuel_type "${row.fuel_type}" not in allowed list: ${ALLOWED_FUEL_TYPES.join(', ')}`);
-        } else {
-            specs.fuel_type = row.fuel_type;
-        }
-    }
-
-    // fuel_consumption_*: float 0.1–99.9 or empty
-    const parseConsumption = (val, label) => {
-        if (val === '' || val == null) return null;
-        const f = parseFloat(val);
-        if (isNaN(f) || f < 0.1 || f > 99.9) {
-            errs.push(`${rowLabel}: ${label} "${val}" must be float 0.1–99.9`);
-            return undefined; // signal invalid
-        }
-        return f;
-    };
-    const city     = parseConsumption(row.fuel_consumption_city, 'fuel_consumption_city');
-    const highway  = parseConsumption(row.fuel_consumption_highway, 'fuel_consumption_highway');
-    const combined = parseConsumption(row.fuel_consumption_combined, 'fuel_consumption_combined');
-    const consLegacy = parseConsumption(row.fuel_consumption, 'fuel_consumption');
-    if (city     !== undefined && city     !== null) specs.fuel_consumption_city     = city;
-    if (highway  !== undefined && highway  !== null) specs.fuel_consumption_highway  = highway;
-    if (combined !== undefined && combined !== null) specs.fuel_consumption_combined = combined;
-    if (consLegacy !== undefined && consLegacy !== null) specs.fuel_consumption = consLegacy;
-
-    // electric_range_km: integer 1–2000 or empty
-    if (row.electric_range_km !== '' && row.electric_range_km != null) {
-        const range = parseInt(row.electric_range_km, 10);
-        if (isNaN(range) || range < 1 || range > 2000) {
-            errs.push(`${rowLabel}: electric_range_km "${row.electric_range_km}" must be integer 1–2000`);
-        } else {
-            specs.electric_range_km = range;
-        }
-    }
-
-    // engine_type: must be in allowed list or empty
-    if (row.engine_type) {
-        if (!ALLOWED_ENGINE_TYPES.includes(row.engine_type)) {
-            errs.push(`${rowLabel}: engine_type "${row.engine_type}" not in allowed list: ${ALLOWED_ENGINE_TYPES.join(', ')}`);
-        } else {
-            specs.engine_type = row.engine_type;
-        }
-    }
-
-    // engine_configuration: must be in allowed list or empty
-    if (row.engine_configuration) {
-        if (!ALLOWED_ENGINE_CONFIGS.includes(row.engine_configuration)) {
-            errs.push(`${rowLabel}: engine_configuration "${row.engine_configuration}" not in allowed list: ${ALLOWED_ENGINE_CONFIGS.join(', ')}`);
-        } else {
-            specs.engine_configuration = row.engine_configuration;
-        }
-    }
-
-    // capacity (commercial): string, max 20 chars
-    if (row.capacity) {
-        if (String(row.capacity).length > 20) {
-            errs.push(`${rowLabel}: capacity "${row.capacity}" exceeds 20 characters`);
-        } else {
-            specs.capacity = String(row.capacity);
-        }
-    }
-
+    if (row.fuel_type) { if (!ALLOWED_FUEL_TYPES.includes(row.fuel_type)) errs.push(`${rowLabel}: fuel_type "${row.fuel_type}" not allowed`); else specs.fuel_type = row.fuel_type; }
+    const parseC = (val, label) => { if (val === '' || val == null) return null; const f = parseFloat(val); if (isNaN(f) || f < 0.1 || f > 99.9) { errs.push(`${rowLabel}: ${label} must be 0.1–99.9`); return undefined; } return f; };
+    ['fuel_consumption_city','fuel_consumption_highway','fuel_consumption_combined','fuel_consumption'].forEach(k => { const v = parseC(row[k], k); if (v !== undefined && v !== null) specs[k] = v; });
+    if (row.electric_range_km !== '' && row.electric_range_km != null) { const r = parseInt(row.electric_range_km, 10); if (isNaN(r) || r < 1 || r > 2000) errs.push(`${rowLabel}: electric_range_km must be 1–2000`); else specs.electric_range_km = r; }
+    if (row.engine_type) { if (!ALLOWED_ENGINE_TYPES.includes(row.engine_type)) errs.push(`${rowLabel}: engine_type not allowed`); else specs.engine_type = row.engine_type; }
+    if (row.engine_configuration) { if (!ALLOWED_ENGINE_CONFIGS.includes(row.engine_configuration)) errs.push(`${rowLabel}: engine_configuration not allowed`); else specs.engine_configuration = row.engine_configuration; }
+    if (row.capacity) { if (String(row.capacity).length > 20) errs.push(`${rowLabel}: capacity exceeds 20 chars`); else specs.capacity = String(row.capacity); }
     return { valid: errs.length === 0, specs, errors: errs };
 }
 
-/**
- * Import taxonomy rows from parsed Excel data.
- * rows: [{ category, brand, model, variant?, ...tech-spec fields }]
- * Returns { imported, skipped, errors }
- */
 export async function importTaxonomyRows(rows, adminUid, adminName) {
     const report = { imported: 0, skipped: 0, errors: [] };
-
-    // Load existing brands and models for dedup
     const existingBrands = await getBrands();
     const existingModels = await getModels();
-
     const brandMap = new Map(existingBrands.map(b => [normalize(b.name + '|' + b.category), b]));
-    const modelMap = new Map(existingModels.map(m => [normalize(m.name + '|' + m.brandId), m]));
-
-    // Load existing taxonomy_import_log variants for updates/merging
-    const categories = [...new Set(rows.map(r => (r.category || 'avto').trim().toLowerCase()))];
-    const logsMap = new Map();
-    for (const c of categories) {
-        try {
-            const snap = await getDocs(query(collection(db, 'taxonomy_import_log'), where('category', '==', c)));
-            snap.forEach(d => {
-                const data = d.data();
-                const key = normalize(c + '|' + data.brand + '|' + data.model + '|' + data.trim);
-                logsMap.set(key, { id: d.id, ref: d.ref, specs: data.specs || {} });
-            });
-        } catch (err) {
-            console.warn(`[Admin] Failed to load existing logs for category ${c}:`, err);
-        }
-    }
-
-    let batch = writeBatch(db);
-    let batchCount = 0;
+    const modelMap = new Map(existingModels.map(m => [normalize(m.name + '|' + (m.brand_id || m.brandId)), m]));
 
     for (const row of rows) {
         try {
             const cat = (row.category || 'avto').trim().toLowerCase();
             const brandName = (row.brand || '').trim();
             const modelName = (row.model || '').trim();
-
             if (!brandName) { report.errors.push(`Vrstica brez znamke: ${JSON.stringify(row)}`); continue; }
 
-            // Brand dedup
             const brandKey = normalize(brandName + '|' + cat);
             let brand = brandMap.get(brandKey);
             if (!brand) {
-                const newBrandRef = doc(collection(db, 'brands'));
-                batch.set(newBrandRef, {
-                    name: brandName,
-                    slug: slugify(brandName),
-                    category: cat,
-                    logoUrl: '',
-                    createdAt: serverTimestamp(),
-                });
-                brand = { id: newBrandRef.id, name: brandName, category: cat };
+                const id = await createBrand({ name: brandName, category: cat });
+                brand = { id, name: brandName, category: cat };
                 brandMap.set(brandKey, brand);
-                batchCount++;
                 report.imported++;
             }
 
-            // Model dedup
             if (modelName) {
                 const modelKey = normalize(modelName + '|' + brand.id);
                 if (!modelMap.has(modelKey)) {
-                    const newModelRef = doc(collection(db, 'models'));
-                    batch.set(newModelRef, {
-                        name: modelName,
-                        slug: slugify(modelName),
-                        brandId: brand.id,
-                        brandName: brandName,
-                        category: cat,
-                        createdAt: serverTimestamp(),
-                    });
-                    modelMap.set(modelKey, { id: newModelRef.id });
-                    batchCount++;
+                    const id = await createModel({ name: modelName, brandId: brand.id, brandName, category: cat });
+                    modelMap.set(modelKey, { id });
                     report.imported++;
                 }
             }
 
-            // Variant dedup + tech-spec validation + import-log write/update
             if (modelName && row.variant) {
                 const trimName = String(row.variant).trim();
                 if (trimName) {
                     const rowLabel = `${brandName} / ${modelName} / ${trimName}`;
                     const { valid, specs, errors: specErrors } = validateTrimSpecs(row, rowLabel);
                     specErrors.forEach(e => report.errors.push(e));
-
                     if (valid || Object.keys(specs).length === 0) {
-                        const variantObj = { trim: trimName, ...specs };
-                        const variantKey = normalize(cat + '|' + brandName + '|' + modelName + '|' + trimName);
-                        
-                        const existingLog = logsMap.get(variantKey);
-                        if (existingLog) {
-                            // Merge specs (specifically fuel_type and engine_capacity_cc)
-                            const mergedSpecs = { ...existingLog.specs, ...variantObj };
-                            const hasChanges = JSON.stringify(existingLog.specs) !== JSON.stringify(mergedSpecs);
-                            if (hasChanges) {
-                                batch.update(existingLog.ref, {
-                                    specs: mergedSpecs,
-                                    updatedAt: serverTimestamp(),
-                                    updatedBy: adminUid,
-                                });
-                                existingLog.specs = mergedSpecs; // Update in-memory
-                                batchCount++;
+                        const variantObj = { trim: trimName, brand: brandName, model: modelName, category: cat, ...specs };
+                        const { data: existing } = await supabase.from('taxonomy_import_log').select('id, specs').eq('category', cat).eq('brand', brandName).eq('model', modelName).eq('trim', trimName).maybeSingle();
+                        if (existing) {
+                            const merged = { ...existing.specs, ...variantObj };
+                            if (JSON.stringify(existing.specs) !== JSON.stringify(merged)) {
+                                await supabase.from('taxonomy_import_log').update({ specs: merged, updated_at: new Date().toISOString(), updated_by: adminUid }).eq('id', existing.id);
                                 report.imported++;
-                            } else {
-                                report.skipped++;
-                            }
+                            } else { report.skipped++; }
                         } else {
-                            // Log variant + specs to import audit collection
-                            const variantRef = doc(collection(db, 'taxonomy_import_log'));
-                            batch.set(variantRef, {
-                                trim:       trimName,
-                                brand:      brandName,
-                                model:      modelName,
-                                category:   cat,
-                                specs:      variantObj,
-                                importedAt: serverTimestamp(),
-                                importedBy: adminUid,
-                            });
-                            logsMap.set(variantKey, { id: variantRef.id, ref: variantRef, specs: variantObj });
-                            batchCount++;
+                            await supabase.from('taxonomy_import_log').insert({ ...variantObj, specs: variantObj, imported_by: adminUid });
                             report.imported++;
                         }
                     }
                 }
             }
-
-            // Firestore batch limit: 500 ops
-            if (batchCount >= 490) {
-                try {
-                    await batch.commit();
-                } finally {
-                    batch = writeBatch(db);
-                    batchCount = 0;
-                }
-            }
-        } catch (e) {
-            report.errors.push(`Napaka pri vrstici ${JSON.stringify(row)}: ${e.message}`);
-        }
+        } catch (e) { report.errors.push(`Napaka: ${e.message}`); }
     }
-
-    if (batchCount > 0) {
-        await batch.commit();
-    }
-
-    await addAuditLog(adminUid, adminName, 'TAXONOMY_IMPORT', 'taxonomy', {
-        imported: report.imported,
-        skipped: report.skipped,
-        errors: report.errors.length,
-    });
-
+    await addAuditLog(adminUid, adminName, 'TAXONOMY_IMPORT', 'taxonomy', { imported: report.imported, skipped: report.skipped, errors: report.errors.length });
     return report;
 }
 
 export async function clearCarTaxonomy(adminUid, adminName) {
-    let batch = writeBatch(db);
-    let count = 0;
-
-    // 1. Delete brands where category == 'avto'
-    const brandsSnap = await getDocs(query(collection(db, 'brands'), where('category', '==', 'avto')));
-    for (const d of brandsSnap.docs) {
-        batch.delete(d.ref);
-        count++;
-        if (count >= 450) {
-            await batch.commit();
-            batch = writeBatch(db);
-            count = 0;
-        }
-    }
-
-    // 2. Delete models where category == 'avto'
-    const modelsSnap = await getDocs(query(collection(db, 'models'), where('category', '==', 'avto')));
-    for (const d of modelsSnap.docs) {
-        batch.delete(d.ref);
-        count++;
-        if (count >= 450) {
-            await batch.commit();
-            batch = writeBatch(db);
-            count = 0;
-        }
-    }
-
-    // 3. Delete taxonomy_import_log where category == 'avto'
-    const logsSnap = await getDocs(query(collection(db, 'taxonomy_import_log'), where('category', '==', 'avto')));
-    for (const d of logsSnap.docs) {
-        batch.delete(d.ref);
-        count++;
-        if (count >= 450) {
-            await batch.commit();
-            batch = writeBatch(db);
-            count = 0;
-        }
-    }
-
-    if (count > 0) {
-        await batch.commit();
-    }
-
+    await Promise.all([
+        supabase.from('brands').delete().eq('category', 'avto'),
+        supabase.from('models').delete().eq('category', 'avto'),
+        supabase.from('taxonomy_import_log').delete().eq('category', 'avto'),
+    ]);
     await addAuditLog(adminUid, adminName, 'TAXONOMY_CLEAR', 'taxonomy', { category: 'avto' });
 }
 
 // ── Reports / Moderation ──────────────────────────────────────────────────────
 
 export async function getReports(status = null) {
-    let q;
-    if (status) {
-        q = query(collection(db, 'reports'), where('status', '==', status), orderBy('createdAt', 'desc'), limit(100));
-    } else {
-        q = query(collection(db, 'reports'), orderBy('createdAt', 'desc'), limit(100));
-    }
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    let q = supabase.from('reports').select('*').order('created_at', { ascending: false }).limit(100);
+    if (status) q = q.eq('status', status);
+    const { data } = await q;
+    return data || [];
 }
 
 export async function resolveReport(reportId, action, adminNote = '') {
-    await updateDoc(doc(db, 'reports', reportId), {
-        status: action === 'dismiss' ? 'dismissed' : 'resolved',
-        resolvedAt: serverTimestamp(),
-        adminNote,
-    });
+    await supabase.from('reports').update({ status: action === 'dismiss' ? 'dismissed' : 'resolved', resolved_at: new Date().toISOString(), admin_note: adminNote }).eq('id', reportId);
 }
 
 // ── Site settings ─────────────────────────────────────────────────────────────
 
+const DEFAULT_SETTINGS = { packages: { free: { name: 'Brezplačni', price: 0, maxListings: 3, durationDays: 30 }, premium: { name: 'Premium', price: 9.99, maxListings: 20, durationDays: 60 }, dealer: { name: 'Dealer', price: 49.99, maxListings: 999, durationDays: 365 } }, maxImagesPerListing: 20, listingAutoExpireDays: 90, featuredPricePerDay: 2.99, maintenanceMode: false, allowGuestListings: false };
+
 export async function getSiteSettings() {
-    const snap = await getDoc(doc(db, 'siteConfig', 'main'));
-    if (!snap.exists()) {
-        return {
-            packages: {
-                free: { name: 'Brezplačni', price: 0, maxListings: 3, durationDays: 30 },
-                premium: { name: 'Premium', price: 9.99, maxListings: 20, durationDays: 60 },
-                dealer: { name: 'Dealer', price: 49.99, maxListings: 999, durationDays: 365 },
-            },
-            maxImagesPerListing: 20,
-            listingAutoExpireDays: 90,
-            featuredPricePerDay: 2.99,
-            maintenanceMode: false,
-            allowGuestListings: false,
-        };
-    }
-    return snap.data();
+    const { data } = await supabase.from('site_config').select('*').eq('id', 'main').maybeSingle();
+    return data?.settings || DEFAULT_SETTINGS;
 }
 
-export async function updateSiteSettings(data) {
-    await updateDoc(doc(db, 'siteConfig', 'main'), { ...data, updatedAt: serverTimestamp() });
+export async function updateSiteSettings(settings) {
+    await supabase.from('site_config').upsert({ id: 'main', settings, updated_at: new Date().toISOString() }, { onConflict: 'id' });
 }
 
 // ── SEO Management ────────────────────────────────────────────────────────────
 
 export async function getSeoPages(limitN = 100) {
-    const q = query(collection(db, 'seoPages'), orderBy('slug'), limit(limitN));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const { data } = await supabase.from('seo_pages').select('*').order('slug').limit(limitN);
+    return data || [];
 }
 
-export async function upsertSeoPage(slug, data) {
-    const docRef = doc(db, 'seoPages', slug.replace(/\//g, '_'));
-    const snap = await getDoc(docRef);
-    if (snap.exists()) {
-        await updateDoc(docRef, { ...data, slug, updatedAt: serverTimestamp() });
-    } else {
-        await updateDoc(docRef, { ...data, slug, createdAt: serverTimestamp() }).catch(() =>
-            addDoc(collection(db, 'seoPages'), { ...data, slug, createdAt: serverTimestamp() })
-        );
-    }
+export async function upsertSeoPage(slug, pageData) {
+    await supabase.from('seo_pages').upsert({ slug, ...pageData, updated_at: new Date().toISOString() }, { onConflict: 'slug' });
 }
 
 // ── Analytics ─────────────────────────────────────────────────────────────────
 
 export async function getTopBrands(limitN = 10) {
-    // Count listings per brand
-    const q = query(collection(db, 'listings'), where('status', '==', 'active'), limit(500));
-    const snap = await getDocs(q);
-    const brandCounts = {};
-    snap.docs.forEach(d => {
-        const make = d.data().make || 'Neznano';
-        brandCounts[make] = (brandCounts[make] || 0) + 1;
-    });
-    return Object.entries(brandCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, limitN)
-        .map(([name, count]) => ({ name, count }));
+    const { data } = await supabase.from('listings').select('brand').eq('status', 'active').limit(500);
+    const counts = {};
+    (data || []).forEach(r => { const b = r.brand || 'Neznano'; counts[b] = (counts[b] || 0) + 1; });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limitN).map(([name, count]) => ({ name, count }));
 }
 
 export async function getListingsByDay(days = 14) {
-    const since = new Date();
-    since.setDate(since.getDate() - days);
-
-    const q = query(
-        collection(db, 'listings'),
-        where('createdAt', '>=', since),
-        orderBy('createdAt', 'desc'),
-        limit(500)
-    );
-    const snap = await getDocs(q);
-
+    const since = new Date(); since.setDate(since.getDate() - days);
+    const { data } = await supabase.from('listings').select('created_at').gte('created_at', since.toISOString()).order('created_at', { ascending: false }).limit(500);
     const byDay = {};
-    snap.docs.forEach(d => {
-        const date = d.data().createdAt?.toDate?.();
-        if (!date) return;
-        const key = date.toISOString().split('T')[0];
-        byDay[key] = (byDay[key] || 0) + 1;
-    });
-
-    // Fill missing days with 0
+    (data || []).forEach(r => { const key = r.created_at.slice(0, 10); byDay[key] = (byDay[key] || 0) + 1; });
     const result = [];
-    for (let i = days - 1; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const key = d.toISOString().split('T')[0];
-        result.push({ date: key, count: byDay[key] || 0 });
-    }
+    for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const key = d.toISOString().slice(0, 10); result.push({ date: key, count: byDay[key] || 0 }); }
     return result;
 }
 
 export async function getSearchAnalytics(limitN = 20) {
-    const q = query(collection(db, 'searchLogs'), orderBy('count', 'desc'), limit(limitN));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const { data } = await supabase.from('search_logs').select('*').order('count', { ascending: false }).limit(limitN);
+    return data || [];
 }
 
 // ── Webscraping: approved sources ─────────────────────────────────────────────
-// The allowlist of shop domains the platform has permission to scrape. Only
-// `approved: true` sources are ever scraped by the (future) backend crawler.
 
 function canonicalDomain(input) {
     let s = String(input || '').trim().toLowerCase();
-    s = s.replace(/^https?:\/\//, '').replace(/^www\./, '');
-    s = s.split('/')[0].split('?')[0].split('#')[0];
+    s = s.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].split('?')[0].split('#')[0];
     return s;
 }
 
 export async function getScrapingSources() {
-    const snap = await getDocs(collection(db, 'scrapingSources'));
-    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    return docs.sort((a, b) => (a.domain || '').localeCompare(b.domain || ''));
+    const { data } = await supabase.from('scraping_sources').select('*');
+    return (data || []).sort((a, b) => (a.domain || '').localeCompare(b.domain || ''));
 }
 
 export async function createScrapingSource(data) {
-    const docRef = await addDoc(collection(db, 'scrapingSources'), {
-        domain: canonicalDomain(data.domain),
-        name: (data.name || '').trim(),
-        baseUrl: (data.baseUrl || '').trim(),
-        category: data.category || 'oboje',        // 'deli' | 'gume' | 'oboje'
-        approved: !!data.approved,
-        permissionNote: (data.permissionNote || '').trim(),
-        robotsAllowed: data.robotsAllowed !== false,
-        status: data.status || 'active',           // 'active' | 'paused'
-        lastScrapedAt: null,
-        lastScrapeStatus: null,
-        createdAt: serverTimestamp(),
-    });
-    return docRef.id;
+    const { data: row, error } = await supabase.from('scraping_sources').insert({ domain: canonicalDomain(data.domain), name: (data.name || '').trim(), base_url: (data.baseUrl || '').trim(), category: data.category || 'oboje', approved: !!data.approved, permission_note: (data.permissionNote || '').trim(), robots_allowed: data.robotsAllowed !== false, status: data.status || 'active' }).select('id').single();
+    if (error) throw new Error(error.message);
+    return row.id;
 }
 
 export async function updateScrapingSource(id, data) {
-    const updates = { ...data, updatedAt: serverTimestamp() };
+    const updates = { ...data, updated_at: new Date().toISOString() };
     if (data.domain) updates.domain = canonicalDomain(data.domain);
-    await updateDoc(doc(db, 'scrapingSources', id), updates);
+    await supabase.from('scraping_sources').update(updates).eq('id', id);
 }
 
 export async function deleteScrapingSource(id) {
-    await deleteDoc(doc(db, 'scrapingSources', id));
+    await supabase.from('scraping_sources').delete().eq('id', id);
 }
 
 export async function getApprovedScrapingDomains() {
-    const q = query(collection(db, 'scrapingSources'), where('approved', '==', true));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => d.data().domain).filter(Boolean);
+    const { data } = await supabase.from('scraping_sources').select('domain').eq('approved', true);
+    return (data || []).map(r => r.domain).filter(Boolean);
 }
 
-// ── Price-comparison catalog (partsCatalog) ───────────────────────────────────
-// Manual ingestion path until the webscraping backend exists. Each product holds
-// a denormalized `offers[]` array; lowestPrice/offerCount are precomputed here.
+// ── Price-comparison catalog ───────────────────────────────────────────────────
 
 function computeOfferStats(offers = []) {
     const prices = offers.map(o => Number(o.price)).filter(n => !isNaN(n));
-    return {
-        lowestPrice: prices.length ? Math.min(...prices) : null,
-        offerCount: offers.length,
-    };
+    return { lowestPrice: prices.length ? Math.min(...prices) : null, offerCount: offers.length };
 }
 
 export async function getCatalogProductsAdmin() {
-    const snap = await getDocs(collection(db, 'partsCatalog'));
-    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    return docs.sort((a, b) => (b.updatedAt?.toMillis?.() || 0) - (a.updatedAt?.toMillis?.() || 0));
+    const { data } = await supabase.from('parts_catalog').select('*').order('updated_at', { ascending: false });
+    return data || [];
 }
 
 export async function createCatalogProduct(data) {
     const offers = Array.isArray(data.offers) ? data.offers : [];
     const stats = computeOfferStats(offers);
-    const docRef = await addDoc(collection(db, 'partsCatalog'), {
-        itemType: data.itemType || 'part',
-        vehicleCategory: data.vehicleCategory || 'avto',
-        title: (data.title || '').trim(),
-        brand: (data.brand || '').trim(),
-        imageUrl: data.imageUrl || '',
-        attributes: data.attributes || {},
-        offers,
-        ...stats,
-        status: data.status || 'active',
-        ingestSource: 'manual',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-    });
-    return docRef.id;
+    const { data: row, error } = await supabase.from('parts_catalog').insert({ item_type: data.itemType || 'part', vehicle_category: data.vehicleCategory || 'avto', title: (data.title || '').trim(), brand: (data.brand || '').trim(), image_url: data.imageUrl || '', attributes: data.attributes || {}, offers, ...stats, status: data.status || 'active', ingest_source: 'manual' }).select('id').single();
+    if (error) throw new Error(error.message);
+    return row.id;
 }
 
 export async function updateCatalogProduct(id, data) {
-    const updates = { ...data, updatedAt: serverTimestamp() };
+    const updates = { ...data, updated_at: new Date().toISOString() };
     if (Array.isArray(data.offers)) Object.assign(updates, computeOfferStats(data.offers));
-    await updateDoc(doc(db, 'partsCatalog', id), updates);
+    await supabase.from('parts_catalog').update(updates).eq('id', id);
 }
 
 export async function deleteCatalogProduct(id) {
-    await deleteDoc(doc(db, 'partsCatalog', id));
+    await supabase.from('parts_catalog').delete().eq('id', id);
+}
+
+// ── Taxonomy Proposals ────────────────────────────────────────────────────────
+
+export async function submitTaxonomyProposal({ type, brand, model = null, category = null, value, submittedBy }) {
+    const trimmed = value.trim();
+    if (!trimmed || !brand) throw new Error('Manjka vrednost ali znamka.');
+    const { data, error } = await supabase.from('taxonomy_proposals').insert({ author_id: submittedBy || null, status: 'pending', payload: { type, brand, model, category, value: trimmed } }).select('id').single();
+    if (error) throw new Error(error.message);
+    return data.id;
+}
+
+export async function getTaxonomyProposals({ status = null, type = null } = {}) {
+    let q = supabase.from('taxonomy_proposals').select('*').order('created_at', { ascending: false }).limit(200);
+    if (status) q = q.eq('status', status);
+    const { data } = await q;
+    return (data || []).map(r => ({ id: r.id, status: r.status, createdAt: r.created_at, ...r.payload }));
+}
+
+export async function approveTaxonomyProposal(id, editedValue = null) {
+    const updates = { status: 'approved' };
+    if (editedValue) {
+        const { data } = await supabase.from('taxonomy_proposals').select('payload').eq('id', id).single();
+        updates.payload = { ...(data?.payload || {}), value: editedValue.trim() };
+    }
+    await supabase.from('taxonomy_proposals').update(updates).eq('id', id);
+}
+
+export async function rejectTaxonomyProposal(id) {
+    await supabase.from('taxonomy_proposals').update({ status: 'rejected' }).eq('id', id);
+}
+
+export async function getApprovedProposalsForBrand(brand) {
+    if (!brand) return [];
+    const { data } = await supabase.from('taxonomy_proposals').select('*').eq('status', 'approved').contains('payload', { brand });
+    return (data || []).map(r => ({ id: r.id, ...r.payload }));
+}
+
+// ── Auctions ──────────────────────────────────────────────────────────────────
+
+export async function getAdminAuctions() {
+    const { data } = await supabase.from('auctions').select('*').order('created_at', { ascending: false }).limit(200);
+    return data || [];
+}
+
+export async function getAdminAuctionBids(listingId) {
+    const { data } = await supabase.from('bids').select('*').eq('auction_id', listingId).order('created_at', { ascending: false });
+    return data || [];
+}
+
+export async function adminSetAuctionStatus(listingId, status) {
+    await supabase.from('auctions').update({ status, updated_at: new Date().toISOString() }).eq('id', listingId);
+}
+
+export async function getAuctionAlertsAdmin() {
+    const { data } = await supabase.from('auction_alerts').select('*').order('created_at', { ascending: false }).limit(500);
+    return data || [];
+}
+
+export async function adminForceCloseAuction(listingId) {
+    const { data } = await supabase.from('auctions').select('*').eq('id', listingId).single();
+    if (!data) throw new Error('Dražba ne obstaja.');
+    await supabase.from('auctions').update({
+        status: 'ended',
+        winner_id: data.current_bidder || null,
+        data: { ...(data.data || {}), endedAt: new Date().toISOString() },
+        updated_at: new Date().toISOString(),
+    }).eq('id', listingId);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function slugify(str) {
-    return str
-        .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
+    return str.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-function normalize(str) {
-    return str.toLowerCase().trim();
-}
-
-// ── Taxonomy Proposals ────────────────────────────────────────────────────────
-// User-submitted custom linija and equipment entries that feed into taxonomy
-// after admin review. Listings show them immediately; search only after approval.
-
-export async function submitTaxonomyProposal({ type, brand, model = null, category = null, value, submittedBy }) {
-    const trimmed = value.trim();
-    if (!trimmed || !brand) throw new Error('Manjka vrednost ali znamka.');
-    const docRef = await addDoc(collection(db, 'taxonomy_proposals'), {
-        type,          // 'linija' | 'equipment'
-        brand,
-        model: model || null,
-        category: category || null,
-        value: trimmed,
-        submittedBy: submittedBy || null,
-        status: 'pending',
-        createdAt: serverTimestamp(),
-    });
-    return docRef.id;
-}
-
-export async function getTaxonomyProposals({ status = null, type = null } = {}) {
-    const constraints = [orderBy('createdAt', 'desc'), limit(200)];
-    if (status) constraints.unshift(where('status', '==', status));
-    if (type) constraints.unshift(where('type', '==', type));
-    const q = query(collection(db, 'taxonomy_proposals'), ...constraints);
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
-
-export async function approveTaxonomyProposal(id, editedValue = null) {
-    const ref = doc(db, 'taxonomy_proposals', id);
-    const update = { status: 'approved' };
-    if (editedValue) update.value = editedValue.trim();
-    await updateDoc(ref, update);
-}
-
-export async function rejectTaxonomyProposal(id) {
-    await updateDoc(doc(db, 'taxonomy_proposals', id), { status: 'rejected' });
-}
-
-export async function getApprovedProposalsForBrand(brand) {
-    if (!brand) return [];
-    const q = query(
-        collection(db, 'taxonomy_proposals'),
-        where('status', '==', 'approved'),
-        where('brand', '==', brand)
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
-
-// ── Auctions (dražbe) ─────────────────────────────────────────────────────────
-
-export async function getAdminAuctions() {
-    const q = query(collection(db, 'auctions'), orderBy('createdAt', 'desc'), limit(200));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
-
-export async function getAdminAuctionBids(listingId) {
-    const q = query(collection(db, 'auctions', listingId, 'bids'), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
-
-export async function adminSetAuctionStatus(listingId, status) {
-    await updateDoc(doc(db, 'auctions', listingId), { status, updatedAt: serverTimestamp() });
-}
-
-/** Manual close (no backend yet): pick the highest bidder as winner. */
-export async function adminForceCloseAuction(listingId) {
-    const ref = doc(db, 'auctions', listingId);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) throw new Error('Dražba ne obstaja.');
-    const a = snap.data();
-    await updateDoc(ref, {
-        status: 'ended',
-        winnerId: a.currentBidderId || null,
-        endedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-    });
-}
-
-export async function getAuctionAlertsAdmin() {
-    const q = query(collection(db, 'auctionAlerts'), orderBy('createdAt', 'desc'), limit(500));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
+function normalize(str) { return str.toLowerCase().trim(); }

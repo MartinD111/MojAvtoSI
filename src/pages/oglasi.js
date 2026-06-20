@@ -3,9 +3,11 @@
 
 const MAX_COMPARE = 3;
 
+import { escHtml } from '../utils/escHtml.js';
 import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { PLATFORM } from '../config/platform.js';
-import { auth } from '../firebase.js';
+import { currentUser } from '../lib/currentUser.js';
+import { navigateTo } from '../router.js';
 import { COUNTRIES, getRegions } from '../data/locationData.js';
 
 // itemTypes shown on the main listings board for the active platform.
@@ -138,7 +140,7 @@ function removeFromCompare(carId) {
 
 // ── Favourite toggle ─────────────────────────────────────────
 async function toggleFavourite(btn, carId, car) {
-    let user = auth.currentUser;
+    let user = currentUser();
 
     if (!user) {
         try {
@@ -166,9 +168,9 @@ async function toggleFavourite(btn, carId, car) {
     btn.disabled = true;
     try {
         if (liked) {
-            await removeFromFavourites(user.uid, carId);
+            await removeFromFavourites(user.id, carId);
         } else {
-            await addToFavourites(user.uid, car);
+            await addToFavourites(user.id, car);
         }
     } catch (err) {
         // Rollback on error
@@ -190,11 +192,11 @@ async function toggleFavourite(btn, carId, car) {
 let userFavouritesCache = new Set();
 
 async function checkFavouriteStates() {
-    const user = auth.currentUser;
+    const user = currentUser();
     if (!user) return;
     
     try {
-        const favs = await getFavourites(user.uid);
+        const favs = await getFavourites(user.id);
         userFavouritesCache = new Set(favs.map(f => f.listingId));
         
         const btns = document.querySelectorAll('.listing-fav-btn[data-car-id]');
@@ -280,7 +282,7 @@ export function renderCarCard(car, auction = null) {
         <!-- Image Container -->
         <div class="listing-card-img" data-current-idx="0">
             <div class="carousel-track">
-                ${images.map(img => `<img src="${img}" alt="${car.title}" loading="lazy">`).join('')}
+                ${images.map(img => `<img src="${img}" alt="${escHtml(car.title)}" loading="lazy">`).join('')}
             </div>
             
             ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
@@ -309,8 +311,8 @@ export function renderCarCard(car, auction = null) {
             <div class="listing-card-header">
                 <div class="car-info">
                     <h2 class="listing-card-title vehicle-title">
-                        <span class="vehicle-title-make-model">${car.make || car.title} ${car.make ? (car.model || '') : ''}</span>
-                        ${(car.make && car.variant) ? `<span class="vehicle-title-variant">${car.variant}</span>` : ''}
+                        <span class="vehicle-title-make-model">${escHtml(car.make || car.title)} ${car.make ? escHtml(car.model || '') : ''}</span>
+                        ${(car.make && car.variant) ? `<span class="vehicle-title-variant">${escHtml(car.variant)}</span>` : ''}
                     </h2>
 
                 </div>
@@ -384,7 +386,7 @@ export function renderCarCard(car, auction = null) {
                     ${car.location?.region ? `
                     <div class="seller-note-card">
                         <i data-lucide="map-pin"></i>
-                        <span>${car.location.region}${car.location.country && car.location.country !== 'SI' ? ', ' + car.location.country : ''}</span>
+                        <span>${escHtml(car.location.region)}${car.location.country && car.location.country !== 'SI' ? ', ' + escHtml(car.location.country) : ''}</span>
                     </div>
                     ` : '<div style="flex: 1;"></div>'}
                     <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
@@ -413,14 +415,14 @@ window.showContactPopup = function (carId) {
                 <i data-lucide="x"></i>
             </button>
             <div class="contact-popup-header">
-                <img src="${car.sellerImage}" class="seller-avatar">
-                <h3 class="seller-name">${car.seller}</h3>
+                <img src="${escHtml(car.sellerImage)}" class="seller-avatar">
+                <h3 class="seller-name">${escHtml(car.seller)}</h3>
                 <p class="seller-type-label">${car.sellerType === 'dealer' ? 'Authorized Dealer' : 'Private Seller'}</p>
             </div>
             <div class="contact-popup-info-box">
                 <div class="contact-row">
                     <i data-lucide="map-pin" class="row-icon"></i>
-                    <span class="row-text">${typeof car.location === 'object' ? (car.location.region || car.location.city || '') : car.location}</span>
+                    <span class="row-text">${escHtml(typeof car.location === 'object' ? (car.location.region || car.location.city || '') : car.location)}</span>
                 </div>
                 <div class="contact-row">
                     <i data-lucide="phone" class="row-icon"></i>
@@ -436,7 +438,7 @@ window.showContactPopup = function (carId) {
                     <i data-lucide="clock" class="footer-row-icon"></i>
                     <div>
                         <p class="footer-row-label">Business Hours</p>
-                        <p class="footer-row-value">${car.openingHours}</p>
+                        <p class="footer-row-value">${escHtml(car.openingHours)}</p>
                     </div>
                 </div>` : ''}
 
@@ -445,7 +447,7 @@ window.showContactPopup = function (carId) {
                     <i data-lucide="info" class="footer-row-icon"></i>
                     <div>
                         <p class="footer-row-label">Seller Note</p>
-                        <p class="footer-row-value">${car.sellerNote}</p>
+                        <p class="footer-row-value">${escHtml(car.sellerNote)}</p>
                     </div>
                 </div>` : ''}
             </div>
@@ -492,9 +494,9 @@ export function bindCardEvents(container, cars) {
             const carId = card.getAttribute('data-car-id');
             const car = cars.find(c => c.id === carId);
             if (car && car.entryType === 'auction') {
-                window.location.hash = `#/drazba?id=${carId}`;
+                navigateTo(`/drazba?id=${carId}`);
             } else {
-                window.location.hash = `#/oglas?id=${carId}`;
+                navigateTo(`/oglas?id=${carId}`);
             }
         });
     });
@@ -504,7 +506,7 @@ export function bindCardEvents(container, cars) {
         btn.addEventListener('click', e => {
             e.stopPropagation();
             const carId = btn.getAttribute('data-car-id');
-            showContactPopup(carId);
+            window.showContactPopup(carId);
         });
     });
 
@@ -524,7 +526,7 @@ export function bindCardEvents(container, cars) {
         btn.addEventListener('click', async e => {
             e.stopPropagation();
             const carId = btn.getAttribute('data-car-id');
-            const user = auth.currentUser;
+            const user = currentUser();
 
             if (!user) {
                 try {
@@ -663,52 +665,9 @@ function initLegendPopup() {
     overlay.style.display = 'none';
 }
 
-// ── Sidebar React mount (single root, safe to call repeatedly) ───────────────
-let _sidebarRoot = null;
-
-function mountSidebarFilters() {
-    const container = document.getElementById('react-sidebar-filters-root');
-    if (!container) return;
-
-    if (!_sidebarRoot) {
-        _sidebarRoot = ReactDOM.createRoot(container);
-    }
-    _sidebarRoot.render(
-        React.createElement(AdvancedSearch, { variant: 'sidebar', compact: true })
-    );
-}
-
-function unmountSidebarFilters() {
-    if (_sidebarRoot) {
-        _sidebarRoot.unmount();
-        _sidebarRoot = null;
-    }
-}
-
-// ── Filter listings with current store state ─────────────────────────────────
-function applyStoreFilters() {
-    const { filters } = useSearchStore.getState();
-    const { brand, model, price, year, fuel } = filters;
-
-    const filtered = SAMPLE_LISTINGS.filter(car => {
-        if (brand.length && !brand.includes(car.make)) return false;
-        if (model && car.model !== model) return false;
-        const carYear = parseInt(car.year, 10) || 0;
-        if (carYear < year.min || carYear > year.max) return false;
-        const carPrice = car.priceRaw || 0;
-        if (carPrice < price.min || carPrice > price.max) return false;
-        if (fuel.length && !fuel.includes(car.fuel)) return false;
-        return true;
-    });
-
-    renderListings(filtered);
-}
 
 function parseHashParams() {
-    const hash = window.location.hash.slice(1) || '/';
-    const qIndex = hash.indexOf('?');
-    if (qIndex === -1) return new URLSearchParams();
-    return new URLSearchParams(hash.slice(qIndex + 1));
+    return new URLSearchParams(window.location.search);
 }
 
 function applyUrlFilters(params) {
@@ -1561,9 +1520,8 @@ function getSidebarFormState() {
 
 function updateUrlParamsFromInputs() {
     const params = getSidebarFormState();
-    const hash = window.location.hash.split('?')[0];
     const newParams = params.toString();
-    window.history.replaceState(null, '', `${hash}${newParams ? '?' + newParams : ''}`);
+    window.history.replaceState(null, '', `${window.location.pathname}${newParams ? '?' + newParams : ''}`);
 }
 
 function renderActivePills(containerId, values, onRemove) {
@@ -1573,7 +1531,7 @@ function renderActivePills(containerId, values, onRemove) {
     values.forEach(val => {
         const pill = document.createElement('span');
         pill.className = 'sidebar-active-pill';
-        pill.innerHTML = `${val} <button type="button" class="sidebar-pill-remove" aria-label="Odstrani">&times;</button>`;
+        pill.innerHTML = `${escHtml(val)} <button type="button" class="sidebar-pill-remove" aria-label="Odstrani">&times;</button>`;
         pill.querySelector('.sidebar-pill-remove').addEventListener('click', (e) => {
             e.preventDefault();
             onRemove(val);
@@ -1606,7 +1564,7 @@ function updateAccordionSummaries() {
     const osnovniParts = [...makes, ...models, ...variants];
     if (bodyType) osnovniParts.push(bodyType);
     if (onlySale) osnovniParts.push('Akcija');
-    _setAccSummary('summaryOsnovni', 'summaryOsnovni' && document.querySelector('[id="summaryOsnovni"]')?.closest('.adv-accordion')?.querySelector('.adv-acc-trigger'), osnovniParts);
+    _setAccSummary('summaryOsnovni', document.querySelector('[id="summaryOsnovni"]')?.closest('.adv-accordion')?.querySelector('.adv-acc-trigger'), osnovniParts);
 
     // Cena in letnik: yearFrom, yearTo, priceTo
     const cenaParts = [];
@@ -1966,7 +1924,6 @@ export function destroyOglasiPage() {
         document.removeEventListener('routeParamsChanged', window._oglasiParamsListener);
         delete window._oglasiParamsListener;
     }
-    unmountSidebarFilters();
 }
 
 if (window.lucide) window.lucide.createIcons();

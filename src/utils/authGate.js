@@ -4,7 +4,7 @@
 //   import { showAuthGate } from '../utils/authGate.js';
 //   const user = await showAuthGate({ icon: '❤️', title: '...', message: '...' });
 
-import { auth } from '../firebase.js';
+import { currentUser } from '../lib/currentUser.js';
 import { loginWithGoogle, loginWithEmail, registerWithEmail } from '../auth/auth.js';
 
 let _activeOverlay = null;
@@ -18,8 +18,8 @@ const GOOGLE_SVG = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" 
 
 export function showAuthGate(options = {}) {
     return new Promise((resolve, reject) => {
-        if (auth.currentUser) {
-            resolve(auth.currentUser);
+        if (currentUser()) {
+            resolve(currentUser());
             return;
         }
 

@@ -1,4 +1,5 @@
 // Compare page — renders side-by-side comparison of selected vehicles/vessels
+import { escHtml } from '../utils/escHtml.js';
 import { key as lsKey } from '../config/storageKeys.js';
 
 const ALL_FIELDS = [
@@ -67,18 +68,18 @@ function renderComparison() {
             .map(f => `
                 <div class="compare-spec-row">
                     <span class="compare-spec-label"><i data-lucide="${f.icon}"></i> ${f.label}</span>
-                    <span class="compare-spec-value">${car[f.key] || '—'}</span>
+                    <span class="compare-spec-value">${escHtml(car[f.key] || '—')}</span>
                 </div>`)
             .join('');
 
         gridHTML += `
         <div class="compare-col" data-compare-id="${car.id}">
             <div class="compare-col-img">
-                <img src="${car.image}" alt="${car.title}" loading="lazy">
+                <img src="${car.image}" alt="${escHtml(car.title)}" loading="lazy">
             </div>
             <div class="compare-col-header">
-                <h2 class="compare-col-title">${car.title}</h2>
-                <p class="compare-col-subtitle">${car.subtitle || ''}</p>
+                <h2 class="compare-col-title">${escHtml(car.title)}</h2>
+                <p class="compare-col-subtitle">${escHtml(car.subtitle || '')}</p>
                 <div class="compare-col-price-row">
                     <span class="compare-col-price">${car.price || '—'}</span>
                     <span class="price-rating rating-${rating.color}">${rating.label}</span>

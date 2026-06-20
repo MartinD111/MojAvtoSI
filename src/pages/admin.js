@@ -3,6 +3,7 @@
 // Modular admin controller: 12 modules, sidebar SPA navigation
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import { escHtml } from '../utils/escHtml.js';
 import {
     checkAdminRole, getUserRole, getDashboardStats, getRecentListings,
     getAllListings, adminUpdateListingStatus, adminDeleteListing, adminSetFeatured,
@@ -12,7 +13,7 @@ import {
     importTaxonomyRows, getReports, resolveReport,
     getSiteSettings, updateSiteSettings,
     getSeoPages, upsertSeoPage,
-    getTopBrands, getListingsByDay, getAuditLogs, addAuditLog,
+    getTopBrands, getListingsByDay, getAuditLogs, addAuditLog, getSearchAnalytics,
     getScrapingSources, createScrapingSource, updateScrapingSource, deleteScrapingSource,
     getCatalogProductsAdmin, createCatalogProduct, updateCatalogProduct, deleteCatalogProduct,
     clearCarTaxonomy,
@@ -21,6 +22,7 @@ import {
     adminForceCloseAuction, getAuctionAlertsAdmin,
 } from '../services/adminService.js';
 import { PLATFORM } from '../config/platform.js';
+import { navigateTo } from '../router.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
 
 // ── Global admin state ────────────────────────────────────────────────────────
@@ -33,16 +35,16 @@ let _chart = null;
 // ── Entry point ───────────────────────────────────────────────────────────────
 export async function initAdminPage() {
     const user = window.__currentUser;
-    if (!user) { window.location.hash = '/prijava'; return; }
+    if (!user) { navigateTo('/prijava'); return; }
 
-    const isAdmin = await checkAdminRole(user.uid);
+    const isAdmin = await checkAdminRole(user.id);
     if (!isAdmin) {
         document.getElementById('app-container').innerHTML = `
           <div style="text-align:center;padding:6rem 2rem;">
             <div style="font-size:4rem;margin-bottom:1rem;">🔒</div>
             <h2 style="color:#dc2626;margin:0 0 0.5rem;">Dostop zavrnjen</h2>
             <p style="color:#6b7280;">Nimate administratorskih pravic.</p>
-            <a href="#/" style="color:#2563eb;font-weight:600;">← Nazaj domov</a>
+            <a href="/" style="color:#2563eb;font-weight:600;">← Nazaj domov</a>
           </div>`;
         return;
     }
@@ -60,7 +62,7 @@ export async function initAdminPage() {
 
     renderShell();
     attachSidebarNav();
-    navigateTo('dashboard');
+    adminNavTo('dashboard');
 }
 
 // ── Shell layout ──────────────────────────────────────────────────────────────
@@ -169,7 +171,7 @@ function roleLabel(role) {
 // ── Sidebar navigation ────────────────────────────────────────────────────────
 function attachSidebarNav() {
     document.querySelectorAll('.adm-nav-item').forEach(btn => {
-        btn.addEventListener('click', () => navigateTo(btn.dataset.section));
+        btn.addEventListener('click', () => adminNavTo(btn.dataset.section));
     });
 
     document.getElementById('adm-menu-toggle').addEventListener('click', () => {
@@ -179,7 +181,7 @@ function attachSidebarNav() {
     document.getElementById('adm-global-search').addEventListener('input', debounce(onGlobalSearch, 400));
 }
 
-function navigateTo(section) {
+function adminNavTo(section) {
     _activeSection = section;
     document.querySelectorAll('.adm-nav-item').forEach(b => b.classList.toggle('active', b.dataset.section === section));
     document.getElementById('adm-content').innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam…</div>';
@@ -284,7 +286,7 @@ async function renderDashboard() {
         // Chart.js bar chart
         drawListingsChart(chartData);
 
-        window.__adminNav = navigateTo;
+        window.__adminNav = adminNavTo;
         window.__adminApprove = id => quickStatus(id, 'active');
         window.__adminReject  = id => openRejectModal(id);
 
@@ -506,7 +508,7 @@ async function renderUsers() {
 
     window.__usrBan    = uid => confirmAction('Ban/unban tega uporabnika?', () => doToggleBan(uid, _allUsers));
     window.__usrRole   = uid => openRoleModal(uid, _allUsers);
-    window.__usrGlassi = uid => navigateTo('listings'); // shortcut
+    window.__usrGlassi = uid => adminNavTo('listings'); // shortcut
 }
 
 function renderUsersTable(users) {
@@ -722,7 +724,7 @@ let _exhaustCache = null;
 
 async function loadExhaustBrands() {
     if (_exhaustCache) return _exhaustCache;
-    const res = await fetch('json/exhaust_brands.json');
+    const res = await fetch('/json/exhaust_brands.json');
     if (!res.ok) throw new Error('Napaka pri nalaganju exhaust_brands.json');
     _exhaustCache = await res.json();
     return _exhaustCache;
@@ -944,7 +946,7 @@ let _vehicleLinesCache = null;
 
 async function loadVehicleLinesAdmin() {
     if (_vehicleLinesCache) return _vehicleLinesCache;
-    const res = await fetch('json/vehicle_lines.json');
+    const res = await fetch('/json/vehicle_lines.json');
     if (!res.ok) throw new Error('Napaka pri nalaganju vehicle_lines.json');
     _vehicleLinesCache = await res.json();
     return _vehicleLinesCache;
@@ -3429,7 +3431,7 @@ function openBrandModal(brand) {
             }
             showToast(brand ? 'Znamka posodobljena.' : 'Znamka dodana.', 'success');
             el.remove();
-            loadBrandsTable('');
+            adminNavTo(_activeSection);
         } catch (err) { showToast('Napaka: ' + err.message, 'error'); }
     });
 }
@@ -3458,7 +3460,7 @@ function openModelModal(model, brands, defaultBrandId) {
             showToast(model ? 'Model posodobljen.' : 'Model dodan.', 'success');
             el.remove();
             const filter = document.getElementById('model-brand-filter')?.value || '';
-            loadModelsTable(filter, brands);
+            adminNavTo(_activeSection);
         } catch (err) { showToast('Napaka: ' + err.message, 'error'); }
     });
 }
@@ -3632,16 +3634,12 @@ function fmtDate(ts) {
     return d.toLocaleDateString('sl-SI', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-function escHtml(str) {
-    if (str === null || str === undefined) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 
 function errBox(e) {
     return `<div class="adm-alert adm-alert-error">Napaka: ${escHtml(e?.message || String(e))}</div>`;
 }
 
-window.__adminNav = s => navigateTo(s);
+window.__adminNav = s => adminNavTo(s);
 
 function showToast(msg, type = 'success') {
     document.querySelector('.adm-toast')?.remove();

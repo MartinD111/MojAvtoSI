@@ -57,10 +57,6 @@ const pageModules = {
 };
 
 document.addEventListener('beforeRouteChange', () => {
-    // Always attempt to unmount React synchronously when leaving a page
-    if (window.unmountReactSearch) {
-        window.unmountReactSearch();
-    }
     // Tear down oglasi subscriptions and React sidebar when navigating away
     if (window._oglasiUnsubscribe) {
         window._oglasiUnsubscribe();

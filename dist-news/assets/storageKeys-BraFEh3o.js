@@ -1,1 +1,0 @@
-import{t as e}from"./platform-BvWcB7wr.js";function t(t,...n){let r=n.filter(Boolean).join(`_`);return`${e.id}_${t}${r?`_`+r:``}`}export{t};

@@ -6,6 +6,7 @@
 // A source toggle lets the user show Vse / Rabljeni oglasi / Cenik trgovin.
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import { escHtml } from '../utils/escHtml.js';
 import { t } from '../core/i18n.js';
 import { getListings } from '../services/listingService.js';
 import { getCatalogProducts, getLowestPrice } from '../services/catalogService.js';
@@ -62,9 +63,9 @@ export async function initGumeInDeliPage() {
 // results shell (the advanced-filters view) that previously loaded immediately.
 function renderMojAvtoLanding(root) {
     // Brand lists loaded lazily so dropdowns can populate after initial render.
-    fetch('json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; refreshLandingBrand(); }).catch(() => {});
-    fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; refreshLandingBrand(); }).catch(() => {});
-    fetch('json/parts_brands.json').then(r => r.json()).then(d => { partsBrands = d || {}; refreshLandingBrand(); }).catch(() => {});
+    fetch('/json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; refreshLandingBrand(); }).catch(() => {});
+    fetch('/json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; refreshLandingBrand(); }).catch(() => {});
+    fetch('/json/parts_brands.json').then(r => r.json()).then(d => { partsBrands = d || {}; refreshLandingBrand(); }).catch(() => {});
 
     const tileGroups = () => {
         if (state.itemType === 'tire') {
@@ -307,8 +308,8 @@ function renderMojAvtoLanding(root) {
             renderShell(root);
             initCustomSelects();
             bindChrome();
-            fetch('json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; renderFilters(); }).catch(() => {});
-            fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => {});
+            fetch('/json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; renderFilters(); }).catch(() => {});
+            fetch('/json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => {});
             await loadData();
             renderFilters();
             applyAndRender();
@@ -453,7 +454,7 @@ function renderNavtikaLanding(root) {
     });
 
     // Brand / model cascade
-    fetch('json/brands_models_plovila.json').then(r => r.json()).then(d => {
+    fetch('/json/brands_models_plovila.json').then(r => r.json()).then(d => {
         navBrands = d || {};
         const brandSel = document.getElementById('navBrand');
         if (brandSel) brandSel.innerHTML = brandOpts();
@@ -501,7 +502,7 @@ function renderNavtikaLanding(root) {
         renderShell(root);
         initCustomSelects();
         bindChrome();
-        fetch('json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => {});
+        fetch('/json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; renderFilters(); }).catch(() => {});
         await loadData();
         renderFilters();
         applyAndRender();
@@ -1024,5 +1025,4 @@ function seasonLabel(s) {
 }
 function fmtNum(n) { return new Intl.NumberFormat('sl-SI').format(Math.round(n)); }
 function fmtEur(n) { return fmtNum(n) + ' €'; }
-function escHtml(str) { return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function escAttr(str) { return escHtml(str); }
+const escAttr = escHtml;

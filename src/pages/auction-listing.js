@@ -10,12 +10,13 @@
 //
 // Live updates come from Firestore onSnapshot (subscribeAuction / subscribeBids).
 
+import { escHtml } from '../utils/escHtml.js';
 import { getListingById, getListings } from '../services/listingService.js';
 import {
     subscribeAuction, subscribeBids, placeBid, minNextBid, isAuctionActive,
     MIN_BID_INCREMENT, calcBuyerPremium, BUYER_PREMIUM_PCT, ANTI_SNIP_WINDOW_MS,
 } from '../services/auctionService.js';
-import { auth } from '../firebase.js';
+import { currentUser } from '../lib/currentUser.js';
 import { PLATFORM } from '../config/platform.js';
 import { t } from '../core/i18n.js';
 import { startCountdown, endsAtMillis } from '../utils/countdown.js';
@@ -46,7 +47,7 @@ export async function initAuctionListingPage() {
     console.log('[AuctionListing] init');
     cleanup();
 
-    const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+    const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const page = document.getElementById('listingPage');
     if (!id || !page) {
@@ -202,7 +203,7 @@ function injectAuctionUI(listing) {
 // ── Live update from the auction snapshot ─────────────────────────────────────
 function updateAuctionUI(auction) {
     if (!auction) return;
-    const isOwn = auth.currentUser && auth.currentUser.uid === auction.sellerId;
+    const isOwn = currentUser() && currentUser()?.id === auction.sellerId;
     const isSilent = auction.auctionType === 'silent';
     const active = isAuctionActive(auction);
     const min = minNextBid(auction);
@@ -335,7 +336,7 @@ function renderBidHistory(bids) {
         return;
     }
     const isSilent = _auction?.auctionType === 'silent';
-    const isOwn = auth.currentUser && auth.currentUser.uid === _auction?.sellerId;
+    const isOwn = currentUser() && currentUser()?.id === _auction?.sellerId;
     const auctionEnded = _auction && !isAuctionActive(_auction);
     // In a silent auction hide amounts from everyone except the seller until it ends.
     const hideBidAmounts = isSilent && !isOwn && !auctionEnded;
@@ -343,7 +344,7 @@ function renderBidHistory(bids) {
     wrap.innerHTML = bids.map(b => {
         const when = b.createdAt?.toDate ? b.createdAt.toDate() : null;
         const time = when ? when.toLocaleString('sl-SI', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-        const name = (b.bidderName || 'Ponudnik').replace(/(.{2}).*/, '$1***');
+        const name = escHtml((b.bidderName || 'Ponudnik').replace(/(.{2}).*/, '$1***'));
         const amountHtml = hideBidAmounts
             ? `<span class="bid-amount bid-amount--hidden">• • •</span>`
             : `<span class="bid-amount">${fmtEur(b.amountEur)}</span>`;
@@ -351,7 +352,7 @@ function renderBidHistory(bids) {
         return `<div class="bid-row">
             <span class="bid-name">${name}${proxyTag}</span>
             ${amountHtml}
-            <span class="bid-time">${time}</span>
+            <span class="bid-time">${escHtml(time)}</span>
         </div>`;
     }).join('');
 }
@@ -359,7 +360,7 @@ function renderBidHistory(bids) {
 // ── Bid submit → contract modal → placeBid ────────────────────────────────────
 async function onBidSubmit(e) {
     e.preventDefault();
-    if (!auth.currentUser) {
+    if (!currentUser()) {
         const { showAuthGate } = await import('../utils/authGate.js');
         showAuthGate();
         return;
@@ -436,7 +437,7 @@ function openContractModal(amount, notify, maxBidEur = null) {
         const status = document.getElementById('acBidStatus');
         try {
             const result = await placeBid(
-                _listing.id, amount, auth.currentUser,
+                _listing.id, amount, currentUser(),
                 { type: contract.type, signatureData: contract.signatureData },
                 notify,
                 maxBidEur,

@@ -10,8 +10,8 @@ export const ENV = {
   apiBaseUrl: e.VITE_API_BASE_URL || 'http://localhost:8080',
 
   // Supabase (DB + Auth) — anon key is safe to ship; RLS protects the data.
-  supabaseUrl: e.VITE_SUPABASE_URL || '',
-  supabaseAnonKey: e.VITE_SUPABASE_ANON_KEY || '',
+  supabaseUrl: e.VITE_SUPABASE_URL || 'https://placeholder.supabase.co',
+  supabaseAnonKey: e.VITE_SUPABASE_ANON_KEY || 'placeholder-anon-key',
 
   // Typesense search node (the search-only key is fetched at runtime from /api/search/key).
   typesense: {

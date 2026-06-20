@@ -2,12 +2,12 @@
 // Create Listing — Multi-step Controller — MojAvto.si
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import { escHtml } from '../utils/escHtml.js';
 import { createListing, updateListing, getListingById } from '../services/listingService.js';
 import { EQUIPMENT_GROUPS, getEquipmentForCategory } from '../data/equipment.js';
-import { auth } from '../firebase.js';
-import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { currentUser } from '../lib/currentUser.js';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
-import { getCurrentUserDoc } from '../auth/auth.js';
+import { getCurrentUserDoc, loginWithGoogle, loginWithEmail, registerWithEmail } from '../auth/auth.js';
 import { t, getCurrentLang } from '../core/i18n.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 import { getModelBodyType } from '../utils/bodyType.js';
@@ -96,7 +96,7 @@ const isOpremaItem = s => s.itemType === 'oprema';
 
 const STEPS = [
     { id: 'typeSelect', title: null },  // 0: vehicle vs parts/tires
-    { id: 'entry', title: null, condition: s => isVehicleItem(s) && !auth.currentUser },  // 1: entry mode (logged-out vehicles only)
+    { id: 'entry', title: null, condition: s => isVehicleItem(s) && !currentUser() },  // 1: entry mode (logged-out vehicles only)
     { id: 'category', title: 'cl_step_category', number: true },
     { id: 'basic', title: 'cl_step_basic', number: true, condition: isVehicleItem },
     { id: 'technical', title: 'cl_step_technical', number: true, condition: s => isVehicleItem(s) && (!isNavtika() || !vesselCfg().basicEngine) },
@@ -113,7 +113,7 @@ const STEPS = [
     // Promotion (visibility) tiers don't apply to auctions — package is chosen above.
     { id: 'promotion', title: 'cl_step_visibility', number: true, condition: s => s.entryType !== 'auction' },
     { id: 'review', title: 'cl_step_review', number: true },
-    { id: 'auth', title: 'cl_step_signin', condition: () => !auth.currentUser },
+    { id: 'auth', title: 'cl_step_signin', condition: () => !currentUser() },
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -506,7 +506,7 @@ export async function initCreateListingPage() {
         .catch(() => { });
 
     // Edit mode — detect ?edit=<listingId> in the hash
-    const hashParams = new URLSearchParams(window.location.hash.split('?')[1] || '');
+    const hashParams = new URLSearchParams(window.location.search);
     const editId = hashParams.get('edit');
     if (editId) {
         editListingId = editId;
@@ -541,7 +541,7 @@ export async function initCreateListingPage() {
     }
 
     // Check if user is logged in to pre-set seller type
-    if (auth.currentUser) {
+    if (currentUser()) {
         try {
             const userDoc = await getCurrentUserDoc();
             if (userDoc && userDoc.sellerType) {
@@ -800,7 +800,7 @@ function applyAiImport(data, warnings) {
     // known line we keep state.linija; otherwise it becomes a custom proposal that
     // flows into taxonomy_proposals (admin approval), same as a manual entry.
     if (proposedLinija && state.make) {
-        fetch('json/vehicle_lines.json')
+        fetch('/json/vehicle_lines.json')
             .then(r => (r.ok ? r.json() : {}))
             .then(map => {
                 const known = (map[state.make] || []);
@@ -820,10 +820,10 @@ function applyAiImport(data, warnings) {
 
 // ── Step 1: Entry mode (vehicles only) ────────────────────────────────────────
 function renderEntryStep() {
-    const sellerToggleHtml = auth.currentUser
+    const sellerToggleHtml = currentUser()
         ? `<div style="padding:0.75rem 1rem;background:rgba(255,255,255,0.4);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,0.5);border-radius:12px;display:flex;align-items:center;gap:0.75rem;font-weight:600;">
                 ${state.sellerType === 'business' ? '🏢 ' + t('cl_business_dealership') : '👤 ' + t('cl_private_seller')}
-                <span style="font-size:0.75rem;color:#64748b;font-weight:400;margin-left:auto;">${t('cl_signed_in_as')} ${auth.currentUser.displayName || auth.currentUser.email}</span>
+                <span style="font-size:0.75rem;color:#64748b;font-weight:400;margin-left:auto;">${t('cl_signed_in_as')} ${currentUser()?.user_metadata?.display_name || currentUser()?.email}</span>
            </div>`
         : `<div class="cl-seller-toggle">
                 <button class="cl-seller-btn ${state.sellerType === 'private' ? 'active' : ''}" data-type="private">
@@ -1410,7 +1410,7 @@ function renderOpremaDetailsStep() {
     });
 
     // Brand dropdown — load from JSON (managed in admin center)
-    fetch('json/equipment_brands.json')
+    fetch('/json/equipment_brands.json')
         .then(r => r.json())
         .then(brands => {
             const sel = document.getElementById('fEqBrand');
@@ -1790,7 +1790,7 @@ function renderBasicStep() {
     let _clVehicleLines = null;
     function loadClVehicleLines() {
         if (_clVehicleLines) return Promise.resolve(_clVehicleLines);
-        return fetch('json/vehicle_lines.json')
+        return fetch('/json/vehicle_lines.json')
             .then(r => r.ok ? r.json() : {})
             .then(d => { _clVehicleLines = d; return d; })
             .catch(() => { _clVehicleLines = {}; return {}; });
@@ -2306,7 +2306,7 @@ function renderNavtikaBasicStep() {
         }
     }
 
-    fetch('json/brands_models_plovila.json')
+    fetch('/json/brands_models_plovila.json')
         .then(r => r.json())
         .then(data => {
             brandModelData = data;
@@ -3092,7 +3092,7 @@ function renderNavtikaTechnicalStep() {
 
     // Populate the engine-brand dropdown from the outboard-motor brand list.
     if (showBrand) {
-        fetch('json/brands_models_izvenkrmni.json')
+        fetch('/json/brands_models_izvenkrmni.json')
             .then(r => r.json())
             .then(data => {
                 const sel = document.getElementById('fEngineBrand');
@@ -3253,7 +3253,7 @@ function renderEquipmentStep() {
 
     // Exhaust brand dropdown — load from JSON
     if (isMoto) {
-        fetch('json/exhaust_brands.json')
+        fetch('/json/exhaust_brands.json')
             .then(r => r.json())
             .then(brands => {
                 const sel = document.getElementById('cl-exhaust-brand');
@@ -4121,7 +4121,7 @@ function renderLocationStep() {
             name,
             phone: document.getElementById('fPhone').value.trim(),
             showPhone: document.getElementById('fShowPhone').checked,
-            email: auth.currentUser?.email || '',
+            email: currentUser()?.email || '',
         };
 
         if (!isBusiness) {
@@ -4691,8 +4691,8 @@ function renderReviewStep() {
 
     document.getElementById('btnRevBack').addEventListener('click', goPrev);
     document.getElementById('btnRevNext').addEventListener('click', () => {
-        if (auth.currentUser) {
-            submitListing(auth.currentUser);
+        if (currentUser()) {
+            submitListing(currentUser());
         } else {
             goNext(); // go to auth step
         }
@@ -4773,8 +4773,8 @@ function renderAuthStep() {
 
     document.getElementById('btnGoogle').addEventListener('click', async () => {
         try {
-            const result = await signInWithPopup(auth, new GoogleAuthProvider());
-            await afterAuth(result.user);
+            saveDraft(state); // persist draft before OAuth redirect
+            await loginWithGoogle(); // triggers redirect to Google; user returns to origin
         } catch (e) { showErr(e.message); }
     });
 
@@ -4782,8 +4782,8 @@ function renderAuthStep() {
         try {
             const email = document.getElementById('authEmail').value;
             const pw = document.getElementById('authPassword').value;
-            const result = await signInWithEmailAndPassword(auth, email, pw);
-            await afterAuth(result.user);
+            const user = await loginWithEmail(email, pw);
+            await afterAuth(user);
         } catch (e) { showErr(t('cl_err_signin') + e.message); }
     });
 
@@ -4791,8 +4791,8 @@ function renderAuthStep() {
         try {
             const email = document.getElementById('authEmail').value;
             const pw = document.getElementById('authPassword').value;
-            const result = await createUserWithEmailAndPassword(auth, email, pw);
-            await afterAuth(result.user);
+            const user = await registerWithEmail({ email, password: pw });
+            await afterAuth(user);
         } catch (e) { showErr(t('cl_err_register') + e.message); }
     });
 }
@@ -4822,10 +4822,10 @@ async function submitListing(user) {
             // ── Edit mode: upload only new File objects, keep existing URLs ──
             const [newExtUrls, newIntUrls] = await Promise.all([
                 state._exteriorFiles.length > 0
-                    ? (await import('../services/listingService.js')).uploadImages(state._exteriorFiles, user.uid)
+                    ? (await import('../services/listingService.js')).uploadImages(state._exteriorFiles, user.id)
                     : Promise.resolve([]),
                 state._interiorFiles.length > 0
-                    ? (await import('../services/listingService.js')).uploadImages(state._interiorFiles, user.uid)
+                    ? (await import('../services/listingService.js')).uploadImages(state._interiorFiles, user.id)
                     : Promise.resolve([]),
             ]);
 
@@ -4922,6 +4922,3 @@ function setHtml(html) {
     if (el) el.innerHTML = html;
 }
 
-function escHtml(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}

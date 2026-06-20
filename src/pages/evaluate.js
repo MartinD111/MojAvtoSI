@@ -1,3 +1,4 @@
+import { escHtml } from '../utils/escHtml.js';
 import { getListings } from '../services/listingService.js';
 import { getVehicleRating } from '../utils/valuationScore.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
@@ -246,6 +247,3 @@ function renderStarsSvg(stars, size = 'md') {
     return html;
 }
 
-function escHtml(str) {
-    return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}

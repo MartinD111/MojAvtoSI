@@ -33,7 +33,7 @@ export function getSupportedLangs() {
 
 async function loadTranslations(lang) {
     try {
-        const response = await fetch(`lang/${lang}.json`);
+        const response = await fetch(`/lang/${lang}.json`);
         if (!response.ok) throw new Error('Failed to load translations');
         translations = await response.json();
     } catch (error) {
@@ -44,7 +44,7 @@ async function loadTranslations(lang) {
     // category/type labels. Base file stays focused on MojAvto.
     if (PLATFORM.id !== 'avto') {
         try {
-            const res = await fetch(`lang/${lang}.${PLATFORM.id}.json`);
+            const res = await fetch(`/lang/${lang}.${PLATFORM.id}.json`);
             if (res.ok) translations = { ...translations, ...(await res.json()) };
         } catch { /* overlay is optional */ }
     }

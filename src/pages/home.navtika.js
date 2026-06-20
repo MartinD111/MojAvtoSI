@@ -7,6 +7,7 @@ import { getListings } from '../services/listingService.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
 import { t } from '../core/i18n.js';
 import { initWordSlider } from './home.js';
+import { navigateTo } from '../router.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 
 const SEA_JOKES = {
@@ -115,7 +116,7 @@ function fillCategorySelect() {
         e.stopPropagation();
         const target = advLink.dataset.target || '#/iskanje?cat=colni';
         const hash = target.startsWith('#') ? target.slice(1) : target;
-        window.location.hash = hash;
+        navigateTo(hash);
     });
     sel.addEventListener('change', () => { fillSubcatSelect(sel.value); updateAdvLink(); });
 
@@ -261,7 +262,7 @@ function bindSearch() {
         if (prodaja) params.set('prodaja', '1');
         if (najem) params.set('najem', '1');
         const dest = homeSearchMode === 'drazbe' ? '/drazbe' : '/oglasi';
-        window.location.hash = `${dest}?${params.toString()}`;
+        navigateTo(`${dest}?${params.toString()}`);
     });
 }
 

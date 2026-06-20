@@ -1,77 +1,77 @@
-// Garage Service — MojAvto.si
-// CRUD for user vehicles stored in Firestore subcollection: users/{uid}/vehicles
+// Garage Service — MojAvto.si (Supabase)
+// User vehicles and favourites are stored in profiles.prefs (jsonb).
 
-import {
-    collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc,
-    serverTimestamp, query, orderBy,
-} from 'firebase/firestore';
-import { db } from '../firebase.js';
+import { supabase } from '../lib/supabase.js';
 
-function vehiclesRef(uid) {
-    return collection(db, 'users', uid, 'vehicles');
+// ── Shared helpers ─────────────────────────────────────────────────────────────
+
+async function getPrefs(uid) {
+    const { data } = await supabase.from('profiles').select('prefs').eq('id', uid).single();
+    return data?.prefs || {};
 }
 
-// Add vehicle
+async function setPrefs(uid, prefs) {
+    await supabase.from('profiles').upsert({ id: uid, prefs }, { onConflict: 'id' });
+}
+
+// ── Vehicles (personal garage) ─────────────────────────────────────────────────
+
 export async function addVehicle(uid, vehicle) {
-    const data = {
-        ...vehicle,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-    };
-    const docRef = await addDoc(vehiclesRef(uid), data);
-    return docRef.id;
+    const prefs = await getPrefs(uid);
+    const vehicles = Array.isArray(prefs.vehicles) ? prefs.vehicles : [];
+    const id = `v_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    vehicles.unshift({ id, ...vehicle, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    await setPrefs(uid, { ...prefs, vehicles });
+    return id;
 }
 
-// Get all vehicles for user
 export async function getVehicles(uid) {
-    const q = query(vehiclesRef(uid), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const prefs = await getPrefs(uid);
+    return Array.isArray(prefs.vehicles) ? prefs.vehicles : [];
 }
 
-// Update vehicle
 export async function updateVehicle(uid, vehicleId, updates) {
-    const ref = doc(db, 'users', uid, 'vehicles', vehicleId);
-    await updateDoc(ref, { ...updates, updatedAt: serverTimestamp() });
+    const prefs = await getPrefs(uid);
+    const vehicles = (prefs.vehicles || []).map(v =>
+        v.id === vehicleId ? { ...v, ...updates, updatedAt: new Date().toISOString() } : v
+    );
+    await setPrefs(uid, { ...prefs, vehicles });
 }
 
-// Delete vehicle
 export async function deleteVehicle(uid, vehicleId) {
-    const ref = doc(db, 'users', uid, 'vehicles', vehicleId);
-    await deleteDoc(ref);
+    const prefs = await getPrefs(uid);
+    const vehicles = (prefs.vehicles || []).filter(v => v.id !== vehicleId);
+    await setPrefs(uid, { ...prefs, vehicles });
 }
 
-// ── Favourites (liked listings) ──────────────────────────────────────────────
-// Stored in Firestore: users/{uid}/favourites/{listingId}
-
-function favouritesRef(uid) {
-    return collection(db, 'users', uid, 'favourites');
-}
+// ── Favourites (liked listings) ────────────────────────────────────────────────
 
 export async function addToFavourites(uid, listing) {
-    const ref = doc(db, 'users', uid, 'favourites', listing.id);
-    await setDoc(ref, {
+    const prefs = await getPrefs(uid);
+    const favourites = Array.isArray(prefs.favourites) ? prefs.favourites : [];
+    if (favourites.find(f => f.listingId === listing.id)) return;
+    favourites.unshift({
         listingId: listing.id,
         title: listing.title || '',
         price: listing.price || '',
         image: listing.images?.exterior?.[0] || listing.image || '',
-        savedAt: serverTimestamp(),
+        savedAt: new Date().toISOString(),
     });
+    await setPrefs(uid, { ...prefs, favourites });
 }
 
 export async function removeFromFavourites(uid, listingId) {
-    const ref = doc(db, 'users', uid, 'favourites', listingId);
-    await deleteDoc(ref);
+    const prefs = await getPrefs(uid);
+    const favourites = (prefs.favourites || []).filter(f => f.listingId !== listingId);
+    await setPrefs(uid, { ...prefs, favourites });
 }
 
 export async function getFavourites(uid) {
-    const q = query(favouritesRef(uid), orderBy('savedAt', 'desc'));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const prefs = await getPrefs(uid);
+    return (prefs.favourites || []).sort((a, b) => (b.savedAt || '').localeCompare(a.savedAt || ''));
 }
 
 export async function isFavourite(uid, listingId) {
-    const ref = doc(db, 'users', uid, 'favourites', listingId);
-    const snap = await getDoc(ref);
-    return snap.exists();
+    const prefs = await getPrefs(uid);
+    return (prefs.favourites || []).some(f => f.listingId === listingId);
 }

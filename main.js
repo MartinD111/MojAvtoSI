@@ -7,7 +7,11 @@ import { initHeader } from './src/components/header.js';
 import { bindB2BContext, onB2BChange } from './src/core/b2bContext.js';
 import { registerDefaultExtensions } from './src/core/extensions.js';
 import { PLATFORM } from './src/config/platform.js';
+import { initMonitoring, setMonitoringUser } from './src/lib/monitoring.js';
 import './src/index.css';
+
+// Initialize monitoring (Sentry + PostHog) — non-blocking, runs in background.
+initMonitoring();
 
 // Apply platform brand colors + document title before first paint.
 applyPlatformBranding();
@@ -27,7 +31,7 @@ registerDefaultExtensions();
 initHeader();
 
 // Boot footer
-fetch('views/footer.html')
+fetch('/views/footer.html')
     .then(r => r.text())
     .then(html => {
         const footerEl = document.getElementById('footer');
@@ -54,8 +58,8 @@ document.addEventListener('langChanged', () => {
 window.__authReady = new Promise(resolve => {
     onAuth(user => {
         window.__currentUser = user || null;
-        // Bind/unbind B2B profile snapshot whenever auth changes
         bindB2BContext(user);
+        setMonitoringUser(user);
         resolve(user);
     });
 });

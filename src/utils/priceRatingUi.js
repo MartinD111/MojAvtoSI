@@ -8,6 +8,7 @@
 // When confidence is too low for a comparables-based rating, callers pass a
 // fallback derived from the local price-ratio heuristic — see ratingFallbackStars().
 // ═══════════════════════════════════════════════════════════════════════════════
+import { escHtml } from './escHtml.js';
 
 const STAR_COLOR = 'var(--color-primary-start, #f59e0b)';
 const EMPTY_COLOR = '#374151';
@@ -40,11 +41,6 @@ export function ratingFallbackStars(priceRating) {
     if (score === 3) return { stars: 4.5, label: 'Odlična vrednost' };
     if (score === 1) return { stars: 2,   label: 'Nad povprečjem' };
     return { stars: 3, label: 'Poštena cena' };
-}
-
-function escHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c =>
-        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 // Compact stacked badge for listing cards: stars on top, Slovenian label beneath.

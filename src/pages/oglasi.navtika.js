@@ -4,10 +4,12 @@
 const MAX_COMPARE = 3;
 const MAX_NOTE_CHARS = 110;
 
+import { escHtml } from '../utils/escHtml.js';
 import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { PLATFORM } from '../config/platform.js';
 import { MAIN_CATEGORIES } from '../data/categories.navtika.js';
-import { auth } from '../firebase.js';
+import { currentUser } from '../lib/currentUser.js';
+import { navigateTo } from '../router.js';
 
 // itemTypes shown on the main listings board for the active platform.
 const PRIMARY_ITEM_TYPES = PLATFORM.id === 'navtika' ? ['plovilo', 'motor'] : ['vehicle'];
@@ -138,7 +140,7 @@ function removeFromCompare(carId) {
 
 // ── Favourite toggle ─────────────────────────────────────────
 async function toggleFavourite(btn, carId, car) {
-    let user = auth.currentUser;
+    let user = currentUser();
 
     if (!user) {
         try {
@@ -166,9 +168,9 @@ async function toggleFavourite(btn, carId, car) {
     btn.disabled = true;
     try {
         if (liked) {
-            await removeFromFavourites(user.uid, carId);
+            await removeFromFavourites(user.id, carId);
         } else {
-            await addToFavourites(user.uid, car);
+            await addToFavourites(user.id, car);
         }
     } catch (err) {
         // Rollback on error
@@ -190,11 +192,11 @@ async function toggleFavourite(btn, carId, car) {
 let userFavouritesCache = new Set();
 
 async function checkFavouriteStates() {
-    const user = auth.currentUser;
+    const user = currentUser();
     if (!user) return;
     
     try {
-        const favs = await getFavourites(user.uid);
+        const favs = await getFavourites(user.id);
         userFavouritesCache = new Set(favs.map(f => f.listingId));
         
         const btns = document.querySelectorAll('.listing-fav-btn[data-car-id]');
@@ -433,7 +435,7 @@ function renderCarCard(car) {
         <!-- Image Container -->
         <div class="listing-card-img" data-current-idx="0">
             <div class="carousel-track">
-                ${images.map(img => `<img src="${img}" alt="${car.title}" loading="lazy">`).join('')}
+                ${images.map(img => `<img src="${img}" alt="${escHtml(car.title)}" loading="lazy">`).join('')}
             </div>
             
             ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
@@ -459,8 +461,8 @@ function renderCarCard(car) {
             <div class="listing-card-header">
                 <div class="car-info">
                     <h2 class="listing-card-title navtika-title">
-                        <span class="navtika-title-make">${car.make || car.title}</span>
-                        ${(car.variant || car.model) ? `<span class="navtika-title-model">${car.variant || car.model}</span>` : ''}
+                        <span class="navtika-title-make">${escHtml(car.make || car.title)}</span>
+                        ${(car.variant || car.model) ? `<span class="navtika-title-model">${escHtml(car.variant || car.model)}</span>` : ''}
                     </h2>
                 </div>
                 
@@ -505,7 +507,7 @@ function renderCarCard(car) {
                 <div class="navtika-card-location">
                     ${car.location?.city ? `
                     <i data-lucide="map-pin"></i>
-                    <span>${car.location.region || car.location.city || ''}</span>
+                    <span>${escHtml(car.location.region || car.location.city || '')}</span>
                     ` : ''}
                 </div>
                 <div class="navtika-card-actions">
@@ -541,14 +543,14 @@ window.showContactPopup = function (carId) {
                 <i data-lucide="x"></i>
             </button>
             <div class="contact-popup-header">
-                <img src="${car.sellerImage}" class="seller-avatar">
-                <h3 class="seller-name">${car.seller}</h3>
+                <img src="${escHtml(car.sellerImage)}" class="seller-avatar">
+                <h3 class="seller-name">${escHtml(car.seller)}</h3>
                 <p class="seller-type-label">${car.sellerType === 'dealer' ? 'Authorized Dealer' : 'Private Seller'}</p>
             </div>
             <div class="contact-popup-info-box">
                 <div class="contact-row">
                     <i data-lucide="map-pin" class="row-icon"></i>
-                    <span class="row-text">${typeof car.location === 'object' ? (car.location.region || car.location.city || '') : car.location}</span>
+                    <span class="row-text">${escHtml(typeof car.location === 'object' ? (car.location.region || car.location.city || '') : car.location)}</span>
                 </div>
                 <div class="contact-row">
                     <i data-lucide="phone" class="row-icon"></i>
@@ -564,7 +566,7 @@ window.showContactPopup = function (carId) {
                     <i data-lucide="clock" class="footer-row-icon"></i>
                     <div>
                         <p class="footer-row-label">Business Hours</p>
-                        <p class="footer-row-value">${car.openingHours}</p>
+                        <p class="footer-row-value">${escHtml(car.openingHours)}</p>
                     </div>
                 </div>` : ''}
 
@@ -573,7 +575,7 @@ window.showContactPopup = function (carId) {
                     <i data-lucide="info" class="footer-row-icon"></i>
                     <div>
                         <p class="footer-row-label">Seller Note</p>
-                        <p class="footer-row-value">${car.sellerNote}</p>
+                        <p class="footer-row-value">${escHtml(car.sellerNote)}</p>
                     </div>
                 </div>` : ''}
             </div>
@@ -608,7 +610,7 @@ function renderListings(cars) {
             if (e.target.closest('.pill-btn') || e.target.closest('.action-pill-btn') ||
                 e.target.closest('.action-circle-btn') ||
                 e.target.closest('.carousel-btn') || e.target.closest('.carousel-dots')) return;
-            window.location.hash = `#/oglas?id=${card.getAttribute('data-car-id')}`;
+            navigateTo(`/oglas?id=${card.getAttribute('data-car-id')}`);
         });
     });
 
@@ -617,7 +619,7 @@ function renderListings(cars) {
         btn.addEventListener('click', e => {
             e.stopPropagation();
             const carId = btn.getAttribute('data-car-id');
-            showContactPopup(carId);
+            window.showContactPopup(carId);
         });
     });
 
@@ -637,7 +639,7 @@ function renderListings(cars) {
         btn.addEventListener('click', async e => {
             e.stopPropagation();
             const carId = btn.getAttribute('data-car-id');
-            const user = auth.currentUser;
+            const user = currentUser();
 
             if (!user) {
                 try {
@@ -776,52 +778,9 @@ function initLegendPopup() {
     overlay.style.display = 'none';
 }
 
-// ── Sidebar React mount (single root, safe to call repeatedly) ───────────────
-let _sidebarRoot = null;
-
-function mountSidebarFilters() {
-    const container = document.getElementById('react-sidebar-filters-root');
-    if (!container) return;
-
-    if (!_sidebarRoot) {
-        _sidebarRoot = ReactDOM.createRoot(container);
-    }
-    _sidebarRoot.render(
-        React.createElement(AdvancedSearch, { variant: 'sidebar', compact: true })
-    );
-}
-
-function unmountSidebarFilters() {
-    if (_sidebarRoot) {
-        _sidebarRoot.unmount();
-        _sidebarRoot = null;
-    }
-}
-
-// ── Filter listings with current store state ─────────────────────────────────
-function applyStoreFilters() {
-    const { filters } = useSearchStore.getState();
-    const { brand, model, price, year, fuel } = filters;
-
-    const filtered = SAMPLE_LISTINGS.filter(car => {
-        if (brand.length && !brand.includes(car.make)) return false;
-        if (model && car.model !== model) return false;
-        const carYear = parseInt(car.year, 10) || 0;
-        if (carYear < year.min || carYear > year.max) return false;
-        const carPrice = car.priceRaw || 0;
-        if (carPrice < price.min || carPrice > price.max) return false;
-        if (fuel.length && !fuel.includes(car.fuel)) return false;
-        return true;
-    });
-
-    renderListings(filtered);
-}
 
 function parseHashParams() {
-    const hash = window.location.hash.slice(1) || '/';
-    const qIndex = hash.indexOf('?');
-    if (qIndex === -1) return new URLSearchParams();
-    return new URLSearchParams(hash.slice(qIndex + 1));
+    return new URLSearchParams(window.location.search);
 }
 
 function applyUrlFilters(params) {
@@ -1073,7 +1032,7 @@ async function initSidebarFiltering() {
     // Populate engine make dropdown from taxonomy
     const engineMakeSel = document.getElementById('sidebarEngineMake');
     if (engineMakeSel && engineMakeSel.options.length <= 1) {
-        fetch('json/brands_models_izvenkrmni.json')
+        fetch('/json/brands_models_izvenkrmni.json')
             .then(r => r.ok ? r.json() : {})
             .then(data => {
                 Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
@@ -1281,7 +1240,7 @@ async function initSidebarFiltering() {
             
             const params = parseHashParams();
             const cat = params.get('cat');
-            window.location.hash = `/oglasi${cat ? '?cat=' + cat : ''}`;
+            navigateTo(`/oglasi${cat ? '?cat=' + cat : ''}`);
         });
     }
 
@@ -1386,9 +1345,8 @@ function getSidebarFormState() {
 
 function updateUrlParamsFromInputs() {
     const params = getSidebarFormState();
-    const hash = window.location.hash.split('?')[0];
     const newParams = params.toString();
-    window.history.replaceState(null, '', `${hash}${newParams ? '?' + newParams : ''}`);
+    window.history.replaceState(null, '', `${window.location.pathname}${newParams ? '?' + newParams : ''}`);
 }
 
 function updateUrlParams(makes, models) {
@@ -1396,7 +1354,7 @@ function updateUrlParams(makes, models) {
     if (makes && makes.length > 0) params.set('make', makes.join(',')); else params.delete('make');
     if (models && models.length > 0) params.set('model', models.join(',')); else params.delete('model');
     const paramStr = params.toString();
-    window.location.hash = `/oglasi${paramStr ? '?' + paramStr : ''}`;
+    navigateTo(`/oglasi${paramStr ? '?' + paramStr : ''}`);
 }
 
 function updateFiltersUI() {
@@ -1790,7 +1748,6 @@ export function destroyOglasiPage() {
         document.removeEventListener('routeParamsChanged', window._oglasiParamsListener);
         delete window._oglasiParamsListener;
     }
-    unmountSidebarFilters();
 }
 
 if (window.lucide) window.lucide.createIcons();

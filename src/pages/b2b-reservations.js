@@ -14,7 +14,7 @@ export async function initB2bReservationsPage() {
     const main = mountB2BShell({ activeRoute: '/b2b/rezervacije', title: 'Rezervacije' });
     if (!main) return;
 
-    const urlStatus = new URLSearchParams((location.hash.split('?')[1] || '')).get('status') || '';
+    const urlStatus = new URLSearchParams(location.search).get('status') || '';
 
     main.innerHTML = `
         <div class="b2b-tabs" id="b2bResTabs">

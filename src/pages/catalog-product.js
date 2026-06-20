@@ -4,11 +4,12 @@
 // external stores where the part/tire can be bought (ceneje.si style).
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import { escHtml } from '../utils/escHtml.js';
 import { t } from '../core/i18n.js';
 import { getCatalogProductById, getLowestPrice } from '../services/catalogService.js';
 
 function getParam(name) {
-    const qs = window.location.hash.split('?')[1] || '';
+    const qs = window.location.search.slice(1);
     return new URLSearchParams(qs).get(name);
 }
 
@@ -112,5 +113,4 @@ function seasonLabel(s) {
 }
 function fmtNum(n) { return new Intl.NumberFormat('sl-SI').format(Math.round(n)); }
 function fmtEur(n) { return fmtNum(n) + ' €'; }
-function escHtml(str) { return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function escAttr(str) { return escHtml(str); }
+const escAttr = escHtml;

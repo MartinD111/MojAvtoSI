@@ -1,1 +1,0 @@
-import{r as e}from"./bodyType-D6Z4hc39.js";export{e as getModelVariants};

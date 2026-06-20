@@ -1,6 +1,8 @@
 // business-profile.js — Business Profile Page — MojAvto.si
 // Renders full business profile: hero, info bar, tabs (oglasi/storitve/ocene/o podjetju)
 
+import { escHtml } from '../utils/escHtml.js';
+import { navigateTo } from '../router.js';
 import { getBusinessById, getTypeLabels, getBusinessTypeInfo } from '../services/businessService.js';
 import { serviceLabels } from '../data/businesses.js';
 import { SAMPLE_LISTINGS as sampleCars } from '../data/sampleListings.js'; // Reuse platform listings
@@ -56,7 +58,7 @@ function buildHero(biz) {
 
     // Booking hook (no implementation)
     document.getElementById('bookingHeroBtn')?.addEventListener('click', () => {
-        window.location.hash = `#/booking?businessId=${biz.id}`;
+        navigateTo(`/booking?businessId=${biz.id}`);
     });
 }
 
@@ -73,15 +75,15 @@ function buildInfoBar(biz) {
     document.getElementById('bizInfoBar').innerHTML = `
         <div class="biz-info-item">
             <i data-lucide="map-pin"></i>
-            ${biz.contact.address}
+            ${escHtml(biz.contact.address)}
         </div>
         <div class="biz-info-item">
             <i data-lucide="phone"></i>
-            <a href="tel:${biz.contact.phone}">${biz.contact.phone}</a>
+            <a href="tel:${escHtml(biz.contact.phone)}">${escHtml(biz.contact.phone)}</a>
         </div>
         <div class="biz-info-item">
             <i data-lucide="mail"></i>
-            <a href="mailto:${biz.contact.email}">${biz.contact.email}</a>
+            <a href="mailto:${escHtml(biz.contact.email)}">${escHtml(biz.contact.email)}</a>
         </div>
         ${brandsHtml ? `<div class="biz-info-item"><i data-lucide="tag"></i>${brandsHtml}</div>` : ''}
     `;
@@ -150,7 +152,7 @@ function buildListingsTab(biz) {
     }
 
     grid.innerHTML = listings.map(car => `
-        <div class="biz-listing-card" onclick="window.location.hash='#/oglas?id=${car.id}'">
+        <div class="biz-listing-card" onclick="window.navigateTo('/oglas?id=${car.id}')">
             <img class="biz-listing-img" src="${car.images[0]}" alt="${car.title}" loading="lazy" />
             <div class="biz-listing-body">
                 <div class="biz-listing-title">${car.title}</div>
@@ -199,7 +201,7 @@ function buildServicesTab(biz) {
             </div>
             <div class="biz-service-name">${serviceLabels[s] || s}</div>
             <div class="biz-service-price">${servicePricesMock[s] || 'po dogovoru'}</div>
-            <button class="biz-service-cta" onclick="window.location.hash='#/booking?businessId=${biz.id}&service=${s}'">
+            <button class="biz-service-cta" onclick="window.navigateTo('/booking?businessId=${biz.id}&service=${s}')">
                 Rezerviraj →
             </button>
         </div>
@@ -208,7 +210,7 @@ function buildServicesTab(biz) {
     // Booking banner
     if (bookingBtn) {
         bookingBtn.addEventListener('click', () => {
-            window.location.hash = `#/booking?businessId=${biz.id}`;
+            navigateTo(`/booking?businessId=${biz.id}`);
         });
     }
 }
@@ -256,14 +258,14 @@ function buildReviewsTab(biz) {
     list.innerHTML = mockReviews.map(r => `
         <div class="biz-review-card">
             <div class="biz-review-header">
-                <img class="biz-review-avatar" src="${r.avatar}" alt="${r.author}" />
+                <img class="biz-review-avatar" src="${r.avatar}" alt="${escHtml(r.author)}" />
                 <div>
-                    <div class="biz-review-author">${r.author}</div>
+                    <div class="biz-review-author">${escHtml(r.author)}</div>
                     <div class="biz-review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
-                    <div class="biz-review-date">${r.date}</div>
+                    <div class="biz-review-date">${escHtml(r.date)}</div>
                 </div>
             </div>
-            <div class="biz-review-text">${r.text}</div>
+            <div class="biz-review-text">${escHtml(r.text)}</div>
         </div>
     `).join('');
 }
@@ -278,7 +280,7 @@ function buildAboutTab(biz) {
     sections.push(`
         <div class="biz-about-section">
             <h3><i data-lucide="info"></i>O podjetju</h3>
-            <p class="biz-about-text">${biz.description}</p>
+            <p class="biz-about-text">${escHtml(biz.description)}</p>
         </div>
     `);
 
@@ -287,7 +289,7 @@ function buildAboutTab(biz) {
             <div class="biz-about-section">
                 <h3><i data-lucide="landmark"></i>Leasing partnerji</h3>
                 <div class="biz-leasing-partners">
-                    ${biz.leasingPartners.map(p => `<span class="biz-leasing-tag">✓ ${p}</span>`).join('')}
+                    ${biz.leasingPartners.map(p => `<span class="biz-leasing-tag">✓ ${escHtml(p)}</span>`).join('')}
                 </div>
             </div>
         `);
@@ -298,7 +300,7 @@ function buildAboutTab(biz) {
             <div class="biz-about-section">
                 <h3><i data-lucide="award"></i>Pooblaščene znamke</h3>
                 <div class="biz-brands-row">
-                    ${biz.authorizedBrands.map(b => `<span class="biz-brand-tag authorized">${b}</span>`).join('')}
+                    ${biz.authorizedBrands.map(b => `<span class="biz-brand-tag authorized">${escHtml(b)}</span>`).join('')}
                 </div>
             </div>
         `);
@@ -309,10 +311,10 @@ function buildAboutTab(biz) {
         <div class="biz-about-section">
             <h3><i data-lucide="map-pin"></i>Kontakt & lokacija</h3>
             <p class="biz-about-text">
-                <strong>Naslov:</strong> ${biz.contact.address}<br/>
-                <strong>Telefon:</strong> <a href="tel:${biz.contact.phone}" style="color:var(--color-primary-start);">${biz.contact.phone}</a><br/>
-                <strong>E-pošta:</strong> <a href="mailto:${biz.contact.email}" style="color:var(--color-primary-start);">${biz.contact.email}</a><br/>
-                <strong>Tip:</strong> ${typeLabels.join(', ')}
+                <strong>Naslov:</strong> ${escHtml(biz.contact.address)}<br/>
+                <strong>Telefon:</strong> <a href="tel:${escHtml(biz.contact.phone)}" style="color:var(--color-primary-start);">${escHtml(biz.contact.phone)}</a><br/>
+                <strong>E-pošta:</strong> <a href="mailto:${escHtml(biz.contact.email)}" style="color:var(--color-primary-start);">${escHtml(biz.contact.email)}</a><br/>
+                <strong>Tip:</strong> ${typeLabels.map(escHtml).join(', ')}
             </p>
         </div>
     `);
@@ -328,10 +330,7 @@ export function initBusinessProfilePage() {
     const error = document.getElementById('bizProfileError');
     const content = document.getElementById('bizProfileContent');
 
-    // Get business ID from URL hash: #/poslovni-profil?id=XXX
-    const hash = window.location.hash;
-    const idMatch = hash.match(/[?&]id=([^&]+)/);
-    const bizId = idMatch ? idMatch[1] : null;
+    const bizId = new URLSearchParams(window.location.search).get('id');
 
     if (!bizId) {
         loading.style.display = 'none';

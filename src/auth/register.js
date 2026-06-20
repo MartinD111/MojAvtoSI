@@ -1,5 +1,6 @@
 // Register page logic — MojAvto.si
 import { registerWithEmail, loginWithGoogle } from '../auth/auth.js';
+import { navigateTo } from '../router.js';
 
 export function initRegisterPage() {
     // ── Private form elements ─────────────────────────────────────────────────
@@ -39,7 +40,7 @@ export function initRegisterPage() {
             googleBtn.disabled = true;
             googleBtn.innerHTML = '<i class="fab fa-google"></i> Registriram...';
             await loginWithGoogle();
-            window.location.hash = '/dashboard';
+            navigateTo('/dashboard');
         } catch (err) {
             errorEl.textContent = err.message;
             googleBtn.disabled = false;
@@ -67,7 +68,7 @@ export function initRegisterPage() {
 
         try {
             await registerWithEmail({ fullname, email, password, region });
-            window.location.hash = '/dashboard';
+            navigateTo('/dashboard');
         } catch (err) {
             const msgs = {
                 'auth/email-already-in-use': 'Ta e-mail je že v uporabi.',

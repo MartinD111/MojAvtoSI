@@ -1,6 +1,7 @@
 // map.js — Business Discovery Map Page — MojAvto.si
 // Leaflet integration, filter sidebar, list/map sync
 
+import { escHtml } from '../utils/escHtml.js';
 import { store } from '../store/store.js';
 import {
     getAllBusinesses,
@@ -12,6 +13,7 @@ import {
 } from '../services/businessService.js';
 import { allBrands, serviceLabels } from '../data/businesses.js';
 import { PLATFORM } from '../config/platform.js';
+import { navigateTo } from '../router.js';
 
 // ── State ────────────────────────────────────────────────────
 let leafletMap = null;
@@ -65,16 +67,16 @@ function renderBusinessList(businesses) {
 
         return `
         <div class="biz-card" data-biz-id="${biz.id}" onclick="window._openBizProfile('${biz.id}')">
-            <img class="biz-card-logo" src="${biz.logo}" alt="${biz.name}" />
+            <img class="biz-card-logo" src="${biz.logo}" alt="${escHtml(biz.name)}" />
             <div class="biz-card-body">
-                <div class="biz-card-name">${biz.name}</div>
+                <div class="biz-card-name">${escHtml(biz.name)}</div>
                 <div class="biz-card-meta">
                     ${getTypeBadgesHtml(biz)}
                     <div class="biz-card-rating">
                         ★ ${biz.rating.toFixed(1)} <span class="count">(${biz.reviewCount})</span>
                     </div>
                 </div>
-                <div class="biz-card-desc">${biz.description}</div>
+                <div class="biz-card-desc">${escHtml(biz.description)}</div>
                 <div class="biz-card-footer">
                     ${dist}
                     <div class="biz-card-badges">
@@ -138,10 +140,10 @@ function buildPopupHtml(biz) {
     return `
     <div class="map-popup">
         <div class="map-popup-header">
-            <img class="map-popup-logo" src="${biz.logo}" alt="${biz.name}" />
+            <img class="map-popup-logo" src="${biz.logo}" alt="${escHtml(biz.name)}" />
             <div>
-                <div class="map-popup-name">${biz.name}</div>
-                <div class="map-popup-city">${biz.location.city}</div>
+                <div class="map-popup-name">${escHtml(biz.name)}</div>
+                <div class="map-popup-city">${escHtml(biz.location.city)}</div>
             </div>
         </div>
         <div class="map-popup-types">${typeBadges}</div>
@@ -439,7 +441,7 @@ function locateUser() {
 
 // ── Navigate to business profile ──────────────────────────────
 window._openBizProfile = function (id) {
-    window.location.hash = `#/poslovni-profil?id=${id}`;
+    navigateTo(`/poslovni-profil?id=${id}`);
 };
 
 // ── Mobile filter drawer ──────────────────────────────────────
@@ -519,8 +521,7 @@ export function initMapPage() {
     setupFilters();
 
     // Pre-filter from URL query param (e.g. #/zemljevid?type=service from header links)
-    const urlHash = window.location.hash;
-    const typeParam = (urlHash.match(/[?&]type=([^&]+)/) || [])[1];
+    const typeParam = new URLSearchParams(window.location.search).get('type');
     if (typeParam) {
         const pill = document.querySelector(`.type-pill[data-type="${typeParam}"]`);
         if (pill) pill.classList.add('active');

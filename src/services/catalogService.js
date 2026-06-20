@@ -5,8 +5,7 @@
 // the webscraping backend exists. See docs/WEBSCRAPING_HANDOFF.md.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase.js';
+import { supabase } from '../lib/supabase.js';
 import { SAMPLE_CATALOG } from '../data/sampleCatalog.js';
 
 function lowest(product) {
@@ -19,28 +18,27 @@ function lowest(product) {
 export async function getCatalogProducts({ itemType, vehicleCategory } = {}) {
     let products = [];
     try {
-        const snap = await getDocs(collection(db, 'partsCatalog'));
-        products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const { data } = await supabase.from('parts_catalog').select('*').neq('status', 'hidden');
+        products = data || [];
     } catch (err) {
-        console.warn('Could not fetch partsCatalog from Firestore, using sample catalog only.', err);
+        console.warn('Could not fetch parts_catalog from Supabase, using sample catalog only.', err);
     }
 
-    let all = [...products, ...SAMPLE_CATALOG].filter(p => p.status !== 'hidden');
-    if (itemType) all = all.filter(p => p.itemType === itemType);
-    if (vehicleCategory) all = all.filter(p => p.vehicleCategory === vehicleCategory);
+    let all = [...products, ...(import.meta.env.DEV ? SAMPLE_CATALOG : [])].filter(p => p.status !== 'hidden');
+    if (itemType) all = all.filter(p => (p.itemType ?? p.item_type) === itemType);
+    if (vehicleCategory) all = all.filter(p => (p.vehicleCategory ?? p.vehicle_category) === vehicleCategory);
 
-    // Sort by lowest price ascending so the cheapest products surface first.
     return all.sort((a, b) => (lowest(a) ?? Infinity) - (lowest(b) ?? Infinity));
 }
 
 // ── Get a single catalog product ──────────────────────────────────────────────
 export async function getCatalogProductById(id) {
-    const sample = SAMPLE_CATALOG.find(p => p.id === id);
+    const sample = import.meta.env.DEV ? SAMPLE_CATALOG.find(p => p.id === id) : null;
     if (sample) return sample;
 
-    const snap = await getDoc(doc(db, 'partsCatalog', id));
-    if (!snap.exists()) throw new Error('Catalog product does not exist.');
-    return { id: snap.id, ...snap.data() };
+    const { data, error } = await supabase.from('parts_catalog').select('*').eq('id', id).single();
+    if (error || !data) throw new Error('Catalog product does not exist.');
+    return data;
 }
 
 export function getLowestPrice(product) {

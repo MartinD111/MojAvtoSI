@@ -6,7 +6,7 @@ export class ApiNavService {
       ? 'json/navigation.json'
       : `json/navigation.${PLATFORM.id}.json`;
     try {
-      const response = await fetch(file);
+      const response = await fetch('/' + file);
       if (!response.ok) {
         throw new Error('Failed to fetch navigation API');
       }

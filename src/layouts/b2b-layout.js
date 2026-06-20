@@ -1,9 +1,11 @@
 // b2b-layout.js — Renders the B2B shell (sidebar + topbar) around a page's content.
 // Called by every /b2b/* page before it renders into #b2b-main.
 
+import { escHtml as escapeHtml } from '../utils/escHtml.js';
 import { getB2BProfile, getRoles, isVerifiedBusiness } from '../core/b2bContext.js';
 import { getExtensionsForRoles } from '../core/extensions.js';
 import { logout } from '../auth/auth.js';
+import { navigateTo } from '../router.js';
 import { PLATFORM } from '../config/platform.js';
 
 /**
@@ -21,7 +23,7 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
             <div style="padding:3rem;text-align:center;">
                 <h2>Dostop ni mogoč</h2>
                 <p>Ta sekcija je namenjena samo poslovnim uporabnikom.</p>
-                <a href="#/dashboard" class="btn btn-primary">Domov</a>
+                <a href="/dashboard" class="btn btn-primary">Domov</a>
             </div>`;
         return null;
     }
@@ -36,7 +38,7 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
             <!-- Sidebar -->
             <aside class="b2b-sidebar">
                 <div class="b2b-brand">
-                    <a href="#/" class="b2b-brand-link">
+                    <a href="/" class="b2b-brand-link">
                         <span class="b2b-brand-mark">${PLATFORM.brandMark}</span>
                         <span class="b2b-brand-text">${PLATFORM.brandName}<span>${PLATFORM.tld}</span></span>
                     </a>
@@ -53,7 +55,7 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
 
                 <nav class="b2b-nav">
                     ${extensions.map(e => `
-                        <a href="#${e.route}" class="b2b-nav-item ${activeRoute === e.route ? 'active' : ''}" data-route="${e.route}">
+                        <a href="${e.route}" class="b2b-nav-item ${activeRoute === e.route ? 'active' : ''}" data-route="${e.route}">
                             <i data-lucide="${e.icon}"></i>
                             <span>${escapeHtml(e.name)}</span>
                         </a>
@@ -61,7 +63,7 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
                 </nav>
 
                 <div class="b2b-sidebar-footer">
-                    <a href="#/dashboard" class="b2b-nav-item b2b-exit">
+                    <a href="/dashboard" class="b2b-nav-item b2b-exit">
                         <i data-lucide="user"></i> <span>Osebni račun</span>
                     </a>
                     <button id="b2bLogoutBtn" class="b2b-nav-item b2b-logout">
@@ -105,7 +107,7 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
     // Logout
     document.getElementById('b2bLogoutBtn')?.addEventListener('click', async () => {
         await logout();
-        window.location.hash = '/';
+        navigateTo('/');
     });
 
     return document.getElementById('b2b-main');
@@ -116,10 +118,4 @@ function roleLabel(r) {
     return (PLATFORM.b2bRoleLabels && PLATFORM.b2bRoleLabels[r])
         || { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer', tuner: 'Tuning center', detailing: 'Avto detajling', carwash: 'Avtopralnica' }[r]
         || r;
-}
-
-function escapeHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c => (
-        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-    ));
 }

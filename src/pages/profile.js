@@ -1,6 +1,7 @@
 // Profile page — MojAvto.si
 // Moja garaža: add/manage vehicles with tire info
 import { getVehicles, addVehicle, updateVehicle, deleteVehicle, getFavourites, removeFromFavourites } from '../services/garageService.js';
+import { navigateTo } from '../router.js';
 import { getBrands, getModels } from '../services/adminService.js';
 import { t } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
@@ -11,18 +12,18 @@ export async function initProfilePage() {
     if (!container) return;
 
     const user = window.__currentUser;
-    if (!user) { window.location.hash = '/prijava'; return; }
+    if (!user) { navigateTo('/prijava'); return; }
 
     container.innerHTML = `
     <div style="max-width:900px;margin:2rem auto;padding:0 1rem;">
 
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
-        ${user.photoURL
-            ? `<img src="${user.photoURL}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" />`
+        ${user.user_metadata?.avatar_url
+            ? `<img src="${user.user_metadata.avatar_url}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" />`
             : `<div style="width:56px;height:56px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👤</div>`}
         <div>
-          <h1 style="margin:0;font-size:1.5rem;font-weight:700;">${user.displayName || t('profile_user_fallback')}</h1>
+          <h1 style="margin:0;font-size:1.5rem;font-weight:700;">${user.user_metadata?.display_name || user.user_metadata?.full_name || user.email || t('profile_user_fallback')}</h1>
           <p style="margin:0;color:#6b7280;font-size:0.9rem;">${user.email}</p>
         </div>
       </div>

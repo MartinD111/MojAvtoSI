@@ -1,6 +1,5 @@
 // Service Entry Page — for verified mechanics / B2B users
-import { auth } from '../firebase.js';
-import { onAuthStateChanged } from 'firebase/auth';
+import { supabase } from '../lib/supabase.js';
 import { addServiceRecord } from '../services/serviceBookService.js';
 
 const SERVICE_TYPES = [
@@ -21,17 +20,17 @@ function isAuthorized(user) {
     );
 }
 
-export function initServiceEntryPage() {
+export async function initServiceEntryPage() {
     const page = document.getElementById('service-entry-page');
     if (!page) return;
 
-    onAuthStateChanged(auth, user => {
-        if (!isAuthorized(user)) {
-            renderAccessDenied(page);
-            return;
-        }
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user ?? null;
+    if (!isAuthorized(user)) {
+        renderAccessDenied(page);
+    } else {
         renderForm(page, user);
-    });
+    }
 }
 
 function renderAccessDenied(page) {
@@ -123,8 +122,8 @@ function renderForm(page, user) {
                 mileage: mileage || null,
                 serviceType,
                 description,
-                mechanicId: user.uid,
-                mechanicName: user.displayName || user.email || 'Service',
+                mechanicId: user.id,
+                mechanicName: user.user_metadata?.display_name || user.email || 'Service',
             });
             showToast('✅ Record saved successfully!');
             form.reset();

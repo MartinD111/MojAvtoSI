@@ -1,5 +1,6 @@
 // Login page logic — MojAvto.si
 import { loginWithEmail, loginWithGoogle } from '../auth/auth.js';
+import { navigateTo } from '../router.js';
 
 export function initLoginPage() {
     const form = document.getElementById('loginForm');
@@ -12,7 +13,7 @@ export function initLoginPage() {
             googleBtn.disabled = true;
             googleBtn.innerHTML = '<i class="fab fa-google"></i> Prijavljam...';
             await loginWithGoogle();
-            window.location.hash = '/dashboard';
+            navigateTo('/dashboard');
         } catch (err) {
             errorEl.textContent = err.message;
             googleBtn.disabled = false;
@@ -33,7 +34,7 @@ export function initLoginPage() {
 
         try {
             await loginWithEmail(email, password);
-            window.location.hash = '/dashboard';
+            navigateTo('/dashboard');
         } catch (err) {
             const msgs = {
                 'auth/user-not-found': 'Uporabnik s tem e-mailom ne obstaja.',

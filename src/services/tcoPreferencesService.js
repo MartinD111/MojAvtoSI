@@ -1,128 +1,59 @@
-/**
- * TCO Preferences Service
- * Manages user preferences for TCO calculations (age, annual kilometers)
- * Stores in Firestore and localStorage with sync
- */
+// TCO Preferences Service — MojAvto.si (Supabase)
+// Stored in profiles.prefs.tco with localStorage as primary cache.
 
-import { db, auth } from '../firebase.js';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { supabase } from '../lib/supabase.js';
 import { key as lsKey } from '../config/storageKeys.js';
 
 const STORAGE_KEY = lsKey('tco_preferences');
-const FIRESTORE_COLLECTION = 'users';
 
-// Default preferences
-const DEFAULT_PREFERENCES = {
-    age: 35,
-    annualMiles: 15000,
-    state: 'SI',
-};
+const DEFAULT_PREFERENCES = { age: 35, annualMiles: 15000, state: 'SI' };
 
-/**
- * Get user's TCO preferences from localStorage or Firestore
- */
 export async function getTCOPreferences() {
-    const user = auth.currentUser;
-
-    // Try localStorage first (fastest)
     const cached = localStorage.getItem(STORAGE_KEY);
-    if (cached) {
-        try {
-            return JSON.parse(cached);
-        } catch (e) {
-            console.warn('[TCOPreferences] Invalid localStorage data');
-        }
-    }
+    if (cached) { try { return JSON.parse(cached); } catch {} }
 
-    // If logged in, fetch from Firestore
+    const { data: { user } } = await supabase.auth.getUser();
     if (user) {
         try {
-            const userDoc = await getDoc(doc(db, FIRESTORE_COLLECTION, user.uid));
-            if (userDoc.exists()) {
-                const data = userDoc.data();
-                const prefs = {
-                    age: data.tcoPreferences?.age || DEFAULT_PREFERENCES.age,
-                    annualMiles: data.tcoPreferences?.annualMiles || DEFAULT_PREFERENCES.annualMiles,
-                    state: data.tcoPreferences?.state || DEFAULT_PREFERENCES.state,
-                };
-                // Cache in localStorage
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-                return prefs;
+            const { data } = await supabase.from('profiles').select('prefs').eq('id', user.id).single();
+            if (data?.prefs?.tco) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data.prefs.tco));
+                return data.prefs.tco;
             }
         } catch (e) {
-            console.warn('[TCOPreferences] Could not fetch from Firestore:', e.message);
+            console.warn('[TCOPreferences] Could not fetch from Supabase:', e.message);
         }
     }
-
-    // Return defaults if not found
     return DEFAULT_PREFERENCES;
 }
 
-/**
- * Save user's TCO preferences to Firestore and localStorage
- */
 export async function saveTCOPreferences(preferences) {
-    const user = auth.currentUser;
-
-    // Validate preferences
     const validated = {
         age: Math.max(16, Math.min(120, preferences.age || 35)),
         annualMiles: Math.max(100, Math.min(200000, preferences.annualMiles || 15000)),
         state: preferences.state || 'SI',
     };
-
-    // Save to localStorage
     localStorage.setItem(STORAGE_KEY, JSON.stringify(validated));
 
-    // Save to Firestore if logged in
+    const { data: { user } } = await supabase.auth.getUser();
     if (user) {
         try {
-            const userRef = doc(db, FIRESTORE_COLLECTION, user.uid);
-            const userDoc = await getDoc(userRef);
-
-            if (userDoc.exists()) {
-                // Update existing document
-                await setDoc(
-                    userRef,
-                    { tcoPreferences: validated },
-                    { merge: true }
-                );
-            } else {
-                // Create new document
-                await setDoc(userRef, {
-                    uid: user.uid,
-                    email: user.email,
-                    tcoPreferences: validated,
-                    createdAt: new Date(),
-                });
-            }
+            const { data } = await supabase.from('profiles').select('prefs').eq('id', user.id).single();
+            const prefs = data?.prefs || {};
+            await supabase.from('profiles').upsert({ id: user.id, prefs: { ...prefs, tco: validated } }, { onConflict: 'id' });
         } catch (e) {
-            console.error('[TCOPreferences] Could not save to Firestore:', e.message);
-            // Continue anyway - localStorage is enough
+            console.error('[TCOPreferences] Could not save to Supabase:', e.message);
         }
     }
-
     return validated;
 }
 
-/**
- * Clear preferences (for logout)
- */
 export function clearTCOPreferences() {
     localStorage.removeItem(STORAGE_KEY);
 }
 
-/**
- * Get preferences for display/editing
- */
 export function getPreferencesForUI() {
     const cached = localStorage.getItem(STORAGE_KEY);
-    if (cached) {
-        try {
-            return JSON.parse(cached);
-        } catch (e) {
-            return DEFAULT_PREFERENCES;
-        }
-    }
+    if (cached) { try { return JSON.parse(cached); } catch {} }
     return DEFAULT_PREFERENCES;
 }

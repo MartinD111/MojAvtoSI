@@ -2,13 +2,14 @@
 // Listing Detail Page — MojAvto.si
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import { escHtml } from '../utils/escHtml.js';
 import { getListingById, recordListingView, getListingViewStats, formatPrice, getListings } from '../services/listingService.js';
 import { kmToMiles, kwToHp, l100kmToMpg, formatDisplacement, showCompareLimitToast } from '../utils/listingUtils.js';
 import { getVehicleRating } from '../utils/valuationScore.js';
 import { renderRatingBlockDetail } from '../utils/priceRatingUi.js';
 import { getEquipmentLabel, EQUIPMENT_GROUPS } from '../data/equipment.js';
-import { auth, db } from '../firebase.js';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { currentUser } from '../lib/currentUser.js';
+import { supabase } from '../lib/supabase.js';
 import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite } from '../services/garageService.js';
 import { key as lsKey } from '../config/storageKeys.js';
@@ -21,7 +22,7 @@ import { t, getCurrentLang } from '../core/i18n.js';
 export async function initListingPage() {
     console.log('[ListingPage] init');
 
-    const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+    const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const page = document.getElementById('listingPage');
 
@@ -191,7 +192,7 @@ async function initFavBtn(l) {
     const syncWithFirebase = async (user) => {
         if (!user) return;
         try {
-            const liked = await isFavourite(user.uid, l.id);
+            const liked = await isFavourite(user.id, l.id);
             const localSet = getLikedSet();
             if (liked) { localSet.add(l.id); btn.classList.add('active'); }
             else        { localSet.delete(l.id); btn.classList.remove('active'); }
@@ -199,23 +200,15 @@ async function initFavBtn(l) {
         } catch { /* non-critical */ }
     };
 
-    // auth.currentUser can be null on first render — wait for auth to settle.
-    if (auth.currentUser) {
-        syncWithFirebase(auth.currentUser);
-    } else {
-        const unsub = auth.onAuthStateChanged(user => {
-            unsub();
-            syncWithFirebase(user);
-        });
-    }
+    syncWithFirebase(currentUser());
 
     btn.addEventListener('click', async () => {
-        let currentUser = auth.currentUser;
+        let user = currentUser();
 
         // Auth gate for logged-out users — revert only on cancel, not on Firebase errors.
-        if (!currentUser) {
+        if (!user) {
             try {
-                currentUser = await showAuthGate({
+                user = await showAuthGate({
                     icon: '❤️',
                     title: t('save_to_favorites_title'),
                     message: t('save_to_favorites_msg'),
@@ -238,9 +231,9 @@ async function initFavBtn(l) {
         btn.disabled = true;
         try {
             if (wasActive) {
-                await removeFromFavourites(currentUser.uid, l.id);
+                await removeFromFavourites(user.id, l.id);
             } else {
-                await addToFavourites(currentUser.uid, { id: l.id, title: l.make + ' ' + l.model, price: l.priceEur || l.price, images: l.images });
+                await addToFavourites(user.id, { id: l.id, title: l.make + ' ' + l.model, price: l.priceEur || l.price, images: l.images });
             }
         } catch (err) {
             console.warn('[lpFavBtn] Firebase sync failed (local state kept):', err);
@@ -274,10 +267,10 @@ function initCompareBtn(l) {
         }
 
         // Adding — require auth (same gate as the board).
-        let currentUser = auth.currentUser;
-        if (!currentUser) {
+        let user = currentUser();
+        if (!user) {
             try {
-                currentUser = await showAuthGate({
+                user = await showAuthGate({
                     icon: '⚖️',
                     title: t('compare_vehicles_title'),
                     message: t('compare_vehicles_msg'),
@@ -517,7 +510,7 @@ function renderListing(l) {
 
     // Owner edit bar — shown async once auth resolves
     const injectOwnerBar = (user) => {
-        if (!user || user.uid !== l.authorId) return;
+        if (!user || user.id !== l.authorId) return;
         if (document.getElementById('lpOwnerBar')) return;
         const bar = document.createElement('div');
         bar.id = 'lpOwnerBar';
@@ -531,11 +524,7 @@ function renderListing(l) {
         container?.insertAdjacentElement('afterbegin', bar);
         if (window.lucide) window.lucide.createIcons({ nodes: [bar] });
     };
-    if (auth.currentUser) {
-        injectOwnerBar(auth.currentUser);
-    } else {
-        const unsub = auth.onAuthStateChanged(user => { unsub(); injectOwnerBar(user); });
-    }
+    injectOwnerBar(currentUser());
 
     // Init icons
     // Stacked layouts relocate the price card out of the sidebar:
@@ -1033,11 +1022,10 @@ function showReportModal(listingId) {
         btn.disabled = true;
         btn.textContent = 'Pošiljam...';
         try {
-            await addDoc(collection(db, 'reports'), {
-                listingId,
-                reporterId: auth.currentUser?.uid || null,
+            await supabase.from('reports').insert({
+                listing_id: listingId,
+                reporter_id: currentUser()?.id || null,
                 reason: selected.value,
-                createdAt: serverTimestamp(),
                 status: 'pending',
             });
             overlay.querySelector('div').innerHTML = `
@@ -1135,9 +1123,6 @@ function formatDate(ts) {
     return d.toLocaleDateString('sl-SI', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-function escHtml(str) {
-    return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
 
 function errorHtml(title, msg) {
     return `

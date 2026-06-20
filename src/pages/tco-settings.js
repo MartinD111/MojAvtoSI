@@ -6,16 +6,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import TCOPreferencesPanel from '../components/TCOPreferencesPanel.jsx';
-import { auth } from '../firebase.js';
+import { currentUser } from '../lib/currentUser.js';
+import { navigateTo } from '../router.js';
 import { t } from '../core/i18n.js';
 
 export async function initTCOSettingsPage() {
     const container = document.getElementById('app-container');
     if (!container) return;
 
-    const user = auth.currentUser;
+    const user = currentUser();
     if (!user) {
-        window.location.hash = '/prijava';
+        navigateTo('/prijava');
         return;
     }
 

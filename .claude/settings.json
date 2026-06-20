@@ -40,7 +40,15 @@
       "Bash(node --check \"c:\\\\Users\\\\marti\\\\AMS d.o.o\\\\MojAvto.si\\\\src\\\\pages\\\\home.news.js\")",
       "Bash(node --check \"c:/Users/marti/AMS d.o.o/MojAvto.si/src/pages/gume-in-deli.js\")",
       "Bash(PYTHONIOENCODING=utf-8 py scripts/build_prosti_cas_taxonomy.py)",
-      "Bash(PYTHONIOENCODING=utf-8 python3 scripts/build_prosti_cas_taxonomy.py)"
+      "Bash(PYTHONIOENCODING=utf-8 python3 scripts/build_prosti_cas_taxonomy.py)",
+      "Bash(grep -n \"card.innerHTML\\\\|\\\\.innerHTML =\\\\|\\\\${.*\\\\.make\\\\|\\\\${.*\\\\.model\\\\|\\\\${.*\\\\.title\\\\|\\\\${.*\\\\.location\\\\|\\\\${.*authorName\\\\|\\\\${.*\\\\.description\" src/pages/oglasi.js)",
+      "Bash(grep -n '\\\\${.*\\\\.\\(make\\\\|model\\\\|title\\\\|variant\\\\|description\\\\|authorName\\\\|seller\\\\|sellerNote\\\\|openingHours\\\\|region\\\\|city\\\\|country\\\\|location\\)' src/pages/oglasi.navtika.js)",
+      "Bash(grep -n \"\\\\${.*\\\\.\\\\\\(make\\\\|model\\\\|title\\\\|variant\\\\|description\\\\|authorName\\\\|seller\\\\b\\\\|sellerNote\\\\|openingHours\\\\|region\\\\|city\\\\|country\\\\|name\\\\b\\\\|address\\\\\\)\" src/pages/home.js)",
+      "Bash(grep -n \"\\\\${.*\\\\.\\\\\\(name\\\\b\\\\|description\\\\|make\\\\|model\\\\|type\\\\|address\\\\|phone\\\\|email\\\\|seller\\\\|title\\\\\\)\" src/pages/map.js)",
+      "Bash(grep -n \"\\\\${.*\\\\.\\\\\\(make\\\\|model\\\\|title\\\\|variant\\\\|description\\\\|authorName\\\\\\)\" src/pages/compare.js)",
+      "Bash(grep -n \"\\\\${.*\\\\.\\\\\\(name\\\\b\\\\|description\\\\|address\\\\|phone\\\\|email\\\\|comment\\\\|text\\\\|make\\\\|model\\\\\\)\" src/pages/business-profile.js)",
+      "Bash(grep -n \"\\\\${.*\\\\.\\\\\\(make\\\\|model\\\\|title\\\\|description\\\\|authorName\\\\|name\\\\b\\\\\\)\" src/pages/auction-listing.js)",
+      "Bash(npx cross-env *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\marti\\.claude\\projects\\c--Users-marti-AMS-d-o-o-MojAvto-si\\memory"

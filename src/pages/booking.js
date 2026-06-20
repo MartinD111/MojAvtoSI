@@ -1300,13 +1300,12 @@ export async function initBookingPage() {
     if (tireHandoff) sessionStorage.removeItem(lsKey('tire_handoff'));
 
     // Parse URL params
-    const hash = window.location.hash;
-    const bizIdMatch = hash.match(/[?&]businessId=([^&]+)/);
-    const serviceParam = (hash.match(/[?&]service=([^&]+)/) || [])[1];
-    const tireOrderIdParam = (hash.match(/[?&]tireOrderId=([^&]+)/) || [])[1] || null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const serviceParam = urlParams.get('service');
+    const tireOrderIdParam = urlParams.get('tireOrderId') || null;
 
     // Handoff overrides businessId from URL if present
-    state.businessId = (tireHandoff?.vulcanizerId) || (bizIdMatch ? bizIdMatch[1] : null);
+    state.businessId = (tireHandoff?.vulcanizerId) || urlParams.get('businessId');
 
     if (!state.businessId) {
         const wizard = document.getElementById('bookingWizard');

@@ -1,6 +1,7 @@
 // Advanced Search page — platform-aware (vehicles / vessels)
 // Category-aware: reads ?cat=, ?sub=, ?searchType=, ?vtype=, ?najem= from URL
 import { getListings } from '../services/listingService.js';
+import { navigateTo } from '../router.js';
 import { getApprovedProposalsForBrand } from '../services/adminService.js';
 import { t } from '../core/i18n.js';
 import { resolveCategory, SEARCH_TYPE_OPTIONS } from '../data/categories.js';
@@ -129,10 +130,7 @@ function injectRentalToggle(ctx) {
 // Parse query params from hash URL
 // ═══════════════════════════════════════════════════════════════════════════════
 function parseHashParams() {
-    const hash = window.location.hash.slice(1) || '/';
-    const qIndex = hash.indexOf('?');
-    if (qIndex === -1) return new URLSearchParams();
-    return new URLSearchParams(hash.slice(qIndex + 1));
+    return new URLSearchParams(window.location.search);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -557,7 +555,7 @@ function bindSearchLogic(catContext) {
     let _vehicleLinesData = null;
     function loadVehicleLines() {
         if (_vehicleLinesData) return Promise.resolve(_vehicleLinesData);
-        return fetch('json/vehicle_lines.json')
+        return fetch('/json/vehicle_lines.json')
             .then(r => r.ok ? r.json() : {})
             .then(d => { _vehicleLinesData = d; return d; })
             .catch(() => { _vehicleLinesData = {}; return {}; });
@@ -758,7 +756,7 @@ function bindSearchLogic(catContext) {
             updateLiveCount();
         }
 
-        fetch('json/exhaust_brands.json')
+        fetch('/json/exhaust_brands.json')
             .then(r => r.json())
             .then(brands => {
                 brands.forEach(b => {
@@ -1491,7 +1489,7 @@ bindCardDrag(excludedVehicleCardsEl);
 
         const paramStr = params.toString();
         const target = searchMode === 'drazbe' ? '/drazbe' : '/oglasi';
-        window.location.hash = `${target}${paramStr ? '?' + paramStr : ''}`;
+        navigateTo(`${target}${paramStr ? '?' + paramStr : ''}`);
     });
 }
 

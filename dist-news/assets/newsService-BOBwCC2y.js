@@ -1,1 +1,0 @@
-import{c as e,l as t}from"./newsService-Ve7q7qVu.js";export{e as getPublishedNews,t as newsCategoryLabel};

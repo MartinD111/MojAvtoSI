@@ -1,1 +1,0 @@
-import{t as e}from"./platform-BvWcB7wr.js";function t(t){return e.id===`navtika`?t===`izvenkrmni-motorji`||t===`izvenkrmni_motorji`?`json/brands_models_izvenkrmni.json`:`json/brands_models_plovila.json`:t===`motor`||t===`moto`?`json/brands_models_moto.json`:t===`gospodarska`?`json/brands_models_gospodarska.json`:`json/brands_models_global.json`}export{t};

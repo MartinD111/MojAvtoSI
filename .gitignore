@@ -6,6 +6,7 @@ dist/
 dist-avto/
 dist-navtika/
 dist-ssr/
+dist-news/
 
 # Environment variables (NEVER commit these)
 .env

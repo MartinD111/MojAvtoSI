@@ -1,3 +1,4 @@
+import { escHtml } from '../utils/escHtml.js';
 import { SAMPLE_LISTINGS } from '../data/sampleListings.js';
 import { getListings } from '../services/listingService.js';
 import { COUNTRIES, getRegions } from '../data/locationData.js';
@@ -17,6 +18,7 @@ import { MAIN_CATEGORIES } from '../data/categories.js';
 import { brandsFileFor } from '../data/brandFiles.js';
 import { popularBrandsFor } from '../data/popularBrands.js';
 import { PLATFORM } from '../config/platform.js';
+import { navigateTo } from '../router.js';
 
 let allListings = [];
 
@@ -104,8 +106,8 @@ function setupRotatingAds() {
         return `
             <div class="sponsored-mini-card-wrapper">
                 <a href="#/oglas?id=${car.id}" class="sponsored-mini-card">
-                    <img src="${img}" alt="${car.title}">
-                    <h4 class="sponsored-title">${car.make} ${car.model}</h4>
+                    <img src="${img}" alt="${escHtml(car.title)}">
+                    <h4 class="sponsored-title">${escHtml(car.make)} ${escHtml(car.model)}</h4>
                     <div class="sponsored-specs centered">
                         <div class="spec-row centered">
                             ${getYearPill(car.year)}
@@ -218,8 +220,8 @@ function renderListingsSection(containerId, sectionId, listings, hideIfEmpty = f
         return `
             <div class="sponsored-mini-card-wrapper">
                 <a href="#/oglas?id=${listing.id}" class="sponsored-mini-card" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-                    <img src="${imgUrl}" alt="${listing.make} ${listing.model}">
-                    <h4 class="sponsored-title">${listing.make} ${listing.model}</h4>
+                    <img src="${imgUrl}" alt="${escHtml(listing.make)} ${escHtml(listing.model)}">
+                    <h4 class="sponsored-title">${escHtml(listing.make)} ${escHtml(listing.model)}</h4>
                     <div class="sponsored-specs centered">
                         <div class="spec-row centered">
                             ${getYearPill(listing.year)}
@@ -534,7 +536,7 @@ function setupSearchForm() {
             if (region) query += `&region=${encodeURIComponent(region)}`;
 
             const target = homeSearchMode === 'drazbe' ? '/drazbe' : '/oglasi';
-            window.location.hash = `${target}${query}`;
+            navigateTo(`${target}${query}`);
         });
     }
 

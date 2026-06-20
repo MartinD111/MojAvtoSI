@@ -5,6 +5,7 @@ import { t, getCurrentLang, switchLang } from '../core/i18n.js';
 import { PLATFORM } from '../config/platform.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { ApiNavService } from '../services/apiNavService.js';
+import { navigateTo } from '../router.js';
 
 const FLAG_SL = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width: 100%; height: 100%; object-fit: cover; display: block;">
@@ -40,8 +41,8 @@ export function initHeader() {
   const headerEl = document.getElementById('header');
 
   async function render(user) {
-    const hash = window.location.hash;
-    
+    const path = window.location.pathname;
+
     // Fetch dynamic navigation items
     const navData = await ApiNavService.fetchNavigation();
     const navItems = navData.navItems || [];
@@ -53,9 +54,10 @@ export function initHeader() {
     // Helper to generate nav items from JSON
     const renderNavItems = () => {
       return navItems.map(item => {
+        const itemPath = item.href ? item.href.split('?')[0] : null;
         const isActive = item.href
-          ? (item.href === '#/' ? hash === '#/' || hash === '#' : hash.startsWith(item.href))
-          : (item.children && item.children.some(c => hash.startsWith(c.href)));
+          ? (item.href === '/' ? path === '/' : path.startsWith(itemPath))
+          : (item.children && item.children.some(c => path.startsWith(c.href.split('?')[0])));
         
         if (item.children) {
           return `
@@ -67,7 +69,7 @@ export function initHeader() {
               <div class="mega-menu" id="${item.id}Mega" role="menu">
                 <div class="mega-vertical-list">
                   ${item.children.map(child => `
-                  <a href="${child.href}" class="mega-vertical-item ${hash.includes(child.href) ? 'active' : ''}" role="menuitem">
+                  <a href="${child.href}" class="mega-vertical-item ${path.startsWith(child.href.split('?')[0]) ? 'active' : ''}" role="menuitem">
                     <i data-lucide="${child.icon}"></i> ${navLabel(child)}
                   </a>`).join('')}
                 </div>
@@ -92,7 +94,7 @@ export function initHeader() {
 
             <!-- LEFT: logo (desktop) / burger (mobile) -->
             <div class="nav-left">
-              <a href="#/" class="logo-text">${PLATFORM.brandName}<span class="logo-accent">${PLATFORM.tld}</span></a>
+              <a href="/" class="logo-text">${PLATFORM.brandName}<span class="logo-accent">${PLATFORM.tld}</span></a>
               <button class="burger-btn" id="burgerBtn" aria-label="Meni" aria-expanded="false" aria-controls="navLinks">
                 <i data-lucide="menu"></i>
               </button>
@@ -111,34 +113,34 @@ export function initHeader() {
                   <i data-lucide="external-link"></i><span> ${PLATFORM.siblingName}</span>
                 </a>
               ` : user ? `
-                <a href="#/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);"><i data-lucide="plus"></i><span> ${t('publish_listing')}</span></a>
+                <a href="/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);"><i data-lucide="plus"></i><span> ${t('publish_listing')}</span></a>
                 <div id="userMenu" class="relative desktop-only-action">
                   <button id="userMenuBtn" class="pill-btn secondary user-btn" style="border-radius: var(--md-sys-shape-corner-large);">
-                    ${user.photoURL
-                      ? `<img src="${user.photoURL}" class="avatar" style="border-radius:50%; width:24px; height:24px; object-fit:cover;" alt="Profil" />`
+                    ${user.user_metadata?.avatar_url
+                      ? `<img src="${user.user_metadata.avatar_url}" class="avatar" style="border-radius:50%; width:24px; height:24px; object-fit:cover;" alt="Profil" />`
                       : `<i data-lucide="user"></i>`}
-                    <span>${user.displayName?.split(' ')[0] || t('my_profile')}</span>
+                    <span>${(user.user_metadata?.display_name || user.user_metadata?.full_name || user.email)?.split(' ')[0] || t('my_profile')}</span>
                   </button>
                   <div id="userDropdown" class="glass-dropdown">
-                    <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
+                    <a href="/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
                     <div class="dropdown-divider dropdown-publish-listing"></div>
-                    <a href="#/dashboard"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
-                    <a href="#/profil"><i data-lucide="user"></i> ${t('my_profile')}</a>
-                    <a href="#/garaža"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
-                    <a href="#/primerjava" style="display: flex; align-items: center; justify-content: space-between;">
+                    <a href="/dashboard"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
+                    <a href="/profil"><i data-lucide="user"></i> ${t('my_profile')}</a>
+                    <a href="/garaža"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
+                    <a href="/primerjava" style="display: flex; align-items: center; justify-content: space-between;">
                         <span><i data-lucide="scale"></i> ${t('compare_btn')}</span>
                         <span id="compareBadgeDropdown" class="compare-badge-small" style="display: none; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: 800;">0</span>
                     </a>
                     <div class="dropdown-divider"></div>
                     <button id="logoutBtn" class="dropdown-logout"><i data-lucide="log-out"></i> ${t('logout')}</button>
-                    <a href="#/admin" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
+                    <a href="/admin" style="color: #f59e0b;"><i data-lucide="shield"></i> Admin</a>
                   </div>
                 </div>
               ` : `
-                <a href="#/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);">
+                <a href="/novi-oglas" class="pill-btn primary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);">
                   <i data-lucide="plus"></i><span> ${t('publish_listing')}</span>
                 </a>
-                <a href="#/profil" class="pill-btn secondary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);">
+                <a href="/profil" class="pill-btn secondary btn-sm desktop-only-action" style="border-radius: var(--md-sys-shape-corner-large);">
                   <i data-lucide="user"></i><span> ${t('my_profile')}</span>
                 </a>
               `}
@@ -167,18 +169,18 @@ export function initHeader() {
               <!-- Mobile profile button (right side) -->
               <div class="mobile-profile-wrap">
                 <button id="mobileProfileBtn" class="nav-avatar-mobile" aria-label="Profil" aria-haspopup="true" aria-expanded="false">
-                  ${user?.photoURL
-                    ? `<img src="${user.photoURL}" alt="Profil" />`
+                  ${user?.user_metadata?.avatar_url
+                    ? `<img src="${user.user_metadata.avatar_url}" alt="Profil" />`
                     : `<i data-lucide="user"></i>`}
                 </button>
                 <div id="mobileProfileDropdown" class="glass-dropdown mobile-profile-dropdown">
                   ${user ? `
-                    <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
+                    <a href="/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
                     <div class="dropdown-divider dropdown-publish-listing"></div>
-                    <a href="#/dashboard"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
-                    <a href="#/profil"><i data-lucide="user"></i> ${t('my_profile')}</a>
-                    <a href="#/garaža"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
-                    <a href="#/primerjava" style="display:flex;align-items:center;justify-content:space-between;">
+                    <a href="/dashboard"><i data-lucide="layout-dashboard"></i> ${t('dashboard_link')}</a>
+                    <a href="/profil"><i data-lucide="user"></i> ${t('my_profile')}</a>
+                    <a href="/garaža"><i data-lucide="warehouse"></i> ${t('my_garage')}</a>
+                    <a href="/primerjava" style="display:flex;align-items:center;justify-content:space-between;">
                       <span><i data-lucide="scale"></i> ${t('compare_btn')}</span>
                       <span id="compareBadgeMobile" class="compare-badge-small" style="display:none;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:0.65rem;align-items:center;justify-content:center;font-weight:800;">0</span>
                     </a>
@@ -199,9 +201,9 @@ export function initHeader() {
                     <div class="dropdown-divider"></div>
                     <button class="dropdown-logout" id="mobileProfileLogoutBtn"><i data-lucide="log-out"></i> ${t('logout')}</button>
                   ` : `
-                    <a href="#/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
+                    <a href="/novi-oglas" class="dropdown-publish-listing"><i data-lucide="plus"></i> ${t('publish_listing')}</a>
                     <div class="dropdown-divider dropdown-publish-listing"></div>
-                    <a href="#/prijava"><i data-lucide="log-in"></i> ${t('login')}</a>
+                    <a href="/prijava"><i data-lucide="log-in"></i> ${t('login')}</a>
                     <div class="dropdown-divider"></div>
                     <button type="button" class="dropdown-theme-toggle" id="themeToggleMobileProfileBtn">
                       <i data-lucide="${isDark ? 'sun' : 'moon'}"></i>
@@ -309,7 +311,7 @@ export function initHeader() {
 
         trigger.addEventListener('click', (e) => {
           if (!isMobile()) {
-            window.location.hash = item.children[0].href;
+            navigateTo(item.children[0].href);
           } else {
             e.preventDefault();
             e.stopPropagation();
@@ -347,7 +349,7 @@ export function initHeader() {
     // ── Logout ──
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
       await logout();
-      window.location.hash = '/';
+      navigateTo('/');
     });
 
     // ── Mobile profile dropdown ──
@@ -379,20 +381,20 @@ export function initHeader() {
 
     document.getElementById('mobileProfileLogoutBtn')?.addEventListener('click', async () => {
       await logout();
-      window.location.hash = '/';
+      navigateTo('/');
     });
 
     // ── Mobile page title ──
     const updatePageTitle = () => {
       const titleEl = document.getElementById('mobilePageTitle');
       if (!titleEl) return;
-      const hash = window.location.hash;
+      const curPath = window.location.pathname;
       const active = navItems.find(item =>
-        item.href ? (item.href === '#/' ? hash === '#/' || hash === '#' : hash.startsWith(item.href))
-                  : item.children?.some(c => hash.startsWith(c.href))
+        item.href ? (item.href === '/' ? curPath === '/' : curPath.startsWith(item.href.split('?')[0]))
+                  : item.children?.some(c => curPath.startsWith(c.href.split('?')[0]))
       );
       if (active?.children) {
-        const child = active.children.find(c => hash.startsWith(c.href));
+        const child = active.children.find(c => curPath.startsWith(c.href.split('?')[0]));
         titleEl.textContent = child ? navLabel(child) : navLabel(active);
       } else {
         titleEl.textContent = active ? navLabel(active) : (PLATFORM.brandName + PLATFORM.tld);
@@ -428,7 +430,7 @@ export function initHeader() {
     window.updateHeaderCompare();
   });
 
-  window.addEventListener('hashchange', () => {
+  window.addEventListener('popstate', () => {
     render(window._currentUser || null);
   });
 

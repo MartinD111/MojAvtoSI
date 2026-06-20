@@ -3,7 +3,7 @@
 // come to auction. Writes to auctionAlerts via auctionService.createAuctionAlert.
 
 import { createAuctionAlert } from '../services/auctionService.js';
-import { auth } from '../firebase.js';
+import { currentUser } from '../lib/currentUser.js';
 
 export function newsletterWidgetHtml(prefill = {}) {
     return `
@@ -17,7 +17,7 @@ export function newsletterWidgetHtml(prefill = {}) {
         </div>
         <form class="an-form" id="auctionNewsletterForm">
             <input type="email" class="an-input" id="anEmail" placeholder="vaš@email.si" required
-                value="${prefill.email || (auth.currentUser?.email || '')}" />
+                value="${prefill.email || (currentUser()?.email || '')}" />
             <input type="text" class="an-input" id="anInterest" placeholder="Npr. BMW, Audi, kombi …"
                 value="${prefill.interest || ''}" />
             <button type="submit" class="an-submit">Prijava</button>
@@ -35,7 +35,7 @@ export function bindNewsletterWidget(root = document) {
         const email = root.querySelector('#anEmail').value.trim();
         const interest = root.querySelector('#anInterest').value.trim();
         try {
-            await createAuctionAlert(email, { interest }, auth.currentUser?.uid || null);
+            await createAuctionAlert(email, { interest }, currentUser()?.id || null);
             if (status) { status.textContent = '✓ Prijavljeni ste na obvestila.'; status.className = 'an-status ok'; }
             form.reset();
         } catch (err) {

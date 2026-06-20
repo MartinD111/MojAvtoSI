@@ -3,7 +3,9 @@
 // Self-contained controller for the boat search view (advanced-search.navtika.html).
 // Kept separate from the car search so neither platform's logic interferes.
 // ═══════════════════════════════════════════════════════════════════════════════
+import { escHtml as escapeHtml } from '../utils/escHtml.js';
 import { getListings } from '../services/listingService.js';
+import { navigateTo } from '../router.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
 import { brandsFileFor } from '../data/brandFiles.js';
 import { t } from '../core/i18n.js';
@@ -106,9 +108,7 @@ function prefillFromParams(params) {
 }
 
 function parseHashParams() {
-    const hash = window.location.hash.slice(1) || '/';
-    const q = hash.indexOf('?');
-    return q === -1 ? new URLSearchParams() : new URLSearchParams(hash.slice(q + 1));
+    return new URLSearchParams(window.location.search);
 }
 
 // ── Equipment chips — generated from equipment.js so the navtika search filter and
@@ -296,7 +296,7 @@ function applyCategory(ctx) {
 function loadEngineMakeDropdown() {
     const sel = document.getElementById('advEngineMake');
     if (!sel || sel.options.length > 1) return;
-    fetch('json/brands_models_izvenkrmni.json')
+    fetch('/json/brands_models_izvenkrmni.json')
         .then(r => r.ok ? r.json() : {})
         .then(data => {
             Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
@@ -325,15 +325,14 @@ function loadBrands(catSlug) {
 
             // Inject approved custom makes (proposals of type 'make' for this platform)
             try {
-                const { getDocs, collection, query, where } = await import('firebase/firestore');
-                const { db } = await import('../firebase.js');
-                const snap = await getDocs(query(
-                    collection(db, 'taxonomy_proposals'),
-                    where('status', '==', 'approved'),
-                    where('type', '==', 'make')
-                ));
-                snap.docs.forEach(d => {
-                    const brand = d.data().value;
+                const { supabase } = await import('../lib/supabase.js');
+                const { data: proposals } = await supabase
+                    .from('taxonomy_proposals')
+                    .select('payload')
+                    .eq('status', 'approved')
+                    .contains('payload', { type: 'make' });
+                (proposals || []).forEach(row => {
+                    const brand = row.payload?.value;
                     if (brand && !data[brand]) {
                         const o = document.createElement('option');
                         o.value = brand; o.textContent = `${brand} ✦`;
@@ -496,7 +495,7 @@ function bindForm(ctx) {
 
         const paramStr = params.toString();
         const target = searchMode === 'drazbe' ? '/drazbe' : '/oglasi';
-        window.location.hash = `${target}${paramStr ? '?' + paramStr : ''}`;
+        navigateTo(`${target}${paramStr ? '?' + paramStr : ''}`);
     });
 }
 
@@ -944,6 +943,3 @@ function fmt(n) {
     return new Intl.NumberFormat('sl-SI').format(n);
 }
 
-function escapeHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}

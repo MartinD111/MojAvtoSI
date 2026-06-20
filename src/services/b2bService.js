@@ -1,233 +1,213 @@
-// b2bService.js — All Firestore queries scoped to currentUser.uid (providerId)
-// Security model: every read/write enforces providerId == auth.currentUser.uid
+// b2bService.js — B2B operations (Supabase)
+// All writes enforce provider_id == authenticated user's id.
 
-import { db, auth, storage } from '../firebase.js';
-import {
-    collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
-    getDoc, getDocs, query, where, orderBy, limit, serverTimestamp
-} from 'firebase/firestore';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { supabase } from '../lib/supabase.js';
+import { uploadImage } from '../lib/uploads.js';
 
-// ── Guard helper ─────────────────────────────────────────────
-function requireProvider() {
-    const u = auth.currentUser;
-    if (!u) throw new Error('Sign in required.');
-    return u.uid;
+// ── Guard helper ──────────────────────────────────────────────────────────────
+
+async function requireProvider() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Sign in required.');
+    return user.id;
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// BUSINESS / PROFILE (businesses/{providerId})
+// BUSINESS / PROFILE
 // ════════════════════════════════════════════════════════════════════════════
+
 export async function getMyBusiness() {
-    const uid = requireProvider();
-    const snap = await getDoc(doc(db, 'businesses', uid));
-    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+    const uid = await requireProvider();
+    const { data } = await supabase.from('businesses').select('*').eq('id', uid).maybeSingle();
+    return data ? { ...data } : null;
 }
 
 export async function saveMyBusiness(data) {
-    const uid = requireProvider();
-    await setDoc(doc(db, 'businesses', uid), {
-        ...data,
-        providerId: uid,
-        updatedAt: serverTimestamp(),
-    }, { merge: true });
+    const uid = await requireProvider();
+    await supabase.from('businesses').upsert({ id: uid, provider_id: uid, ...data, updated_at: new Date().toISOString() }, { onConflict: 'id' });
 }
 
 export async function uploadBusinessAsset(file, kind /* 'logo'|'cover'|'gallery' */) {
-    const uid = requireProvider();
-    const path = `businesses/${uid}/${kind}/${Date.now()}_${file.name}`;
-    const r = storageRef(storage, path);
-    await uploadBytes(r, file);
-    return await getDownloadURL(r);
+    const uid = await requireProvider();
+    return await uploadImage(file, { scope: kind === 'gallery' ? 'business-gallery' : 'business', ownerId: uid, kind });
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// SERVICES / PRICING (businesses/{providerId}/services/{id})
+// SERVICES / PRICING — flat table with provider_id
 // ════════════════════════════════════════════════════════════════════════════
+
 export async function listServices() {
-    const uid = requireProvider();
-    const snap = await getDocs(collection(db, 'businesses', uid, 'services'));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const uid = await requireProvider();
+    const { data } = await supabase.from('services').select('*').eq('provider_id', uid);
+    return data || [];
 }
 
 export async function saveService(data) {
-    const uid = requireProvider();
-    const col = collection(db, 'businesses', uid, 'services');
+    const uid = await requireProvider();
+    const payload = { ...data, provider_id: uid, updated_at: new Date().toISOString() };
+    delete payload.id;
+
     if (data.id) {
-        await setDoc(doc(col, data.id), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+        await supabase.from('services').update(payload).eq('id', data.id).eq('provider_id', uid);
         return data.id;
     }
-    const ref = await addDoc(col, { ...data, createdAt: serverTimestamp() });
-    return ref.id;
+    const { data: row, error } = await supabase.from('services').insert({ ...payload, created_at: new Date().toISOString() }).select('id').single();
+    if (error) throw new Error(error.message);
+    return row.id;
 }
 
 export async function deleteService(id) {
-    const uid = requireProvider();
-    await deleteDoc(doc(db, 'businesses', uid, 'services', id));
+    const uid = await requireProvider();
+    await supabase.from('services').delete().eq('id', id).eq('provider_id', uid);
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// BOOKINGS (bookings/{id}) — filter by providerId
+// BOOKINGS — provider_id filter
 // ════════════════════════════════════════════════════════════════════════════
+
 export async function listMyBookings(filters = {}) {
-    const uid = requireProvider();
-    const clauses = [where('providerId', '==', uid)];
-    if (filters.status) clauses.push(where('status', '==', filters.status));
-    const q = query(collection(db, 'bookings'), ...clauses);
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const uid = await requireProvider();
+    let q = supabase.from('bookings').select('*').eq('provider_id', uid);
+    if (filters.status) q = q.eq('status', filters.status);
+    const { data } = await q;
+    return (data || []).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 }
 
 export async function updateBookingStatus(id, status) {
-    const uid = requireProvider();
-    const ref = doc(db, 'bookings', id);
-    const snap = await getDoc(ref);
-    if (!snap.exists() || snap.data().providerId !== uid) {
-        throw new Error('Access denied.');
-    }
-    await updateDoc(ref, { status, updatedAt: serverTimestamp() });
+    const uid = await requireProvider();
+    const { data: row } = await supabase.from('bookings').select('provider_id').eq('id', id).single();
+    if (!row || row.provider_id !== uid) throw new Error('Access denied.');
+    await supabase.from('bookings').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
 }
 
 export async function blockSlot(date, time, reason) {
-    const uid = requireProvider();
-    await addDoc(collection(db, 'bookings'), {
-        providerId: uid,
-        date, time,
-        status: 'blocked',
-        notes: reason || 'Blocked slot',
-        createdAt: serverTimestamp(),
-    });
+    const uid = await requireProvider();
+    await supabase.from('bookings').insert({ provider_id: uid, date, time, status: 'blocked', notes: reason || 'Blocked slot', created_at: new Date().toISOString() });
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// INVENTORY (inventory/{id}) — dealer
+// INVENTORY — dealer
 // ════════════════════════════════════════════════════════════════════════════
+
 export async function listInventory(statusFilter) {
-    const uid = requireProvider();
-    const clauses = [where('providerId', '==', uid)];
-    if (statusFilter) clauses.push(where('status', '==', statusFilter));
-    const snap = await getDocs(query(collection(db, 'inventory'), ...clauses));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const uid = await requireProvider();
+    let q = supabase.from('inventory').select('*').eq('provider_id', uid);
+    if (statusFilter) q = q.eq('status', statusFilter);
+    const { data } = await q;
+    return data || [];
 }
 
 export async function saveInventoryItem(data) {
-    const uid = requireProvider();
+    const uid = await requireProvider();
+    const payload = { ...data, provider_id: uid, updated_at: new Date().toISOString() };
+    delete payload.id;
+
     if (data.id) {
-        const ref = doc(db, 'inventory', data.id);
-        const existing = await getDoc(ref);
-        if (existing.exists() && existing.data().providerId !== uid) throw new Error('Access denied.');
-        await setDoc(ref, { ...data, providerId: uid, updatedAt: serverTimestamp() }, { merge: true });
+        const { data: existing } = await supabase.from('inventory').select('provider_id').eq('id', data.id).single();
+        if (existing && existing.provider_id !== uid) throw new Error('Access denied.');
+        await supabase.from('inventory').update(payload).eq('id', data.id);
         return data.id;
     }
-    const ref = await addDoc(collection(db, 'inventory'), {
-        ...data,
-        providerId: uid,
-        status: data.status || 'draft',
-        createdAt: serverTimestamp(),
-    });
-    return ref.id;
+    const { data: row, error } = await supabase.from('inventory').insert({ ...payload, status: data.status || 'draft', created_at: new Date().toISOString() }).select('id').single();
+    if (error) throw new Error(error.message);
+    return row.id;
 }
 
 export async function deleteInventoryItem(id) {
-    const uid = requireProvider();
-    const ref = doc(db, 'inventory', id);
-    const snap = await getDoc(ref);
-    if (snap.exists() && snap.data().providerId !== uid) throw new Error('Access denied.');
-    await deleteDoc(ref);
+    const uid = await requireProvider();
+    const { data: existing } = await supabase.from('inventory').select('provider_id').eq('id', id).single();
+    if (existing && existing.provider_id !== uid) throw new Error('Access denied.');
+    await supabase.from('inventory').delete().eq('id', id);
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// LEADS (leads/{id}) — dealer CRM
+// LEADS — dealer CRM
 // ════════════════════════════════════════════════════════════════════════════
+
 export async function listLeads(statusFilter) {
-    const uid = requireProvider();
-    const clauses = [where('providerId', '==', uid)];
-    if (statusFilter) clauses.push(where('status', '==', statusFilter));
-    const snap = await getDocs(query(collection(db, 'leads'), ...clauses));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    const uid = await requireProvider();
+    let q = supabase.from('leads').select('*').eq('provider_id', uid).order('created_at', { ascending: false });
+    if (statusFilter) q = q.eq('status', statusFilter);
+    const { data } = await q;
+    return data || [];
 }
 
 export async function updateLead(id, data) {
-    const uid = requireProvider();
-    const ref = doc(db, 'leads', id);
-    const snap = await getDoc(ref);
-    if (snap.exists() && snap.data().providerId !== uid) throw new Error('Access denied.');
-    await updateDoc(ref, { ...data, updatedAt: serverTimestamp() });
+    const uid = await requireProvider();
+    const { data: existing } = await supabase.from('leads').select('provider_id').eq('id', id).single();
+    if (existing && existing.provider_id !== uid) throw new Error('Access denied.');
+    await supabase.from('leads').update({ ...data, updated_at: new Date().toISOString() }).eq('id', id);
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// TIRE STORAGE (tire_storage/{id}) — vulcanizer "hotel za gume"
+// TIRE STORAGE — "hotel za gume"
 // ════════════════════════════════════════════════════════════════════════════
+
 export async function listTireStorage(statusFilter) {
-    const uid = requireProvider();
-    const clauses = [where('providerId', '==', uid)];
-    if (statusFilter) clauses.push(where('status', '==', statusFilter));
-    const snap = await getDocs(query(collection(db, 'tire_storage'), ...clauses));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const uid = await requireProvider();
+    let q = supabase.from('tire_storage').select('*').eq('provider_id', uid);
+    if (statusFilter) q = q.eq('status', statusFilter);
+    const { data } = await q;
+    return data || [];
 }
 
 export async function saveTireStorage(data) {
-    const uid = requireProvider();
+    const uid = await requireProvider();
+    const payload = { ...data, provider_id: uid, updated_at: new Date().toISOString() };
+    delete payload.id;
+
     if (data.id) {
-        const ref = doc(db, 'tire_storage', data.id);
-        const existing = await getDoc(ref);
-        if (existing.exists() && existing.data().providerId !== uid) throw new Error('Access denied.');
-        await setDoc(ref, { ...data, providerId: uid, updatedAt: serverTimestamp() }, { merge: true });
+        const { data: existing } = await supabase.from('tire_storage').select('provider_id').eq('id', data.id).single();
+        if (existing && existing.provider_id !== uid) throw new Error('Access denied.');
+        await supabase.from('tire_storage').update(payload).eq('id', data.id);
         return data.id;
     }
-    const ref = await addDoc(collection(db, 'tire_storage'), {
-        ...data,
-        providerId: uid,
-        status: data.status || 'stored',
-        createdAt: serverTimestamp(),
-    });
-    return ref.id;
+    const { data: row, error } = await supabase.from('tire_storage').insert({ ...payload, status: data.status || 'stored', created_at: new Date().toISOString() }).select('id').single();
+    if (error) throw new Error(error.message);
+    return row.id;
 }
 
 export async function deleteTireStorageItem(id) {
-    const uid = requireProvider();
-    const ref = doc(db, 'tire_storage', id);
-    const snap = await getDoc(ref);
-    if (snap.exists() && snap.data().providerId !== uid) throw new Error('Access denied.');
-    await deleteDoc(ref);
+    const uid = await requireProvider();
+    const { data: existing } = await supabase.from('tire_storage').select('provider_id').eq('id', id).single();
+    if (existing && existing.provider_id !== uid) throw new Error('Access denied.');
+    await supabase.from('tire_storage').delete().eq('id', id);
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// ANALYTICS SUMMARY — counts for dashboard
+// DASHBOARD STATS
 // ════════════════════════════════════════════════════════════════════════════
+
 export async function getDashboardStats() {
-    const uid = requireProvider();
-    const [bookings, services, inventory, leads] = await Promise.all([
-        getDocs(query(collection(db, 'bookings'), where('providerId', '==', uid))),
-        getDocs(collection(db, 'businesses', uid, 'services')),
-        getDocs(query(collection(db, 'inventory'), where('providerId', '==', uid))).catch(() => ({ docs: [] })),
-        getDocs(query(collection(db, 'leads'), where('providerId', '==', uid))).catch(() => ({ docs: [] })),
+    const uid = await requireProvider();
+    const [bookingsRes, servicesRes, inventoryRes, leadsRes] = await Promise.allSettled([
+        supabase.from('bookings').select('status, total_price').eq('provider_id', uid),
+        supabase.from('services').select('id', { count: 'exact', head: true }).eq('provider_id', uid),
+        supabase.from('inventory').select('id', { count: 'exact', head: true }).eq('provider_id', uid),
+        supabase.from('leads').select('status').eq('provider_id', uid),
     ]);
 
-    const bookingsArr = bookings.docs.map(d => d.data());
+    const bookingsArr = bookingsRes.status === 'fulfilled' ? (bookingsRes.value.data || []) : [];
+    const servicesCount = servicesRes.status === 'fulfilled' ? (servicesRes.value.count || 0) : 0;
+    const inventoryCount = inventoryRes.status === 'fulfilled' ? (inventoryRes.value.count || 0) : 0;
+    const leadsArr = leadsRes.status === 'fulfilled' ? (leadsRes.value.data || []) : [];
+
     return {
         bookings: {
             total: bookingsArr.length,
             pending: bookingsArr.filter(b => b.status === 'pending').length,
             confirmed: bookingsArr.filter(b => b.status === 'confirmed').length,
             completed: bookingsArr.filter(b => b.status === 'completed').length,
-            revenue: bookingsArr
-                .filter(b => b.status === 'completed')
-                .reduce((sum, b) => sum + (Number(b.totalPrice) || 0), 0),
+            revenue: bookingsArr.filter(b => b.status === 'completed').reduce((sum, b) => sum + (Number(b.total_price) || 0), 0),
         },
-        services: services.docs.length,
-        inventory: inventory.docs.length,
-        leads: {
-            total: leads.docs.length,
-            new: leads.docs.filter(d => d.data().status === 'new').length,
-        },
+        services: servicesCount,
+        inventory: inventoryCount,
+        leads: { total: leadsArr.length, new: leadsArr.filter(l => l.status === 'new').length },
     };
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// TIRE ORDERS (tire_orders collection)
+// TIRE ORDERS
 // Flow: buyer submits → vulkanizer confirms → buyer books appointment
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -243,93 +223,67 @@ function addBusinessDays(startDate, days) {
 }
 
 export async function submitTireOrder(tireData, vulcanizerId) {
-    const u = auth.currentUser;
-    if (!u) throw new Error('Sign in required.');
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Sign in required.');
 
     const estimatedDeliveryDate = addBusinessDays(new Date(), 3).toISOString().slice(0, 10);
 
-    const orderData = {
-        vulcanizerId,
-        buyerId: u.uid,
-        tireData: {
+    const { data: row, error } = await supabase.from('tire_orders').insert({
+        vulcanizer_id: vulcanizerId,
+        buyer_id: user.id,
+        tire_data: {
             brand: tireData.tireBrand,
             model: tireData.tireModel,
             dimension: tireData.tireDim,
             quantity: tireData.quantity,
         },
         status: 'pending_confirmation',
-        submittedAt: serverTimestamp(),
-        confirmedAt: null,
-        orderedAt: null,
-        estimatedDeliveryDate,
-        priceSnapshot: tireData.price || null,
-        currentPrice: tireData.price || null,
-        bookingUrl: null,
-    };
+        estimated_delivery_date: estimatedDeliveryDate,
+        price_snapshot: tireData.price || null,
+        current_price: tireData.price || null,
+        booking_url: null,
+        created_at: new Date().toISOString(),
+    }).select('id').single();
+    if (error) throw new Error(error.message);
 
-    const ref = await addDoc(collection(db, 'tire_orders'), orderData);
-    console.info(`[TireOrder] New order ${ref.id} for tire shop ${vulcanizerId}. Mock notification: "New tire order awaiting confirmation."`);
-
-    return { id: ref.id, estimatedDeliveryDate };
+    console.info(`[TireOrder] New order ${row.id} for tire shop ${vulcanizerId}.`);
+    return { id: row.id, estimatedDeliveryDate };
 }
 
 export async function getTireOrder(tireOrderId) {
-    const snap = await getDoc(doc(db, 'tire_orders', tireOrderId));
-    if (!snap.exists()) return null;
-    return { id: snap.id, ...snap.data() };
+    const { data } = await supabase.from('tire_orders').select('*').eq('id', tireOrderId).maybeSingle();
+    return data || null;
 }
 
 export async function listPendingTireOrders() {
-    const uid = requireProvider();
-    const q = query(
-        collection(db, 'tire_orders'),
-        where('vulcanizerId', '==', uid),
-        where('status', '==', 'pending_confirmation'),
-        orderBy('submittedAt', 'desc')
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const uid = await requireProvider();
+    const { data } = await supabase.from('tire_orders').select('*').eq('vulcanizer_id', uid).eq('status', 'pending_confirmation').order('created_at', { ascending: false });
+    return data || [];
 }
 
 export async function confirmTireOrderReceival(tireOrderId) {
-    const uid = requireProvider();
-    const ref = doc(db, 'tire_orders', tireOrderId);
-    const snap = await getDoc(ref);
-    if (!snap.exists() || snap.data().vulcanizerId !== uid) {
-        throw new Error('Access denied.');
-    }
+    const uid = await requireProvider();
+    const { data: order } = await supabase.from('tire_orders').select('*').eq('id', tireOrderId).single();
+    if (!order || order.vulcanizer_id !== uid) throw new Error('Access denied.');
 
     const bookingUrl = `${window.location.origin}/#/booking?businessId=${uid}&tireOrderId=${tireOrderId}`;
+    await supabase.from('tire_orders').update({ status: 'confirmed', confirmed_at: new Date().toISOString(), booking_url: bookingUrl }).eq('id', tireOrderId);
 
-    await updateDoc(ref, {
-        status: 'confirmed',
-        confirmedAt: serverTimestamp(),
-        bookingUrl,
-    });
-
-    const order = snap.data();
-    console.info(`[TireOrder] Order ${tireOrderId} confirmed. Mock SMS to buyer (buyerId: ${order.buyerId}): "Your tires have been received. Book an appointment: ${bookingUrl}"`);
-
+    console.info(`[TireOrder] Order ${tireOrderId} confirmed. Booking URL: ${bookingUrl}`);
     return { bookingUrl };
 }
 
 export async function checkAndHandlePriceChange(tireOrderId, newPrice) {
-    const uid = requireProvider();
-    const ref = doc(db, 'tire_orders', tireOrderId);
-    const snap = await getDoc(ref);
-    if (!snap.exists() || snap.data().vulcanizerId !== uid) throw new Error('Access denied.');
+    const uid = await requireProvider();
+    const { data: order } = await supabase.from('tire_orders').select('*').eq('id', tireOrderId).single();
+    if (!order || order.vulcanizer_id !== uid) throw new Error('Access denied.');
 
-    const order = snap.data();
-    if (order.priceSnapshot !== newPrice) {
-        await updateDoc(ref, { status: 'price_changed', currentPrice: newPrice, updatedAt: serverTimestamp() });
-        console.info(`[TireOrder] Price changed for ${tireOrderId}. Mock SMS to buyer: "The tire price changed from $${order.priceSnapshot} to $${newPrice}. Please confirm the purchase."`);
+    if (order.price_snapshot !== newPrice) {
+        await supabase.from('tire_orders').update({ status: 'price_changed', current_price: newPrice, updated_at: new Date().toISOString() }).eq('id', tireOrderId);
+        console.info(`[TireOrder] Price changed for ${tireOrderId}: ${order.price_snapshot} → ${newPrice}`);
     }
 }
 
 export async function markTireOrderOrdered(tireOrderId) {
-    const ref = doc(db, 'tire_orders', tireOrderId);
-    await updateDoc(ref, {
-        status: 'ordered',
-        orderedAt: serverTimestamp(),
-    });
+    await supabase.from('tire_orders').update({ status: 'ordered', ordered_at: new Date().toISOString() }).eq('id', tireOrderId);
 }

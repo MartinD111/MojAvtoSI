@@ -1,52 +1,50 @@
 // SPA Router — platform-aware (MojAvto / MojaNavtika)
-import { auth } from './firebase.js';
-import { onAuthStateChanged } from 'firebase/auth';
+import { supabase } from './lib/supabase.js';
 import { fetchB2BProfile } from './core/b2bContext.js';
 import { t, translatePage, i18nReady } from './core/i18n.js';
 import { PLATFORM } from './config/platform.js';
 
-
 // ── Route definitions ─────────────────────────────────────────────────────────
 const routes = {
-    '/': { view: 'home', protected: false },
-    '/oglasi': { view: 'oglasi', protected: false },
-    '/iskanje': { view: 'advanced-search', protected: false },
-    '/oglas': { view: 'listing', protected: false },
-    '/drazbe': { view: 'drazbe', protected: false },
-    '/drazba': { view: 'auction-listing', protected: false },
-    '/gume-in-deli': { view: 'gume-in-deli', protected: false },
-    '/katalog': { view: 'catalog-product', protected: false },
-    '/prijava': { view: 'login', protected: false },
-    '/registracija': { view: 'register', protected: false },
-    '/dashboard': { view: 'dashboard', protected: true },
-    '/novi-oglas': { view: 'create-listing', protected: false },
-    '/profil': { view: 'profile', protected: true },
-    '/garaža': { view: 'profile', protected: true },
-    '/primerjava': { view: 'compare', protected: false },
-    '/oceni-vrednost': { view: 'evaluate', protected: false },
-    '/o-nas': { view: 'about', protected: false },
-    '/kontakt': { view: 'contact', protected: false },
-    '/faq': { view: 'faq', protected: false },
-    '/pravno-obvestilo': { view: 'pravno-obvestilo', protected: false },
-    '/zasebnost': { view: 'zasebnost', protected: false },
-    '/admin': { view: 'admin', protected: true },
-    '/zemljevid': { view: 'map', protected: false },
-    '/poslovni-profil': { view: 'business-profile', protected: false },
-    '/booking': { view: 'booking', protected: false },
-    '/servis/vnos': { view: 'service-entry', protected: true },
-    '/nastavitve-tco': { view: 'tco-settings', protected: true },
+    '/': { view: 'home', protected: false, title: null },
+    '/oglasi': { view: 'oglasi', protected: false, title: 'Oglasi' },
+    '/iskanje': { view: 'advanced-search', protected: false, title: 'Iskanje' },
+    '/oglas': { view: 'listing', protected: false, title: 'Oglas' },
+    '/drazbe': { view: 'drazbe', protected: false, title: 'Dražbe' },
+    '/drazba': { view: 'auction-listing', protected: false, title: 'Dražba' },
+    '/gume-in-deli': { view: 'gume-in-deli', protected: false, title: 'Gume in deli' },
+    '/katalog': { view: 'catalog-product', protected: false, title: 'Katalog' },
+    '/prijava': { view: 'login', protected: false, title: 'Prijava' },
+    '/registracija': { view: 'register', protected: false, title: 'Registracija' },
+    '/dashboard': { view: 'dashboard', protected: true, title: 'Nadzorna plošča' },
+    '/novi-oglas': { view: 'create-listing', protected: false, title: 'Oddaj oglas' },
+    '/profil': { view: 'profile', protected: true, title: 'Moj profil' },
+    '/garaža': { view: 'profile', protected: true, title: 'Moja garaža' },
+    '/primerjava': { view: 'compare', protected: false, title: 'Primerjava vozil' },
+    '/oceni-vrednost': { view: 'evaluate', protected: false, title: 'Oceni vrednost' },
+    '/o-nas': { view: 'about', protected: false, title: 'O nas' },
+    '/kontakt': { view: 'contact', protected: false, title: 'Kontakt' },
+    '/faq': { view: 'faq', protected: false, title: 'Pogosta vprašanja' },
+    '/pravno-obvestilo': { view: 'pravno-obvestilo', protected: false, title: 'Pravno obvestilo' },
+    '/zasebnost': { view: 'zasebnost', protected: false, title: 'Zasebnost' },
+    '/admin': { view: 'admin', protected: true, title: 'Admin' },
+    '/zemljevid': { view: 'map', protected: false, title: 'Zemljevid' },
+    '/poslovni-profil': { view: 'business-profile', protected: false, title: 'Poslovni profil' },
+    '/booking': { view: 'booking', protected: false, title: 'Rezervacija' },
+    '/servis/vnos': { view: 'service-entry', protected: true, title: 'Vnos servisa' },
+    '/nastavitve-tco': { view: 'tco-settings', protected: true, title: 'Nastavitve stroškov' },
 
     // ── B2B Operating System ──
-    '/b2b': { view: 'b2b-dashboard', protected: true, b2bOnly: true },
-    '/b2b/rezervacije': { view: 'b2b-reservations', protected: true, b2bOnly: true },
-    '/b2b/storitve': { view: 'b2b-services', protected: true, b2bOnly: true },
-    '/b2b/profil': { view: 'b2b-profile-editor', protected: true, b2bOnly: true },
-    '/b2b/zaloga': { view: 'b2b-inventory', protected: true, b2bOnly: true },
-    '/b2b/leads': { view: 'b2b-leads', protected: true, b2bOnly: true },
-    '/b2b/delavnica': { view: 'b2b-workshop', protected: true, b2bOnly: true },
-    '/b2b/servis-vnos': { view: 'service-entry', protected: true, b2bOnly: true },
-    '/b2b/hotel-gum': { view: 'b2b-tire-hotel', protected: true, b2bOnly: true },
-    '/b2b/bulk-import': { view: 'bulk-import', protected: true, b2bOnly: true },
+    '/b2b': { view: 'b2b-dashboard', protected: true, b2bOnly: true, title: 'B2B' },
+    '/b2b/rezervacije': { view: 'b2b-reservations', protected: true, b2bOnly: true, title: 'B2B rezervacije' },
+    '/b2b/storitve': { view: 'b2b-services', protected: true, b2bOnly: true, title: 'B2B storitve' },
+    '/b2b/profil': { view: 'b2b-profile-editor', protected: true, b2bOnly: true, title: 'B2B profil' },
+    '/b2b/zaloga': { view: 'b2b-inventory', protected: true, b2bOnly: true, title: 'B2B zaloga' },
+    '/b2b/leads': { view: 'b2b-leads', protected: true, b2bOnly: true, title: 'B2B leadi' },
+    '/b2b/delavnica': { view: 'b2b-workshop', protected: true, b2bOnly: true, title: 'B2B delavnica' },
+    '/b2b/servis-vnos': { view: 'service-entry', protected: true, b2bOnly: true, title: 'Vnos servisa' },
+    '/b2b/hotel-gum': { view: 'b2b-tire-hotel', protected: true, b2bOnly: true, title: 'Hotel gum' },
+    '/b2b/bulk-import': { view: 'bulk-import', protected: true, b2bOnly: true, title: 'Uvoz oglasov' },
 };
 
 const PROTECTED_REDIRECT = '/prijava';
@@ -66,6 +64,30 @@ const PLATFORM_VIEW_VARIANTS = {
     navtika: new Set(['home', 'advanced-search', 'oglasi', 'drazbe', 'auction-listing']),
 };
 
+// ── Programmatic navigation ───────────────────────────────────────────────────
+export function navigateTo(path) {
+    history.pushState({}, '', path);
+    router();
+}
+// Expose globally for inline onclick handlers in dynamically-generated HTML.
+window.navigateTo = navigateTo;
+
+// ── Page meta helpers ─────────────────────────────────────────────────────────
+function applyRouteMeta(route) {
+    const b = `${PLATFORM.brandName}${PLATFORM.tld}`;
+    document.title = route.title ? `${route.title} — ${b}` : b;
+}
+
+// Called by page inits to set a data-driven title (e.g. listing title) and/or description.
+export function setPageMeta(title, description) {
+    const b = `${PLATFORM.brandName}${PLATFORM.tld}`;
+    document.title = `${title} — ${b}`;
+    if (description) {
+        const el = document.querySelector('meta[name="description"]');
+        if (el) el.setAttribute('content', description);
+    }
+}
+
 // ── Load a view HTML into the main container ──────────────────────────────────
 async function loadView(viewName) {
     try {
@@ -78,24 +100,24 @@ async function loadView(viewName) {
             // only when one is known to exist; otherwise load the shared view.
             const hasVariant = PLATFORM_VIEW_VARIANTS[PLATFORM.id]?.has(viewName);
             const file = hasVariant ? `${viewName}.${PLATFORM.id}` : viewName;
-            const res = await fetch(`views/${file}.html${v}`);
+            const res = await fetch(`/views/${file}.html${v}`);
             if (!res.ok) throw new Error(`View not found: ${viewName}`);
             APP.innerHTML = await res.text();
         }
         // Translate the newly loaded content
         translatePage(APP);
 
-        // Track the loaded path so filter-only hash changes skip a full reload.
-        _lastLoadedPath = decodeURIComponent((window.location.hash.slice(1) || '/').split('?')[0]);
+        // Track the loaded path so filter-only param changes skip a full reload.
+        _lastLoadedPath = decodeURIComponent(window.location.pathname);
 
         // Dispatch so page-specific scripts can init
         document.dispatchEvent(new CustomEvent('routeChanged', { detail: { view: viewName } }));
     } catch {
-        APP.innerHTML = `<div class="error-page"><h1>404</h1><p>${t('error_404_msg', 'Page not found.')}</p><a href="#/">← ${t('nav_home')}</a></div>`;
+        APP.innerHTML = `<div class="error-page"><h1>404</h1><p>${t('error_404_msg', 'Page not found.')}</p><a href="/">← ${t('nav_home')}</a></div>`;
     }
 }
 
-// Track the last loaded path so same-path hash changes (filter params) don't reload the view.
+// Track the last loaded path so same-path navigations (filter params) don't reload the view.
 let _lastLoadedPath = null;
 
 // ── Main router function ──────────────────────────────────────────────────────
@@ -104,15 +126,12 @@ async function router() {
     // renders, so translatePage never paints stale/base strings on first load.
     await i18nReady;
 
-    const hash = window.location.hash.slice(1) || '/';
-    // Strip query params and decode special characters (e.g. č, š, ž)
-    const path = decodeURIComponent(hash.split('?')[0]);
+    const path = decodeURIComponent(window.location.pathname);
 
-    // If only the query params changed (same path already loaded), let the page
-    // handle the update itself (e.g. sidebar filter reapplication) rather than
-    // reloading the whole view.
+    // If only query params changed (same path already loaded), let the page
+    // handle the update itself rather than reloading the whole view.
     if (path === _lastLoadedPath) {
-        document.dispatchEvent(new CustomEvent('routeParamsChanged', { detail: { path, hash } }));
+        document.dispatchEvent(new CustomEvent('routeParamsChanged', { detail: { path, search: window.location.search } }));
         return;
     }
 
@@ -123,47 +142,40 @@ async function router() {
     document.dispatchEvent(new CustomEvent('beforeRouteChange', { detail: { path } }));
 
     let route = routes[path];
-    route = route || { view: '404', protected: false };
+    route = route || { view: '404', protected: false, title: null };
+
+    applyRouteMeta(route);
 
     if (route.protected) {
-        // Wait for auth state before deciding
-        await new Promise(resolve => {
-            const unsub = onAuthStateChanged(auth, async user => {
-                unsub();
-                if (!user) {
-                    window.location.hash = PROTECTED_REDIRECT;
-                    resolve();
-                    return;
-                }
-                // B2B-only gate
-                if (route.b2bOnly) {
-                    const profile = await fetchB2BProfile(user);
-                    if (profile?.sellerType !== 'business') {
-                        window.location.hash = '/dashboard';
-                        resolve();
-                        return;
-                    }
-                }
-                // Auto-redirect business users to B2B home if they hit /dashboard
-                if (route.view === 'dashboard') {
-                    const profile = await fetchB2BProfile(user);
-                    if (profile?.sellerType === 'business') {
-                        window.location.hash = '/b2b';
-                        resolve();
-                        return;
-                    }
-                }
-                loadView(route.view);
-                resolve();
-            });
-        });
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user ?? null;
+        if (!user) {
+            navigateTo(PROTECTED_REDIRECT);
+        } else if (route.b2bOnly) {
+            const profile = await fetchB2BProfile(user);
+            if (profile?.sellerType !== 'business') {
+                navigateTo('/dashboard');
+            } else {
+                await loadView(route.view);
+            }
+        } else if (route.view === 'dashboard') {
+            const profile = await fetchB2BProfile(user);
+            if (profile?.sellerType === 'business') {
+                navigateTo('/b2b');
+            } else {
+                await loadView(route.view);
+            }
+        } else {
+            await loadView(route.view);
+        }
+        return;
     } else {
         await loadView(route.view);
     }
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-window.addEventListener('hashchange', router);
+window.addEventListener('popstate', router);
 window.addEventListener('load', router);
 
 // Force a full re-render of the current route (e.g. after a language switch),
