@@ -25,6 +25,10 @@ import {
     buildAuctionContract, contractScenario,
 } from '../utils/auctionContract.js';
 import { openAiImportOverlay } from '../utils/aiListingImport.js';
+import { getUserListings } from '../services/listingService.js';
+import { enforceListingQuota } from '../utils/paywall.js';
+import { markIntent, clearIntent } from '../utils/abandonment.js';
+import { invalidate } from '../lib/cachedFetch.js';
 
 // ── Draft persistence ─────────────────────────────────────────────────────────
 const DRAFT_KEY = 'cl_draft';
@@ -67,6 +71,8 @@ function saveDraft(state) {
         sessionStorage.setItem(DRAFT_KEY, JSON.stringify(toSave));
         // Encode current File objects as base64 so they survive the auth redirect
         encodeFilesToSession(state._exteriorFiles, state._interiorFiles);
+        // Record a global "resume" intent so abandonment can re-surface this draft.
+        markIntent('create_listing');
     } catch { /* quota exceeded — ignore */ }
 }
 
@@ -80,6 +86,7 @@ function loadDraft() {
 function clearDraft() {
     sessionStorage.removeItem(DRAFT_KEY);
     sessionStorage.removeItem(PHOTO_KEY);
+    clearIntent('create_listing');
 }
 
 // Formatter functions removed in favor of import from inputFormatters.js
@@ -549,6 +556,20 @@ export async function initCreateListingPage() {
             }
         } catch (e) {
             console.error('[CreateListing] Fetch user profile failed:', e);
+        }
+
+        // Free-tier quota gate (UI-only). Private sellers over the active-listing
+        // limit see the paywall upsell. Authoritative enforcement belongs on the
+        // server (see src/utils/paywall.js).
+        try {
+            const u = currentUser();
+            if (u && state.sellerType !== 'business') {
+                const mine = await getUserListings(u.uid || u.id);
+                const activeCount = mine.filter(l => l.status === 'active').length;
+                enforceListingQuota({ used: activeCount });
+            }
+        } catch (e) {
+            console.error('[CreateListing] Quota check failed:', e);
         }
     }
 
@@ -4888,6 +4909,10 @@ async function submitListing(user) {
             listingId = await createListing(state, state._exteriorFiles, state._interiorFiles, user);
             clearDraft();
         }
+
+        // Invalidate the dashboard listings cache so the new/updated listing shows.
+        const _uid = user?.uid || user?.id;
+        if (_uid) invalidate('dash_listings_' + _uid);
 
         state._exteriorUrls.forEach(url => { try { URL.revokeObjectURL(url); } catch {} });
         state._interiorUrls.forEach(url => { try { URL.revokeObjectURL(url); } catch {} });

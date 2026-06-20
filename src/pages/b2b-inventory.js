@@ -2,6 +2,8 @@
 import { mountB2BShell } from '../layouts/b2b-layout.js';
 import { listInventory, saveInventoryItem, deleteInventoryItem } from '../services/b2bService.js';
 import { hasRole } from '../core/b2bContext.js';
+import { renderError } from '../utils/uiState.js';
+import { mapError } from '../utils/errorMap.js';
 
 const STATUSES = [
     { key: 'draft',   label: 'Osnutek',     color: '#6b7280', bg: '#f3f4f6' },
@@ -76,7 +78,7 @@ export async function initB2bInventoryPage() {
             _items = await listInventory(status || undefined);
             render();
         } catch (err) {
-            document.getElementById('invContent').innerHTML = `<div class="b2b-empty"><p>Napaka: ${err.message}</p></div>`;
+            renderError(document.getElementById('invContent'), { mapped: mapError(err), onRetry: load });
         }
     }
 

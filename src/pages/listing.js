@@ -18,6 +18,8 @@ import ReactDOM from 'react-dom/client';
 import CostPanel from '../components/CostPanel.jsx';
 import { getServiceHistoryByVin } from '../services/serviceBookService.js';
 import { t, getCurrentLang } from '../core/i18n.js';
+import { renderError } from '../utils/uiState.js';
+import { mapError } from '../utils/errorMap.js';
 
 export async function initListingPage() {
     console.log('[ListingPage] init');
@@ -27,7 +29,7 @@ export async function initListingPage() {
     const page = document.getElementById('listingPage');
 
     if (!id) {
-        if (page) page.innerHTML = errorHtml(t('error_listing_not_found'), t('error_missing_id'));
+        if (page) renderError(page, { mapped: mapError({ status: 404 }) });
         return;
     }
 
@@ -36,13 +38,14 @@ export async function initListingPage() {
             getListingById(id),
             getListings().catch(() => []),
         ]);
+        if (!listing) { if (page) renderError(page, { mapped: mapError({ status: 404 }) }); return; }
         recordListingView(id);      // log this view (local timeline + Firestore daily) before rendering stats
         renderListing(listing);
         injectRating(listing, allListings);
         injectServiceHistory(listing);
     } catch (err) {
         console.error('[ListingPage]', err);
-        if (page) page.innerHTML = errorHtml(t('error_listing_not_found'), err.message);
+        if (page) renderError(page, { mapped: mapError(err), onRetry: initListingPage });
     }
 }
 

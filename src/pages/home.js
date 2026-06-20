@@ -37,16 +37,7 @@ export async function initHomePage() {
     // Setup rotating sponsored ads
     setupRotatingAds();
 
-    // Fetch listings and populate sections
-    try {
-        allListings = await getListings();
-        
-        // Initial render — primary category of the active platform
-        updateHomeCategory(PRIMARY_CATEGORY);
-    } catch (err) {
-        console.error("Error loading home page listings:", err);
-    }
-
+    // Initialize search form immediately — doesn't need listings data
     setupSearchForm();
     setupCarousels();
     initWordSlider();
@@ -54,6 +45,18 @@ export async function initHomePage() {
     if (window.lucide) {
         window.lucide.createIcons();
     }
+
+    // Fetch listings in background so the search form is interactive right away
+    getListings()
+        .then(listings => {
+            allListings = listings;
+            updateHomeCategory(PRIMARY_CATEGORY);
+        })
+        .catch(err => {
+            console.error('[HomePage] Failed to load listings:', err);
+            // Still initialize brand dropdowns with empty set
+            updateHomeCategory(PRIMARY_CATEGORY);
+        });
 }
 
 /**

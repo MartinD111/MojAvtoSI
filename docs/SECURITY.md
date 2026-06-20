@@ -103,6 +103,32 @@ can inherit request A's identity.
 - **No PII in errors/logs**: error responses are generic; Sentry scrubs and we
   don't log credentials. Keep it that way when adding endpoints.
 
+## 9. SQL injection
+
+**Status: mitigated by construction.** The API never builds SQL from strings.
+
+- **All DB access goes through the Supabase client** (`.from().select()/.eq()/
+  .insert()/.rpc()` in `server/src/lib/supabase.ts` and the route handlers).
+  PostgREST binds every value as a parameter — user input is data, never SQL
+  text. There is **no** raw `pg`/`client.query`, no `` sql`…` `` template, and no
+  string concatenation into a query anywhere in `server/src`.
+- **Business logic that needs SQL lives in Postgres functions** (`place_bid`,
+  `debit_wallet` in `supabase/security.sql`), declared `security definer` with a
+  pinned `search_path`. They take typed args (`uuid`, `numeric`) — not
+  interpolated text — and run row-locked (`for update`) to also close race
+  conditions.
+- **Input is validated before it reaches the DB** with Zod `.strip()` schemas
+  (`server/src/lib/validation.ts`), which additionally drops unknown keys
+  (mass-assignment / prototype-pollution defence).
+
+**Keeping it that way — regression guard.** If direct SQL is ever introduced,
+follow the `set_local`-inside-a-transaction rule in §1 **and** parameterize.
+A lightweight CI check fails the build if raw-SQL patterns appear in `server/src`:
+
+```bash
+npm run check:sql   # scripts/check-no-raw-sql.mjs — greps for sql`` / client.query / string-concat SQL
+```
+
 ## Dashboard checklist (Supabase)
 - [ ] Auth → Confirm email: **ON**
 - [ ] Auth → Attack Protection: enable **Turnstile** (same keys as the app)

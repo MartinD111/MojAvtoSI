@@ -16,6 +16,7 @@ const isPrimaryItem = l => PRIMARY_ITEM_TYPES.includes(l.itemType) || (PLATFORM.
 import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite, getFavourites } from '../services/garageService.js';
 import { getListings, getListingsPaged } from '../services/listingService.js';
+import { renderLoading } from '../utils/uiState.js';
 import { initCustomSelects } from '../utils/customSelect.js';
 import { getCurrentLang } from '../core/i18n.js';
 import { showCompareLimitToast } from '../utils/listingUtils.js';
@@ -939,6 +940,10 @@ async function loadMoreListings() {
 }
 
 async function initSidebarFiltering() {
+    // Show skeleton placeholders while the first page loads.
+    const _feedContainer = document.getElementById('carListingsContainer');
+    if (_feedContainer) renderLoading(_feedContainer, { skeleton: true, rows: 6 });
+
     // 1. Fetch first page of listings
     try {
         const page = await getListingsPaged({ lastDoc: null, pageSize: 24 });

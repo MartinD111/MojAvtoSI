@@ -64,6 +64,14 @@ window.__authReady = new Promise(resolve => {
     });
 });
 
+// After auth resolves, offer to resume any abandoned transaction (auction
+// payment, half-filled listing draft, or unfinished plan upgrade).
+window.__authReady.then(() => {
+    import('./src/utils/abandonment.js')
+        .then(m => m.promptResume())
+        .catch(() => { /* non-critical */ });
+});
+
 // Keep <body> class in sync with B2B mode so CSS can adapt globally
 onB2BChange(profile => {
     const isBiz = profile?.sellerType === 'business';

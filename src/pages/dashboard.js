@@ -11,6 +11,9 @@ import {
 } from '../services/bookingService.js';
 import { serviceLabels } from '../data/businesses.js';
 import { t, getCurrentLang } from '../core/i18n.js';
+import { renderLoading, renderEmpty, renderError } from '../utils/uiState.js';
+import { swr, invalidate } from '../lib/cachedFetch.js';
+import { mapError } from '../utils/errorMap.js';
 
 
 function isVerifiedBusiness(user) {
@@ -74,12 +77,7 @@ export async function initDashboardPage() {
 
       <div class="dashboard-section">
         <h2>📋 ${t('dashboard_my_active_listings')}</h2>
-        <div id="user-listings-container" style="min-height: 100px;">
-          <div style="text-align:center;padding:2rem;color:#9ca3af;">
-            <i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-bottom:0.5rem;"></i>
-            <p style="margin:0;font-size:0.9rem;">${t('dashboard_loading_listings')}</p>
-          </div>
-        </div>
+        <div id="user-listings-container" style="min-height: 100px;"></div>
       </div>
 
       <!-- Reservations section -->
@@ -104,20 +102,53 @@ export async function initDashboardPage() {
     </div>
   `;
 
-  // Fetch and render listings
+  // Fetch and render listings — stale-while-revalidate with progressive loader.
   const listingsContainer = document.getElementById('user-listings-container');
-  try {
-    const listings = await getUserListings(user.uid);
 
-    if (listings.length === 0) {
-      listingsContainer.innerHTML = `
-        <div style="text-align:center;padding:2rem;color:#9ca3af;">
-          <div style="font-size:2rem;margin-bottom:0.5rem;">📋</div>
-          <p style="margin:0;font-size:0.9rem;">${t('dashboard_no_listings_yet')}</p>
-          <a href="#/novi-oglas" style="display:inline-block;margin-top:1rem;padding:12px 28px;background:linear-gradient(135deg, #f97316, #ea580c);color:#fff;border-radius:9999px;text-decoration:none;font-size:0.95rem;font-weight:700;box-shadow:0 10px 15px -3px rgba(249,115,22,0.3);transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 20px -3px rgba(249,115,22,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 10px 15px -3px rgba(249,115,22,0.3)'">${t('dashboard_post_first_listing')}</a>
-        </div>
-      `;
+  async function loadListings() {
+    const { cached, fresh } = swr('dash_listings_' + user.uid, () => getUserListings(user.uid), { ttl: 60_000 });
+
+    let loader = null;
+    if (cached) {
+      renderUserListings(listingsContainer, cached);
+      listingsContainer.classList.add('ui-updating');
+      listingsContainer.setAttribute('data-updating-label', t('ui_updating'));
     } else {
+      loader = renderLoading(listingsContainer, { progressive: true });
+    }
+
+    try {
+      const listings = await fresh;
+      loader?.destroy();
+      listingsContainer.classList.remove('ui-updating');
+      listingsContainer.removeAttribute('data-updating-label');
+      renderUserListings(listingsContainer, listings);
+    } catch (err) {
+      loader?.destroy();
+      listingsContainer.classList.remove('ui-updating');
+      console.error('Error loading user listings:', err);
+      if (!cached) renderError(listingsContainer, { mapped: mapError(err), onRetry: loadListings });
+    }
+  }
+
+  loadListings();
+
+  // Render bookings and service history
+  renderBookingsSection(user.uid);
+  renderServiceHistorySection(user.uid);
+}
+
+// Renders the user's active-listings list into `listingsContainer`.
+function renderUserListings(listingsContainer, listings) {
+    if (!listings || listings.length === 0) {
+      renderEmpty(listingsContainer, {
+        icon: '📋',
+        titleKey: 'dashboard_no_listings_yet',
+        cta: { labelKey: 'dashboard_post_first_listing', href: '/novi-oglas' },
+      });
+      return;
+    }
+
       let html = '<div style="display:flex;flex-direction:column;gap:1rem;">';
       listings.forEach(listing => {
         const imgUrl = listing.images?.exterior?.[0] || 'https://via.placeholder.com/150?text=Ni+slike';
@@ -176,15 +207,6 @@ export async function initDashboardPage() {
           if (listing) printListing(listing);
         });
       });
-    }
-  } catch (err) {
-    console.error("Error loading user listings:", err);
-    listingsContainer.innerHTML = '<p style="color:red;text-align:center;">Error loading listings.</p>';
-  }
-
-  // Render bookings and service history
-  renderBookingsSection(user.uid);
-  renderServiceHistorySection(user.uid);
 }
 
 // ── Print-to-Sell ─────────────────────────────────────────────
@@ -252,6 +274,8 @@ function showRemoveListingPopup(listingId, listingTitle) {
         btns.forEach(b => { b.disabled = true; });
         try {
             await deleteListing(listingId, markAsSold ? 'sold' : 'removed');
+            const uid = window.__currentUser?.uid;
+            if (uid) invalidate('dash_listings_' + uid);
             closePopup();
             initDashboardPage();
         } catch (err) {

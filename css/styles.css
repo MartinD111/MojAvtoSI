@@ -335,7 +335,7 @@ body {
 }
 
 /* Objavi oglas — collapsed circle, expands on hover */
-.nav-actions a[href="#/novi-oglas"].pill-btn.primary {
+.nav-actions a[href="/novi-oglas"].pill-btn.primary {
   width: auto;
   min-width: 36px;
   max-width: 36px;
@@ -349,10 +349,9 @@ body {
     box-shadow 0.3s ease;
   flex-shrink: 0;
   gap: 0;
-  /* Hide gap when closed to center icon */
 }
 
-.nav-actions a[href="#/novi-oglas"].pill-btn.primary span {
+.nav-actions a[href="/novi-oglas"].pill-btn.primary span {
   opacity: 0;
   max-width: 0;
   display: inline-block;
@@ -361,13 +360,13 @@ body {
   transition: opacity 0.2s ease 0.05s, max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.nav-actions a[href="#/novi-oglas"].pill-btn.primary:hover {
+.nav-actions a[href="/novi-oglas"].pill-btn.primary:hover {
   max-width: 180px;
   padding: 0 16px 0 12px;
   gap: 8px;
 }
 
-.nav-actions a[href="#/novi-oglas"].pill-btn.primary:hover span {
+.nav-actions a[href="/novi-oglas"].pill-btn.primary:hover span {
   opacity: 1;
   max-width: 150px;
 }
@@ -4018,11 +4017,11 @@ body.dark-mode .toggle-slider {
 }
 
 #rot-prev-btn {
-  left: -22px;
+  left: 8px;
 }
 
 #rot-next-btn {
-  right: -22px;
+  right: 8px;
 }
 
 #rot-prev-btn:hover,
@@ -4485,6 +4484,13 @@ body.dark-mode .sponsored-mini-card:hover {
   align-items: center;
   gap: 4px;
   white-space: nowrap;
+}
+
+/* Prevent motorcycle extra pills (4T, Boxer) from wrapping to new rows in compact cards */
+.sponsored-mini-card .spec-row {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .sponsored-specs i,
