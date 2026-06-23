@@ -83,11 +83,11 @@ function updateHomeCategory(category) {
     const catSlug = category === 'motor' ? 'moto' : category;
     const homeAdvLink = document.getElementById('homeAdvancedSearchLink');
     if (homeAdvLink) {
-        homeAdvLink.href = `#/iskanje?cat=${catSlug}`;
+        homeAdvLink.href = `/iskanje?cat=${catSlug}`;
     }
     const headerAdvLink = document.getElementById('oglasiMenuBtn');
     if (headerAdvLink) {
-        headerAdvLink.href = `#/iskanje?cat=${catSlug}`;
+        headerAdvLink.href = `/iskanje?cat=${catSlug}`;
     }
 }
 
@@ -105,26 +105,46 @@ function setupRotatingAds() {
 
     function renderAdCard(car) {
         const img = car.images?.exterior?.[0] || 'https://via.placeholder.com/120x80?text=Ni+slike';
-        
+        const isMoto = car.category === 'motor' || car.category === 'moto';
+        const price = typeof car.price === 'number'
+            ? new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(car.price)
+            : car.price;
+
+        const motoSpecs = `
+            <div class="sponsored-specs centered">
+                <div class="spec-row centered">
+                    ${getYearPill(car.year)}
+                    ${getKmPill(car.mileage)}
+                </div>
+                <div class="spec-row centered">
+                    ${car.engineCc ? `<div class="spec-pill displacement-pill" data-cc="${car.engineCc}"><i data-lucide="cog"></i><span>${new Intl.NumberFormat('sl-SI').format(car.engineCc)} cc</span></div>` : ''}
+                    ${car.engineStroke ? `<div class="spec-pill stroke-pill" title="Takt motorja: ${car.engineStroke}"><i data-lucide="activity"></i><strong>${car.engineStroke}</strong></div>` : ''}
+                </div>
+                ${car.engineType ? `<div class="spec-row centered"><div class="spec-pill type-pill" title="Vrsta motorja: ${car.engineType}"><i data-lucide="cpu"></i><strong>${car.engineType}</strong></div></div>` : ''}
+            </div>`;
+
+        const carSpecs = `
+            <div class="sponsored-specs centered">
+                <div class="spec-row centered">
+                    ${getYearPill(car.year)}
+                    ${getKmPill(car.mileage)}
+                </div>
+                <div class="spec-row centered">
+                    ${getFuelPill(car)}
+                    ${getTransmissionPill(car)}
+                </div>
+                <div class="spec-row centered">
+                    ${getConsumptionPill(car)}
+                </div>
+            </div>`;
+
         return `
             <div class="sponsored-mini-card-wrapper">
                 <a href="#/oglas?id=${car.id}" class="sponsored-mini-card">
                     <img src="${img}" alt="${escHtml(car.title)}">
                     <h4 class="sponsored-title">${escHtml(car.make)} ${escHtml(car.model)}</h4>
-                    <div class="sponsored-specs centered">
-                        <div class="spec-row centered">
-                            ${getYearPill(car.year)}
-                            ${getKmPill(car.mileage)}
-                        </div>
-                        <div class="spec-row centered">
-                            ${getFuelPill(car)}
-                            ${getTransmissionPill(car)}
-                        </div>
-                        <div class="spec-row centered">
-                            ${getConsumptionPill(car)}
-                        </div>
-                    </div>
-                    <div class="sponsored-price">${typeof car.price === 'number' ? new Intl.NumberFormat('sl-SI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(car.price) : car.price}</div>
+                    ${isMoto ? motoSpecs : carSpecs}
+                    <div class="sponsored-price">${price}</div>
                 </a>
             </div>
         `;
@@ -511,6 +531,32 @@ function setupSearchForm() {
 
     // Simple search redirect
     const form = document.getElementById('homeSearchForm');
+
+    // Reset button — fire change events so custom select triggers update their display
+    const resetBtn = form ? form.querySelector('button[type="reset"]') : null;
+    if (resetBtn) {
+        resetBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const fireChange = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.selectedIndex = 0;
+                el.dispatchEvent(new Event('change'));
+            };
+            // Reset make first — its change listener cascades to clear model + variant
+            fireChange('home-make');
+            // Reset remaining selects
+            fireChange('home-reg-from');
+            fireChange('home-mileage-to');
+            fireChange('home-fuel-type');
+            // Reset country — its change listener clears + disables region
+            fireChange('home-country');
+            // Reset price text input
+            const priceEl = document.getElementById('home-price-to');
+            if (priceEl) priceEl.value = '';
+        });
+    }
+
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -540,6 +586,15 @@ function setupSearchForm() {
 
             const target = homeSearchMode === 'drazbe' ? '/drazbe' : '/oglasi';
             navigateTo(`${target}${query}`);
+        });
+    }
+
+    // "Več filtrov" link — use SPA navigation so the router handles it
+    const advLink = document.getElementById('homeAdvancedSearchLink');
+    if (advLink) {
+        advLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo(advLink.getAttribute('href'));
         });
     }
 
