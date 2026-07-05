@@ -6,6 +6,7 @@ import { navigateTo } from '../router.js';
 import { getBusinessById, getTypeLabels, getBusinessTypeInfo } from '../services/businessService.js';
 import { serviceLabels } from '../data/businesses.js';
 import { SAMPLE_LISTINGS as sampleCars } from '../data/sampleListings.js'; // Reuse platform listings
+import { renderCarCard, bindCardEvents } from './oglasi.js';
 
 // ── Helpers ──────────────────────────────────────────────────
 function getStars(rating) {
@@ -131,8 +132,99 @@ function showTab(tabId) {
 window._showBizTab = showTab;
 
 // ── Build Listings Tab ────────────────────────────────────────
+// Reuses the same card renderer, toolbar markup, and grid layout as the
+// main /oglasi listings board so a dealer's inventory looks identical.
+let bizAllListings = [];
+let bizListingsSort = '';
+let bizListingsFuel = 'all';
+
+function renderListingsGrid(listings) {
+    const grid = document.getElementById('carListingsContainer');
+    if (!grid) return;
+
+    if (listings.length === 0) {
+        grid.innerHTML = `<div class="biz-empty"><div style="font-size:2rem;margin-bottom:0.5rem;">🚗</div><div>Ni oglasov, ki bi ustrezali izbranim filtrom.</div></div>`;
+        return;
+    }
+
+    grid.innerHTML = listings.map(car => renderCarCard(car)).join('');
+    bindCardEvents(grid, listings);
+}
+
+function applyListingsFilterSort() {
+    let listings = [...bizAllListings];
+
+    if (bizListingsFuel !== 'all') {
+        listings = listings.filter(c => c.fuel === bizListingsFuel);
+    }
+
+    switch (bizListingsSort) {
+        case 'price-asc':
+            listings.sort((a, b) => (a.priceRaw ?? Infinity) - (b.priceRaw ?? Infinity));
+            break;
+        case 'price-desc':
+            listings.sort((a, b) => (b.priceRaw ?? 0) - (a.priceRaw ?? 0));
+            break;
+        case 'year-desc':
+            listings.sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0));
+            break;
+        case 'km-asc':
+            listings.sort((a, b) => (a.mileageKm ?? Infinity) - (b.mileageKm ?? Infinity));
+            break;
+        default:
+            break;
+    }
+
+    renderListingsGrid(listings);
+}
+
+function buildListingsToolbar() {
+    const toolbar = document.getElementById('bizListingsToolbar');
+    if (!toolbar) return;
+
+    if (bizAllListings.length === 0) {
+        toolbar.style.display = 'none';
+        return;
+    }
+    toolbar.style.display = '';
+
+    const fuels = [...new Set(bizAllListings.map(c => c.fuel).filter(Boolean))];
+
+    toolbar.innerHTML = `
+        <h2 class="biz-listings-count">${bizAllListings.length} ${bizAllListings.length === 1 ? 'oglas' : 'oglasov'}</h2>
+        <div class="sort-wrap">
+            ${fuels.length > 1 ? `
+            <div class="pill-select-wrapper">
+                <select class="pill-input" id="bizFuelFilter" data-no-search="true">
+                    <option value="all">Vsa goriva</option>
+                    ${fuels.map(f => `<option value="${escHtml(f)}">${escHtml(f)}</option>`).join('')}
+                </select>
+            </div>` : ''}
+            <span class="sort-label">Razvrsti po:</span>
+            <div class="pill-select-wrapper">
+                <select class="pill-input" id="bizSortSelect" data-no-search="true">
+                    <option value="">Priporočeno</option>
+                    <option value="price-asc">Cena: najnižja</option>
+                    <option value="price-desc">Cena: najvišja</option>
+                    <option value="year-desc">Letnik: najnovejši</option>
+                    <option value="km-asc">Kilometrina: najnižja</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('bizFuelFilter')?.addEventListener('change', (e) => {
+        bizListingsFuel = e.target.value;
+        applyListingsFilterSort();
+    });
+    document.getElementById('bizSortSelect').addEventListener('change', (e) => {
+        bizListingsSort = e.target.value;
+        applyListingsFilterSort();
+    });
+}
+
 function buildListingsTab(biz) {
-    const grid = document.getElementById('bizListingsGrid');
+    const grid = document.getElementById('carListingsContainer');
     if (!grid) return;
 
     // Filter sampleCars by sellerId (using biz.id or biz.name as seller match)
@@ -146,21 +238,12 @@ function buildListingsTab(biz) {
         listings = sampleCars.filter(c => c.sellerType === 'dealer').slice(0, 3);
     }
 
-    if (listings.length === 0) {
-        grid.innerHTML = `<div class="biz-empty"><div style="font-size:2rem;margin-bottom:0.5rem;">🚗</div><div>Ta avto hiša nima aktivnih oglasov.</div></div>`;
-        return;
-    }
+    bizAllListings = listings;
+    bizListingsSort = '';
+    bizListingsFuel = 'all';
 
-    grid.innerHTML = listings.map(car => `
-        <div class="biz-listing-card" onclick="window.navigateTo('/oglas?id=${car.id}')">
-            <img class="biz-listing-img" src="${car.images[0]}" alt="${car.title}" loading="lazy" />
-            <div class="biz-listing-body">
-                <div class="biz-listing-title">${car.title}</div>
-                <div class="biz-listing-sub">${car.subtitle}</div>
-                <div class="biz-listing-price">${car.price}</div>
-            </div>
-        </div>
-    `).join('');
+    buildListingsToolbar();
+    renderListingsGrid(bizAllListings);
 }
 
 // ── Build Services Tab ────────────────────────────────────────

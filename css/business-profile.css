@@ -280,57 +280,22 @@
 }
 
 /* ── Listings Tab (Oglasi) ───────────────────────────────── */
-.biz-listings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
+/* Listing cards themselves reuse the main /oglasi board's renderCarCard
+   markup and .grid-layout CSS (see styles.css) so a dealer's inventory
+   here looks identical to the platform-wide listings grid. This block
+   only styles the toolbar wrapper (count + sort/filter selects). */
+.biz-listings-toolbar {
+    margin-bottom: 1.25rem;
 }
 
-.biz-listing-card {
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(16px);
-    border: 1.5px solid rgba(255,255,255,0.6);
-    border-radius: 1.5rem;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-}
-
-.biz-listing-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 28px rgba(37,99,235,0.1);
-    border-color: rgba(37,99,235,0.2);
-}
-
-.biz-listing-img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-}
-
-.biz-listing-body {
-    padding: 1rem;
-}
-
-.biz-listing-title {
-    font-size: 0.95rem;
+.biz-listings-count {
+    font-size: 1.1rem;
     font-weight: 800;
     color: #1e293b;
-    margin: 0 0 0.25rem;
+    margin: 0;
 }
 
-.biz-listing-sub {
-    font-size: 0.78rem;
-    color: #64748b;
-    margin-bottom: 0.6rem;
-}
-
-.biz-listing-price {
-    font-size: 1.1rem;
-    font-weight: 900;
-    color: #1e293b;
-}
+body.dark-mode .biz-listings-count { color: #f8fafc; }
 
 /* ── Services Tab ────────────────────────────────────────── */
 .biz-services-grid {
@@ -641,12 +606,10 @@ body.dark-mode .biz-tab-btn.active { background: rgba(30,41,59,0.9); }
 body.dark-mode .biz-about-section,
 body.dark-mode .biz-reviews-summary,
 body.dark-mode .biz-review-card,
-body.dark-mode .biz-service-card,
-body.dark-mode .biz-listing-card {
+body.dark-mode .biz-service-card {
     background: rgba(30,41,59,0.8);
     border-color: rgba(255,255,255,0.08);
 }
-body.dark-mode .biz-listing-title,
 body.dark-mode .biz-service-name,
 body.dark-mode .biz-review-author,
 body.dark-mode .biz-about-section h3,

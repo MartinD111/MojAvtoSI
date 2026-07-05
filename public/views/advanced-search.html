@@ -504,8 +504,8 @@
                     </div>
                 </div>
 
-                <!-- Mileage -->
-                <div class="adv-grid-2">
+                <!-- Mileage (km) — shown for road-going vehicles -->
+                <div class="adv-grid-2" id="odometerKmBlock">
                     <div class="adv-field-group">
                         <label class="adv-label">Prevoženi kilometri od</label>
                         <input type="text" name="mileageFrom" placeholder="0 km" class="adv-input js-format-number" inputmode="numeric">
@@ -513,6 +513,18 @@
                     <div class="adv-field-group">
                         <label class="adv-label" for="mileage-to">Prevoženi kilometri do</label>
                         <input type="text" id="mileage-to" name="mileageTo" placeholder="Brez omejitve" class="adv-input js-format-number" inputmode="numeric">
+                    </div>
+                </div>
+
+                <!-- Operating hours — shown instead of km for machinery (bagri, traktorji, viličarji…) -->
+                <div class="adv-grid-2" id="odometerHoursBlock" style="display:none;">
+                    <div class="adv-field-group">
+                        <label class="adv-label">Obratovalne ure od</label>
+                        <input type="text" name="engineHoursFrom" placeholder="0 h" class="adv-input js-format-number" inputmode="numeric">
+                    </div>
+                    <div class="adv-field-group">
+                        <label class="adv-label" for="engine-hours-to">Obratovalne ure do</label>
+                        <input type="text" id="engine-hours-to" name="engineHoursTo" placeholder="Brez omejitve" class="adv-input js-format-number" inputmode="numeric">
                     </div>
                 </div>
 

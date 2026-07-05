@@ -40,7 +40,7 @@ import { getModelVariants } from '../utils/bodyType.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 
 // ── Power unit toggle ────────────────────────────────────────
-let currentPowerUnit = 'kw';
+let currentPowerUnit = 'km'; // 'km' = KM/HP (default), 'kw' = kW
 
 function applyPowerUnit(unit) {
     currentPowerUnit = unit;

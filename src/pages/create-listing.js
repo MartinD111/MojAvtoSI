@@ -149,7 +149,7 @@ let state = {
     // Tires
     tireSize: '', tireWidth: '', tireAspect: '', tireRim: '',
     tireSeason: '', treadDepthMm: '', dotYear: '', tireCount: '',
-    make: '', model: '', variant: '', linija: '', year: '', mileageKm: '',
+    make: '', model: '', variant: '', linija: '', year: '', mileageKm: '', engineHours: '',
     color: '', colorType: 'solid', doorsCount: '', seatsCount: '',
     condition: 'Rabljeno', firstRegistration: '', previousOwnersCount: '',
     fuel: '', hybridType: null, transmission: '', driveType: '',
@@ -405,6 +405,7 @@ function hydrateStateFromListing(l) {
         linija: l.linija || '',
         year: l.year ? String(l.year) : '',
         mileageKm: l.mileageKm ?? (l.mileage ? String(l.mileage) : ''),
+        engineHours: l.engineHours != null ? String(l.engineHours) : '',
         color: l.color || '',
         colorType: l.colorType || 'solid',
         doorsCount: l.doorsCount ? String(l.doorsCount) : '',
@@ -1054,6 +1055,17 @@ const CATEGORIES_NAVTIKA = [
 
 const CATEGORIES = PLATFORM.id === 'navtika' ? CATEGORIES_NAVTIKA : CATEGORIES_AVTO;
 
+// ── Odometer unit for the create form (km vs operating hours) ──────────────────
+// Machinery is measured in operating hours, not km. In the create flow machinery
+// lives under the `mehanizacija` category (construction/agriculture/forklifts…);
+// the `gospodarska` road-vehicle subs stay on km. Kept in lockstep with the
+// search-side COMMERCIAL_ODOMETER schema.
+function odometerUnitForState(s) {
+    if (s.category === 'mehanizacija') return 'hours';
+    // Some gospodarska body-types are machinery-adjacent; default km otherwise.
+    return 'km';
+}
+
 // ── Per-vessel-type listing config (navtika) ──────────────────────────────────
 // Keyed by state.category (the CATEGORIES_NAVTIKA ids — note hyphens). Drives which
 // field groups / engine options the navtika Basic + Technical steps render, and
@@ -1692,13 +1704,21 @@ function renderBasicStep() {
 
             <div class="cl-row">
                 <div class="cl-field">
+                    ${odometerUnitForState(state) === 'hours' ? `
+                    <label class="cl-label">${t('cl_label_engine_hours', 'Obratovalne ure')} <span class="req">*</span></label>
+                    <div class="cl-mileage-wrap">
+                        <input class="cl-input" id="fMileage" type="text"
+                            value="${state.engineHours ? formatNumberWithCommas(state.engineHours) : ''}"
+                            placeholder="${t('cl_placeholder_engine_hours', 'npr. 500')}" autocomplete="off" />
+                        <span class="cl-mileage-unit">h</span>
+                    </div>` : `
                     <label class="cl-label">${t('cl_label_mileage')} <span class="req">*</span></label>
                     <div class="cl-mileage-wrap">
                         <input class="cl-input" id="fMileage" type="text"
                             value="${state.mileageKm ? formatNumberWithCommas(state.mileageKm) : ''}"
                             placeholder="${t('cl_placeholder_mileage')}" autocomplete="off" />
                         <span class="cl-mileage-unit">km</span>
-                    </div>
+                    </div>`}
                 </div>
 
                 <div class="cl-field">
@@ -2008,6 +2028,7 @@ function renderBasicStep() {
     document.getElementById('btnBasicBack').addEventListener('click', goPrev);
     document.getElementById('btnBasicNext').addEventListener('click', () => {
         const make = makeSel.value;
+        const isHours = odometerUnitForState(state) === 'hours';
         const mileageRaw = document.getElementById('fMileage').value;
         const mileage = parseFormattedNumber(mileageRaw);
         const year = document.getElementById('fYear').value;
@@ -2027,7 +2048,14 @@ function renderBasicStep() {
         state.variant = variantSel.value;
         state.linija = (linijaSel && linijaSel.value) || '';
         state.year = Number(year);
-        state.mileageKm = mileage;
+        // Machinery stores usage as operating hours; road vehicles as km.
+        if (isHours) {
+            state.engineHours = mileage;
+            state.mileageKm = '';
+        } else {
+            state.mileageKm = mileage;
+            state.engineHours = '';
+        }
         state.color = document.getElementById('fColor').value;
         state.colorType = document.getElementById('fColorType').value;
         state.condition = document.getElementById('fCondition').value;
@@ -4865,6 +4893,7 @@ async function submitListing(user) {
                 year: state.year ? Number(state.year) : null,
                 mileageKm: state.mileageKm ? Number(state.mileageKm) : null,
                 mileage: state.mileageKm ? Number(state.mileageKm) : null,
+                engineHours: state.engineHours ? Number(state.engineHours) : null,
                 color: state.color,
                 colorType: state.colorType,
                 doorsCount: state.doorsCount ? Number(state.doorsCount) : null,

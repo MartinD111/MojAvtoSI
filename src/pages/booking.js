@@ -51,6 +51,7 @@ function resetState() {
         // Step 5
         selectedDate: null,
         selectedTime: null,
+        proposedSlots: [],
         notes: '',
 
         // Calendar navigation
@@ -160,8 +161,9 @@ function validateStep(logical) {
         case 4:
             return null; // Izdelki so neobvezni
         case 5:
-            if (!state.selectedDate) return 'Prosim izberite datum.';
-            if (!state.selectedTime) return 'Prosim izberite uro termina.';
+            if (!state.proposedSlots || state.proposedSlots.length === 0) {
+                return 'Prosim predlagajte vsaj en termin (izberite datum in čas ter kliknite "Dodaj ta termin").';
+            }
             return null;
         case 6:
             return null;
@@ -240,7 +242,14 @@ function renderProgress() {
         const isActive = i === currentDisplay;
         const cls = isDone ? 'done' : isActive ? 'active' : '';
 
-        html += `<div class="booking-step-pill">
+        // Add responsive visibility classes
+        let visibilityClass = '';
+        if (i === currentDisplay) visibilityClass = 'step-current';
+        else if (i === currentDisplay - 1) visibilityClass = 'step-prev';
+        else if (i === currentDisplay + 1) visibilityClass = 'step-next';
+        else visibilityClass = 'step-out-of-range';
+
+        html += `<div class="booking-step-pill ${visibilityClass}">
             <div class="booking-step-pill-btn ${cls}">
                 ${isDone ? '<i data-lucide="check" style="width:14px;height:14px;"></i>' : i}
             </div>
@@ -248,7 +257,14 @@ function renderProgress() {
         </div>`;
 
         if (i < total) {
-            html += `<div class="booking-step-connector ${isDone ? 'done' : ''}"></div>`;
+            let connVisibilityClass = '';
+            if (i >= currentDisplay - 1 && i <= currentDisplay) {
+                connVisibilityClass = 'conn-visible';
+            } else {
+                connVisibilityClass = 'conn-out-of-range';
+            }
+
+            html += `<div class="booking-step-connector ${isDone ? 'done' : ''} ${connVisibilityClass}"></div>`;
         }
     }
 
@@ -736,10 +752,17 @@ function buildCalendarGrid(year, month) {
 }
 
 function buildStep5() {
-    const timePills = timeSlots.map(t => {
-        const disabled = unavailableSlots.includes(t) ? 'disabled' : '';
+    const mode = state.business.bookingMode || 'hourly';
+    const slots = mode === 'halfday' ? ['dopoldan', 'popoldan'] : timeSlots;
+    const timeLabels = mode === 'halfday'
+        ? { dopoldan: 'Dopoldan (8:00 - 12:00)', popoldan: 'Popoldan (12:00 - 16:00)' }
+        : timeSlots.reduce((acc, t) => ({ ...acc, [t]: t }), {});
+
+    const timePills = slots.map(t => {
+        const disabled = mode === 'hourly' && unavailableSlots.includes(t) ? 'disabled' : '';
         const sel = state.selectedTime === t && !disabled ? 'selected' : '';
-        return `<button class="time-pill ${sel}" data-time="${t}" ${disabled}>${t}</button>`;
+        const label = timeLabels[t];
+        return `<button class="time-pill ${sel}" data-time="${t}" ${disabled}>${label}</button>`;
     }).join('');
 
     const { calendarYear: yr, calendarMonth: mo } = state;
@@ -752,13 +775,32 @@ function buildStep5() {
            </div>`
         : '';
 
+    // Render list of proposed slots
+    const proposedListHtml = state.proposedSlots.length === 0
+        ? `<div class="proposed-slots-empty">Niste še dodali nobenega predloga. Izberite datum in čas zgoraj ter kliknite "Dodaj ta termin".</div>`
+        : state.proposedSlots.map((slot, idx) => `
+            <div class="proposed-slot-item">
+                <div class="psi-info">
+                    <i data-lucide="calendar"></i>
+                    <span><strong>${formatBookingDate(slot.date)}</strong> ob ${timeLabels[slot.time]}</span>
+                </div>
+                <button class="psi-remove-btn" data-idx="${idx}" title="Odstrani">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        `).join('');
+
+    const canAdd = state.selectedDate && state.selectedTime;
+
     return `
     <div class="wizard-step">
-        <h2 class="step-title"><i data-lucide="calendar"></i> Izberite termin</h2>
+        <h2 class="step-title"><i data-lucide="calendar"></i> Predlagajte termine za rezervacijo</h2>
+        <p class="step-subtitle-hint" style="font-size:0.8rem;color:#64748b;margin:-0.5rem 0 1.25rem 2.1rem;">Ponudnik ponuja termine <strong>${mode === 'halfday' ? 'dopoldan/popoldan' : 'po urah'}</strong>. Predlagajte enega ali več terminov, ko imate čas. Ponudnik bo potrdil enega izmed njih.</p>
         ${deliveryNote}
+        
         <div class="datetime-layout">
-
             <div class="cal-section">
+                <div class="dt-section-label">Izberite datum</div>
                 <div class="cal-widget glass-card">
                     <div class="cal-header">
                         <button class="cal-nav-btn" id="calPrev" ${prevOk ? '' : 'disabled'}>
@@ -782,18 +824,39 @@ function buildStep5() {
                 </div>
             </div>
 
-            <div>
-                <div class="dt-section-label">Ura</div>
-                <div class="time-grid">${timePills}</div>
-            </div>
-
-            <div class="notes-section">
-                <div class="dt-section-label">Opomba (neobvezno)</div>
-                <textarea id="bookingNotes" class="glass-input" rows="3"
-                    placeholder="Npr. Prosim pokličite dan prej...">${state.notes}</textarea>
+            <div class="time-section">
+                <div class="dt-section-label">${mode === 'halfday' ? 'Izberite del dneva' : 'Izberite uro'}</div>
+                <div class="time-grid ${mode === 'halfday' ? 'halfday-mode' : ''}">${timePills}</div>
+                
+                <button class="add-slot-btn" id="addProposedSlotBtn" ${canAdd ? '' : 'disabled'}>
+                    <i data-lucide="plus"></i> Dodaj ta termin v predloge
+                </button>
             </div>
         </div>
+
+        <div class="proposed-slots-section glass-card">
+            <div class="proposed-slots-header">
+                <i data-lucide="list-todo" style="color:var(--color-primary-start); width: 14px; height: 14px;"></i>
+                Vaši predlagani termini (${state.proposedSlots.length})
+            </div>
+            <div class="proposed-slots-list-container">
+                ${proposedListHtml}
+            </div>
+        </div>
+
+        <div class="notes-section" style="margin-top: 1.5rem;">
+            <div class="dt-section-label">Opomba za ponudnika (neobvezno)</div>
+            <textarea id="bookingNotes" class="glass-input" rows="2"
+                placeholder="Npr. Prosim pokličite dan prej...">${state.notes}</textarea>
+        </div>
     </div>`;
+}
+
+function updateAddButtonState() {
+    const btn = document.getElementById('addProposedSlotBtn');
+    if (btn) {
+        btn.disabled = !(state.selectedDate && state.selectedTime);
+    }
 }
 
 function bindStep5() {
@@ -804,7 +867,7 @@ function bindStep5() {
         rerenderCalendar();
     });
 
-    // Calendar navigation — next month (max 6 months ahead)
+    // Calendar navigation — next month
     document.getElementById('calNext')?.addEventListener('click', () => {
         const now = new Date();
         const maxY = now.getFullYear() + (now.getMonth() + 6 > 11 ? 1 : 0);
@@ -816,12 +879,13 @@ function bindStep5() {
         }
     });
 
-    // Day selection — delegated on calGrid
+    // Day selection
     document.getElementById('calGrid')?.addEventListener('click', (e) => {
         const cell = e.target.closest('.cal-day[data-date]');
         if (!cell) return;
         state.selectedDate = cell.getAttribute('data-date');
         rerenderCalendar();
+        updateAddButtonState();
     });
 
     // Time pills
@@ -830,6 +894,44 @@ function bindStep5() {
             state.selectedTime = btn.getAttribute('data-time');
             document.querySelectorAll('.time-pill').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
+            updateAddButtonState();
+        });
+    });
+
+    // Add proposed slot
+    document.getElementById('addProposedSlotBtn')?.addEventListener('click', () => {
+        if (!state.selectedDate || !state.selectedTime) return;
+        
+        const exists = state.proposedSlots.some(s => s.date === state.selectedDate && s.time === state.selectedTime);
+        if (!exists) {
+            state.proposedSlots.push({
+                date: state.selectedDate,
+                time: state.selectedTime
+            });
+            state.selectedTime = null;
+        }
+        
+        const wizard = document.getElementById('bookingWizard');
+        if (wizard) {
+            wizard.innerHTML = buildStep5();
+            bindStep5();
+        }
+    });
+
+    // Remove proposed slot
+    document.querySelectorAll('.psi-remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const psiBtn = e.target.closest('.psi-remove-btn');
+            if (!psiBtn) return;
+            const idx = parseInt(psiBtn.getAttribute('data-idx'));
+            if (!isNaN(idx)) {
+                state.proposedSlots.splice(idx, 1);
+            }
+            const wizard = document.getElementById('bookingWizard');
+            if (wizard) {
+                wizard.innerHTML = buildStep5();
+                bindStep5();
+            }
         });
     });
 
@@ -841,7 +943,6 @@ function bindStep5() {
 function rerenderCalendar() {
     const grid  = document.getElementById('calGrid');
     const label = document.querySelector('.cal-month-label');
-    const selLabel = document.querySelector('.cal-selected-label');
     const prevBtn  = document.getElementById('calPrev');
     const { calendarYear: yr, calendarMonth: mo } = state;
 
@@ -851,12 +952,14 @@ function rerenderCalendar() {
         const prevOk = !(yr === new Date().getFullYear() && mo <= new Date().getMonth());
         prevBtn.disabled = !prevOk;
     }
-    // Re-bind day clicks after innerHTML update
+    
+    // Re-bind day clicks
     document.getElementById('calGrid')?.addEventListener('click', (e) => {
         const cell = e.target.closest('.cal-day[data-date]');
         if (!cell) return;
         state.selectedDate = cell.getAttribute('data-date');
         rerenderCalendar();
+        updateAddButtonState();
     });
 
     // Update selected label
@@ -936,10 +1039,18 @@ function buildStep6() {
             </div>
 
             <div class="confirm-section glass-card">
-                <div class="confirm-section-label">Termin</div>
+                <div class="confirm-section-label">Predlagani termini (ponudnik potrdi enega)</div>
                 <div class="confirm-section-value">
-                    ${formatBookingDate(state.selectedDate)} ob ${state.selectedTime}
-                    ${state.notes ? `<br><small style="color:#94a3b8;">${state.notes}</small>` : ''}
+                    <ul style="margin: 0.25rem 0 0; padding-left: 1.25rem; font-size: 0.82rem; line-height: 1.5;">
+                        ${state.proposedSlots.map(slot => {
+                            const mode = state.business.bookingMode || 'hourly';
+                            const timeLabel = mode === 'halfday' 
+                                ? (slot.time === 'dopoldan' ? 'dopoldan (8:00 - 12:00)' : 'popoldan (12:00 - 16:00)')
+                                : `ob ${slot.time}`;
+                            return `<li><strong>${formatBookingDate(slot.date)}</strong> ${timeLabel}</li>`;
+                        }).join('')}
+                    </ul>
+                    ${state.notes ? `<br><small style="color:#94a3b8;">Opomba: ${state.notes}</small>` : ''}
                 </div>
             </div>
 
@@ -1017,8 +1128,9 @@ function confirmBooking() {
         products: state.selectedProducts,
         bookingType: isVulcanizer(state.business) ? state.bookingType : null,
         totalPrice: total,
-        date: state.selectedDate,
-        time: state.selectedTime,
+        date: state.proposedSlots[0]?.date || null,
+        time: state.proposedSlots[0]?.time || null,
+        proposedSlots: state.proposedSlots,
         notes: state.notes,
         serviceNumber,
         sendConfirmEmail: state.sendConfirmEmail,
@@ -1088,8 +1200,16 @@ function confirmBooking() {
                 <span class="success-detail-val">${state.business.name}</span>
             </div>
             <div class="success-detail-row">
-                <span class="success-detail-key">Datum</span>
-                <span class="success-detail-val">${formatBookingDate(state.selectedDate)} ob ${state.selectedTime}</span>
+                <span class="success-detail-key">Predlagani termini</span>
+                <span class="success-detail-val">
+                    ${state.proposedSlots.map(slot => {
+                        const mode = state.business.bookingMode || 'hourly';
+                        const timeLabel = mode === 'halfday' 
+                            ? (slot.time === 'dopoldan' ? 'dopoldan' : 'popoldan')
+                            : `${slot.time}`;
+                        return `${formatBookingDate(slot.date)} (${timeLabel})`;
+                    }).join(', ')}
+                </span>
             </div>
             <div class="success-detail-row">
                 <span class="success-detail-key">Skupaj od</span>

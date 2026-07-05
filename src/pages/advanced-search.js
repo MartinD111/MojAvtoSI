@@ -13,11 +13,11 @@ import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js'
 import { getModelBodyType, getModelVariants } from '../utils/bodyType.js';
 import { renderEquipmentChipsHtml } from '../data/equipment.js';
 import { COMMERCIAL_TAXONOMY, COMMERCIAL_BY_KEY } from '../data/commercialTaxonomy.js';
+import { resolveFilterSpec, LEISURE_ENGINE_CONFIGS, LEISURE_FUELS, LEISURE_MOTORIZED } from '../data/categoryFilters.js';
 import {
     MOTO_STROKE_OPTIONS,
     MOTO_CYLINDER_OPTIONS,
     MOTO_LAYOUTS,
-    COMMERCIAL_FUEL_MAP,
     getMotoVariants,
     computeMotoFacets,
     codeMatchesLayout,
@@ -340,14 +340,33 @@ function bindSearchLogic(catContext) {
     let excludedVehicles = [];
     const MAX_VEHICLES = 3;
 
-    // ── Leisure (prosti-cas) field applicability ──
-    // Towed/static leisure vehicles have no engine; motorhomes & camper vans do.
-    // The exotic car engine configs (W12/W16/V10/V12) never apply to any of them.
-    const LEISURE_MOTORIZED = ['Avtodom', 'SnemljivBivalnik'];
-    // Drop supercar configs (W12/W16/V12); keep inline, V6/V8/V10 (Ford Triton V10
-    // was the standard motorhome engine for decades) and electric.
-    const LEISURE_ENGINE_CONFIGS = new Set(['I3', 'I4', 'I5', 'I6', 'V6', 'V8', 'V10', 'Electric']);
-    const LEISURE_FUELS = new Set(['Dizel', 'Petrol', 'Elektrika', 'Hibrid', 'LPG', 'CNG']);
+    // ── Category odometer (km vs operating hours) ──
+    // Machinery is measured in hours, road vehicles in km, trailers in neither.
+    // Driven by resolveFilterSpec() so it stays in lockstep with the create form.
+    function currentVrsta() {
+        const hv = document.getElementById('hiddenVType');
+        return hv ? hv.value : '';
+    }
+    function applyOdometerUnit() {
+        const spec = resolveFilterSpec(activeTab, currentVrsta());
+        const kmBlock = document.getElementById('odometerKmBlock');
+        const hoursBlock = document.getElementById('odometerHoursBlock');
+        const showKm = spec.odometer === 'km';
+        const showHours = spec.odometer === 'hours';
+        if (kmBlock) kmBlock.style.display = showKm ? '' : 'none';
+        if (hoursBlock) hoursBlock.style.display = showHours ? '' : 'none';
+        // Clear the hidden unit's inputs so a stale value can't leak into the filter.
+        if (!showKm) {
+            const mf = document.querySelector('input[name="mileageFrom"]');
+            const mt = document.querySelector('input[name="mileageTo"]');
+            if (mf) mf.value = ''; if (mt) mt.value = '';
+        }
+        if (!showHours) {
+            const hf = document.querySelector('input[name="engineHoursFrom"]');
+            const ht = document.querySelector('input[name="engineHoursTo"]');
+            if (hf) hf.value = ''; if (ht) ht.value = '';
+        }
+    }
 
     function applyLeisureFieldVisibility() {
         if (activeTab !== 'prosti-cas') return;
@@ -392,13 +411,22 @@ function bindSearchLogic(catContext) {
             if (accInterior) accInterior.style.display = 'block';
         }
 
+        // Category-driven odometer unit (km ↔ operating hours) for every tab.
+        applyOdometerUnit();
+
         if (tab === 'prosti-cas') {
             applyLeisureFieldVisibility();
         } else {
-            // Restore full car facets that the leisure pass may have narrowed/hidden.
-            if (engineAcc) engineAcc.style.display = 'block';
-            applyChipGroup('engineConfig', null);
-            applyChipGroup('fuel', null);
+            // Resolve engine-config / fuel visibility from the central schema.
+            const spec = resolveFilterSpec(tab, currentVrsta());
+            if (engineAcc) engineAcc.style.display = spec.showEngine ? 'block' : 'none';
+            applyChipGroup('engineConfig', spec.engineConfigs === 'none' ? new Set() : spec.engineConfigs);
+            // Hide the whole engine-config field group when the tab has no car-style config.
+            const cfgGroup = document.querySelector('input[name="engineConfig"]')?.closest('.car-only-field');
+            if (cfgGroup) cfgGroup.style.display = spec.engineConfigs === 'none' ? 'none' : '';
+            // Fuel narrowing for non-moto tabs is handled in applyRelevance (byVrsta),
+            // so only reset to "all" here when the spec asks for the full list.
+            if (spec.fuels === null) applyChipGroup('fuel', null);
         }
 
         // The hybrid sub-groups are .car-only-field elements the loops above just
@@ -527,17 +555,18 @@ function bindSearchLogic(catContext) {
             }
         }
 
-        // ── Commercial fuel cascade (curated) ──
+        // ── Commercial cascade (curated, per vrsta) ──
         if (activeTab === 'gospodarska') {
-            const hv = document.getElementById('hiddenVType');
-            const vrsta = hv ? hv.value : '';
-            const allowed = vrsta && COMMERCIAL_FUEL_MAP[vrsta]
-                ? new Set(COMMERCIAL_FUEL_MAP[vrsta])
-                : null;
+            const spec = resolveFilterSpec('gospodarska', currentVrsta());
+            const allowed = spec.fuels instanceof Set ? spec.fuels : null;
             const visible = applyChipGroup('fuel', allowed);
             // Hide the whole "Vrsta goriva" group when the vrsta has no engine
             const fuelGroup = document.querySelector('input[name="fuel"]')?.closest('.adv-field-group');
             if (fuelGroup) fuelGroup.style.display = (allowed && visible === 0) ? 'none' : '';
+            // Selecting a vrsta may switch km↔hours and toggle the engine accordion.
+            applyOdometerUnit();
+            const engineAcc = document.getElementById('acc-engine');
+            if (engineAcc) engineAcc.style.display = spec.showEngine ? 'block' : 'none';
         } else if (activeTab === 'prosti-cas') {
             // Leisure vehicles: keep the trimmed fuel list (don't restore car-only fuels).
             applyChipGroup('fuel', LEISURE_FUELS);
@@ -1377,6 +1406,7 @@ bindCardDrag(excludedVehicleCardsEl);
                 includeCallForPrice: fd.get('includeCallForPrice') === '1',
                 yearFrom: Number(fd.get('yearFrom')) || 0, yearTo: Number(fd.get('yearTo')) || Infinity,
                 mileageFrom: parseFormattedNumber(fd.get('mileageFrom')), mileageTo: parseFormattedNumber(fd.get('mileageTo')) || Infinity,
+                engineHoursFrom: parseFormattedNumber(fd.get('engineHoursFrom')), engineHoursTo: parseFormattedNumber(fd.get('engineHoursTo')) || Infinity,
                 powerFrom: powerFromVal, powerTo: powerToVal,
                 cat: catContext.cat, sub: catContext.sub, searchType: catContext.searchType, vtype: catContext.vtype, najem: catContext.najem, activeTab
             };
@@ -1470,6 +1500,12 @@ bindCardDrag(excludedVehicleCardsEl);
         const mileageTo = parseFormattedNumber(fd.get('mileageTo'));
         if (mileageFrom) params.set('mileageFrom', mileageFrom);
         if (mileageTo) params.set('mileageTo', mileageTo);
+
+        // Operating hours From/To (machinery)
+        const engineHoursFrom = parseFormattedNumber(fd.get('engineHoursFrom'));
+        const engineHoursTo = parseFormattedNumber(fd.get('engineHoursTo'));
+        if (engineHoursFrom) params.set('engineHoursFrom', engineHoursFrom);
+        if (engineHoursTo) params.set('engineHoursTo', engineHoursTo);
 
         // Fuel
         const fuels = fd.getAll('fuel').filter(Boolean);
@@ -1608,7 +1644,18 @@ function matchesFilters(l, filters) {
         if (price < filters.priceFrom || (filters.priceTo !== Infinity && price > filters.priceTo)) return false;
     }
     if (l.year < filters.yearFrom || (filters.yearTo !== Infinity && l.year > filters.yearTo)) return false;
-    if (l.mileage < filters.mileageFrom || (filters.mileageTo !== Infinity && l.mileage > filters.mileageTo)) return false;
+    // Mileage (km) — only applied when a km range is actually set (road vehicles).
+    if (filters.mileageFrom > 0 || filters.mileageTo !== Infinity) {
+        const km = l.mileage || 0;
+        if (km < filters.mileageFrom || (filters.mileageTo !== Infinity && km > filters.mileageTo)) return false;
+    }
+    // Operating hours — applied when an hours range is set (machinery). Only
+    // listings that actually record engineHours can match; km-only vehicles never do.
+    if (filters.engineHoursFrom > 0 || filters.engineHoursTo !== Infinity) {
+        if (l.engineHours == null) return false;
+        const hrs = Number(l.engineHours) || 0;
+        if (hrs < filters.engineHoursFrom || (filters.engineHoursTo !== Infinity && hrs > filters.engineHoursTo)) return false;
+    }
 
     // Power (kW) filter
     if (l.powerKw !== undefined) {

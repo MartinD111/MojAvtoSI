@@ -505,7 +505,7 @@ export function initMapPage() {
         // MojaNavtika centers on the Adriatic coast; MojAvto on Slovenia's centre.
         center: PLATFORM.id === 'navtika' ? [45.3, 13.9] : [46.1512, 14.9955],
         zoom: PLATFORM.id === 'navtika' ? 8 : 8,
-        zoomControl: true
+        zoomControl: false
     });
 
     // OpenStreetMap tiles

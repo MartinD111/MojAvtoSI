@@ -1593,9 +1593,9 @@ body.dark-mode .news-card-content p {
     min-height: 220px !important;
   }
 
-  /* Hide seller note but keep note-contact-row for location */
+  /* Show seller location next to call button */
   .seller-note-card {
-    display: none !important;
+    display: inline-flex !important;
   }
 
   /* Price: prevent clipping */
@@ -4538,9 +4538,9 @@ body.dark-mode .sponsored-mini-card:hover {
 }
 
 body.dark-mode .sponsored-mini-card .spec-pill {
-  background: rgba(30, 41, 59, 0.7) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  color: #f1f5f9 !important;
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
 }
 
 body.dark-mode .sponsored-title {
@@ -5021,8 +5021,8 @@ body.dark-mode .spec-pill.type-pill {
 .note-contact-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: flex-start;
+  gap: 0.75rem;
   width: 100%;
   margin-top: 0.85rem;
 }
@@ -5327,6 +5327,307 @@ body.dark-mode .spec-pill:hover {
   background: rgba(51, 65, 85, 0.8) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Unified Colorful Spec Pills for MojAvto (Listings & Sponsored) */
+
+.spec-pill.year-pill,
+.spec-pill.year-pill span {
+  background: #818cf8 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.year-pill i,
+.spec-pill.year-pill svg {
+  color: #ffffff !important;
+}
+.spec-pill.year-pill:hover {
+  background: #818cf8 !important;
+}
+
+.spec-pill.km-pill,
+.spec-pill.km-pill span {
+  background: #2dd4bf !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.km-pill i,
+.spec-pill.km-pill svg {
+  color: #ffffff !important;
+}
+.spec-pill.km-pill:hover {
+  background: #2dd4bf !important;
+}
+
+.spec-pill.power-pill,
+.spec-pill.power-pill span {
+  background: #fbbf24 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.power-pill i,
+.spec-pill.power-pill svg {
+  color: #ffffff !important;
+}
+.spec-pill.power-pill:hover {
+  background: #fbbf24 !important;
+}
+
+.spec-pill.displacement-pill,
+.spec-pill.displacement-pill span {
+  background: #94a3b8 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.displacement-pill i,
+.spec-pill.displacement-pill svg {
+  color: #ffffff !important;
+}
+.spec-pill.displacement-pill:hover {
+  background: #94a3b8 !important;
+}
+
+.spec-pill.fuel-coded.fuel-pill-P,
+.spec-pill.fuel-coded.fuel-pill-P span {
+  background: #60a5fa !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.fuel-coded.fuel-pill-P i,
+.spec-pill.fuel-coded.fuel-pill-P svg {
+  color: #ffffff !important;
+}
+.spec-pill.fuel-coded.fuel-pill-P:hover {
+  background: #60a5fa !important;
+}
+
+.spec-pill.fuel-coded.fuel-pill-D,
+.spec-pill.fuel-coded.fuel-pill-D span {
+  background: #34d399 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.fuel-coded.fuel-pill-D i,
+.spec-pill.fuel-coded.fuel-pill-D svg {
+  color: #ffffff !important;
+}
+.spec-pill.fuel-coded.fuel-pill-D:hover {
+  background: #34d399 !important;
+}
+
+.spec-pill.fuel-coded.fuel-pill-H,
+.spec-pill.fuel-coded.fuel-pill-H span {
+  background: #06b6d4 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.fuel-coded.fuel-pill-H i,
+.spec-pill.fuel-coded.fuel-pill-H svg {
+  color: #ffffff !important;
+}
+.spec-pill.fuel-coded.fuel-pill-H:hover {
+  background: #06b6d4 !important;
+}
+
+.spec-pill.fuel-coded.fuel-pill-HB,
+.spec-pill.fuel-coded.fuel-pill-HB span {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.fuel-coded.fuel-pill-HB i,
+.spec-pill.fuel-coded.fuel-pill-HB svg {
+  color: #ffffff !important;
+}
+.spec-pill.fuel-coded.fuel-pill-HB:hover {
+  background: #6366f1 !important;
+}
+
+.spec-pill.fuel-coded.fuel-pill-E,
+.spec-pill.fuel-coded.fuel-pill-E span {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.fuel-coded.fuel-pill-E i,
+.spec-pill.fuel-coded.fuel-pill-E svg {
+  color: #ffffff !important;
+}
+.spec-pill.fuel-coded.fuel-pill-E:hover {
+  background: #10b981 !important;
+}
+
+.spec-pill.fuel-coded.fuel-pill-LPG,
+.spec-pill.fuel-coded.fuel-pill-LPG span {
+  background: #fb923c !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.fuel-coded.fuel-pill-LPG i,
+.spec-pill.fuel-coded.fuel-pill-LPG svg {
+  color: #ffffff !important;
+}
+.spec-pill.fuel-coded.fuel-pill-LPG:hover {
+  background: #fb923c !important;
+}
+
+.spec-pill.transmission-pill,
+.spec-pill.transmission-pill span,
+.spec-pill.transmission-pill.type-auto,
+.spec-pill.transmission-pill.type-auto span {
+  background: #fb923c !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.transmission-pill i,
+.spec-pill.transmission-pill svg,
+.spec-pill.transmission-pill.type-auto i,
+.spec-pill.transmission-pill.type-auto svg {
+  color: #ffffff !important;
+}
+.spec-pill.transmission-pill:hover,
+.spec-pill.transmission-pill.type-auto:hover {
+  background: #fb923c !important;
+}
+
+.spec-pill.transmission-pill.type-manual,
+.spec-pill.transmission-pill.type-manual span {
+  background: #94a3b8 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.transmission-pill.type-manual i,
+.spec-pill.transmission-pill.type-manual svg {
+  color: #ffffff !important;
+}
+.spec-pill.transmission-pill.type-manual:hover {
+  background: #94a3b8 !important;
+}
+
+.spec-pill.consumption-pill,
+.spec-pill.consumption-pill span,
+.spec-pill.consumption-pill.status-medium,
+.spec-pill.consumption-pill.status-medium span {
+  background: #fbbf24 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.consumption-pill i,
+.spec-pill.consumption-pill svg,
+.spec-pill.consumption-pill.status-medium i,
+.spec-pill.consumption-pill.status-medium svg {
+  color: #ffffff !important;
+}
+.spec-pill.consumption-pill:hover,
+.spec-pill.consumption-pill.status-medium:hover {
+  background: #fbbf24 !important;
+}
+
+.spec-pill.consumption-pill.status-low,
+.spec-pill.consumption-pill.status-low span {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.consumption-pill.status-low i,
+.spec-pill.consumption-pill.status-low svg {
+  color: #ffffff !important;
+}
+.spec-pill.consumption-pill.status-low:hover {
+  background: #10b981 !important;
+}
+
+.spec-pill.consumption-pill.status-high,
+.spec-pill.consumption-pill.status-high span {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.consumption-pill.status-high i,
+.spec-pill.consumption-pill.status-high svg {
+  color: #ffffff !important;
+}
+.spec-pill.consumption-pill.status-high:hover {
+  background: #ef4444 !important;
+}
+
+.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]),
+.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) span,
+.spec-pill.consumption-pill.status-medium[title*="Domet"],
+.spec-pill.consumption-pill.status-medium[title*="Domet"] span,
+.spec-pill.consumption-pill.status-medium[title*="Doseg"],
+.spec-pill.consumption-pill.status-medium[title*="Doseg"] span {
+  background: #0ea5e9 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) i,
+.spec-pill.consumption-pill.status-medium[title*="Domet"] i,
+.spec-pill.consumption-pill.status-medium[title*="Doseg"] i,
+.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) svg,
+.spec-pill.consumption-pill.status-medium[title*="Domet"] svg,
+.spec-pill.consumption-pill.status-medium[title*="Doseg"] svg {
+  color: #ffffff !important;
+}
+
+.spec-pill.battery-pill,
+.spec-pill.battery-pill span {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.spec-pill.battery-pill i,
+.spec-pill.battery-pill svg {
+  color: #ffffff !important;
+}
+.spec-pill.battery-pill:hover {
+  background: #10b981 !important;
+}
+
+/* Solid Location Pill */
+.seller-note-card {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+}
+.seller-note-card span {
+  color: #ffffff !important;
+}
+.seller-note-card i,
+.seller-note-card svg {
+  color: #ffffff !important;
+}
+body.dark-mode .seller-note-card {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+/* Solid Call Button */
+.action-pill-btn.contact-btn {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+.action-pill-btn.contact-btn i,
+.action-pill-btn.contact-btn svg {
+  color: #ffffff !important;
+}
+.action-pill-btn.contact-btn:hover {
+  background: #059669 !important;
+  color: #ffffff !important;
+}
+body.dark-mode .action-pill-btn.contact-btn {
+  background: #10b981 !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+body.dark-mode .action-pill-btn.contact-btn:hover {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
 }
 
 .spec-row {
@@ -9834,6 +10135,400 @@ body.dark-mode .nav-oprema-cat-btn.active {
 .news-article-body .nb-article-quote p { margin: 0 0 .4rem; font-size: 1.1rem; font-style: italic; }
 .news-article-body .nb-article-quote cite { font-size: .82rem; color: #6b7280; font-style: normal; }
 .news-article-body .nb-article-divider { border: none; border-top: 2px solid #e5e7eb; margin: 2rem 0; }
-body.dark-mode .news-article-body .nb-article-heading { color: #f1f5f9; }
+body.dark-mode .news-article-body .nb-article-divider { border-color: #374151; }
 body.dark-mode .news-article-body .nb-article-quote { background: #1a1830; }
 body.dark-mode .news-article-body .nb-article-source { background: #374151; color: #e5e7eb; }
+
+/* ── Final Solid Overrides for MojAvto Pills (Listings & Sponsored) ── */
+
+/* 1. Year Pill */
+body .spec-pill.year-pill,
+body.dark-mode .spec-pill.year-pill,
+body .sponsored-mini-card .spec-pill.year-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.year-pill {
+  background: #818cf8 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.year-pill *,
+body.dark-mode .spec-pill.year-pill *,
+body .sponsored-mini-card .spec-pill.year-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.year-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.year-pill:hover,
+body.dark-mode .spec-pill.year-pill:hover {
+  background: #818cf8 !important;
+}
+
+/* 2. Km Pill */
+body .spec-pill.km-pill,
+body.dark-mode .spec-pill.km-pill,
+body .sponsored-mini-card .spec-pill.km-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.km-pill {
+  background: #2dd4bf !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.km-pill *,
+body.dark-mode .spec-pill.km-pill *,
+body .sponsored-mini-card .spec-pill.km-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.km-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.km-pill:hover,
+body.dark-mode .spec-pill.km-pill:hover {
+  background: #2dd4bf !important;
+}
+
+/* 3. Power Pill */
+body .spec-pill.power-pill,
+body.dark-mode .spec-pill.power-pill,
+body .sponsored-mini-card .spec-pill.power-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.power-pill {
+  background: #fbbf24 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.power-pill *,
+body.dark-mode .spec-pill.power-pill *,
+body .sponsored-mini-card .spec-pill.power-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.power-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.power-pill:hover,
+body.dark-mode .spec-pill.power-pill:hover {
+  background: #fbbf24 !important;
+}
+
+/* 4. Displacement Pill */
+body .spec-pill.displacement-pill,
+body.dark-mode .spec-pill.displacement-pill,
+body .sponsored-mini-card .spec-pill.displacement-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.displacement-pill {
+  background: #94a3b8 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.displacement-pill *,
+body.dark-mode .spec-pill.displacement-pill *,
+body .sponsored-mini-card .spec-pill.displacement-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.displacement-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.displacement-pill:hover,
+body.dark-mode .spec-pill.displacement-pill:hover {
+  background: #94a3b8 !important;
+}
+
+/* 5. Fuel P (Petrol) */
+body .spec-pill.fuel-coded.fuel-pill-P,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-P,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P {
+  background: #60a5fa !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-P *,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-P *,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P *,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P * {
+  color: #ffffff !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-P:hover,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-P:hover {
+  background: #60a5fa !important;
+}
+
+/* 6. Fuel D (Diesel) */
+body .spec-pill.fuel-coded.fuel-pill-D,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-D,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D {
+  background: #34d399 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-D *,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-D *,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D *,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D * {
+  color: #ffffff !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-D:hover,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-D:hover {
+  background: #34d399 !important;
+}
+
+/* 7. Fuel H (Hybrid) */
+body .spec-pill.fuel-coded.fuel-pill-H,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-H,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H {
+  background: #06b6d4 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-H *,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-H *,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H *,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H * {
+  color: #ffffff !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-H:hover,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-H:hover {
+  background: #06b6d4 !important;
+}
+
+/* 8. Fuel HB (Plug-in Hybrid) */
+body .spec-pill.fuel-coded.fuel-pill-HB,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-HB,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-HB *,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-HB *,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB *,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB * {
+  color: #ffffff !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-HB:hover,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-HB:hover {
+  background: #6366f1 !important;
+}
+
+/* 9. Fuel E (Electric) */
+body .spec-pill.fuel-coded.fuel-pill-E,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-E,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-E *,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-E *,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E *,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E * {
+  color: #ffffff !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-E:hover,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-E:hover {
+  background: #10b981 !important;
+}
+
+/* 10. Fuel LPG */
+body .spec-pill.fuel-coded.fuel-pill-LPG,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-LPG,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG {
+  background: #fb923c !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-LPG *,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-LPG *,
+body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG *,
+body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG * {
+  color: #ffffff !important;
+}
+body .spec-pill.fuel-coded.fuel-pill-LPG:hover,
+body.dark-mode .spec-pill.fuel-coded.fuel-pill-LPG:hover {
+  background: #fb923c !important;
+}
+
+/* 11. Transmission (Automatic type-auto) */
+body .spec-pill.transmission-pill,
+body.dark-mode .spec-pill.transmission-pill,
+body .spec-pill.transmission-pill.type-auto,
+body.dark-mode .spec-pill.transmission-pill.type-auto,
+body .sponsored-mini-card .spec-pill.transmission-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill,
+body .sponsored-mini-card .spec-pill.transmission-pill.type-auto,
+body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill.type-auto {
+  background: #fb923c !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.transmission-pill *,
+body.dark-mode .spec-pill.transmission-pill *,
+body .sponsored-mini-card .spec-pill.transmission-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.transmission-pill:hover,
+body.dark-mode .spec-pill.transmission-pill:hover,
+body .spec-pill.transmission-pill.type-auto:hover,
+body.dark-mode .spec-pill.transmission-pill.type-auto:hover {
+  background: #fb923c !important;
+}
+
+/* 12. Transmission (Manual type-manual) */
+body .spec-pill.transmission-pill.type-manual,
+body.dark-mode .spec-pill.transmission-pill.type-manual,
+body .sponsored-mini-card .spec-pill.transmission-pill.type-manual,
+body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill.type-manual {
+  background: #94a3b8 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.transmission-pill.type-manual *,
+body.dark-mode .spec-pill.transmission-pill.type-manual *,
+body .sponsored-mini-card .spec-pill.transmission-pill.type-manual *,
+body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill.type-manual * {
+  color: #ffffff !important;
+}
+body .spec-pill.transmission-pill.type-manual:hover,
+body.dark-mode .spec-pill.transmission-pill.type-manual:hover {
+  background: #94a3b8 !important;
+}
+
+/* 13. Consumption (Low status-low) */
+body .spec-pill.consumption-pill.status-low,
+body.dark-mode .spec-pill.consumption-pill.status-low,
+body .sponsored-mini-card .spec-pill.consumption-pill.status-low,
+body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-low {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.consumption-pill.status-low *,
+body.dark-mode .spec-pill.consumption-pill.status-low *,
+body .sponsored-mini-card .spec-pill.consumption-pill.status-low *,
+body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-low * {
+  color: #ffffff !important;
+}
+body .spec-pill.consumption-pill.status-low:hover,
+body.dark-mode .spec-pill.consumption-pill.status-low:hover {
+  background: #10b981 !important;
+}
+
+/* 14. Consumption (Medium status-medium) */
+body .spec-pill.consumption-pill,
+body.dark-mode .spec-pill.consumption-pill,
+body .spec-pill.consumption-pill.status-medium,
+body.dark-mode .spec-pill.consumption-pill.status-medium,
+body .sponsored-mini-card .spec-pill.consumption-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill,
+body .sponsored-mini-card .spec-pill.consumption-pill.status-medium,
+body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-medium {
+  background: #fbbf24 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.consumption-pill *,
+body.dark-mode .spec-pill.consumption-pill *,
+body .sponsored-mini-card .spec-pill.consumption-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.consumption-pill:hover,
+body.dark-mode .spec-pill.consumption-pill:hover,
+body .spec-pill.consumption-pill.status-medium:hover,
+body.dark-mode .spec-pill.consumption-pill.status-medium:hover {
+  background: #fbbf24 !important;
+}
+
+/* 15. Consumption (High status-high) */
+body .spec-pill.consumption-pill.status-high,
+body.dark-mode .spec-pill.consumption-pill.status-high,
+body .sponsored-mini-card .spec-pill.consumption-pill.status-high,
+body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-high {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.consumption-pill.status-high *,
+body.dark-mode .spec-pill.consumption-pill.status-high *,
+body .sponsored-mini-card .spec-pill.consumption-pill.status-high *,
+body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-high * {
+  color: #ffffff !important;
+}
+body .spec-pill.consumption-pill.status-high:hover,
+body.dark-mode .spec-pill.consumption-pill.status-high:hover {
+  background: #ef4444 !important;
+}
+
+/* 16. EV Range (Blue status-medium battery/doseg) */
+body .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]),
+body.dark-mode .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]),
+body .spec-pill.consumption-pill.status-medium[title*="Domet"],
+body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Domet"],
+body .spec-pill.consumption-pill.status-medium[title*="Doseg"],
+body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Doseg"] {
+  background: #0ea5e9 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) *,
+body.dark-mode .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) *,
+body .spec-pill.consumption-pill.status-medium[title*="Domet"] *,
+body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Domet"] *,
+body .spec-pill.consumption-pill.status-medium[title*="Doseg"] *,
+body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Doseg"] * {
+  color: #ffffff !important;
+}
+
+/* 17. Battery Pill */
+body .spec-pill.battery-pill,
+body.dark-mode .spec-pill.battery-pill,
+body .sponsored-mini-card .spec-pill.battery-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.battery-pill {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.battery-pill *,
+body.dark-mode .spec-pill.battery-pill *,
+body .sponsored-mini-card .spec-pill.battery-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.battery-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.battery-pill:hover,
+body.dark-mode .spec-pill.battery-pill:hover {
+  background: #10b981 !important;
+}
+
+/* 18. Motorcycle Stroke Pill */
+body .spec-pill.stroke-pill,
+body.dark-mode .spec-pill.stroke-pill,
+body .sponsored-mini-card .spec-pill.stroke-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.stroke-pill {
+  background: #0ea5e9 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.stroke-pill *,
+body.dark-mode .spec-pill.stroke-pill *,
+body .sponsored-mini-card .spec-pill.stroke-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.stroke-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.stroke-pill:hover,
+body.dark-mode .spec-pill.stroke-pill:hover {
+  background: #0ea5e9 !important;
+}
+
+/* 19. Motorcycle Engine Type/Configuration Pill */
+body .spec-pill.type-pill,
+body.dark-mode .spec-pill.type-pill,
+body .sponsored-mini-card .spec-pill.type-pill,
+body.dark-mode .sponsored-mini-card .spec-pill.type-pill {
+  background: #8b5cf6 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+body .spec-pill.type-pill *,
+body.dark-mode .spec-pill.type-pill *,
+body .sponsored-mini-card .spec-pill.type-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill.type-pill * {
+  color: #ffffff !important;
+}
+body .spec-pill.type-pill:hover,
+body.dark-mode .spec-pill.type-pill:hover {
+  background: #8b5cf6 !important;
+}

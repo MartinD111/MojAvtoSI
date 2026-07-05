@@ -41,6 +41,7 @@ export const mockBusinesses = [
         leasingPartners: ['VB Leasing', 'Porsche Leasing'],
         offersTyreStorage: true,
         servicesOffered: ['oil_change', 'brake_service', 'tyre_change', 'diagnostics'],
+        bookingMode: 'halfday',
         createdAt: '2018-06-20'
     },
     {
@@ -81,6 +82,7 @@ export const mockBusinesses = [
         leasingPartners: [],
         offersTyreStorage: true,
         servicesOffered: ['tyre_change', 'tyre_storage', 'oil_change', 'inspection', 'washing'],
+        bookingMode: 'hourly',
         createdAt: '2017-09-05'
     },
     {
@@ -121,6 +123,7 @@ export const mockBusinesses = [
         leasingPartners: [],
         offersTyreStorage: false,
         servicesOffered: ['oil_change', 'inspection', 'diagnostics'],
+        bookingMode: 'halfday',
         createdAt: '2022-05-01'
     },
     {

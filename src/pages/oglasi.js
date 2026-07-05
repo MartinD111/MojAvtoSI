@@ -41,7 +41,7 @@ import { getModelVariants } from '../utils/bodyType.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
 
 // ── Power unit toggle ────────────────────────────────────────
-let currentPowerUnit = 'kw';
+let currentPowerUnit = 'km'; // 'km' = KM/HP (default), 'kw' = kW
 
 function applyPowerUnit(unit) {
     currentPowerUnit = unit;
@@ -384,15 +384,15 @@ export function renderCarCard(car, auction = null) {
                 </div>
 
                 <div class="note-contact-row">
+                    <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
+                        <i data-lucide="phone"></i>
+                    </button>
                     ${car.location?.region ? `
                     <div class="seller-note-card">
                         <i data-lucide="map-pin"></i>
                         <span>${escHtml(car.location.region)}${car.location.country && car.location.country !== 'SI' ? ', ' + escHtml(car.location.country) : ''}</span>
                     </div>
-                    ` : '<div style="flex: 1;"></div>'}
-                    <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
-                        <i data-lucide="phone"></i>
-                    </button>
+                    ` : ''}
                 </div>
             </div>
         </div>
@@ -678,6 +678,8 @@ function applyUrlFilters(params) {
     const yearFrom = parseInt(params.get('yearFrom'), 10) || 0;
     const priceTo = parseInt(params.get('priceTo'), 10) || Infinity;
     const mileageTo = parseInt(params.get('mileageTo'), 10) || Infinity;
+    const engineHoursFrom = parseInt(params.get('engineHoursFrom'), 10) || 0;
+    const engineHoursTo = parseInt(params.get('engineHoursTo'), 10) || Infinity;
 
     const filtered = SAMPLE_LISTINGS.filter(car => {
         const carCat = (car.category === 'motor' || car.category === 'moto') ? 'moto' : car.category;
@@ -685,16 +687,23 @@ function applyUrlFilters(params) {
         if (filterCat && carCat !== filterCat) return false;
         if (make && car.make !== make) return false;
         if (model && car.model !== model) return false;
-        
+
         const carYear = parseInt(car.year, 10) || 0;
         if (carYear < yearFrom) return false;
-        
+
         const carPrice = car.priceRaw || 0;
         if (carPrice > priceTo) return false;
-        
+
         const carMileage = car.mileageKm || (parseInt(car.mileage?.replace(/[^0-9]/g, ''), 10) || 0);
         if (carMileage > mileageTo) return false;
-        
+
+        // Operating hours (machinery). Only listings recording engineHours match.
+        if (engineHoursFrom > 0 || engineHoursTo !== Infinity) {
+            if (car.engineHours == null) return false;
+            const carHours = Number(car.engineHours) || 0;
+            if (carHours < engineHoursFrom || carHours > engineHoursTo) return false;
+        }
+
         return true;
     });
 
@@ -1299,6 +1308,8 @@ function applySidebarFilters() {
     const cat = params.get('cat');
     const najem = params.get('najem');
     const mileageToParam = parseInt(params.get('mileageTo'), 10) || Infinity;
+    const engineHoursFromParam = parseInt(params.get('engineHoursFrom'), 10) || 0;
+    const engineHoursToParam = parseInt(params.get('engineHoursTo'), 10) || Infinity;
 
     const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
@@ -1342,6 +1353,13 @@ function applySidebarFilters() {
 
         const carMileage = car.mileageKm || (parseInt(car.mileage?.replace(/[^0-9]/g, ''), 10) || 0);
         if (carMileage > mileageToParam) return false;
+
+        // Operating hours (machinery). Only listings recording engineHours match.
+        if (engineHoursFromParam > 0 || engineHoursToParam !== Infinity) {
+            if (car.engineHours == null) return false;
+            const carHours = Number(car.engineHours) || 0;
+            if (carHours < engineHoursFromParam || carHours > engineHoursToParam) return false;
+        }
 
         if (fuels.length > 0) {
             let normalizedCarFuel = car.fuel;

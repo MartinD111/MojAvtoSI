@@ -853,55 +853,69 @@ body.dark-mode .map-filter-actions .filter-reset-btn:hover {
     display: flex;
     align-items: center;
     gap: 0.65rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 9999px;
-    padding: 0.5rem 1rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 0.4rem 0.9rem;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
     z-index: 500;
     white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.map-overlay-bar:hover {
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 12px 35px -8px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.92);
 }
 
 .map-overlay-loc {
     font-size: 0.78rem;
     font-weight: 600;
-    color: #475569;
+    color: #334155;
     display: flex;
     align-items: center;
     gap: 0.35rem;
 }
 
 .map-overlay-loc i {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     color: var(--color-primary-start);
 }
 
 .map-locate-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.35rem;
     padding: 0.35rem 0.75rem;
     border-radius: 9999px;
     border: none;
-    background: var(--color-primary-start);
+    background: linear-gradient(135deg, var(--color-primary-start, #2563eb), var(--color-primary-end, #4f46e5));
     color: white;
     font-size: 0.75rem;
     font-weight: 700;
     font-family: 'Inter', sans-serif;
     cursor: pointer;
-    transition: all 0.18s;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .map-locate-btn i {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
 }
 
 .map-locate-btn:hover {
-    opacity: 0.9;
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.map-locate-btn:active {
+    transform: translateY(0) scale(0.98);
 }
 
 /* ── Dark Mode ───────────────────────────────────────────── */
@@ -1001,12 +1015,18 @@ body.dark-mode .biz-card-name {
 }
 
 body.dark-mode .map-overlay-bar {
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.85);
     border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .map-overlay-bar:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(15, 23, 42, 0.92);
 }
 
 body.dark-mode .map-overlay-loc {
-    color: #94a3b8;
+    color: #cbd5e1;
 }
 
 /* ── Mobile filter FAB (hidden on desktop) ───────────────── */
@@ -1065,10 +1085,23 @@ body.dark-mode .map-overlay-loc {
         display: none;
     }
 
-    /* Overlay bar: restore default centering */
+    /* Overlay bar: restore default centering and fit on mobile */
     .map-overlay-bar {
         left: 50%;
         transform: translateX(-50%);
-        max-width: calc(100% - 2rem);
+        max-width: calc(100% - 1.5rem);
+        padding: 0.35rem 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .map-locate-btn {
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+    }
+
+    .map-locate-btn .btn-text {
+        display: none;
     }
 }

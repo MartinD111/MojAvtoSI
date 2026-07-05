@@ -323,11 +323,21 @@ function renderBookingsSection(userId) {
         };
         const sc = statusColors[cls] || { bg: '#f8fafc', color: '#64748b', border: '#e2e8f0' };
 
+        let dateLabel = '';
+        if (b.proposedSlots && b.proposedSlots.length > 0) {
+            dateLabel = b.proposedSlots.map(s => {
+                const timeLabel = s.time === 'dopoldan' ? 'dopoldan' : s.time === 'popoldan' ? 'popoldan' : `ob ${s.time}`;
+                return `${formatBookingDate(s.date)} (${timeLabel})`;
+            }).join(' / ');
+        } else {
+            dateLabel = `${formatBookingDate(b.date)} ob ${b.time || ''}`;
+        }
+
         return `
         <div class="dashboard-booking-card">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
                 <span style="font-size:0.7rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:9999px;background:${sc.bg};color:${sc.color};border:1px solid ${sc.border};">${label}</span>
-                <span style="font-size:0.75rem;color:#94a3b8;font-weight:500;">${formatBookingDate(b.date)} ob ${b.time || ''}</span>
+                <span style="font-size:0.75rem;color:#94a3b8;font-weight:500;">${dateLabel}</span>
             </div>
             <div class="booking-title">${b.businessName || 'Unknown business'}</div>
             <div class="booking-services">${services}</div>
