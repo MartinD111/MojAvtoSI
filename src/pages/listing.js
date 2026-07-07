@@ -198,7 +198,7 @@ async function initFavBtn(l) {
             const liked = await isFavourite(user.id, l.id);
             const localSet = getLikedSet();
             if (liked) { localSet.add(l.id); btn.classList.add('active'); }
-            else        { localSet.delete(l.id); btn.classList.remove('active'); }
+            else { localSet.delete(l.id); btn.classList.remove('active'); }
             setLikedSet(localSet);
         } catch { /* non-critical */ }
     };
@@ -257,7 +257,7 @@ function initCompareBtn(l) {
 
     btn.addEventListener('click', async () => {
         const list = getList();
-        const idx  = list.findIndex(c => c.id === l.id);
+        const idx = list.findIndex(c => c.id === l.id);
 
         if (idx !== -1) {
             // Already in compare — remove without requiring auth.
@@ -326,8 +326,9 @@ function renderListing(l) {
             <!-- Header: title -->
             <header class="lp-header">
                 <div class="lp-header-main">
-                    <h1 class="lp-title">${escHtml(buildTitle(l))}</h1>
-                    <div class="lp-meta-row">
+                    <h1 class="lp-title">${escHtml(l.make)} ${escHtml(l.model || '')}</h1>
+                    ${l.variant ? `<div class="lp-subtitle">${escHtml(l.variant)}</div>` : ''}
+                    <div class="lp-meta-row" style="margin-top: 0.5rem;">
                         <div class="lp-view-toggle">
                             <button class="lp-view-btn active" data-view="exterior">${t('exterior')}</button>
                             <button class="lp-view-btn ${interiorImages.length === 0 ? 'disabled' : ''}" data-view="interior" ${interiorImages.length === 0 ? 'disabled' : ''}>${t('interior')}</button>
@@ -335,6 +336,32 @@ function renderListing(l) {
                         ${l.createdAt ? `<span>📅 ${formatDate(l.createdAt)}</span>` : ''}
                         ${l.viewCount ? `<span>👁 ${t('views_count', { count: l.viewCount })}</span>` : ''}
                     </div>
+                </div>
+
+                <!-- Price block in header -->
+                <div class="lp-header-price">
+                    <div class="lp-price-pill-container">
+                        ${l.salePriceEur ? `
+                        <div class="lp-price-discount-wrapper">
+                            <div class="lp-sale-price">${formatPrice(l.salePriceEur, false)}</div>
+                            <div class="lp-original-price-row">
+                                <span class="lp-original-price">${formatPrice(l.priceEur || l.priceRaw || l.price || 0, false)}</span>
+                                <span class="lp-discount-pct">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                    -${Math.round((1 - l.salePriceEur / (l.priceEur || l.priceRaw || l.price)) * 100)}%
+                                </span>
+                            </div>
+                        </div>` : `
+                        <div class="lp-price">${formatPrice(l.priceRaw || l.priceEur || l.price || 0, l.callForPrice)}</div>`}
+                    </div>
+                    <div id="lpRatingBlock"></div>
+                    <div id="lpServiceBadge"></div>
+                    ${l.priceNegotiable ? `<div class="lp-price-sub">${t('price_is_negotiable')}</div>` : ''}
+                    ${l.leaseAvailable && !l.leasingConditions ? `<div class="lp-price-sub">${t('financing_available')}</div>` : ''}
+                    ${l.leasingConditions ? `
+                    <button class="lp-leasing-btn" id="btnShowLeasing">
+                        <i data-lucide="credit-card"></i> ${t('check_financing_options')}
+                    </button>` : ''}
                 </div>
             </header>
 
@@ -377,44 +404,19 @@ function renderListing(l) {
                 <!-- RIGHT: sidebar (Sticky) -->
                 <aside class="lp-sidebar">
 
-                    <!-- Price Card (Pilled and Centered) -->
-                    <div class="lp-sidebar-card lp-price-card centered">
-                        <!-- Price + rating block. On tablet this sits on the left,
-                             with the action row pushed to the right. -->
-                        <div class="lp-price-main">
-                        <div class="lp-price-pill-container">
-                            ${l.salePriceEur ? `
-                            <div>
-                                <div class="lp-sale-price">${formatPrice(l.salePriceEur, false)}</div>
-                                <div class="lp-original-price">${formatPrice(l.priceEur || l.priceRaw || l.price || 0, false)}</div>
-                                <div class="lp-discount-pct">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                                    -${Math.round((1 - l.salePriceEur / (l.priceEur || l.priceRaw || l.price)) * 100)}%
-                                </div>
-                            </div>` : `
-                            <div class="lp-price">${formatPrice(l.priceRaw || l.priceEur || l.price || 0, l.callForPrice)}</div>`}
-                        </div>
-                        <div id="lpRatingBlock"></div>
-                        <div id="lpServiceBadge"></div>
-                        ${l.priceNegotiable ? `<div class="lp-price-sub">${t('price_is_negotiable')}</div>` : ''}
-                        ${l.leaseAvailable && !l.leasingConditions ? `<div class="lp-price-sub">${t('financing_available')}</div>` : ''}
-                        ${l.leasingConditions ? `
-                        <button class="lp-leasing-btn" id="btnShowLeasing">
-                            <i data-lucide="credit-card"></i> ${t('check_financing_options')}
-                        </button>` : ''}
-                        </div>
+                    <!-- Price Card wrapper (keeps compatibility with auction pages) -->
+                    <div class="lp-price-card" style="display: none;"></div>
 
-                        <!-- Like + Compare actions -->
-                        <div class="lp-action-row">
-                            <button class="lp-action-btn lp-fav-btn" id="lpFavBtn" data-listing-id="${l.id}" title="${t('save_to_favorites_title')}">
-                                <i data-lucide="heart"></i>
-                                <span>${t('save_btn')}</span>
-                            </button>
-                            <button class="lp-action-btn lp-compare-btn" id="lpCompareBtn" data-listing-id="${l.id}" title="${t('compare_vehicles_title')}">
-                                <i data-lucide="scale"></i>
-                                <span>${t('compare_btn')}</span>
-                            </button>
-                        </div>
+                    <!-- Save + Compare actions (no background card) -->
+                    <div class="lp-action-row lp-sidebar-actions" style="margin-top: 0; margin-bottom: 1rem;">
+                        <button class="lp-action-btn lp-fav-btn" id="lpFavBtn" data-listing-id="${l.id}" title="${t('save_to_favorites_title')}">
+                            <i data-lucide="heart"></i>
+                            <span>${t('save_btn')}</span>
+                        </button>
+                        <button class="lp-action-btn lp-compare-btn" id="lpCompareBtn" data-listing-id="${l.id}" title="${t('compare_vehicles_title')}">
+                            <i data-lucide="scale"></i>
+                            <span>${t('compare_btn')}</span>
+                        </button>
                     </div>
 
                     <!-- View statistics -->
@@ -530,19 +532,28 @@ function renderListing(l) {
     injectOwnerBar(currentUser());
 
     // Init icons
-    // Stacked layouts relocate the price card out of the sidebar:
-    //  • Tablet (769–900px): into the header, opposite the title (top-right).
-    //  • Phone (≤768px): right after the gallery.
+    // Relocate layout elements on stacked/mobile widths:
     const winW = window.innerWidth;
+    const priceBlock = page.querySelector('.lp-header-price');
+    const actionRow = page.querySelector('.lp-action-row.lp-sidebar-actions');
+
     if (winW <= 900) {
-        const priceCard = page.querySelector('.lp-price-card');
-        if (priceCard) {
-            if (winW > 768) {
-                const header = page.querySelector('.lp-header');
-                if (header) header.appendChild(priceCard);
-            } else {
-                const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
-                if (gallery) gallery.insertAdjacentElement('afterend', priceCard);
+        if (winW > 768) {
+            // Tablet: Price block is already in the header. Move the action buttons to the header too.
+            const header = page.querySelector('.lp-header');
+            if (header && actionRow) {
+                header.appendChild(actionRow);
+            }
+        } else {
+            // Phone: Move price block after gallery, and action buttons right after price block.
+            const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
+            if (gallery) {
+                if (priceBlock) {
+                    gallery.insertAdjacentElement('afterend', priceBlock);
+                    if (actionRow) priceBlock.insertAdjacentElement('afterend', actionRow);
+                } else if (actionRow) {
+                    gallery.insertAdjacentElement('afterend', actionRow);
+                }
             }
         }
     }
@@ -717,19 +728,60 @@ function renderSpecsHtml(l) {
 
     // 1. Key Specs for the primary box
     const keySpecs = [
-        { label: t('spec_first_registration'), value: l.firstRegistration || l.year, icon: 'calendar-days' },
-        { label: t('spec_vehicle_type'), value: l.subcategory || l.segment, icon: 'car' },
-        { label: t('spec_mileage'), value: km ? fmtKm(km) : null, icon: 'gauge' },
-        { label: t('spec_power'), value: powerLabel, icon: 'zap' },
-        { label: t('spec_fuel'), value: isElectric ? 'E' : null, icon: 'fuel' },
-        { label: t('spec_gearbox'), value: !isElectric ? l.transmission : null, icon: 'settings-2' },
-        isMoto && l.engineStroke ? { label: 'Takt motorja', value: l.engineStroke, icon: 'activity' } : null,
-        isMoto && l.engineType ? { label: 'Vrsta motorja', value: l.engineType, icon: 'cpu' } : null,
-        { label: t('spec_displacement'), value: l.engineCc ? formatDisplacement(l.engineCc, localStorage.getItem(lsKey('displacement_unit')) || 'cc', getCurrentLang()) : null, icon: 'cpu' },
+        { label: t('spec_first_registration'), value: l.firstRegistration || l.year, icon: 'calendar-days', pillClass: 'spec-pill year-pill' },
+        { label: t('spec_vehicle_type'), value: l.subcategory || l.segment, icon: 'car', pillClass: 'spec-pill type-pill' },
+        { label: t('spec_mileage'), value: km ? fmtKm(km) : null, icon: 'gauge', pillClass: 'spec-pill km-pill' },
+        { label: t('spec_power'), value: powerLabel, icon: 'zap', pillClass: 'spec-pill power-pill' },
+        {
+            label: t('spec_fuel'),
+            value: isElectric ? 'E' : null,
+            icon: 'fuel',
+            pillClass: (() => {
+                const fuelStr = (l.fuel || '').toLowerCase().trim();
+                const fuelClasses = {
+                    'petrol': 'fuel-pill-P', 'bencin': 'fuel-pill-P', 'benzin': 'fuel-pill-P', 'b': 'fuel-pill-P', 'gasoline': 'fuel-pill-P', 'gas': 'fuel-pill-P',
+                    'diesel': 'fuel-pill-D', 'dizel': 'fuel-pill-D', 'd': 'fuel-pill-D',
+                    'hibrid': 'fuel-pill-H', 'hybrid': 'fuel-pill-H', 'h': 'fuel-pill-H',
+                    'priključni hibrid': 'fuel-pill-HB', 'plug-in hybrid': 'fuel-pill-HB', 'ph': 'fuel-pill-HB',
+                    'elektrika': 'fuel-pill-E', 'električno': 'fuel-pill-E', 'electric': 'fuel-pill-E', 'e': 'fuel-pill-E',
+                    'lpg': 'fuel-pill-LPG'
+                };
+                const cls = fuelClasses[fuelStr] || 'fuel-pill-E';
+                return `spec-pill fuel-coded ${cls}`;
+            })()
+        },
+        {
+            label: t('spec_gearbox'),
+            value: !isElectric ? l.transmission : null,
+            icon: 'settings-2',
+            pillClass: (() => {
+                const tStr = (l.transmission || '').toLowerCase().trim();
+                const typeCls = (tStr.includes('roč') || tStr.includes('manual')) ? 'type-manual' : 'type-auto';
+                return `spec-pill transmission-pill ${typeCls}`;
+            })()
+        },
+        isMoto && l.engineStroke ? { label: 'Takt motorja', value: l.engineStroke, icon: 'activity', pillClass: 'spec-pill stroke-pill' } : null,
+        isMoto && l.engineType ? { label: 'Vrsta motorja', value: l.engineType, icon: 'cpu', pillClass: 'spec-pill type-pill' } : null,
+        { label: t('spec_displacement'), value: l.engineCc ? formatDisplacement(l.engineCc, localStorage.getItem(lsKey('displacement_unit')) || 'cc', getCurrentLang()) : null, icon: 'cpu', pillClass: 'spec-pill displacement-pill' },
         {
             label: isElectric ? t('spec_range') : t('spec_fuel_economy'),
             value: buildConsumptionLabel(l),
-            icon: isElectric ? 'battery-charging' : 'droplet'
+            icon: isElectric ? 'battery-charging' : 'droplet',
+            pillClass: (() => {
+                if (isElectric) {
+                    const rangeKm = l.electricRangeKm || 0;
+                    let statusCls = 'status-low';
+                    if (rangeKm <= 250) statusCls = 'status-high';
+                    else if (rangeKm <= 400) statusCls = 'status-medium';
+                    return `spec-pill consumption-pill ${statusCls}`;
+                } else {
+                    const cons = parseFloat(l.fuelL100kmCombined || l.fuelL100km);
+                    let statusCls = 'status-medium';
+                    if (cons <= 5.0) statusCls = 'status-low';
+                    else if (cons >= 7.0) statusCls = 'status-high';
+                    return `spec-pill consumption-pill ${statusCls}`;
+                }
+            })()
         },
     ].filter(s => s && s.value !== null && s.value !== undefined && s.value !== '');
 
@@ -766,7 +818,7 @@ function renderSpecsHtml(l) {
                 <div class="lp-key-specs-box">
                     <div class="lp-key-specs-grid">
                         ${keySpecs.map(s => `
-                            <div class="lp-key-spec-item" title="${escHtml(s.label)}">
+                            <div class="lp-key-spec-item ${s.pillClass || ''}" title="${escHtml(s.label)}">
                                 <i data-lucide="${s.icon}" class="lp-key-spec-icon"></i>
                                 <span class="lp-key-spec-value">${escHtml(String(s.value))}</span>
                             </div>
@@ -858,7 +910,7 @@ function renderEquipmentAccordions(l) {
                 <button type="button" class="adv-acc-trigger" aria-expanded="false">
                     <span class="adv-acc-title">
                         <i data-lucide="list-checks"></i>
-                        ${t('equipment_and_features', 'Oprema in dodatki')}
+                        ${t('additional_equipment', 'Dodatna oprema')}
                         <span class="lp-eq-count">${total}</span>
                     </span>
                     <div class="adv-acc-right"><i data-lucide="chevron-down" class="adv-acc-chevron"></i></div>
@@ -975,11 +1027,11 @@ function renderSellerCardHtml(l) {
 
 // ── Report listing modal ──────────────────────────────────────────────────────
 const REPORT_REASONS = [
-    { value: 'spam',        label: 'Spam ali prevara' },
+    { value: 'spam', label: 'Spam ali prevara' },
     { value: 'napacna_cena', label: 'Napačna cena ali podatki' },
-    { value: 'ze_prodano',  label: 'Vozilo je že prodano' },
-    { value: 'neprimerno',  label: 'Neprimerna vsebina' },
-    { value: 'ostalo',      label: 'Drugo' },
+    { value: 'ze_prodano', label: 'Vozilo je že prodano' },
+    { value: 'neprimerno', label: 'Neprimerna vsebina' },
+    { value: 'ostalo', label: 'Drugo' },
 ];
 
 function showReportModal(listingId) {

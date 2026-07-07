@@ -56,19 +56,9 @@ export function renderRatingBadgeCard(rating, title = '') {
 // Full rating block for listing detail pages: stars, then label below,
 // then the price signal, optional rare-equipment note, confidence + warning.
 export function renderRatingBlockDetail(rating, opts = {}) {
-    const { confidenceLabel = '', rareFeaturesLabel = 'Redka oprema' } = opts;
     return `
-        <div style="margin:0.5rem 0 0.25rem; padding:0.5rem 0.6rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:0.6rem;">
-            <div>${renderStarsHtml(rating.stars, 13)}</div>
-            <div style="font-size:0.78rem; font-weight:700; color:${STAR_COLOR}; margin-top:2px;">${escHtml(rating.label)}</div>
-            ${rating.priceSignal ? `<div style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">${escHtml(rating.priceSignal)}</div>` : ''}
-            ${rating.equipmentSignal ? `<div style="font-size:0.78rem; color:#64748b; margin-top:2px;">${escHtml(rareFeaturesLabel)}: ${escHtml(rating.equipmentSignal)}</div>` : ''}
-            ${confidenceLabel ? `<div style="margin-top:6px;">
-                <span style="font-size:0.72rem; font-weight:600; padding:0.2rem 0.5rem; border-radius:999px; background:rgba(255,255,255,0.05); color:#64748b;">${escHtml(confidenceLabel)}</span>
-            </div>` : ''}
-            ${rating.warning ? `
-            <div style="margin-top:0.6rem; padding:0.5rem 0.75rem; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; font-size:0.8rem; color:#fca5a5; display:flex; gap:0.4rem; align-items:center;">
-                <span>⚠️</span>${escHtml(rating.warning)}
-            </div>` : ''}
+        <div style="margin:0.15rem 0 0; text-align:center; display:flex; flex-direction:column; align-items:center; gap:2px;">
+            ${renderStarsHtml(rating.stars, 14)}
+            <div style="font-size:0.68rem; font-weight:700; color:${STAR_COLOR}; text-transform:uppercase; letter-spacing:0.04em;">${escHtml(rating.label)}</div>
         </div>`;
 }

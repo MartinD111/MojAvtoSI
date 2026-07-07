@@ -41,6 +41,17 @@ export const sampleCars = [
         fuelL100km: 13.2,
         firstRegistration: '05/2023',
         previousOwnersCount: 1,
+        equipment: [
+            'ABS', 'ESP', 'Alarm', 'AirbagDriver', 'AirbagPassenger', 'AirbagSide', 'LED', 'Matrix', 
+            'AdaptiveLight', 'SportSeats', 'Armrest', 'Climate2Zone', 'HeatedSeats', 'ParkSensorFront', 
+            'ParkSensorRear', 'RearCamera', 'Navigation', 'Bluetooth', 'CarPlay', 'PremiumSound', 
+            'SportSuspension', 'TirePressure', 'ServiceBook'
+        ],
+        customEquipment: [
+            { value: 'Clubsport paket' },
+            { value: 'Karbonska šoljkasta sedeža' },
+            { value: 'Sistem za dvig prednje osi (Lift)' }
+        ],
         status: 'active'
     },
     {
@@ -170,6 +181,15 @@ export const sampleCars = [
         isNew: true,
         engineCc: 1968,
         fuelL100km: 5.2,
+        equipment: [
+            'ABS', 'ESP', 'Alarm', 'AirbagDriver', 'AirbagPassenger', 'AirbagSide', 'LED', 'Matrix', 
+            'Climate2Zone', 'HeatedSeats', 'ParkSensorFront', 'ParkSensorRear', 'RearCamera', 
+            'Navigation', 'Bluetooth', 'CarPlay', 'CruiseControl', 'TirePressure', 'ServiceBook'
+        ],
+        customEquipment: [
+            { value: 'S-line zunanji in notranji paket' },
+            { value: 'Virtualni števec' }
+        ],
         status: 'active'
     },
     {

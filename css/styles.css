@@ -335,7 +335,7 @@ body {
 }
 
 /* Objavi oglas — collapsed circle, expands on hover */
-.nav-actions a[href="/novi-oglas"].pill-btn.primary {
+.nav-actions a[href$="/novi-oglas"].pill-btn.primary {
   width: auto;
   min-width: 36px;
   max-width: 36px;
@@ -351,7 +351,7 @@ body {
   gap: 0;
 }
 
-.nav-actions a[href="/novi-oglas"].pill-btn.primary span {
+.nav-actions a[href$="/novi-oglas"].pill-btn.primary span {
   opacity: 0;
   max-width: 0;
   display: inline-block;
@@ -360,13 +360,13 @@ body {
   transition: opacity 0.2s ease 0.05s, max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.nav-actions a[href="/novi-oglas"].pill-btn.primary:hover {
+.nav-actions a[href$="/novi-oglas"].pill-btn.primary:hover {
   max-width: 180px;
   padding: 0 16px 0 12px;
   gap: 8px;
 }
 
-.nav-actions a[href="/novi-oglas"].pill-btn.primary:hover span {
+.nav-actions a[href$="/novi-oglas"].pill-btn.primary:hover span {
   opacity: 1;
   max-width: 150px;
 }
@@ -494,9 +494,11 @@ body {
   }
 }
 
-/* Dynamically shift links left when the 'Objavi oglas' (+) button expands on hover */
-.nav-inner:has(.nav-actions a[href="/novi-oglas"].pill-btn.primary:hover) .desktop-links {
-  transform: translateX(calc(-50% - 90px));
+/* Dynamically shift links left when the 'Objavi oglas' (+) button expands on hover, but only on narrower desktop views where they would overlap */
+@media (max-width: 1280px) {
+  .nav-inner:has(.nav-actions a[href$="/novi-oglas"].pill-btn.primary:hover) .desktop-links {
+    transform: translateX(calc(-50% - 90px));
+  }
 }
 
 
@@ -4514,6 +4516,34 @@ body.dark-mode .sponsored-mini-card:hover {
   padding-top: 0.5rem;
   text-align: center;
   width: 100%;
+}
+
+/* Compact Spec Pills and Rows inside Sponsored Listings to prevent overlapping */
+.sponsored-mini-card .spec-row {
+  min-height: auto !important;
+  gap: 6px !important;
+  margin-top: 4px !important;
+  justify-content: center !important;
+}
+
+.sponsored-mini-card .spec-pill {
+  font-size: 0.72rem !important;
+  padding: 5px 10px !important;
+  gap: 5px !important;
+}
+
+.sponsored-mini-card .spec-pill i,
+.sponsored-mini-card .spec-pill svg {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.sponsored-title {
+  margin-bottom: 0.5rem !important;
+}
+
+.sponsored-specs {
+  gap: 4px !important;
 }
 
 .sponsored-badge {

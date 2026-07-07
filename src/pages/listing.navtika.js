@@ -321,8 +321,9 @@ function renderListing(l) {
             <!-- Header: title -->
             <header class="lp-header">
                 <div class="lp-header-main">
-                    <h1 class="lp-title">${escHtml(buildTitle(l))}</h1>
-                    <div class="lp-meta-row">
+                    <h1 class="lp-title">${escHtml(l.make)} ${escHtml(l.model || '')}</h1>
+                    ${l.variant ? `<div class="lp-subtitle">${escHtml(l.variant)}</div>` : ''}
+                    <div class="lp-meta-row" style="margin-top: 0.5rem;">
                         <div class="lp-view-toggle">
                             <button class="lp-view-btn active" data-view="exterior">${t('exterior')}</button>
                             <button class="lp-view-btn ${interiorImages.length === 0 ? 'disabled' : ''}" data-view="interior" ${interiorImages.length === 0 ? 'disabled' : ''}>${t('interior')}</button>
@@ -330,6 +331,32 @@ function renderListing(l) {
                         ${l.createdAt ? `<span>📅 ${formatDate(l.createdAt)}</span>` : ''}
                         ${l.viewCount ? `<span>👁 ${t('views_count', { count: l.viewCount })}</span>` : ''}
                     </div>
+                </div>
+
+                <!-- Price block in header -->
+                <div class="lp-header-price">
+                    <div class="lp-price-pill-container">
+                        ${l.salePriceEur ? `
+                        <div class="lp-price-discount-wrapper">
+                            <div class="lp-sale-price">${formatPrice(l.salePriceEur, false)}</div>
+                            <div class="lp-original-price-row">
+                                <span class="lp-original-price">${formatPrice(l.priceEur || l.priceRaw || l.price || 0, false)}</span>
+                                <span class="lp-discount-pct">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                    -${Math.round((1 - l.salePriceEur / (l.priceEur || l.priceRaw || l.price)) * 100)}%
+                                </span>
+                            </div>
+                        </div>` : `
+                        <div class="lp-price">${formatPrice(l.priceRaw || l.priceEur || l.price || 0, l.callForPrice)}</div>`}
+                    </div>
+                    <div id="lpRatingBlock"></div>
+                    <div id="lpServiceBadge"></div>
+                    ${l.priceNegotiable ? `<div class="lp-price-sub">${t('price_is_negotiable')}</div>` : ''}
+                    ${l.leaseAvailable && !l.leasingConditions ? `<div class="lp-price-sub">${t('financing_available')}</div>` : ''}
+                    ${l.leasingConditions ? `
+                    <button class="lp-leasing-btn" id="btnShowLeasing">
+                        <i data-lucide="credit-card"></i> ${t('check_financing_options')}
+                    </button>` : ''}
                 </div>
             </header>
 
@@ -372,40 +399,19 @@ function renderListing(l) {
                 <!-- RIGHT: sidebar (Sticky) -->
                 <aside class="lp-sidebar">
 
-                    <!-- Price Card (Pilled and Centered) -->
-                    <div class="lp-sidebar-card lp-price-card centered">
-                        <div class="lp-price-pill-container">
-                            ${l.salePriceEur ? `
-                            <div>
-                                <div class="lp-sale-price">${formatPrice(l.salePriceEur, false)}</div>
-                                <div class="lp-original-price">${formatPrice(l.priceEur || l.priceRaw || l.price || 0, false)}</div>
-                                <div class="lp-discount-pct">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                                    -${Math.round((1 - l.salePriceEur / (l.priceEur || l.priceRaw || l.price)) * 100)}%
-                                </div>
-                            </div>` : `
-                            <div class="lp-price">${formatPrice(l.priceRaw || l.priceEur || l.price || 0, l.callForPrice)}</div>`}
-                        </div>
-                        <div id="lpRatingBlock"></div>
-                        <div id="lpServiceBadge"></div>
-                        ${l.priceNegotiable ? `<div class="lp-price-sub">${t('price_is_negotiable')}</div>` : ''}
-                        ${l.leaseAvailable && !l.leasingConditions ? `<div class="lp-price-sub">${t('financing_available')}</div>` : ''}
-                        ${l.leasingConditions ? `
-                        <button class="lp-leasing-btn" id="btnShowLeasing">
-                            <i data-lucide="credit-card"></i> ${t('check_financing_options')}
-                        </button>` : ''}
+                    <!-- Price Card wrapper (keeps compatibility with auction pages) -->
+                    <div class="lp-price-card" style="display: none;"></div>
 
-                        <!-- Like + Compare actions -->
-                        <div class="lp-action-row">
-                            <button class="lp-action-btn lp-fav-btn" id="lpFavBtn" data-listing-id="${l.id}" title="${t('save_to_favorites_title')}">
-                                <i data-lucide="heart"></i>
-                                <span>${t('save_btn')}</span>
-                            </button>
-                            <button class="lp-action-btn lp-compare-btn" id="lpCompareBtn" data-listing-id="${l.id}" title="${t('compare_vehicles_title')}">
-                                <i data-lucide="scale"></i>
-                                <span>${t('compare_btn')}</span>
-                            </button>
-                        </div>
+                    <!-- Save + Compare actions (no background card) -->
+                    <div class="lp-action-row lp-sidebar-actions" style="margin-top: 0; margin-bottom: 1rem;">
+                        <button class="lp-action-btn lp-fav-btn" id="lpFavBtn" data-listing-id="${l.id}" title="${t('save_to_favorites_title')}">
+                            <i data-lucide="heart"></i>
+                            <span>${t('save_btn')}</span>
+                        </button>
+                        <button class="lp-action-btn lp-compare-btn" id="lpCompareBtn" data-listing-id="${l.id}" title="${t('compare_vehicles_title')}">
+                            <i data-lucide="scale"></i>
+                            <span>${t('compare_btn')}</span>
+                        </button>
                     </div>
 
                     <!-- View statistics -->
@@ -499,13 +505,30 @@ function renderListing(l) {
         }
     });
 
-    // Init icons
-    // Mobile layout: move price card right after gallery so order is
-    // gallery → price → specs/description/seller-note → TCO → seller card
-    if (window.innerWidth <= 900) {
-        const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
-        const priceCard = page.querySelector('.lp-price-card');
-        if (gallery && priceCard) gallery.insertAdjacentElement('afterend', priceCard);
+    // Relocate layout elements on stacked/mobile widths:
+    const winW = window.innerWidth;
+    const priceBlock = page.querySelector('.lp-header-price');
+    const actionRow = page.querySelector('.lp-action-row.lp-sidebar-actions');
+
+    if (winW <= 900) {
+        if (winW > 768) {
+            // Tablet: Price block is already in the header. Move the action buttons to the header too.
+            const header = page.querySelector('.lp-header');
+            if (header && actionRow) {
+                header.appendChild(actionRow);
+            }
+        } else {
+            // Phone: Move price block after gallery, and action buttons right after price block.
+            const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
+            if (gallery) {
+                if (priceBlock) {
+                    gallery.insertAdjacentElement('afterend', priceBlock);
+                    if (actionRow) priceBlock.insertAdjacentElement('afterend', actionRow);
+                } else if (actionRow) {
+                    gallery.insertAdjacentElement('afterend', actionRow);
+                }
+            }
+        }
     }
 
     if (window.lucide) window.lucide.createIcons();
@@ -670,12 +693,27 @@ function renderKeyStripHtml(l) {
 // ── Technical specs ───────────────────────────────────────────────────────────
 function renderSpecsHtml(l) {
     const keySpecs = [];
-    if (l.year) keySpecs.push({ label: t('spec_first_registration', 'Letnik'), value: l.year, icon: 'calendar-days' });
-    if (l.lengthM) keySpecs.push({ label: 'Dolžina', value: `${l.lengthM} m`, icon: 'ruler' });
-    if (l.fuel) keySpecs.push({ label: 'Gorivo', value: l.fuel, icon: 'fuel' });
-    if (l.enginePowerHp || l.powerHp) keySpecs.push({ label: 'Moč motorja', value: `${l.enginePowerHp || l.powerHp} KM`, icon: 'zap' });
-    if (l.engineHours) keySpecs.push({ label: 'Ure motorja', value: `${l.engineHours} h`, icon: 'clock' });
-    if (l.cabins) keySpecs.push({ label: 'Kabine', value: l.cabins, icon: 'bed' });
+    if (l.year) keySpecs.push({ label: t('spec_first_registration', 'Letnik'), value: l.year, icon: 'calendar-days', pillClass: 'spec-pill year-pill' });
+    if (l.lengthM) keySpecs.push({ label: 'Dolžina', value: `${l.lengthM} m`, icon: 'ruler', pillClass: 'spec-pill length-pill' });
+    if (l.fuel) {
+        const fuelStr = (l.fuel || '').toLowerCase().trim();
+        const fuelClasses = {
+            'petrol': 'fuel-pill-P', 'bencin': 'fuel-pill-P', 'benzin': 'fuel-pill-P', 'b': 'fuel-pill-P', 'gasoline': 'fuel-pill-P', 'gas': 'fuel-pill-P',
+            'diesel': 'fuel-pill-D', 'dizel': 'fuel-pill-D', 'd': 'fuel-pill-D',
+            'hibrid': 'fuel-pill-H', 'hybrid': 'fuel-pill-H', 'h': 'fuel-pill-H',
+            'priključni hibrid': 'fuel-pill-HB', 'plug-in hybrid': 'fuel-pill-HB', 'ph': 'fuel-pill-HB',
+            'elektrika': 'fuel-pill-E', 'električno': 'fuel-pill-E', 'electric': 'fuel-pill-E', 'e': 'fuel-pill-E',
+            'lpg': 'fuel-pill-LPG'
+        };
+        const cls = fuelClasses[fuelStr] || 'fuel-pill-E';
+        keySpecs.push({ label: 'Gorivo', value: l.fuel, icon: 'fuel', pillClass: `spec-pill fuel-coded ${cls}` });
+    }
+    if (l.enginePowerHp || l.powerHp) {
+        const hp = l.enginePowerHp || l.powerHp;
+        keySpecs.push({ label: 'Moč motorja', value: `${hp} KM`, icon: 'zap', pillClass: 'spec-pill power-pill' });
+    }
+    if (l.engineHours) keySpecs.push({ label: 'Ure motorja', value: `${l.engineHours} h`, icon: 'clock', pillClass: 'spec-pill hours-pill' });
+    if (l.cabins) keySpecs.push({ label: 'Kabine', value: l.cabins, icon: 'bed', pillClass: 'spec-pill berths-pill' });
 
     const secondarySpecs = [];
     if (l.beamM) secondarySpecs.push(['Širina', `${l.beamM} m`]);
@@ -694,7 +732,7 @@ function renderSpecsHtml(l) {
                 <div class="lp-key-specs-box">
                     <div class="lp-key-specs-grid">
                         ${keySpecs.map(s => `
-                            <div class="lp-key-spec-item" title="${escHtml(s.label)}">
+                            <div class="lp-key-spec-item ${s.pillClass || ''}" title="${escHtml(s.label)}">
                                 <i data-lucide="${s.icon}" class="lp-key-spec-icon"></i>
                                 <span class="lp-key-spec-value">${escHtml(String(s.value))}</span>
                             </div>
@@ -780,7 +818,7 @@ function renderEquipmentAccordions(l) {
 
     return `
         <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px solid rgba(0,0,0,0.06);">
-            <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em;">${t('equipment_and_features')}</span>
+            <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em;">${t('additional_equipment', 'Dodatna oprema')}</span>
         </div>
         ${accordionHtml('sofa', t('interior_and_comfort'), interiorItems)}
         ${accordionHtml('shield-check', t('equipment_safety_etc'), equipmentItems)}
