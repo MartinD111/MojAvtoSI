@@ -52,7 +52,7 @@ body {
   /* Legacy aliases for existing code */
   --color-primary-start: var(--md-sys-color-primary);
   --color-primary-end: var(--md-sys-color-secondary);
-  --color-bg-base: var(--md-sys-color-surface-container);
+  --color-bg-base: #e0f2fe; /* Light baby blue color */
   
   /* Replace glassmorphism with M3 surfaces */
   --shadow-glass: var(--md-sys-elevation-2);
@@ -485,12 +485,18 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (min-width: 1025px) {
   .desktop-links {
     display: flex;
   }
+}
+
+/* Dynamically shift links left when the 'Objavi oglas' (+) button expands on hover */
+.nav-inner:has(.nav-actions a[href="/novi-oglas"].pill-btn.primary:hover) .desktop-links {
+  transform: translateX(calc(-50% - 90px));
 }
 
 

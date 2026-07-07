@@ -1,13 +1,6 @@
 {
   "navItems": [
     {
-      "id": "home",
-      "label": "Domov",
-      "i18nKey": "nav_home",
-      "icon": "home",
-      "href": "#/"
-    },
-    {
       "id": "oglasi",
       "label": "Oglasi",
       "i18nKey": "header_listings",
