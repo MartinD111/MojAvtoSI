@@ -6,6 +6,13 @@ import { cpSync, existsSync } from 'node:fs';
 const PLATFORM = process.env.VITE_PLATFORM || 'avto';
 const OUT_DIR = `dist-${PLATFORM}`;
 
+// Compute base path based on environment and platform
+const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
+const REPO_NAME = 'MojAvtoSI';
+const BASE_URL = isGitHubActions
+  ? (PLATFORM === 'navtika' ? `/${REPO_NAME}/navtika/` : `/${REPO_NAME}/`)
+  : '/';
+
 // Static <title>/<meta> per platform, injected into index.html placeholders.
 // (Kept inline here because vite.config runs in plain Node and cannot read the
 // ESM src/config/platform.js with import.meta.env.)
@@ -20,7 +27,7 @@ const HTML_META = {
   },
 };
 
-// Replace %APP_TITLE% / %APP_DESCRIPTION% placeholders in index.html.
+// Replace %APP_TITLE% / %APP_DESCRIPTION% / %APP_BASE_URL% placeholders in index.html.
 function injectHtmlMeta() {
   const meta = HTML_META[PLATFORM] || HTML_META.avto;
   return {
@@ -28,7 +35,8 @@ function injectHtmlMeta() {
     transformIndexHtml(html) {
       return html
         .replaceAll('%APP_TITLE%', meta.title)
-        .replaceAll('%APP_DESCRIPTION%', meta.description);
+        .replaceAll('%APP_DESCRIPTION%', meta.description)
+        .replaceAll('%APP_BASE_URL%', BASE_URL);
     },
   };
 }
@@ -51,7 +59,7 @@ function copyCssFolder() {
 }
 
 export default defineConfig({
-  base: '/',
+  base: BASE_URL,
   root: '.',
   define: {
     // Statically inject the active platform so src/config/platform.js can read it.

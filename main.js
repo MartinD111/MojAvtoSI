@@ -10,6 +10,36 @@ import { PLATFORM } from './src/config/platform.js';
 import { initMonitoring, setMonitoringUser } from './src/lib/monitoring.js';
 import './src/index.css';
 
+// Hijack window.fetch to automatically prefix absolute resource fetches with the base path
+const originalFetch = window.fetch;
+window.fetch = function (resource, options) {
+    if (typeof resource === 'string' && resource.startsWith('/') && !resource.startsWith('//')) {
+        const base = import.meta.env.BASE_URL;
+        if (base !== '/') {
+            resource = `${base.slice(0, -1)}${resource}`;
+        }
+    }
+    return originalFetch.call(this, resource, options);
+};
+
+// Global click interceptor for SPA routing
+document.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    
+    if (a.target === '_blank' || a.hasAttribute('download') || a.hostname !== window.location.hostname) {
+        return;
+    }
+    
+    const href = a.getAttribute('href');
+    if (!href) return;
+    
+    if (href.startsWith('/') && !href.startsWith('//')) {
+        e.preventDefault();
+        import('./src/router.js').then(m => m.navigateTo(href));
+    }
+});
+
 // Initialize monitoring (Sentry + PostHog) — non-blocking, runs in background.
 initMonitoring();
 
@@ -31,12 +61,20 @@ registerDefaultExtensions();
 initHeader();
 
 // Boot footer
-fetch('/views/footer.html')
+fetch('views/footer.html')
     .then(r => r.text())
     .then(html => {
         const footerEl = document.getElementById('footer');
         if (footerEl) {
-            footerEl.innerHTML = html;
+            let htmlText = html;
+            const base = import.meta.env.BASE_URL;
+            if (base !== '/') {
+                const cleanBase = base.slice(0, -1);
+                htmlText = htmlText
+                    .replaceAll('href="/icons/', `href="${cleanBase}/icons/`)
+                    .replaceAll('src="/images/', `src="${cleanBase}/images/`);
+            }
+            footerEl.innerHTML = htmlText;
             translatePage(footerEl);
             applyPlatformFooter(footerEl);
         }

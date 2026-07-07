@@ -1792,7 +1792,7 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
         if (header) header.style.display = 'none';
         grid.innerHTML = COMMERCIAL_TAXONOMY.map(v => {
             const iconHtml = v.icon && v.icon.startsWith('svg:') 
-                ? `<svg class="custom-v-icon"><use href="/icons/vehicles.svg${v.icon.slice(4)}"></use></svg>` 
+                ? `<svg class="custom-v-icon"><use href="icons/vehicles.svg${v.icon.slice(4)}"></use></svg>` 
                 : `<i class="${v.icon}"></i>`;
             return `
             <button type="button" class="body-type-card commercial-vrsta-card" data-key="${v.key}">
@@ -1815,7 +1815,7 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
         if (title) title.textContent = vrsta.label;
         grid.innerHTML = vrsta.categories.map(cat => {
             const iconHtml = vrsta.icon && vrsta.icon.startsWith('svg:') 
-                ? `<svg class="custom-v-icon"><use href="/icons/vehicles.svg${vrsta.icon.slice(4)}"></use></svg>` 
+                ? `<svg class="custom-v-icon"><use href="icons/vehicles.svg${vrsta.icon.slice(4)}"></use></svg>` 
                 : `<i class="${vrsta.icon}"></i>`;
             return `
             <button type="button" class="body-type-card commercial-cat-card" data-value="${cat}">

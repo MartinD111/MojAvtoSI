@@ -326,7 +326,7 @@ function initAutoScroll(trackId, prevId, nextId, speed = 0.5) {
 }
 
 function card(l) {
-    const img = l.images?.exterior?.[0] || '/images/porsche.png';
+    const img = l.images?.exterior?.[0] || 'images/porsche.png';
     const price = l.isRental
         ? (l.rentalPricing?.perWeek ? `${fmt(l.rentalPricing.perWeek)} € / teden` : (l.price || '—'))
         : (l.price || (l.priceRaw ? `${fmt(l.priceRaw)} €` : '—'));

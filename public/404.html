@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>MojAvto.si — Nakup in prodaja vozil</title>
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages Redirector
+      // Copyright (c) 2016 Rafael Pedicini, licensed under the MIT License
+      (function() {
+        const l = window.location;
+        const isNavtika = l.pathname.includes('/navtika/');
+        const segmentsToKeep = isNavtika ? 2 : 1;
+        
+        l.replace(
+          l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+          l.pathname.split('/').slice(0, 1 + segmentsToKeep).join('/') +
+          '/?p=' +
+          encodeURIComponent(l.pathname.slice(1).split('/').slice(segmentsToKeep).join('/')) +
+          (l.search ? '&q=' + encodeURIComponent(l.search.slice(1).replace(/&/g, '~and~')) : '') +
+          l.hash
+        );
+      })();
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

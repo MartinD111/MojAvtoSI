@@ -244,7 +244,7 @@ export function renderCarCard(car, auction = null) {
             displayImages.push(car.images.exterior[1]);
         }
     }
-    if (displayImages.length === 0) displayImages.push(car.image || '/images/car-placeholder.png');
+    if (displayImages.length === 0) displayImages.push(car.image || 'images/car-placeholder.png');
     
     // Ensure unique images and limit to 2 for the board view
     const images = [...new Set(displayImages)].slice(0, 2);

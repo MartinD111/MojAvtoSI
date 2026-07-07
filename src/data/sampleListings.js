@@ -1,4 +1,4 @@
-﻿export const sampleCars = [
+export const sampleCars = [
     {
         id: 'car-premium-1',
         title: 'Porsche 911 GT3 PDK',
@@ -30,7 +30,7 @@
         seatsCount: 2,
         images: {
             exterior: [
-                '/images/porsche.png',
+                'images/porsche.png',
                 'https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?auto=format&fit=crop&w=800&q=80'
             ],
             interior: []
@@ -74,7 +74,7 @@
         seatsCount: 5,
         images: {
             exterior: [
-                '/images/tesla.png',
+                'images/tesla.png',
                 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fd?auto=format&fit=crop&w=800&q=80'
             ],
             interior: []
@@ -118,7 +118,7 @@
         seatsCount: 5,
         images: {
             exterior: [
-                '/images/audi.png',
+                'images/audi.png',
                 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80'
             ],
             interior: []
@@ -624,7 +624,7 @@
         color: 'Črna',
         images: {
             exterior: [
-                '/images/bmw_gs.png'
+                'images/bmw_gs.png'
             ],
             interior: []
         },
@@ -664,7 +664,7 @@
         color: 'Rdeča',
         images: {
             exterior: [
-                '/images/honda_cb.png'
+                'images/honda_cb.png'
             ],
             interior: []
         },
@@ -704,7 +704,7 @@
         color: 'Bela',
         images: {
             exterior: [
-                '/images/sprinter.png'
+                'images/sprinter.png'
             ],
             interior: []
         },

@@ -66,7 +66,9 @@ const PLATFORM_VIEW_VARIANTS = {
 
 // ── Programmatic navigation ───────────────────────────────────────────────────
 export function navigateTo(path) {
-    history.pushState({}, '', path);
+    const base = import.meta.env.BASE_URL;
+    const targetPath = (base !== '/' && path.startsWith('/')) ? `${base.slice(0, -1)}${path}` : path;
+    history.pushState({}, '', targetPath);
     router();
 }
 // Expose globally for inline onclick handlers in dynamically-generated HTML.
@@ -100,9 +102,19 @@ async function loadView(viewName) {
             // only when one is known to exist; otherwise load the shared view.
             const hasVariant = PLATFORM_VIEW_VARIANTS[PLATFORM.id]?.has(viewName);
             const file = hasVariant ? `${viewName}.${PLATFORM.id}` : viewName;
-            const res = await fetch(`/views/${file}.html${v}`);
+            const res = await fetch(`views/${file}.html${v}`);
             if (!res.ok) throw new Error(`View not found: ${viewName}`);
-            APP.innerHTML = await res.text();
+            
+            let htmlText = await res.text();
+            // Rewrite absolute paths inside dynamically-loaded view HTML to match base url
+            const base = import.meta.env.BASE_URL;
+            if (base !== '/') {
+                const cleanBase = base.slice(0, -1);
+                htmlText = htmlText
+                    .replaceAll('href="/icons/', `href="${cleanBase}/icons/`)
+                    .replaceAll('src="/images/', `src="${cleanBase}/images/`);
+            }
+            APP.innerHTML = htmlText;
         }
         // Translate the newly loaded content
         translatePage(APP);
@@ -126,7 +138,13 @@ async function router() {
     // renders, so translatePage never paints stale/base strings on first load.
     await i18nReady;
 
-    const path = decodeURIComponent(window.location.pathname);
+    const base = import.meta.env.BASE_URL;
+    let path = decodeURIComponent(window.location.pathname);
+
+    // Strip base path prefix to match routes (e.g. /MojAvtoSI/oglasi -> /oglasi)
+    if (base !== '/' && path.startsWith(base)) {
+        path = path.slice(base.length - 1);
+    }
 
     // If only query params changed (same path already loaded), let the page
     // handle the update itself rather than reloading the whole view.
