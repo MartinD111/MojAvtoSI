@@ -5397,7 +5397,7 @@ body.dark-mode .spec-pill:hover {
 
 .spec-pill.power-pill,
 .spec-pill.power-pill span {
-  background: #fbbf24 !important;
+  background: #8b5cf6 !important;
   color: #ffffff !important;
   border-color: transparent !important;
 }
@@ -5406,7 +5406,7 @@ body.dark-mode .spec-pill:hover {
   color: #ffffff !important;
 }
 .spec-pill.power-pill:hover {
-  background: #fbbf24 !important;
+  background: #8b5cf6 !important;
 }
 
 .spec-pill.displacement-pill,
@@ -10222,7 +10222,7 @@ body .spec-pill.power-pill,
 body.dark-mode .spec-pill.power-pill,
 body .sponsored-mini-card .spec-pill.power-pill,
 body.dark-mode .sponsored-mini-card .spec-pill.power-pill {
-  background: #fbbf24 !important;
+  background: #8b5cf6 !important;
   color: #ffffff !important;
   border-color: transparent !important;
 }
@@ -10234,7 +10234,7 @@ body.dark-mode .sponsored-mini-card .spec-pill.power-pill * {
 }
 body .spec-pill.power-pill:hover,
 body.dark-mode .spec-pill.power-pill:hover {
-  background: #fbbf24 !important;
+  background: #8b5cf6 !important;
 }
 
 /* 4. Displacement Pill */
