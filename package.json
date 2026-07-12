@@ -18,7 +18,7 @@
   "dependencies": {
     "@sentry/browser": "^8.40.0",
     "@supabase/supabase-js": "^2.46.1",
-    "firebase": "^11.10.0",
+    "firebase": "^12.16.0",
     "jspdf": "^4.2.1",
     "posthog-js": "^1.181.0",
     "qrcode": "^1.5.4",
