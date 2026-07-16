@@ -15,7 +15,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Dostavna',
         label: 'Dostavna vozila',
-        icon: 'svg:#v-com-van',
+        icon: 'custom-svg:#vc-panel-van',
         categories: [
             'Furgon',
             'Furgon s hladilnico',
@@ -32,7 +32,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Tovorna',
         label: 'Tovorna vozila',
-        icon: 'svg:#v-truck',
+        icon: 'custom-svg:#vc-rigid-truck-lorry',
         categories: [
             'Tovornjak',
             'Vlačilec',
@@ -58,7 +58,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'TovornePrikolice',
         label: 'Prikolice in polprikolice',
-        icon: 'svg:#v-trailer',
+        icon: 'custom-svg:#vc-trailer',
         categories: [
             'Prikolica',
             'Prikolica (Hladilna)',
@@ -83,7 +83,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Avtobus',
         label: 'Avtobusi',
-        icon: 'svg:#v-bus',
+        icon: 'custom-svg:#vc-intercity-bus-coach',
         categories: [
             'Mestni solo avtobus',
             'Mestni zglobni avtobus',
@@ -100,7 +100,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Gradbena',
         label: 'Gradbena mehanizacija',
-        icon: 'svg:#v-excavator',
+        icon: 'custom-svg:#vc-crawler-excavator',
         categories: [
             'Bager (gosenični)',
             'Bager na kolesih',
@@ -145,7 +145,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Kmetijska',
         label: 'Kmetijska mehanizacija',
-        icon: 'svg:#v-tractor',
+        icon: 'custom-svg:#vc-agricultural-tractor',
         categories: [
             'Traktor',
             'Traktor (ozki za vinograd)',
@@ -197,7 +197,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Gozdarska',
         label: 'Gozdarska mehanizacija',
-        icon: 'svg:#v-forestry',
+        icon: 'custom-svg:#vc-forestry-harvester',
         categories: [
             'Harvester',
             'Gozdni kombajn',
@@ -214,7 +214,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Komunalna',
         label: 'Komunalna mehanizacija',
-        icon: 'svg:#v-garbage',
+        icon: 'custom-svg:#vc-garbage-truck-refuse-collection-vehicle',
         categories: [
             'Tovornjak za odpadke',
             'Tovornjak za odvoz zabojnikov (Skip Loader)',
@@ -271,7 +271,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Letaliska',
         label: 'Letališka vozila',
-        icon: 'svg:#v-plane',
+        icon: 'custom-svg:#vc-airport-shuttle-bus',
         categories: [
             'Potisni traktor (aircraft tug)',
             'Traktor za prtljago (baggage tug)',
@@ -291,7 +291,7 @@ export const COMMERCIAL_TAXONOMY = [
     {
         key: 'Kamnolom',
         label: 'Kamnolom',
-        icon: 'svg:#v-crusher',
+        icon: 'custom-svg:#vc-crusher',
         categories: [
             'Drobilec',
             'Sejalnik',

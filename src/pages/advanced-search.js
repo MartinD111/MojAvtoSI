@@ -1791,9 +1791,14 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
         selected.clear();
         if (header) header.style.display = 'none';
         grid.innerHTML = COMMERCIAL_TAXONOMY.map(v => {
-            const iconHtml = v.icon && v.icon.startsWith('svg:') 
-                ? `<svg class="custom-v-icon"><use href="icons/vehicles.svg${v.icon.slice(4)}"></use></svg>` 
-                : `<i class="${v.icon}"></i>`;
+            let iconHtml = `<i class="${v.icon}"></i>`;
+            if (v.icon) {
+                if (v.icon.startsWith('custom-svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles-custom.svg${v.icon.slice(11)}"></use></svg>`;
+                } else if (v.icon.startsWith('svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles.svg${v.icon.slice(4)}"></use></svg>`;
+                }
+            }
             return `
             <button type="button" class="body-type-card commercial-vrsta-card" data-key="${v.key}">
                 ${iconHtml}<span>${v.label}</span>
@@ -1814,9 +1819,14 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
         if (header) header.style.display = 'flex';
         if (title) title.textContent = vrsta.label;
         grid.innerHTML = vrsta.categories.map(cat => {
-            const iconHtml = vrsta.icon && vrsta.icon.startsWith('svg:') 
-                ? `<svg class="custom-v-icon"><use href="icons/vehicles.svg${vrsta.icon.slice(4)}"></use></svg>` 
-                : `<i class="${vrsta.icon}"></i>`;
+            let iconHtml = `<i class="${vrsta.icon}"></i>`;
+            if (vrsta.icon) {
+                if (vrsta.icon.startsWith('custom-svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles-custom.svg${vrsta.icon.slice(11)}"></use></svg>`;
+                } else if (vrsta.icon.startsWith('svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles.svg${vrsta.icon.slice(4)}"></use></svg>`;
+                }
+            }
             return `
             <button type="button" class="body-type-card commercial-cat-card" data-value="${cat}">
                 ${iconHtml}<span>${cat}</span>
