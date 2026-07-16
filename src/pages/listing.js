@@ -399,6 +399,14 @@ function renderListing(l) {
                         </div>
                     </section>` : ''}
 
+                    <!-- Similar -->
+                    <section class="lp-similar">
+                        <h2 class="lp-section-title">${t('similar_listings')}</h2>
+                        <div id="similarGrid" class="lp-similar-grid">
+                            <p style="color:#94a3b8;font-size:0.85rem;">${t('loading_similar_listings')}</p>
+                        </div>
+                    </section>
+
                 </div>
 
                 <!-- RIGHT: sidebar (Sticky) -->
@@ -430,16 +438,6 @@ function renderListing(l) {
 
                 </aside>
             </div>
-
-
-
-            <!-- Similar -->
-            <section class="lp-similar">
-                <h2 class="lp-section-title">${t('similar_listings')}</h2>
-                <div id="similarGrid" class="lp-similar-grid">
-                    <p style="color:#94a3b8;font-size:0.85rem;">${t('loading_similar_listings')}</p>
-                </div>
-            </section>
 
         </div>
     `;
@@ -537,23 +535,27 @@ function renderListing(l) {
     const priceBlock = page.querySelector('.lp-header-price');
     const actionRow = page.querySelector('.lp-action-row.lp-sidebar-actions');
 
-    if (winW <= 900) {
-        if (winW > 768) {
-            // Tablet: Price block is already in the header. Move the action buttons to the header too.
-            const header = page.querySelector('.lp-header');
-            if (header && actionRow) {
-                header.appendChild(actionRow);
-            }
-        } else {
-            // Phone: Move price block after gallery, and action buttons right after price block.
-            const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
-            if (gallery) {
-                if (priceBlock) {
-                    gallery.insertAdjacentElement('afterend', priceBlock);
-                    if (actionRow) priceBlock.insertAdjacentElement('afterend', actionRow);
-                } else if (actionRow) {
-                    gallery.insertAdjacentElement('afterend', actionRow);
-                }
+    if (winW > 900) {
+        // Desktop: Move price block to the top of the sidebar to avoid large gap above gallery.
+        const sidebar = page.querySelector('.lp-sidebar');
+        if (sidebar && priceBlock) {
+            sidebar.insertBefore(priceBlock, sidebar.firstChild);
+        }
+    } else if (winW > 768) {
+        // Tablet: Price block stays in the header. Move the action buttons to the header too.
+        const header = page.querySelector('.lp-header');
+        if (header && actionRow) {
+            header.appendChild(actionRow);
+        }
+    } else {
+        // Phone: Move price block after gallery, and action buttons right after price block.
+        const gallery = page.querySelector('.lp-gallery, .lp-gallery-empty');
+        if (gallery) {
+            if (priceBlock) {
+                gallery.insertAdjacentElement('afterend', priceBlock);
+                if (actionRow) priceBlock.insertAdjacentElement('afterend', actionRow);
+            } else if (actionRow) {
+                gallery.insertAdjacentElement('afterend', actionRow);
             }
         }
     }
@@ -562,6 +564,22 @@ function renderListing(l) {
 
     // Load similar
     loadSimilar(l);
+
+    // Set sidebar sticky top dynamically
+    const sidebarElement = page.querySelector('.lp-sidebar');
+    if (sidebarElement) {
+        const updateSidebarStickyTop = () => {
+            const computedTop = Math.min(90, window.innerHeight - sidebarElement.offsetHeight - 20);
+            sidebarElement.style.top = `${computedTop}px`;
+        };
+        setTimeout(updateSidebarStickyTop, 300); // Wait for React cost panel and similar grid to render
+        window.addEventListener('resize', updateSidebarStickyTop);
+        const cleanUp = () => {
+            window.removeEventListener('resize', updateSidebarStickyTop);
+            document.removeEventListener('routeChanged', cleanUp);
+        };
+        document.addEventListener('routeChanged', cleanUp);
+    }
 
     // Accordion Logic (Local implementation for listing page)
     const accTriggers = page.querySelectorAll('.adv-acc-trigger');
