@@ -1819,17 +1819,21 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
         if (header) header.style.display = 'flex';
         if (title) title.textContent = vrsta.label;
         grid.innerHTML = vrsta.categories.map(cat => {
-            let iconHtml = `<i class="${vrsta.icon}"></i>`;
-            if (vrsta.icon) {
-                if (vrsta.icon.startsWith('custom-svg:')) {
-                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles-custom.svg${vrsta.icon.slice(11)}"></use></svg>`;
-                } else if (vrsta.icon.startsWith('svg:')) {
-                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles.svg${vrsta.icon.slice(4)}"></use></svg>`;
+            let catValue = typeof cat === 'object' ? cat.value : cat;
+            let catLabel = typeof cat === 'object' ? cat.label : cat;
+            let catIcon = typeof cat === 'object' && cat.icon ? cat.icon : vrsta.icon;
+
+            let iconHtml = `<i class="${catIcon}"></i>`;
+            if (catIcon) {
+                if (catIcon.startsWith('custom-svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles-custom.svg${catIcon.slice(11)}"></use></svg>`;
+                } else if (catIcon.startsWith('svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles.svg${catIcon.slice(4)}"></use></svg>`;
                 }
             }
             return `
-            <button type="button" class="body-type-card commercial-cat-card" data-value="${cat}">
-                ${iconHtml}<span>${cat}</span>
+            <button type="button" class="body-type-card commercial-cat-card" data-value="${catValue}">
+                ${iconHtml}<span>${catLabel}</span>
             </button>`;
         }).join('');
         grid.querySelectorAll('.commercial-cat-card').forEach(card => {
