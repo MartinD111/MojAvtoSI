@@ -47,7 +47,7 @@ export function initAdvancedSearchPage() {
         cat: params.get('cat') || '',
         sub: params.get('sub') || '',
         searchType: params.get('searchType') || '',
-        vtype: params.get('vtype') || '',
+        vtype: params.get('vtype') || params.get('bodyType') || params.get('bodyTypes') || '',
         najem: params.get('najem') || '',
     };
 
@@ -1479,7 +1479,7 @@ bindCardDrag(excludedVehicleCardsEl);
 
         // Collect selected body types
         const selectedBT = bodyTypeHidden.value;
-        if (selectedBT) params.set('bodyTypes', selectedBT);
+        if (selectedBT) params.set('bodyType', selectedBT);
 
         const fd = new FormData(searchForm);
 

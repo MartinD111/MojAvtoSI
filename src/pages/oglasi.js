@@ -22,6 +22,7 @@ import { getCurrentLang } from '../core/i18n.js';
 import { showCompareLimitToast } from '../utils/listingUtils.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { brandsFileFor } from '../data/brandFiles.js';
+import { COMMERCIAL_BY_KEY } from '../data/commercialTaxonomy.js';
 
 import {
     getFuelPill,
@@ -1273,7 +1274,11 @@ function applySidebarFilters() {
     const yearTo = parseInt(document.getElementById("sidebarYearTo")?.value, 10) || Infinity;
     const priceTo = parseFormattedNumber(document.getElementById("sidebarPriceTo")?.value) || Infinity;
 
-    const bodyType = document.getElementById("sidebarBodyType")?.value || '';
+    let bodyType = document.getElementById("sidebarBodyType")?.value || '';
+    if (!bodyType) {
+        const urlParams = parseHashParams();
+        bodyType = urlParams.get('bodyType') || urlParams.get('bodyTypes') || '';
+    }
     const powerFrom = parseInt(document.getElementById("sidebarPowerFrom")?.value, 10) || 0;
     const powerTo = parseInt(document.getElementById("sidebarPowerTo")?.value, 10) || Infinity;
     const driveType = document.getElementById("sidebarDriveType")?.value || '';
@@ -1400,36 +1405,83 @@ function applySidebarFilters() {
             if (!transmissions.includes(normalizedCarTrans)) return false;
         }
 
-        if (cat !== 'moto' && cat !== 'motor') {
-            if (bodyType) {
-                const seg = (car.segment || '').toLowerCase();
-                const title = (car.title || '').toLowerCase();
-                const bodyLower = bodyType.toLowerCase();
-                if (bodyLower === 'limuzina') {
-                    if (!seg.includes('sedan') && !seg.includes('limuzina')) return false;
-                } else if (bodyLower === 'kombilimuzina') {
-                    if (!seg.includes('hatchback') && !seg.includes('kombilimuzina')) return false;
-                } else if (bodyLower === 'karavan') {
-                    if (!seg.includes('wagon') && !seg.includes('karavan') && !title.includes('avant') && !title.includes('touring') && !title.includes('karavan')) return false;
-                } else if (bodyLower === 'terensko' || bodyLower === 'suv') {
-                    if (!seg.includes('suv') && !seg.includes('terensko') && !seg.includes('crossover')) return false;
-                } else if (bodyLower === 'enoprostorec') {
-                    if (!seg.includes('minivan') && !seg.includes('enoprostorec') && !seg.includes('mpv')) return false;
-                } else if (bodyLower === 'coupe') {
-                    if (!seg.includes('coupe') && !title.includes('coupe')) return false;
-                } else if (bodyLower === 'kabriolet') {
-                    if (!seg.includes('convertible') && !seg.includes('cabriolet') && !seg.includes('kabriolet') && !title.includes('cabrio') && !title.includes('kabriolet')) return false;
-                } else if (bodyLower === 'sportni' || bodyLower === 'športni') {
-                    if (!seg.includes('sport') && !seg.includes('coupe') && !title.includes('sport')) return false;
-                } else if (bodyLower === 'pick-up') {
-                    if (!seg.includes('pick') && !seg.includes('pickup') && !title.includes('pick')) return false;
-                } else if (bodyLower === 'kombi' || bodyLower === 'dostavnik') {
-                    if (!seg.includes('kombi') && !seg.includes('dostav') && !seg.includes('van')) return false;
-                } else if (bodyLower === 'drugo') {
-                    const commonSegs = ['sedan', 'limuzina', 'hatchback', 'kombilimuzina', 'wagon', 'karavan', 'minivan', 'enoprostorec', 'mpv', 'suv', 'terensko', 'crossover', 'coupe', 'convertible', 'cabriolet', 'kabriolet', 'sport', 'pick', 'kombi', 'dostav', 'van'];
-                    if (commonSegs.some(s => seg.includes(s))) return false;
+        if (bodyType) {
+            const selectedBodyTypes = bodyType.split(',').map(t => t.trim());
+            const isMatch = selectedBodyTypes.some(type => {
+                if (type === 'Damaged') return car.isDamaged || car.condition === 'Poškodovano' || car.damaged === 'only';
+                if (type === 'Oldtimer') return car.condition === 'Starodobnik' || (car.year && parseInt(car.year, 10) < 1995);
+                if (type === 'EVozila') return ['EMoto', 'ESkiro', 'EKolo'].includes(car.bodyType) || ['EMoto', 'ESkiro', 'EKolo'].includes(car.vehicleType);
+
+                // Exact matching for bodyType or vehicleType
+                if (car.bodyType === type || car.vehicleType === type) return true;
+
+                // Heuristic matching for cars (only if cat is avto/car or empty)
+                if (cat === 'avto' || cat === 'car' || !cat) {
+                    const seg = (car.segment || '').toLowerCase();
+                    const title = (car.title || '').toLowerCase();
+                    const typeLower = type.toLowerCase();
+                    if (typeLower === 'limuzina') {
+                        return seg.includes('sedan') || seg.includes('limuzina');
+                    } else if (typeLower === 'kombilimuzina') {
+                        return seg.includes('hatchback') || seg.includes('kombilimuzina');
+                    } else if (typeLower === 'karavan') {
+                        return seg.includes('wagon') || seg.includes('karavan') || title.includes('avant') || title.includes('touring') || title.includes('karavan');
+                    } else if (typeLower === 'terensko' || typeLower === 'suv') {
+                        return seg.includes('suv') || seg.includes('terensko') || seg.includes('crossover');
+                    } else if (typeLower === 'enoprostorec') {
+                        return seg.includes('minivan') || seg.includes('enoprostorec') || seg.includes('mpv');
+                    } else if (typeLower === 'coupe') {
+                        return seg.includes('coupe') || title.includes('coupe');
+                    } else if (typeLower === 'kabriolet') {
+                        return seg.includes('convertible') || seg.includes('cabriolet') || seg.includes('kabriolet') || title.includes('cabrio') || title.includes('kabriolet');
+                    } else if (typeLower === 'sportni' || typeLower === 'športni') {
+                        return seg.includes('sport') || seg.includes('coupe') || title.includes('sport');
+                    } else if (typeLower === 'pick-up') {
+                        return seg.includes('pick') || seg.includes('pickup') || title.includes('pick') || title.includes('pickup');
+                    } else if (typeLower === 'kombi' || typeLower === 'dostavnik') {
+                        return seg.includes('kombi') || seg.includes('dostav') || seg.includes('van');
+                    } else if (typeLower === 'drugo') {
+                        const commonSegs = ['sedan', 'limuzina', 'hatchback', 'kombilimuzina', 'wagon', 'karavan', 'minivan', 'enoprostorec', 'mpv', 'suv', 'terensko', 'crossover', 'coupe', 'convertible', 'cabriolet', 'kabriolet', 'sport', 'pick', 'kombi', 'dostav', 'van'];
+                        return !commonSegs.some(s => seg.includes(s));
+                    }
                 }
-            }
+
+                // Heuristic matching for commercial vehicles (gospodarska)
+                if (cat === 'gospodarska') {
+                    const seg = (car.segment || '').toLowerCase();
+                    const typeLower = type.toLowerCase();
+                    
+                    // Match main Vrste
+                    if (typeLower === 'dostavna' && (seg.includes('dostav') || seg.includes('van'))) return true;
+                    if (typeLower === 'tovorna' && (seg.includes('tovorn') || seg.includes('truck') || seg.includes('lorry'))) return true;
+                    if (typeLower === 'tovorneprikolice' && (seg.includes('prikolic') || seg.includes('trailer'))) return true;
+                    if (typeLower === 'avtobus' && (seg.includes('avtobus') || seg.includes('bus') || seg.includes('coach'))) return true;
+                    if (typeLower === 'gradbena' && seg.includes('gradben')) return true;
+                    if (typeLower === 'kmetijska' && seg.includes('kmetijsk')) return true;
+                    if (typeLower === 'gozdarska' && seg.includes('gozdarsk')) return true;
+                    if (typeLower === 'komunalna' && seg.includes('komunaln')) return true;
+                    if (typeLower === 'vilicarji' && (seg.includes('viličar') || seg.includes('forklift'))) return true;
+                    if (typeLower === 'interventna' && seg.includes('interventn')) return true;
+                    if (typeLower === 'letaliska' && seg.includes('letališk')) return true;
+                    if (typeLower === 'kamnolom' && seg.includes('kamnolom')) return true;
+                    if (typeLower === 'zimska' && seg.includes('zimsk')) return true;
+
+                    // Commercial parent-child taxonomy expansion
+                    const commVrsta = COMMERCIAL_BY_KEY[type];
+                    if (commVrsta) {
+                        return commVrsta.categories.some(catObj => {
+                            const catVal = typeof catObj === 'object' ? catObj.value : catObj;
+                            return car.bodyType === catVal || car.vehicleType === catVal;
+                        });
+                    }
+                }
+
+                return false;
+            });
+            if (!isMatch) return false;
+        }
+
+        if (cat !== 'moto' && cat !== 'motor') {
             const carPower = car.powerKw || 0;
             if (carPower < powerFrom || (powerTo !== Infinity && carPower > powerTo)) return false;
             if (driveType) {
@@ -1744,7 +1796,10 @@ function prefillSidebarFromUrl() {
     const fields = ['yearFrom', 'yearTo', 'priceTo', 'bodyType', 'driveType', 'engineType', 'engineStroke', 'color', 'sellerType', 'powerFrom', 'powerTo'];
     fields.forEach(f => {
         const el = document.getElementById(`sidebar${f.charAt(0).toUpperCase() + f.slice(1)}`);
-        if (el && params.get(f)) el.value = params.get(f);
+        if (el && params.get(f)) {
+            el.value = params.get(f);
+            el.dispatchEvent(new Event('change'));
+        }
     });
 
     // Country → populate regions → set region
