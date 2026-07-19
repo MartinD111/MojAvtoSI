@@ -245,3 +245,12 @@ create table if not exists public.taxonomy_proposals (
   status      text not null default 'pending',
   created_at  timestamptz not null default now()
 );
+
+-- Global public site configuration (managed by administrators).
+create table if not exists public.site_config (
+  id         text primary key,
+  settings   jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+create trigger trg_site_config_updated before update on public.site_config
+  for each row execute function set_updated_at();

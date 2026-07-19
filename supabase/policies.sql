@@ -26,6 +26,22 @@ alter table public.tire_orders        enable row level security;
 alter table public.reviews            enable row level security;
 alter table public.reports            enable row level security;
 alter table public.taxonomy_proposals enable row level security;
+alter table public.site_config         enable row level security;
+
+create policy site_config_public_read on public.site_config for select using (true);
+create policy site_config_admin_write on public.site_config for all
+  using (public.is_admin()) with check (public.is_admin());
+
+-- Public hero images uploaded from Admin > Nastavitve.
+insert into storage.buckets (id, name, public)
+values ('site-assets', 'site-assets', true)
+on conflict (id) do update set public = true;
+create policy site_assets_public_read on storage.objects for select
+  using (bucket_id = 'site-assets');
+create policy site_assets_admin_insert on storage.objects for insert
+  with check (bucket_id = 'site-assets' and public.is_admin());
+create policy site_assets_admin_delete on storage.objects for delete
+  using (bucket_id = 'site-assets' and public.is_admin());
 
 -- ── profiles ─────────────────────────────────────────────────────────────────
 create policy profiles_self_read   on public.profiles for select using (auth.uid() = id or public.is_admin());

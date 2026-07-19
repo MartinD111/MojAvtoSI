@@ -19,6 +19,7 @@ import { brandsFileFor } from '../data/brandFiles.js';
 import { popularBrandsFor } from '../data/popularBrands.js';
 import { PLATFORM } from '../config/platform.js';
 import { navigateTo } from '../router.js';
+import { getSiteSettings } from '../services/adminService.js';
 
 let allListings = [];
 
@@ -41,6 +42,7 @@ export async function initHomePage() {
     setupSearchForm();
     setupCarousels();
     initWordSlider();
+    loadHeroBackground();
 
     if (window.lucide) {
         window.lucide.createIcons();
@@ -57,6 +59,20 @@ export async function initHomePage() {
             // Still initialize brand dropdowns with empty set
             updateHomeCategory(PRIMARY_CATEGORY);
         });
+}
+
+async function loadHeroBackground() {
+    const element = document.getElementById('homeHeroBackground');
+    if (!element) return;
+    try {
+        const settings = await getSiteSettings();
+        if (settings.heroBackgroundUrl) {
+            element.style.backgroundImage = `url("${settings.heroBackgroundUrl.replace(/"/g, '')}")`;
+            element.classList.add('has-image');
+        }
+    } catch (error) {
+        console.warn('[HomePage] Could not load hero background:', error);
+    }
 }
 
 /**

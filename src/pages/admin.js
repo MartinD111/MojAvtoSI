@@ -11,7 +11,7 @@ import {
     getBrands, createBrand, updateBrand, deleteBrand,
     getModels, createModel, updateModel, deleteModel,
     importTaxonomyRows, getReports, resolveReport,
-    getSiteSettings, updateSiteSettings,
+    getSiteSettings, updateSiteSettings, uploadSiteHeroImage,
     getSeoPages, upsertSeoPage,
     getTopBrands, getListingsByDay, getAuditLogs, addAuditLog, getSearchAnalytics,
     getScrapingSources, createScrapingSource, updateScrapingSource, deleteScrapingSource,
@@ -2987,6 +2987,22 @@ async function renderSettings() {
             <div class="adm-form-grid">
 
               <div class="adm-form-section">
+                <h4>Naslovna stran</h4>
+                <p style="color:#6b7280;font-size:.85rem;margin-top:0">Slika se prikaže za naslovom in se konča približno na sredini iskalnega obrazca.</p>
+                <div class="adm-form-row">
+                  <label for="hero-background-file">Hero slika</label>
+                  <input class="adm-input" id="hero-background-file" name="heroBackgroundFile" type="file" accept="image/jpeg,image/png,image/webp">
+                </div>
+                <div class="adm-form-row">
+                  <label>Trenutna slika</label>
+                  <div>
+                    <input class="adm-input" name="heroBackgroundUrl" type="url" value="${escHtml(s.heroBackgroundUrl || '')}" placeholder="https://…">
+                    <small style="display:block;color:#6b7280;margin-top:.35rem">Priporočeno: 1920 × 900 px, JPG/WebP, do približno 1 MB.</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="adm-form-section">
                 <h4>Paketi</h4>
                 <div class="adm-form-row">
                   <label>Premium cena (€)</label>
@@ -3035,6 +3051,7 @@ async function renderSettings() {
         document.getElementById('settings-form').addEventListener('submit', async e => {
             e.preventDefault();
             const fd = new FormData(e.target);
+            let heroBackgroundUrl = fd.get('heroBackgroundUrl') || '';
             const updates = {
                 'packages.premium.price': parseFloat(fd.get('premiumPrice')),
                 'packages.dealer.price':  parseFloat(fd.get('dealerPrice')),
@@ -3043,8 +3060,14 @@ async function renderSettings() {
                 listingAutoExpireDays:    parseInt(fd.get('listingAutoExpireDays')),
                 allowGuestListings:       fd.get('allowGuestListings') === 'on',
                 maintenanceMode:          fd.get('maintenanceMode') === 'on',
+                heroBackgroundUrl,
             };
             try {
+                const imageFile = fd.get('heroBackgroundFile');
+                if (imageFile?.size) {
+                    showToast('Nalaganje slike …', 'info');
+                    updates.heroBackgroundUrl = await uploadSiteHeroImage(imageFile);
+                }
                 await updateSiteSettings(updates);
                 await addAuditLog(_adminUser.uid, _adminUser.displayName, 'SETTINGS_UPDATE', 'siteConfig', updates);
                 showToast('Nastavitve shranjene.', 'success');

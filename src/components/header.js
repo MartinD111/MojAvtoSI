@@ -94,7 +94,9 @@ export function initHeader() {
 
             <!-- LEFT: logo (desktop) / burger (mobile) -->
             <div class="nav-left">
-              <a href="/" class="logo-text">${PLATFORM.brandName}<span class="logo-accent">${PLATFORM.tld}</span></a>
+              <a href="/" class="logo-text" aria-label="${PLATFORM.brandName}${PLATFORM.tld}">
+                <img src="images/logo-header.png" class="site-logo" alt="${PLATFORM.brandName}${PLATFORM.tld}" />
+              </a>
               <button class="burger-btn" id="burgerBtn" aria-label="Meni" aria-expanded="false" aria-controls="navLinks">
                 <i data-lucide="menu"></i>
               </button>

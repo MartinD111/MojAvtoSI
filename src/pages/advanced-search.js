@@ -4,6 +4,7 @@ import { getListings } from '../services/listingService.js';
 import { navigateTo } from '../router.js';
 import { getApprovedProposalsForBrand } from '../services/adminService.js';
 import { t } from '../core/i18n.js';
+import { translateAdvancedSearchPage } from '../data/advancedSearchI18n.js';
 import { resolveCategory, SEARCH_TYPE_OPTIONS } from '../data/categories.js';
 import { PLATFORM } from '../config/platform.js';
 import { brandsFileFor } from '../data/brandFiles.js';
@@ -62,6 +63,11 @@ export function initAdvancedSearchPage() {
     document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
 
     if (window.lucide) window.lucide.createIcons();
+    translateAdvancedSearchPage(document.querySelector('.search-container') || document);
+    if (!window.__advancedSearchI18nBound) {
+        document.addEventListener('langChanged', () => translateAdvancedSearchPage(document.querySelector('.search-container') || document));
+        window.__advancedSearchI18nBound = true;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1807,6 +1813,7 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
         grid.querySelectorAll('.commercial-vrsta-card').forEach(card => {
             card.addEventListener('click', () => drillInto(card.dataset.key));
         });
+        translateAdvancedSearchPage(grid);
         writeFilter();
         refreshIcons();
     }
@@ -1847,6 +1854,7 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
         });
         writeFilter();
         if (onChange) onChange();
+        translateAdvancedSearchPage(grid);
         refreshIcons();
     }
 

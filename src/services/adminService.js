@@ -309,11 +309,21 @@ const DEFAULT_SETTINGS = { packages: { free: { name: 'Brezplačni', price: 0, ma
 
 export async function getSiteSettings() {
     const { data } = await supabase.from('site_config').select('*').eq('id', 'main').maybeSingle();
-    return data?.settings || DEFAULT_SETTINGS;
+    return { ...DEFAULT_SETTINGS, ...(data?.settings || {}), heroBackgroundUrl: data?.settings?.heroBackgroundUrl || '' };
 }
 
 export async function updateSiteSettings(settings) {
     await supabase.from('site_config').upsert({ id: 'main', settings, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+}
+
+export async function uploadSiteHeroImage(file) {
+    if (!file || !file.type.startsWith('image/')) throw new Error('Izberite slikovno datoteko.');
+    if (file.size > 8 * 1024 * 1024) throw new Error('Slika je prevelika. Največja dovoljena velikost je 8 MB.');
+    const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const path = `hero/autohub-${Date.now()}.${extension}`;
+    const { error } = await supabase.storage.from('site-assets').upload(path, file, { contentType: file.type, upsert: false, cacheControl: '3600' });
+    if (error) throw new Error(error.message);
+    return supabase.storage.from('site-assets').getPublicUrl(path).data.publicUrl;
 }
 
 // ── SEO Management ────────────────────────────────────────────────────────────
