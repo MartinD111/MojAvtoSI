@@ -272,11 +272,21 @@ function applyCategory(ctx) {
     if (grid) {
         const types = typesForCategory(ctx.cat);
         const icon = isOprema ? 'package' : (isEngine ? 'cog' : 'sailboat');
-        grid.innerHTML = types.map(vt => `
+        grid.innerHTML = types.map(vt => {
+            let iconHtml = `<i data-lucide="${icon}"></i>`;
+            if (vt.icon) {
+                if (vt.icon.startsWith('custom-svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles-custom.svg${vt.icon.slice(11)}"></use></svg>`;
+                } else if (vt.icon.startsWith('svg:')) {
+                    iconHtml = `<svg class="custom-v-icon"><use href="icons/vehicles.svg${vt.icon.slice(4)}"></use></svg>`;
+                }
+            }
+            return `
             <button type="button" class="body-type-card" data-value="${vt.value}">
-                <i data-lucide="${icon}"></i>
+                ${iconHtml}
                 <span>${t(vt.label)}</span>
-            </button>`).join('');
+            </button>`;
+        }).join('');
         const hidden = document.getElementById('bodyTypeHidden');
         if (hidden) hidden.value = '';
         grid.querySelectorAll('.body-type-card').forEach(card => {
