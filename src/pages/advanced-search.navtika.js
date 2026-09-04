@@ -8,6 +8,7 @@ import { getListings } from '../services/listingService.js';
 import { navigateTo } from '../router.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
 import { brandsFileFor } from '../data/brandFiles.js';
+import { popularBrandsFor } from '../data/popularBrands.js';
 import { t } from '../core/i18n.js';
 import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
 import { setupNumericFormatter, parseFormattedNumber } from '../utils/inputFormatters.js';
@@ -251,20 +252,20 @@ function applyCategory(ctx) {
     const titleEl = document.getElementById('searchAccordionTitle');
     const iconEl = document.getElementById('searchAccordionIcon');
     if (titleEl) {
-        if (isOprema) { titleEl.innerHTML = '<i data-lucide="package"></i> Oprema za plovila'; }
-        else if (isEngine) { titleEl.innerHTML = '<i data-lucide="cog"></i> Izvenkrmni motorji'; }
-        else { titleEl.innerHTML = '<i data-lucide="sailboat"></i> Osnovi podatki'; }
+        if (isOprema) { titleEl.innerHTML = `<i data-lucide="package"></i> ${t('cat_boat_equipment', 'Oprema za plovila')}`; }
+        else if (isEngine) { titleEl.innerHTML = `<i data-lucide="cog"></i> ${t('cat_outboard_engines', 'Izvenkrmni motorji')}`; }
+        else { titleEl.innerHTML = `<i data-lucide="sailboat"></i> ${t('navtika_basic_info', 'Osnovni podatki')}`; }
     }
     // Grid type label
     const label = document.getElementById('bodyTypeLabel');
     if (label) {
-        if (ctx.cat === 'colni') label.textContent = 'Vrsta čolnov';
-        else if (ctx.cat === 'jadrnice') label.textContent = 'Vrsta jadrnic';
-        else if (ctx.cat === 'gumenjaki') label.textContent = 'Vrsta gumenjakov';
-        else if (ctx.cat === 'jet-ski') label.textContent = 'Vrsta vodnih skuterjev';
-        else if (isOprema) label.textContent = 'Vrsta opreme';
-        else if (isEngine) label.textContent = 'Razred motorja';
-        else label.textContent = 'Vrsta plovila';
+        if (ctx.cat === 'colni') label.textContent = t('navtika_boat_types', 'Vrsta čolnov');
+        else if (ctx.cat === 'jadrnice') label.textContent = t('navtika_sailboat_types', 'Vrsta jadrnic');
+        else if (ctx.cat === 'gumenjaki') label.textContent = t('navtika_inflatable_types', 'Vrsta gumenjakov');
+        else if (ctx.cat === 'jet-ski') label.textContent = t('navtika_pwc_types', 'Vrsta vodnih skuterjev');
+        else if (isOprema) label.textContent = t('navtika_equipment_types', 'Vrsta opreme');
+        else if (isEngine) label.textContent = t('navtika_engine_class', 'Razred motorja');
+        else label.textContent = t('navtika_vessel_type', 'Vrsta plovila');
     }
 
     // Render type grid
@@ -309,11 +310,30 @@ function loadEngineMakeDropdown() {
     fetch('/json/brands_models_izvenkrmni.json')
         .then(r => r.ok ? r.json() : {})
         .then(data => {
+            const popular = popularBrandsFor('izvenkrmni').filter(b => data[b]);
+            if (popular.length) {
+                const lbl = document.createElement('option');
+                lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+                lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+                sel.appendChild(lbl);
+                popular.forEach(brand => {
+                    const o = document.createElement('option');
+                    o.value = brand; o.textContent = brand;
+                    o.dataset.popular = 'true';
+                    sel.appendChild(o);
+                });
+                const sep = document.createElement('option');
+                sep.value = ''; sep.textContent = '──────────────';
+                sep.disabled = true; sep.dataset.popularLabel = 'true';
+                sel.appendChild(sep);
+            }
+
             Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
                 const o = document.createElement('option');
                 o.value = brand; o.textContent = brand;
                 sel.appendChild(o);
             });
+            createCustomSelect(sel);
         })
         .catch(() => {});
 }
@@ -329,7 +349,26 @@ function loadBrands(catSlug) {
         .then(async data => {
             window._boatBrandData = data;
             makeSel.innerHTML = '<option value="">Znamka</option>';
-            Object.keys(data).sort().forEach(b => {
+
+            const popular = popularBrandsFor(catSlug).filter(b => data[b]);
+            if (popular.length) {
+                const lbl = document.createElement('option');
+                lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+                lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+                makeSel.appendChild(lbl);
+                popular.forEach(brand => {
+                    const o = document.createElement('option');
+                    o.value = brand; o.textContent = brand;
+                    o.dataset.popular = 'true';
+                    makeSel.appendChild(o);
+                });
+                const sep = document.createElement('option');
+                sep.value = ''; sep.textContent = '──────────────';
+                sep.disabled = true; sep.dataset.popularLabel = 'true';
+                makeSel.appendChild(sep);
+            }
+
+            Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(b => {
                 const o = document.createElement('option'); o.value = b; o.textContent = b; makeSel.appendChild(o);
             });
 
@@ -397,7 +436,7 @@ function loadBrands(catSlug) {
             const data = window._boatBrandData || {};
             const make = makeSel.value;
             const model = modelSel.value;
-            variantSel.innerHTML = '<option value="">Različica</option>';
+            variantSel.innerHTML = `<option value="">${t('variant', 'Različica')}</option>`;
             variantSel.closest('.form-group')?.classList.remove('adv-hidden');
 
             const rawVariants = (make && model && data[make]?.[model]) ? getModelVariants(data[make][model]) : [];
@@ -665,11 +704,11 @@ function setupMultiVehicleSelector() {
         if (!makeSelect) return;
         makeSelect.value = '';
         if (modelSelect) {
-            modelSelect.innerHTML = '<option value="">Model</option>';
+            modelSelect.innerHTML = `<option value="">${t('model', 'Model')}</option>`;
             modelSelect.disabled = true;
         }
         if (variantSelect) {
-            variantSelect.innerHTML = '<option value="">Različica</option>';
+            variantSelect.innerHTML = `<option value="">${t('variant', 'Različica')}</option>`;
             variantSelect.disabled = true;
         }
         makeSelect.dispatchEvent(new Event('change'));

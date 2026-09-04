@@ -1,14 +1,17 @@
 // Service Entry Page — for verified mechanics / B2B users
 import { supabase } from '../lib/supabase.js';
 import { addServiceRecord } from '../services/serviceBookService.js';
+import { t } from '../core/i18n.js';
 
-const SERVICE_TYPES = [
-    { value: 'mali_servis',    label: 'Minor Service' },
-    { value: 'veliki_servis',  label: 'Major Service' },
-    { value: 'popravilo',      label: 'Repair' },
-    { value: 'pnevmatike',     label: 'Tires' },
-    { value: 'drugo',          label: 'Other' },
-];
+function getServiceTypes() {
+    return [
+        { value: 'mali_servis',    label: t('st_minor', 'Mali servis') },
+        { value: 'veliki_servis',  label: t('st_major', 'Veliki servis') },
+        { value: 'popravilo',      label: t('st_repair', 'Popravilo') },
+        { value: 'pnevmatike',     label: t('st_tires', 'Pnevmatike') },
+        { value: 'drugo',          label: t('st_other', 'Drugo') },
+    ];
+}
 
 function isAuthorized(user) {
     if (!user) return false;
@@ -37,15 +40,15 @@ function renderAccessDenied(page) {
     page.innerHTML = `
         <div style="max-width:480px;margin:4rem auto;text-align:center;padding:2rem;">
             <div style="font-size:3rem;margin-bottom:1rem;">🔒</div>
-            <h2 style="font-size:1.3rem;font-weight:800;color:#1e293b;margin:0 0 0.5rem;">Access Denied</h2>
-            <p style="color:#64748b;margin:0 0 1.5rem;">This page is accessible only to verified workshops and mechanics.</p>
-            <a href="#/dashboard" style="display:inline-block;padding:0.7rem 1.5rem;background:var(--color-primary-start);color:#fff;border-radius:0.75rem;text-decoration:none;font-weight:600;">← Back to Dashboard</a>
+            <h2 style="font-size:1.3rem;font-weight:800;color:#1e293b;margin:0 0 0.5rem;">${t('access_denied_title', 'Dostop zavrnjen')}</h2>
+            <p style="color:#64748b;margin:0 0 1.5rem;">${t('access_denied_mechanic', 'Ta stran je dostopna le verificiranim delavnicam in serviserjem.')}</p>
+            <a href="#/dashboard" style="display:inline-block;padding:0.7rem 1.5rem;background:var(--color-primary-start);color:#fff;border-radius:0.75rem;text-decoration:none;font-weight:600;">${t('back_to_dashboard', '← Nazaj na nadzorno ploščo')}</a>
         </div>`;
 }
 
 function renderForm(page, user) {
-    const typeOptions = SERVICE_TYPES.map(t =>
-        `<option value="${t.value}">${t.label}</option>`
+    const typeOptions = getServiceTypes().map(item =>
+        `<option value="${item.value}">${item.label}</option>`
     ).join('');
 
     page.innerHTML = `
@@ -53,39 +56,39 @@ function renderForm(page, user) {
             <div class="se-card glass-card">
                 <div class="se-card-header">
                     <i data-lucide="wrench"></i>
-                    <h1 class="se-title">Digital Service Record Entry</h1>
+                    <h1 class="se-title">${t('service_entry_title', 'Vnos v digitalno servisno knjižico')}</h1>
                 </div>
-                <p class="se-subtitle">Entered data is permanently linked to the vehicle's VIN number.</p>
+                <p class="se-subtitle">${t('service_entry_subtitle', 'Vneseni podatki se trajno povežejo z VIN številko vozila.')}</p>
 
                 <form id="serviceEntryForm" class="se-form" novalidate>
                     <div class="se-field">
-                        <label for="se-vin">VIN Number <span class="se-required">*</span></label>
-                        <input id="se-vin" type="text" maxlength="17" placeholder="e.g. WBA3A5G59DNP26082" required />
+                        <label for="se-vin">${t('service_vin_label', 'VIN številka')} <span class="se-required">*</span></label>
+                        <input id="se-vin" type="text" maxlength="17" placeholder="npr. WBA3A5G59DNP26082" required />
                     </div>
                     <div class="se-row">
                         <div class="se-field">
-                            <label for="se-date">Service Date <span class="se-required">*</span></label>
+                            <label for="se-date">${t('service_date_label', 'Datum servisa')} <span class="se-required">*</span></label>
                             <input id="se-date" type="date" required />
                         </div>
                         <div class="se-field">
-                            <label for="se-mileage">Odometer Reading (mi)</label>
-                            <input id="se-mileage" type="number" min="0" placeholder="e.g. 77400" />
+                            <label for="se-mileage">${t('service_mileage_label', 'Stanje števca (km)')}</label>
+                            <input id="se-mileage" type="number" min="0" placeholder="npr. 125000" />
                         </div>
                     </div>
                     <div class="se-field">
-                        <label for="se-type">Service Type <span class="se-required">*</span></label>
+                        <label for="se-type">${t('service_type_label', 'Vrsta servisa')} <span class="se-required">*</span></label>
                         <select id="se-type" required>
                             ${typeOptions}
                         </select>
                     </div>
                     <div class="se-field">
-                        <label for="se-desc">Description of Work Performed</label>
-                        <textarea id="se-desc" rows="4" placeholder="Oil change, filters, brake inspection..."></textarea>
+                        <label for="se-desc">${t('service_desc_label', 'Opis opravljenih del')}</label>
+                        <textarea id="se-desc" rows="4" placeholder="${t('service_desc_placeholder', 'Menjava olja, filtri, pregled zavor...')}"></textarea>
                     </div>
                     <div id="se-error" class="se-error" style="display:none;"></div>
                     <button type="submit" class="se-submit-btn" id="seSubmitBtn">
                         <i data-lucide="save"></i>
-                        Save Record
+                        ${t('service_save_record', 'Shrani vnos')}
                     </button>
                 </form>
 
@@ -108,12 +111,12 @@ function renderForm(page, user) {
 
         errorEl.style.display = 'none';
 
-        if (!vin) { showError(errorEl, 'VIN number is required.'); return; }
-        if (vin.length < 5) { showError(errorEl, 'VIN number must be at least 5 characters.'); return; }
-        if (!date) { showError(errorEl, 'Service date is required.'); return; }
+        if (!vin) { showError(errorEl, t('service_err_vin_req', 'VIN številka je obvezna.')); return; }
+        if (vin.length < 5) { showError(errorEl, t('service_err_vin_short', 'VIN številka mora imeti vsaj 5 znakov.')); return; }
+        if (!date) { showError(errorEl, t('service_err_date_req', 'Datum servisa je obvezen.')); return; }
 
         btn.disabled = true;
-        btn.textContent = 'Saving...';
+        btn.textContent = t('service_saving', 'Shranjevanje...');
 
         try {
             await addServiceRecord({
@@ -125,14 +128,14 @@ function renderForm(page, user) {
                 mechanicId: user.id,
                 mechanicName: user.user_metadata?.display_name || user.email || 'Service',
             });
-            showToast('✅ Record saved successfully!');
+            showToast(t('service_toast_success', '✅ Vnos uspešno shranjen!'));
             form.reset();
         } catch (err) {
             console.error('[ServiceEntry]', err);
-            showError(errorEl, 'An error occurred. Please try again.');
+            showError(errorEl, t('service_err_generic', 'Prišlo je do napake. Prosimo, poskusite znova.'));
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="save"></i> Save Record';
+            btn.innerHTML = `<i data-lucide="save"></i> ${t('service_save_record', 'Shrani vnos')}`;
             if (window.lucide) window.lucide.createIcons();
         }
     });

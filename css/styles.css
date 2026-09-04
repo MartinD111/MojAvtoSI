@@ -9937,22 +9937,45 @@ body.dark-mode .gd-itemtype-btn.active {
     height: 24px;
     display: inline-block;
     flex-shrink: 0;
+    fill: var(--icon-base, #475569);
     --icon-base: #475569;
     --icon-accent: var(--color-primary-start);
     --bg-glass: #ffffff;
+    transition: transform 0.2s ease, fill 0.2s ease;
 }
 
 body.dark-mode .custom-v-icon {
-    --icon-base: #94a3b8;
-    --bg-glass: #0f172a;
+    fill: var(--icon-base, #cbd5e1);
+    --icon-base: #cbd5e1;
+    --icon-accent: var(--color-primary-light, #818cf8);
+    --bg-glass: #1e293b;
 }
 
 /* Hover/Active state overrides */
-.body-type-card:hover .custom-v-icon,
+.body-type-card:hover .custom-v-icon {
+    transform: scale(1.06);
+    --icon-base: #0f172a;
+    --icon-accent: var(--color-primary-hover, #4338ca);
+    --bg-glass: #ffffff;
+}
+
 .body-type-card.active .custom-v-icon {
+    transform: scale(1.04);
+    --icon-base: #0f172a;
+    --icon-accent: var(--color-primary-start, #4f46e5);
+    --bg-glass: #ffffff;
+}
+
+body.dark-mode .body-type-card:hover .custom-v-icon {
     --icon-base: #ffffff;
-    --icon-accent: rgba(255, 255, 255, 0.7);
-    --bg-glass: var(--color-primary-start);
+    --icon-accent: #93c5fd;
+    --bg-glass: #1e293b;
+}
+
+body.dark-mode .body-type-card.active .custom-v-icon {
+    --icon-base: #ffffff;
+    --icon-accent: #93c5fd;
+    --bg-glass: #1e293b;
 }
 
 /* Make them slightly larger in the cards */
@@ -10591,4 +10614,67 @@ body.dark-mode .sponsored-mini-card .spec-pill.type-pill * {
 body .spec-pill.type-pill:hover,
 body.dark-mode .spec-pill.type-pill:hover {
   background: #8b5cf6 !important;
+}
+
+/* Brand Select Dropdowns */
+.custom-select-brand-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  min-height: 24px;
+}
+
+.custom-select-brand-name {
+  position: relative;
+  z-index: 2;
+  font-weight: 500;
+}
+
+.custom-select-brand-watermark {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.custom-select-brand-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+body.dark-mode .logo-adaptive {
+  filter: brightness(0) invert(1);
+}
+
+.custom-select-brand-badge {
+  font-size: 2rem;
+  font-weight: 900;
+  color: rgb(var(--brand-rgb));
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.custom-select-option:hover .custom-select-brand-watermark,
+.custom-select-option.highlighted .custom-select-brand-watermark,
+.custom-select-option.selected .custom-select-brand-watermark {
+  opacity: 0.4;
+}
+
+.custom-select-trigger .custom-select-brand-item {
+  min-height: auto;
+}
+
+.custom-select-trigger .custom-select-brand-watermark {
+  display: none;
 }

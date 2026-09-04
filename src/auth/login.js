@@ -1,6 +1,7 @@
 // Login page logic — MojAvto.si
 import { loginWithEmail, loginWithGoogle } from '../auth/auth.js';
 import { navigateTo } from '../router.js';
+import { t } from '../core/i18n.js';
 
 export function initLoginPage() {
     const form = document.getElementById('loginForm');
@@ -11,13 +12,13 @@ export function initLoginPage() {
     googleBtn?.addEventListener('click', async () => {
         try {
             googleBtn.disabled = true;
-            googleBtn.innerHTML = '<i class="fab fa-google"></i> Prijavljam...';
+            googleBtn.innerHTML = `<i class="fab fa-google"></i> ${t('login_btn_loading', 'Prijavljam...')}`;
             await loginWithGoogle();
             navigateTo('/dashboard');
         } catch (err) {
             errorEl.textContent = err.message;
             googleBtn.disabled = false;
-            googleBtn.innerHTML = '<i class="fab fa-google"></i> Prijava z Google';
+            googleBtn.innerHTML = `<i class="fab fa-google"></i> ${t('login_google', 'Prijava z Google')}`;
         }
     });
 
@@ -30,21 +31,21 @@ export function initLoginPage() {
 
         const submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Prijavljam...';
+        submitBtn.textContent = t('login_btn_loading', 'Prijavljam...');
 
         try {
             await loginWithEmail(email, password);
             navigateTo('/dashboard');
         } catch (err) {
             const msgs = {
-                'auth/user-not-found': 'Uporabnik s tem e-mailom ne obstaja.',
-                'auth/wrong-password': 'Napačno geslo.',
-                'auth/invalid-credential': 'Napačen e-mail ali geslo.',
-                'auth/too-many-requests': 'Preveč poskusov. Počakajte in poskusite znova.',
+                'auth/user-not-found': t('login_err_user_not_found', 'Uporabnik s tem e-mailom ne obstaja.'),
+                'auth/wrong-password': t('login_err_wrong_password', 'Napačno geslo.'),
+                'auth/invalid-credential': t('login_err_invalid', 'Napačen e-mail ali geslo.'),
+                'auth/too-many-requests': t('login_err_too_many', 'Preveč poskusov. Počakajte in poskusite znova.'),
             };
             errorEl.textContent = msgs[err.code] || err.message;
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Prijava';
+            submitBtn.textContent = t('login_title', 'Prijava');
         }
     });
 }

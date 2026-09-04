@@ -3,15 +3,15 @@
 <defs>
     <style>
       .cls-1-vc-sedan {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-sedan {
-        fill: #363e4a;
+        fill: var(--icon-base, #363e4a);
       }
 
       .cls-3-vc-sedan {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -26,15 +26,15 @@
 <defs>
     <style>
       .cls-1-vc-damaged-salvage {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-damaged-salvage {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
 
       .cls-3-vc-damaged-salvage {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -52,7 +52,7 @@
 <defs>
     <style>
       .cls-1-vc-self-loading-dumper {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-1-vc-self-loading-dumper, .cls-2-vc-self-loading-dumper, .cls-3-vc-self-loading-dumper, .cls-4-vc-self-loading-dumper, .cls-5-vc-self-loading-dumper, .cls-6-vc-self-loading-dumper {
@@ -60,19 +60,19 @@
       }
 
       .cls-2-vc-self-loading-dumper {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-3-vc-self-loading-dumper {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-4-vc-self-loading-dumper {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-6-vc-self-loading-dumper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -101,19 +101,19 @@
 <defs>
     <style>
       .cls-1-vc-articulated-dump-truck-adt {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-articulated-dump-truck-adt {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-articulated-dump-truck-adt {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-articulated-dump-truck-adt {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -135,23 +135,23 @@
 <defs>
     <style>
       .cls-1-vc-rigid-dump-truck-mining-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-rigid-dump-truck-mining-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-rigid-dump-truck-mining-truck {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-rigid-dump-truck-mining-truck {
-        fill: #fdfcfd;
+        fill: var(--bg-glass, #fdfcfd);
       }
 
       .cls-5-vc-rigid-dump-truck-mining-truck {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -171,19 +171,19 @@
 <defs>
     <style>
       .cls-1-vc-wheel-tractor-scraper {
-        fill: #fcfdfc;
+        fill: var(--bg-glass, #fcfdfc);
       }
 
       .cls-2-vc-wheel-tractor-scraper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-wheel-tractor-scraper {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-wheel-tractor-scraper {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -206,23 +206,23 @@
 <defs>
     <style>
       .cls-1-vc-road-roller-compactor {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-road-roller-compactor {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-road-roller-compactor {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-road-roller-compactor {
-        fill: #053ed8;
+        fill: var(--icon-accent, #053ed8);
       }
 
       .cls-5-vc-road-roller-compactor {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -243,15 +243,15 @@
 <defs>
     <style>
       .cls-1-vc-asphalt-paver {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-asphalt-paver {
-        fill: #073dd3;
+        fill: var(--icon-accent, #073dd3);
       }
 
       .cls-3-vc-asphalt-paver {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
     </style>
   </defs>
@@ -279,23 +279,23 @@
 <defs>
     <style>
       .cls-1-vc-cold-planer-road-milling-machine {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-cold-planer-road-milling-machine {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-cold-planer-road-milling-machine {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
 
       .cls-4-vc-cold-planer-road-milling-machine {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
 
       .cls-5-vc-cold-planer-road-milling-machine {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -332,19 +332,19 @@
 <defs>
     <style>
       .cls-1-vc-trencher {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-trencher {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-trencher {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-trencher {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
     </style>
   </defs>
@@ -368,19 +368,19 @@
 <defs>
     <style>
       .cls-1-vc-mobile-crane {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-mobile-crane {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-mobile-crane {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-mobile-crane {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
     </style>
   </defs>
@@ -408,27 +408,27 @@
 <defs>
     <style>
       .cls-1-vc-crawler-crane {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-crawler-crane {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-crawler-crane {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-4-vc-crawler-crane {
-        fill: #fdfcfd;
+        fill: var(--bg-glass, #fdfcfd);
       }
 
       .cls-5-vc-crawler-crane {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
 
       .cls-6-vc-crawler-crane {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -449,11 +449,11 @@
 <defs>
     <style>
       .cls-1-vc-sportbike {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-sportbike {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -472,23 +472,23 @@
 <defs>
     <style>
       .cls-1-vc-tower-crane-construction-hoist {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-tower-crane-construction-hoist {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-tower-crane-construction-hoist {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-4-vc-tower-crane-construction-hoist {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
 
       .cls-5-vc-tower-crane-construction-hoist {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -515,27 +515,27 @@
 <defs>
     <style>
       .cls-1-vc-cherry-picker-boom-lift {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-cherry-picker-boom-lift {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-cherry-picker-boom-lift {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-cherry-picker-boom-lift {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-5-vc-cherry-picker-boom-lift {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
 
       .cls-6-vc-cherry-picker-boom-lift {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -563,23 +563,23 @@
 <defs>
     <style>
       .cls-1-vc-scissor-lift {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-scissor-lift {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-scissor-lift {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-scissor-lift {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-5-vc-scissor-lift {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
     </style>
   </defs>
@@ -609,23 +609,23 @@
 <defs>
     <style>
       .cls-1-vc-telescopic-boom-lift {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-telescopic-boom-lift {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-telescopic-boom-lift {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-4-vc-telescopic-boom-lift {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-5-vc-telescopic-boom-lift {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -657,15 +657,15 @@
 <defs>
     <style>
       .cls-1-vc-concrete-mixer-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-concrete-mixer-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-concrete-mixer-truck {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -705,19 +705,19 @@
 <defs>
     <style>
       .cls-1-vc-concrete-pump-truck {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-concrete-pump-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-concrete-pump-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-concrete-pump-truck {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -760,11 +760,11 @@
 <defs>
     <style>
       .cls-1-vc-piling-rig {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-2-vc-piling-rig {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -780,27 +780,27 @@
 <defs>
     <style>
       .cls-1-vc-pipelayer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-pipelayer {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-pipelayer {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-4-vc-pipelayer {
-        fill: #fdfcfd;
+        fill: var(--bg-glass, #fdfcfd);
       }
 
       .cls-5-vc-pipelayer {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
 
       .cls-6-vc-pipelayer {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -824,19 +824,19 @@
 <defs>
     <style>
       .cls-1-vc-drilling-rig-jumbo-drill {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-drilling-rig-jumbo-drill {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-drilling-rig-jumbo-drill {
-        fill: #262625;
+        fill: var(--icon-base, #262625);
       }
 
       .cls-4-vc-drilling-rig-jumbo-drill {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -860,15 +860,15 @@
 <defs>
     <style>
       .cls-1-vc-demolition-robot {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-2-vc-demolition-robot {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-3-vc-demolition-robot {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -901,11 +901,11 @@
 <defs>
     <style>
       .cls-1-vc-sport-tourer {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-sport-tourer {
-        fill: #002faa;
+        fill: var(--icon-accent, #002faa);
       }
     </style>
   </defs>
@@ -930,19 +930,19 @@
 <defs>
     <style>
       .cls-1-vc-crusher {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-2-vc-crusher {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-3-vc-crusher {
-        fill: #fdfefe;
+        fill: var(--bg-glass, #fdfefe);
       }
 
       .cls-4-vc-crusher {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -973,19 +973,19 @@
 <defs>
     <style>
       .cls-1-vc-screener {
-        fill: #131313;
+        fill: var(--icon-base, #131313);
       }
 
       .cls-2-vc-screener {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-screener {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-4-vc-screener {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -1011,43 +1011,43 @@
 <defs>
     <style>
       .cls-1-vc-conveyor-belt {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-conveyor-belt {
-        fill: #131313;
+        fill: var(--icon-base, #131313);
       }
 
       .cls-3-vc-conveyor-belt {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-conveyor-belt {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-conveyor-belt {
-        fill: #fefefd;
+        fill: var(--bg-glass, #fefefd);
       }
 
       .cls-6-vc-conveyor-belt {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-7-vc-conveyor-belt {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-8-vc-conveyor-belt {
-        fill: #feffff;
+        fill: var(--bg-glass, #feffff);
       }
 
       .cls-9-vc-conveyor-belt {
-        fill: #fdfefe;
+        fill: var(--bg-glass, #fdfefe);
       }
 
       .cls-10-vc-conveyor-belt {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -1089,23 +1089,23 @@
 <defs>
     <style>
       .cls-1-vc-road-marking-machine {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-road-marking-machine {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-road-marking-machine {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-road-marking-machine {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-5-vc-road-marking-machine {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -1160,27 +1160,27 @@
 <defs>
     <style>
       .cls-1-vc-agricultural-tractor {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-agricultural-tractor {
-        fill: #0337e0;
+        fill: var(--icon-accent, #0337e0);
       }
 
       .cls-3-vc-agricultural-tractor {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-4-vc-agricultural-tractor {
-        fill: #fdfcfe;
+        fill: var(--bg-glass, #fdfcfe);
       }
 
       .cls-5-vc-agricultural-tractor {
-        fill: #feffff;
+        fill: var(--bg-glass, #feffff);
       }
 
       .cls-6-vc-agricultural-tractor {
-        fill: #1a1c1c;
+        fill: var(--icon-base, #1a1c1c);
       }
     </style>
   </defs>
@@ -1209,31 +1209,31 @@
 <defs>
     <style>
       .cls-1-vc-orchard-vineyard-tractor {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-orchard-vineyard-tractor {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-orchard-vineyard-tractor {
-        fill: #0337e0;
+        fill: var(--icon-accent, #0337e0);
       }
 
       .cls-4-vc-orchard-vineyard-tractor {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-5-vc-orchard-vineyard-tractor {
-        fill: #fdfcfe;
+        fill: var(--bg-glass, #fdfcfe);
       }
 
       .cls-6-vc-orchard-vineyard-tractor {
-        fill: #feffff;
+        fill: var(--bg-glass, #feffff);
       }
 
       .cls-7-vc-orchard-vineyard-tractor {
-        fill: #1a1c1c;
+        fill: var(--icon-base, #1a1c1c);
       }
     </style>
   </defs>
@@ -1270,31 +1270,31 @@
 <defs>
     <style>
       .cls-1-vc-garden-tractor {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-garden-tractor {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-garden-tractor {
-        fill: #0337e0;
+        fill: var(--icon-accent, #0337e0);
       }
 
       .cls-4-vc-garden-tractor {
-        fill: #191b1a;
+        fill: var(--icon-base, #191b1a);
       }
 
       .cls-5-vc-garden-tractor {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-6-vc-garden-tractor {
-        fill: #fdfcfe;
+        fill: var(--bg-glass, #fdfcfe);
       }
 
       .cls-7-vc-garden-tractor {
-        fill: #171818;
+        fill: var(--icon-base, #171818);
       }
     </style>
   </defs>
@@ -1330,35 +1330,35 @@
 <defs>
     <style>
       .cls-1-vc-two-wheel-tractor-power-tiller {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-two-wheel-tractor-power-tiller {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-two-wheel-tractor-power-tiller {
-        fill: #fefffe;
+        fill: var(--bg-glass, #fefffe);
       }
 
       .cls-4-vc-two-wheel-tractor-power-tiller {
-        fill: #0337e0;
+        fill: var(--icon-accent, #0337e0);
       }
 
       .cls-5-vc-two-wheel-tractor-power-tiller {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-6-vc-two-wheel-tractor-power-tiller {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-7-vc-two-wheel-tractor-power-tiller {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-8-vc-two-wheel-tractor-power-tiller {
-        fill: #fdfcfe;
+        fill: var(--bg-glass, #fdfcfe);
       }
     </style>
   </defs>
@@ -1383,35 +1383,35 @@
 <defs>
     <style>
       .cls-1-vc-combine-harvester {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-combine-harvester {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-combine-harvester {
-        fill: #0337e0;
+        fill: var(--icon-accent, #0337e0);
       }
 
       .cls-4-vc-combine-harvester {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-5-vc-combine-harvester {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-6-vc-combine-harvester {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-7-vc-combine-harvester {
-        fill: #fdfcfe;
+        fill: var(--bg-glass, #fdfcfe);
       }
 
       .cls-8-vc-combine-harvester {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -1446,35 +1446,35 @@
 <defs>
     <style>
       .cls-1-vc-grape-harvester {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-grape-harvester {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-grape-harvester {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-grape-harvester {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-5-vc-grape-harvester {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-6-vc-grape-harvester {
-        fill: #fcfcfd;
+        fill: var(--bg-glass, #fcfcfd);
       }
 
       .cls-7-vc-grape-harvester {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-8-vc-grape-harvester {
-        fill: #f7f7f7;
+        fill: var(--bg-glass, #f7f7f7);
       }
     </style>
   </defs>
@@ -1504,23 +1504,23 @@
 <defs>
     <style>
       .cls-1-vc-adventure {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-adventure {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-adventure {
-        fill: #002faa;
+        fill: var(--icon-accent, #002faa);
       }
 
       .cls-4-vc-adventure {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-5-vc-adventure {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -1559,31 +1559,31 @@
 <defs>
     <style>
       .cls-1-vc-self-propelled-forage-harvester {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-self-propelled-forage-harvester {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-self-propelled-forage-harvester {
-        fill: #0337e0;
+        fill: var(--icon-accent, #0337e0);
       }
 
       .cls-4-vc-self-propelled-forage-harvester {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-5-vc-self-propelled-forage-harvester {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-6-vc-self-propelled-forage-harvester {
-        fill: #fdfcfe;
+        fill: var(--bg-glass, #fdfcfe);
       }
 
       .cls-7-vc-self-propelled-forage-harvester {
-        fill: #fffffe;
+        fill: var(--bg-glass, #fffffe);
       }
     </style>
   </defs>
@@ -1613,35 +1613,35 @@
 <defs>
     <style>
       .cls-1-vc-self-propelled-mower {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-self-propelled-mower {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-self-propelled-mower {
-        fill: #0337e0;
+        fill: var(--icon-accent, #0337e0);
       }
 
       .cls-4-vc-self-propelled-mower {
-        fill: #191b1a;
+        fill: var(--icon-base, #191b1a);
       }
 
       .cls-5-vc-self-propelled-mower {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-6-vc-self-propelled-mower {
-        fill: #fdfcfe;
+        fill: var(--bg-glass, #fdfcfe);
       }
 
       .cls-7-vc-self-propelled-mower {
-        fill: #171818;
+        fill: var(--icon-base, #171818);
       }
 
       .cls-8-vc-self-propelled-mower {
-        fill: #1a1c1c;
+        fill: var(--icon-base, #1a1c1c);
       }
     </style>
   </defs>
@@ -1680,19 +1680,19 @@
 <defs>
     <style>
       .cls-1-vc-mower {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-mower {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-mower {
-        fill: #171918;
+        fill: var(--icon-base, #171918);
       }
 
       .cls-4-vc-mower {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -1719,15 +1719,15 @@
 <defs>
     <style>
       .cls-1-vc-mulcher-flail-mower {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-mulcher-flail-mower {
-        fill: #0c3bd1;
+        fill: var(--icon-accent, #0c3bd1);
       }
 
       .cls-3-vc-mulcher-flail-mower {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -1754,11 +1754,11 @@
 <defs>
     <style>
       .cls-1-vc-plough-plow {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-plough-plow {
-        fill: #0c3bd1;
+        fill: var(--icon-accent, #0c3bd1);
       }
     </style>
   </defs>
@@ -1779,11 +1779,11 @@
 <defs>
     <style>
       .cls-1-vc-harrows {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-harrows {
-        fill: #0c3bd1;
+        fill: var(--icon-accent, #0c3bd1);
       }
     </style>
   </defs>
@@ -1824,27 +1824,27 @@
 <defs>
     <style>
       .cls-1-vc-rotary-tiller-rotary-hoe {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-rotary-tiller-rotary-hoe {
-        fill: #0c3bd1;
+        fill: var(--icon-accent, #0c3bd1);
       }
 
       .cls-3-vc-rotary-tiller-rotary-hoe {
-        fill: #fcfbfb;
+        fill: var(--bg-glass, #fcfbfb);
       }
 
       .cls-4-vc-rotary-tiller-rotary-hoe {
-        fill: #fcfbfc;
+        fill: var(--bg-glass, #fcfbfc);
       }
 
       .cls-5-vc-rotary-tiller-rotary-hoe {
-        fill: #161817;
+        fill: var(--icon-base, #161817);
       }
 
       .cls-6-vc-rotary-tiller-rotary-hoe {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -1896,11 +1896,11 @@
 <defs>
     <style>
       .cls-1-vc-seedbed-cultivator {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-2-vc-seedbed-cultivator {
-        fill: #fcfcfb;
+        fill: var(--bg-glass, #fcfcfb);
       }
     </style>
   </defs>
@@ -1927,15 +1927,15 @@
 <defs>
     <style>
       .cls-1-vc-seed-drill-seeder {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-seed-drill-seeder {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-seed-drill-seeder {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -1960,7 +1960,7 @@
 <defs>
     <style>
       .cls-1-vc-planter-transplanter {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -1989,74 +1989,38 @@
 <defs>
     <style>
       .cls-1-vc-naked-bike {
-        fill: #363f4b;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-naked-bike {
-        fill: #fff;
-      }
-
-      .cls-3-vc-naked-bike {
-        fill: #050505;
-      }
-
-      .cls-4-vc-naked-bike {
-        fill: #002faa;
-      }
-
-      .cls-5-vc-naked-bike {
-        fill: #fdfefd;
-      }
-
-      .cls-6-vc-naked-bike {
-        fill: none;
-        stroke: #ff0049;
-        stroke-miterlimit: 10;
-      }
-
-      .cls-7-vc-naked-bike {
-        fill: #fefefe;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
-  <path class="cls-1-vc-naked-bike" d="M84.1,261.67c-42.42,0-76.82,34.39-76.82,76.82s34.39,76.82,76.82,76.82,76.82-34.39,76.82-76.82-34.39-76.82-76.82-76.82ZM84.1,400.44c-34.21,0-61.95-27.74-61.95-61.95s27.74-61.95,61.95-61.95,61.95,27.74,61.95,61.95-27.74,61.95-61.95,61.95Z"/>
-  <path d="M84.1,281.5c-31.43,0-56.99,25.57-56.99,56.99s25.57,56.99,56.99,56.99,56.99-25.57,56.99-56.99-25.57-56.99-56.99-56.99ZM136.14,338.49c0,1.42-.1,2.81-.21,4.21l-16.83-4.21,16.83-4.21c.11,1.39.21,2.79.21,4.21ZM103.81,380.66l-4.6,1.86,2.04,5.05c-2.61.92-5.28,1.62-8,2.11l-6.6-26.4,2.9-11.61,10.26,6.16,14,23.33c-2.52,1.75-5.18,3.27-7.97,4.55l-2.04-5.04ZM32.06,338.49c0-1.42.1-2.81.21-4.21l16.83,4.21-16.83,4.21c-.13-1.4-.2-2.8-.21-4.21ZM84.1,343.44c-2.73,0-4.96-2.22-4.96-4.96s2.22-4.96,4.96-4.96,4.96,2.22,4.96,4.96-2.22,4.96-4.96,4.96ZM74.19,338.47v.02s0,.02,0,.02l-.6,1-4.05-1.01,4.05-1.01.6,1ZM94.01,338.51v-.02s0-.02,0-.02l.6-1,4.05,1.01-4.05,1.01-.6-1ZM97.27,333.03l6.16-10.26,23.33-14c4.3,6.15,7.21,13.17,8.52,20.56l-26.4,6.6-11.61-2.9ZM92.25,331.78l-1.13-.28-.02-.02-.28-1.13,3.59-2.15-2.15,3.59ZM89.56,325.32l-2.9-11.61,6.6-26.4c7.39,1.31,14.41,4.22,20.56,8.52l-14,23.33-10.26,6.16ZM85.11,327.98l-1,.6h-.02s-.02,0-.02,0l-1-.6,1.01-4.05,1.01,4.05ZM78.64,325.32l-10.26-6.16-14-23.33c6.15-4.3,13.17-7.21,20.56-8.52l6.6,26.4-2.9,11.61ZM77.39,330.34l-.28,1.13-.02.02-1.13.28-2.15-3.59,3.59,2.15ZM70.93,333.03l-11.61,2.9-26.4-6.6c1.31-7.39,4.22-14.41,8.52-20.56l23.33,14,6.16,10.26ZM59.32,341.04l11.61,2.9-6.16,10.26-23.33,14c-4.3-6.15-7.21-13.17-8.52-20.56l26.4-6.6ZM75.95,345.2l1.13.28.02.02.28,1.13-3.59,2.15,2.15-3.59ZM78.64,351.66l2.9,11.61-6.6,26.4c-7.39-1.31-14.41-4.22-20.56-8.52l14-23.33,10.26-6.16ZM83.09,349l1-.6h.02s.02,0,.02,0l1,.6-1.01,4.05-1.01-4.05ZM90.81,346.64l.28-1.13.02-.02,1.13-.28,2.15,3.59-3.59-2.15ZM97.27,343.95l11.61-2.9,26.4,6.6c-1.31,7.39-4.22,14.41-8.52,20.56l-23.33-14-6.16-10.26ZM123.71,304.82l-14.86,8.92,8.92-14.86c2.14,1.82,4.12,3.81,5.94,5.94h0ZM88.31,286.67l-4.21,16.83-4.21-16.83c1.39-.11,2.79-.21,4.21-.21s2.81.1,4.21.21ZM50.43,298.88l8.92,14.86-14.86-8.92c1.82-2.14,3.81-4.12,5.94-5.94h0ZM44.49,372.15l14.86-8.92-8.92,14.86c-2.14-1.82-4.12-3.81-5.94-5.94h0ZM79.89,390.31l4.21-16.83,4.21,16.83c-1.39.11-2.79.21-4.21.21s-2.81-.1-4.21-.21h0ZM117.76,378.1l-8.92-14.86,14.86,8.92c-1.82,2.14-3.81,4.12-5.94,5.94h0Z"/>
-  <path class="cls-1-vc-naked-bike" d="M433.41,269.56c-39.38,0-71.3,31.92-71.3,71.3s31.92,71.3,71.3,71.3,71.3-31.92,71.3-71.3-31.92-71.3-71.3-71.3ZM433.41,398.36c-31.76,0-57.5-25.74-57.5-57.5s25.74-57.5,57.5-57.5,57.5,25.74,57.5,57.5-25.74,57.5-57.5,57.5Z"/>
-  <path d="M433.41,287.96c-29.17,0-52.9,23.73-52.9,52.9s23.73,52.9,52.9,52.9,52.9-23.73,52.9-52.9-23.73-52.9-52.9-52.9ZM481.72,340.86c0,1.32-.09,2.61-.2,3.91l-15.62-3.91,15.62-3.91c.1,1.29.2,2.59.2,3.91ZM451.71,380.01l-4.27,1.72,1.89,4.68c-2.42.85-4.9,1.51-7.42,1.96l-6.13-24.51,2.69-10.77,9.52,5.71,12.99,21.66c-2.34,1.62-4.81,3.04-7.39,4.23l-1.89-4.68ZM385.11,340.86c0-1.32.09-2.61.2-3.91l15.62,3.91-15.62,3.91c-.12-1.3-.18-2.6-.2-3.91ZM433.41,345.46c-2.54,0-4.6-2.06-4.6-4.6s2.06-4.6,4.6-4.6,4.6,2.06,4.6,4.6-2.06,4.6-4.6,4.6ZM424.22,340.84v.02s0,.02,0,.02l-.55.92-3.76-.94,3.76-.94.55.92ZM442.61,340.88v-.02s0-.02,0-.02l.55-.92,3.76.94-3.76.94-.55-.92ZM445.64,335.8l5.71-9.52,21.66-12.99c3.99,5.71,6.69,12.22,7.91,19.08l-24.51,6.13-10.77-2.69ZM440.98,334.63l-1.05-.26-.02-.02-.26-1.05,3.33-2-2,3.33ZM438.48,328.63l-2.69-10.77,6.13-24.51c6.86,1.22,13.37,3.92,19.08,7.91l-13,21.66-9.52,5.71ZM434.36,331.11l-.92.55h-.02s-.02,0-.02,0l-.92-.55.94-3.76.94,3.76ZM428.35,328.63l-9.52-5.71-12.99-21.66c5.71-3.99,12.22-6.69,19.08-7.91l6.13,24.51-2.69,10.77ZM427.18,333.3l-.26,1.05-.02.02-1.05.26-2-3.33,3.33,2ZM421.19,335.8l-10.77,2.69-24.51-6.13c1.22-6.86,3.92-13.37,7.91-19.08l21.66,12.99,5.71,9.52ZM410.41,343.23l10.77,2.69-5.71,9.52-21.66,12.99c-3.99-5.71-6.69-12.22-7.91-19.08l24.51-6.13ZM425.85,347.09l1.05.26.02.02.26,1.05-3.33,2,2-3.33ZM428.35,353.09l2.69,10.77-6.13,24.51c-6.86-1.22-13.37-3.92-19.08-7.91l12.99-21.66,9.52-5.71ZM432.47,350.61l.92-.55h.02s.02,0,.02,0l.92.55-.94,3.76-.94-3.76ZM439.65,348.42l.26-1.05.02-.02,1.05-.26,2,3.33-3.33-2ZM445.64,345.93l10.77-2.69,24.51,6.13c-1.22,6.86-3.92,13.37-7.91,19.08l-21.66-13-5.71-9.52ZM470.18,309.61l-13.8,8.28,8.28-13.8c1.98,1.69,3.83,3.54,5.52,5.52h0ZM437.32,292.76l-3.91,15.62-3.91-15.62c1.29-.1,2.59-.2,3.91-.2s2.61.09,3.91.2ZM402.17,304.09l8.28,13.8-13.8-8.28c1.69-1.98,3.54-3.83,5.52-5.52h0ZM396.65,372.11l13.8-8.28-8.28,13.8c-1.98-1.69-3.83-3.54-5.52-5.52h0ZM429.51,388.96l3.91-15.62,3.91,15.62c-1.29.1-2.59.2-3.91.2s-2.61-.09-3.91-.2h0ZM464.66,377.63l-8.28-13.8,13.8,8.28c-1.69,1.98-3.54,3.83-5.52,5.52h0Z"/>
-  <path class="cls-3-vc-naked-bike" d="M21.66,251.65h0c4.29,0,10.14-2.63,12.99-5.83l19.91-22.4c.8-.9,1.91-1.48,3.11-1.62l30.63-3.57c1.78-.21,3.59.2,5.11,1.15l21.3,13.31,30.61,22.73,6.63,7c1.02,1.08,1.22,2.7.5,4l-9.77,17.44c-1.15,2.06-3.62,2.99-5.85,2.19l-6.66-2.38c-1.39-.5-2.93.17-3.51,1.53l-1.08,2.53c-.41.95-.26,2.05.4,2.86l6.76,8.37c.97,1.2.54,3-.87,3.63l-46.17,20.81c-3.8,1.71-6.15,5.76-5.4,9.85.94,5.09,5.85,8.24,10.73,7.17l68.2-14.97h23.63c1.03,0,1.68,1.09,1.2,1.99-.37.69-.17,1.54.52,1.91l27.57,14.65h15.25c4.89,1.15,10.15,2.16,15.77,2.94,14.08,1.96,26.75,1.96,37.4,1.15,1.21.05,5.16.06,8.83-2.69,2.53-1.91,3.75-4.24,4.27-5.44,2.65-4.53,5.3-9.05,7.95-13.58l7.13-12.96c1.57-2.86,5.4-3.52,7.84-1.34l5.99,5.35c1.33,1.18,1.72,3.09.97,4.71l-12.93,27.96c-.12.25-.36.41-.64.42-4.72,1.09-9.62,2.07-14.7,2.92-23.81,3.97-45.6,3.95-64.32,2.16l-17.19-1.7c-1.07-.11-2.11-.43-3.05-.94l-29.35-16.1c-1.29-.71-2.89-.42-3.86.68l-.16.18c-.85.97-2.22,1.37-3.41.89-1.59-.64-3.4.12-4.06,1.7l-1.41,3.37c-.54,1.29-.16,2.78.93,3.65l.46.37c.74.59,1.17,1.49,1.17,2.44v3.71c0,1.32.83,2.51,2.08,2.95l30.62,10.86h95.08c3.07-.64,7.24-1.86,11.75-4.33,3.5-1.92,6.21-4.06,8.19-5.87,4.64-8.19,9.28-16.39,13.91-24.58.97-1.98,2.93-6.69,2.32-12.83-.72-7.28-4.61-12.02-6.03-13.61.93-2.56,1.86-5.12,2.79-7.68.51-1.39,2.04-2.12,3.44-1.62l1.5.54c1.37.49,2.89-.2,3.42-1.56l22.48-57.8c.41-1.06,1.44-1.77,2.58-1.77h4.8c1.25,0,2.34.83,2.67,2.04l9.18,33.53v3.25c-3.93,3.07-9.35,8.02-14.22,15.31-4.14,6.19-6.58,12.12-8.05,16.78-.39,1.25.86,2.37,2.06,1.84,11.42-5.1,22.84-10.21,34.26-15.31,1.51-.68,2.27-2.39,1.76-3.96l-1.61-4.97c-.43-1.33.1-2.78,1.29-3.51l10.91-6.74c1.52-.94,3.52-.36,4.31,1.24l6.81,13.8c.7,1.41,1.96,2.52,3.51,2.84,2.91.61,5.6-1.34,6.04-4.13l2.54-16.16c.02-.16.15-.27.31-.29l32.74-3.4c.9-.09,1.16-1.28.39-1.75-4.75-2.88-11.18-6-19.17-7.96-17.91-4.4-32.94-.32-39.73,2.01-5.72-9.12-11.44-18.24-17.16-27.37l-4.17-10.67,8.81,5.57c1.39.43,3.61.94,6.34.77,2.26-.14,4.09-.69,5.34-1.18.68-.31,2.07-.49,2.73-1.66,2.41-4.24,6.2-12.58,5.69-23.44-.36-7.81-2.81-13.93-4.77-17.73-.6-1.17-1.71-1.97-3-2.2-2.76-.5-6.85-.81-11.56.29-4.28,1-7.53,2.82-9.66,4.29-.74.51-1.74.29-2.22-.46-1.16-1.83-2.32-3.67-3.47-5.5-.57-.9-.11-2.08.91-2.36,2.38-.66,5.63-1.97,8.72-4.62.95-.81,1.76-1.65,2.46-2.47,1.61-1.89,1.73-4.64.29-6.67l-7.5-10.6c-1.97-2.79-5.97-3.15-8.41-.77l-10.61,10.32c-1.1,1.07-2.81,1.23-4.09.38l-13.11-8.74-1.14-14.04c-.14-1.76-1.62-3.12-3.38-3.12h-6.54c-1.65,0-3.06,1.18-3.34,2.81l-.9,5.08-11.85-5.16c-3.13-1.37-6.7.64-7.16,4.03l-1.53,11.24c-.21,1.54.54,3.07,1.91,3.81,1.53.83,3.53,1.67,5.96,2.16,4.4.89,8.02.19,9.89-.31.22-.1,2.6-1.07,4.79.31,1.56.98,2.05,2.53,2.16,2.94,1.36,1.13,2.98,2.69,4.48,4.79,2.76,3.85,3.85,7.65,4.33,10.05-2.03,1.24-4.05,2.49-6.08,3.73-1.57.97-2.2,2.94-1.49,4.64l2.93,6.94-6.49-1.39c-5.87-5.24-14.72-11.92-26.75-17.16-17.41-7.59-33.13-8.52-42.36-8.35-7.15.61-22.22,2.86-37.57,13.3-17.2,11.69-24.96,26.99-27.83,33.55-1.86,2.47-3.71,4.95-5.57,7.42-5.38-.54-11.24-1.45-17.47-2.94-16.66-3.97-29.94-10.57-39.58-16.54-2.12-1.72-5.51-4.95-7.88-10.05-.11-.23-.21-.47-.31-.7-1.9-4.38-6.15-7.28-10.92-7.57-18.25-1.09-36.5-2.18-54.76-3.27-2.02-.12-3.79,1.34-4.05,3.35l-1.12,8.68c-.17,1.36.25,2.72,1.17,3.73l5.01,5.54c1.11,1.23.61,3.2-.96,3.74l-11.52,3.95c-.92.32-1.9.41-2.86.28l-11.74-1.59c-1.97-.27-3.93.88-4.48,2.79-.75,2.6,1.2,5.09,3.81,5.09h3.67l-21.2,28.07c-1.76,2.33-.1,5.68,2.83,5.68Z"/>
-  <path class="cls-6-vc-naked-bike" d="M242.44,346.94h.75"/>
-  <path class="cls-7-vc-naked-bike" d="M230.91,251.48l-19.29-5.43-69.5-8.74-25.58-23.08-56.98-19.61,1.78-5.18,58.04,19.97,25.13,22.68,68.2,8.58,18.02,5.08,104.74-36.43c1.31-.46,2.35-1.46,2.86-2.75s.43-2.74-.22-3.96l-3.14-5.96,4.84-2.55,3.14,5.96c1.39,2.64,1.56,5.75.47,8.53-1.09,2.78-3.34,4.93-6.16,5.91l-106.37,37Z"/>
-  <path class="cls-2-vc-naked-bike" d="M217.33,246.06l-4.08-3.65,4.72-5.28-23.07-14.49,2.91-4.64,23.38,14.69c1.29.81,2.15,2.14,2.37,3.65.21,1.51-.25,3.03-1.26,4.17l-4.96,5.55Z"/>
-  <path class="cls-5-vc-naked-bike" d="M325.52,280.23l9.04-19.94-38.73-17.16-24.89,8.45c-.26.09-.5.23-.7.4l-7.58,6.68,3.64.96c.49.13,1.02.07,1.47-.16l3.65-1.89c1.04-.54,2.32-.1,2.81.96h0c.3.66.24,1.43-.17,2.02l-.47.68c-.73,1.07-.31,2.54.88,3.05l7.58,3.25c.87.37,1.88.1,2.45-.65l4.72-6.23c.07-.1.14-.2.19-.3l4.15-8.11c.49-.96,1.64-1.38,2.63-.96l27.56,11.6c.89.38,1.4,1.32,1.22,2.27l-2.48,13.21,3.01,1.86Z"/>
-  <path class="cls-7-vc-naked-bike" d="M264.99,276.28l2.32-3.48,11.13,5.1-5.57,13.22-12.61-4.46c-.46-.16-.8.43-.43.75,13.28,11.49,13.26,30.41,4.23,38.96-7.74,7.33-22.87,7.78-34.32-1.39,2.01,4.79,4.02,9.59,6.03,14.38h-6.03c-2.16-3.51-4.68-8.41-6.49-14.61-2.2-7.51-2.52-14.09-2.38-18.67.27-3,1.16-8.58,4.7-14.49,3.74-6.25,8.56-9.75,11.13-11.36l11.6-10.67c1.09,1.38,4.11,4.8,9.28,6.26,3.1.87,5.78.71,7.42.46Z"/>
-  <circle class="cls-3-vc-naked-bike" cx="245.97" cy="307.82" r="18.78"/>
-  <rect class="cls-3-vc-naked-bike" x="241.1" y="283.94" width="9.62" height="11.71" rx="1.74" ry="1.74"/>
-  <path class="cls-7-vc-naked-bike" d="M149.03,290.89l23.42-14.15,18.09,14.15c-3.89-1.47-11.33-3.68-20.76-2.78-8.25.79-14.46,3.63-17.97,5.57l-2.78-2.78Z"/>
-  <polygon class="cls-7-vc-naked-bike" points="202.37 307.82 169.79 299.94 175.94 314.32 197.97 326.61 207.24 324.29 202.37 307.82"/>
-  <path class="cls-7-vc-naked-bike" d="M403.2,189.43c-1.48,2.12-5.33,8.25-5.33,16.99s3.86,14.87,5.33,16.99c1.38-1.69,6.03-7.84,6.03-16.99s-4.65-15.29-6.03-16.99Z"/>
-  <polygon class="cls-7-vc-naked-bike" points="354.04 192.56 348.94 194.88 367.26 230.83 374.91 225.73 356.82 191.17 354.04 192.56"/>
-  <path class="cls-3-vc-naked-bike" d="M296.76,145.95h20.64v8.81h-20.64c-2.43,0-4.41-1.97-4.41-4.41h0c0-2.43,1.97-4.41,4.41-4.41Z"/>
-  <path class="cls-3-vc-naked-bike" d="M330.72,149.1l-4.37-.27,1.26-20.53c.04-.73-.24-1.43-.78-1.92l-12.98-11.74,2.94-3.25,12.98,11.74c1.54,1.39,2.34,3.37,2.22,5.44l-1.26,20.53Z"/>
-  <path class="cls-3-vc-naked-bike" d="M297,102.43l.72,14.76c.17,3.46,3.4,5.95,6.79,5.22l13.47-2.9,3.94-3.76c.76-.73,1.07-1.8.84-2.82-.3-1.28-.74-2.71-1.41-4.2-2.02-4.49-5.1-7.37-7.23-8.98-.56-.43-1.21-.72-1.9-.88-2.83-.67-5.66-1.35-8.5-2.02-3.54-.84-6.9,1.95-6.72,5.58Z"/>
-  <path class="cls-3-vc-naked-bike" d="M397.05,281.16l29.42,62.79c1.64,3.49,5.9,4.85,9.25,2.96l3.39-1.91c3.14-1.77,4.28-5.73,2.57-8.91l-32.81-60.88c-1.7-3.15-5.59-4.38-8.79-2.78h0c-3.21,1.6-4.56,5.48-3.04,8.73Z"/>
-  <circle class="cls-4-vc-naked-bike" cx="433.41" cy="336.95" r="21.53"/>
-  <circle class="cls-2-vc-naked-bike" cx="433.41" cy="336.95" r="7.55"/>
-  <circle class="cls-4-vc-naked-bike" cx="84.1" cy="334.28" r="23.2"/>
-  <circle class="cls-2-vc-naked-bike" cx="84.1" cy="334.28" r="8.13"/>
+  <g>
+    <path d="M433.64,267.41c-5.84,0-11.52.72-16.96,2l-7.12-18.32c.13-.07.26-.12.39-.17.16-.07.33-.14.46-.19l.11-.04c.4-.16.64-.24.64-.24,5.52-2.08,11.36-3.84,17.84-5.36,6.4-.72,1.2,8,8.64,7.92h11.2c.88,0,1.6-.71,1.6-1.6v-7.04c0-.72-.48-1.36-1.2-1.52-7.2-1.92-13.2-7.76-13.84-8.4-.65-.56-1-1.38-.96-2.24v-40.48s0-.64-.24-.88c-12.08-18.16-29.6-35.2-52.24-50.56-.49-.27-1.08-.3-1.6-.08-5.04,2.4-16.4,9.6-12.16,25.28,2.24,2.72,9.28,5.92,14.64,10.08,8.96,6.4,17.04,12.24,24.48,19.6,5.68,5.76,13.68,13.84,9.36,22.32-5.36,10.88-27.6,16.4-34.48,17.92h-.56c-.63.01-1.25-.18-1.76-.56-8.96-5.92-25.2-15.44-30.24-15.44-3.68.64-5.84,2.08-10.08,4-18.4,8.96-39.12,21.68-54.88,32.96-5.44,3.84-11.2,8.24-16.08,12.64-3.44,2.88-7.2,6.48-9.76,9.76-.72.72-1.6,1.6-1.04,2.64,4.4,10.8,17.44,32.48,14.32,42.96-.16.56-.48,1.12-.8,1.68v.4s-1.12,1.2-1.36,1.52c-2.4,2.4-5.6,3.44-8.88,3.52-.48,0-.88.08-.88.16-.24,0-.64,0-1.04.08-.24,0-.56,0-.64.08-10.32,1.36-23.28,3.84-33.6,6.8-2.48.8-5.68,1.68-7.92,2.48-.24,0-.48.08-.72.16l-.8.24c-16.72,5.84-26.72,13.04-29.68,21.36-.16.56-.08,1.04.24,1.52.24.4.8.64,1.28.64h156.48c.48,0,.88-.24,1.2-.56.32-.32.48-.8.4-1.28-1.92-12.32-4.48-43.92,12.8-72.16,6.8-10.96,15.92-20.16,27.12-27.68.32-.24.72-.48,1.04-.64l6.88,17.04c-6.62,4.4-12.37,9.79-17.11,15.91-.03.05-.07.1-.12.15-.31.4-.62.81-.93,1.23-.36.48-.71.96-1.06,1.45-8.46,12.06-13.18,26.59-13.18,41.74s4.59,29.06,12.45,40.68c.23.36.48.71.73,1.06,13.17,18.77,34.98,31.06,59.62,31.06,40.16,0,72.8-32.64,72.8-72.8s-32.64-72.8-72.8-72.8ZM400.6,254.77l6.96,17.52.12.29,3.4,8.59,3.6,8.96,3.36,8.48.16.4,7.12,17.84.03.06,3.57,8.9,3.68,9.2c.32.8.32,1.68,0,2.48-.32.8-.96,1.36-1.76,1.68-1.63.62-3.46-.16-4.16-1.76l-3.28-8.32-3.75-9.26v-.02s-7.21-18.08-7.21-18.08l-.22-.55-3.38-8.41-3.6-9.04-3.5-8.63-.1-.25-3.92-9.84-2.88-7.44c2-1.04,3.92-2,5.76-2.8ZM441.73,383.46c-.12.03-.24.05-.36.07-2.51.45-5.09.68-7.73.68-24.32,0-44-19.68-44-44,0-13.04,5.68-24.8,14.72-32.72l8,20.08c-2.24,3.68-3.52,8-3.52,12.64,0,13.68,11.12,24.8,24.8,24.8s24.8-11.12,24.8-24.8-10.32-24-23.28-24.72l-7.52-18.8c1.92-.32,3.92-.48,6-.48,2.64,0,5.22.23,7.73.68.12.02.24.04.36.07,20.45,3.79,35.91,21.7,35.91,43.25s-15.46,39.46-35.91,43.25Z"/>
+    <path d="M217.08,285.25c-.41-.31-.95-.4-1.44-.24v.08l-23.28,7.04c-2.56-4.48-8.32-12.88-20.8-25.84-2.64-2.64-5.28-5.52-8.16-8.16-13.92-12.88-30.96-24.8-50.4-25.92-.88,0-2.16-.24-2.56.72-.08.32,0,.72.24,1.04,5.36,4.56,11.6,8.4,15.6,14.48,5.09,6.5,10.72,16.98,13.5,25.9.06.2.12.39.18.58v.08c-13.29-10.19-29.57-15.7-46.32-15.68-42.32,0-76.8,34.48-76.8,76.8,0,23,10.18,43.68,26.28,57.77,13.51,11.84,31.2,19.03,50.52,19.03,36.16,0,66.56-25.12,74.64-58.88.64-2.72,1.2-5.6,1.52-8.48.16,0,.4-.08.56-.08,12.64-2.64,26.24-5.84,41.6-9.84.64-.16,1.04-.64,1.2-1.28,2.08-12,3.28-25.76,4-35.2-.24-4.56,1.52-9.84-.08-13.92ZM47.25,323.84c5.06-18.97,21.47-33.34,41.49-35.38.15-.02.3-.03.44-.04,1.47-.14,2.96-.21,4.46-.21,13.76,0,26.16,5.84,34.88,15.12,2,2,3.76,4.32,5.28,6.72l-1.18.36-13.54,4.12c-6.16-7.2-15.2-11.92-25.44-11.92-4.63,0-9.05.93-13.06,2.63-.04.01-.08.03-.12.05-12.01,5.11-20.43,17.02-20.44,30.9-.01,14.08,8.64,26.14,20.93,31.14,3.9,1.6,8.17,2.48,12.65,2.48h.04c12,0,22.48-6.4,28.4-15.84,4.77-.62,9.6-1.3,14.64-2.15.8-.13,1.6-.27,2.4-.41-1.04,3.12-2.32,6.08-3.92,8.8-8.24,14.32-23.76,24-41.52,24-26.48,0-48-21.52-48-48,0-4.28.56-8.42,1.61-12.37ZM92.78,321c8.41,0,15.22,6.81,15.22,15.21s-6.81,15.22-15.22,15.22-15.21-6.81-15.21-15.22,6.81-15.21,15.21-15.21ZM268.52,224.37c-12.8-4.24-33.52-9.76-44.08-12.16-.66-.23-1.39.09-1.68.72-3.28,5.36-9.84,14.48-17.12,14.48-3.44,0-13.68-2.4-43.44-14-4.4-1.68-8-4.96-10.16-9.28l-5.12-10.24-.16-.16c0-.16-.08-.24-.08-.32,0-.16-.08-.32-.16-.48-3.12-12.64-8.88-27.52-12.72-29.44-.24-.16-.56-.24-.72-.16-10.24.08-70.8,6.48-87.92,11.84-.64.16-1.12.8-1.12,1.44s.4,1.28.96,1.52c6.72,2.8,19.84,6.16,31.52,8.96,14.88,3.6,27.76,6.88,34.56,10.24,15.76,7.84,54.32,46,64.56,63.76.16.32.88.72.88.72l39.6,13.2c3.52.8,1.68-6.16,2.24-8.24-.08-7.2,3.76-14.64,10-17.84,16.56-9.2,28.24-15.28,38.96-20.88,2.88-1.04,2.88-2.88,1.2-3.68ZM214.44,209.89l-55.68-12.4c-.56-.08-1.2.16-1.6.64-.33.5-.39,1.13-.16,1.68l.72,1.52c1.52,2.88,3.92,5.04,6.8,6.16,21.52,8.32,37.28,13.52,41.12,13.52,3.36,0,7.6-5.36,9.76-8.64.64-.88.16-2.24-.96-2.48ZM450.44,232.21c-.16-2.96-.8-7.92-1.68-11.28-.8-4.4-2.64-11.68-6.56-21.36-.64-1.52-3.2-1.04-3.12.64v29.04c1.2,2.8,4.96,4.72,9.04,7.2,2.8.96,2.32-2.56,2.32-4.24ZM312.12,229.17c-2.32-3.44-6.88-10.72-11.44-9.52-5.6,1.6-11.04,4.64-16.48,7.12-14.88,7.28-30,15.36-44.56,23.28-1.04.48-7.12,3.84-8.32,4.48-3.76,2-6.48,6.72-6.56,10.96-.4,16.56-.96,36.16-2.72,52.88-.4,4-.88,8.16-1.6,12.16-.16.96.64,1.92,1.6,1.92,15.28-4.16,28.64-6.32,40-7.52.56-.08,1.12-.16,1.6-.32.32-.08.72-.32.88-.48.96-.6,1.6-1.6,1.76-2.72.32-1.36,0-2.4-.24-3.84-1.28-5.12-5.84-16.16-11.52-28.08-.96-3.68-5.2-7.12-3.52-10.96h-.08c.48-.72.96-1.28,1.68-2.24.08-.08.08-.16.16-.24,2.88-3.76,7.04-8,12.16-12.48,4.72-4.08,9.52-7.68,14.32-11.28,10.08-7.04,17.92-12.48,27.68-18.24,1.52-1.28,6.24-2.56,5.2-4.88ZM410.41,250.73l-.85.28v.08c.13-.07.26-.12.39-.17.19-.07.38-.14.57-.23l-.11.04ZM346.12,199.25c-2.08-3.2-12.64-13.44-62.08-13.44-11.28,0-24.16.56-38.4,1.6-9.36,0-15.76,10.48-18.8,16.72-.48.88.08,2.08,1.04,2.24,5.12,1.2,13.12,3.2,22.48,5.84,9.68,2.72,19.84,5.84,29.04,9.2.8.32,1.68-.24,2.4-.56,5.52-2.72,10.56-5.2,15.36-6.8,1.52-.64,3.04-.96,4.72-.96s3.28.4,4.8,1.28c.72.32,1.04.72,1.68.96,3.76,2.8,6,5.28,8.88,9.76.48.96,1.52,2.08,2.72,1.44,3.76-2.16,7.44-4.16,11.36-6.16,3.2-1.68,6.72-3.36,10-4.72,2-1.36,4.72-.8,5.12-3.12-.08-.4.32-13.44-.32-13.28ZM410.2,208.69c-2.32-4.16-6.32-8-9.76-11.2-5.76-5.28-12.16-10.32-18.64-14.72-.4-.4-1.04-.56-1.68-.4-7.92,2.96-16.64,8.56-20.24,12.08-6.24,6.32-7.04,7.36-7.04,17.84.01.61.35,1.16.88,1.44.24.16.48.16.8.24,1.92.56,4,1.44,6.48,2.56,7.76,3.6,16.32,9.04,20.72,11.92.24.16.56.24.88.24.08,0,.24,0,.4-.08,8.8-2,24.64-7.2,27.92-13.92,1.04-1.84.56-4.16-.72-6Z"/>
+  </g>
+  <path class="cls-2-vc-naked-bike" d="M92.78,302.93c-4.31,0-8.42.82-12.2,2.31-.04.01-.08.03-.12.05-12.28,4.89-20.96,16.89-20.96,30.92s8.91,26.35,21.45,31.12c3.67,1.4,7.66,2.17,11.83,2.17,18.39,0,33.29-14.9,33.29-33.29s-14.9-33.28-33.29-33.28ZM92.78,351.43c-8.4,0-15.21-6.81-15.21-15.22s6.81-15.21,15.21-15.21,15.22,6.81,15.22,15.21-6.81,15.22-15.22,15.22Z"/>
+  <path class="cls-2-vc-naked-bike" d="M458.35,340.19c0,13.64-11.07,24.7-24.71,24.7s-24.71-11.06-24.71-24.7c0-8.45,4.25-15.92,10.72-20.36l3.75,9.26,3.28,8.32c.7,1.6,2.53,2.38,4.16,1.76.8-.32,1.44-.88,1.76-1.68.32-.8.32-1.68,0-2.48l-3.68-9.2-3.57-8.9c2.59-.93,5.38-1.43,8.29-1.43,13.64,0,24.71,11.06,24.71,24.71Z"/>
+  <path class="cls-1-vc-naked-bike" d="M139.78,274.35c.06.2.12.39.18.58v.08c-13.29-10.19-29.57-15.7-46.32-15.68-42.32,0-76.8,34.48-76.8,76.8,0,23,10.18,43.68,26.28,57.77,13.41,11.37,30.75,18.24,49.67,18.24,42.42,0,76.93-34.51,76.93-76.93,0-24.74-11.74-46.79-29.94-60.86ZM136.68,351.82c-6.72,17.71-23.86,30.32-43.89,30.32-25.88,0-46.93-21.05-46.93-46.93,0-3.92.48-7.73,1.39-11.37,4.78-19.13,21.33-33.66,41.49-35.38.15-.02.3-.03.44-.04,1.19-.09,2.4-.14,3.61-.14,16.78,0,31.53,8.85,39.83,22.13,4.5,7.2,7.1,15.7,7.1,24.8,0,5.85-1.07,11.45-3.04,16.61Z"/>
+  <path class="cls-1-vc-naked-bike" d="M432.84,268.06c-8.85,0-17.32,1.6-25.16,4.52l3.4,8.59,3.6,8.96,3.36,8.48c4.63-1.65,9.61-2.55,14.8-2.55,2.92,0,5.77.28,8.53.83.12.02.24.04.36.07,20.1,4.12,35.26,21.94,35.26,43.25s-15.16,39.13-35.26,43.25c-.12.03-.24.05-.36.07-2.76.55-5.61.83-8.53.83-24.35,0-44.15-19.8-44.15-44.15,0-16.91,9.55-31.62,23.53-39.03l-3.38-8.41-3.6-9.04-3.5-8.63c-10.03,4.82-18.79,11.88-25.61,20.54-.03.05-.07.1-.12.15-.31.4-.62.81-.93,1.23-.36.48-.71.96-1.06,1.45-8.39,11.79-13.33,26.2-13.33,41.74s4.65,29.09,12.6,40.68c.23.36.48.71.73,1.06,13.08,18.39,34.57,30.41,58.82,30.41,39.79,0,72.15-32.36,72.15-72.15s-32.36-72.15-72.15-72.15Z"/>
+  <path d="M378.96,187.37l-6.29,2.74-14.32-15.56c-.86-.94-.45-2.46.77-2.83l3.76-1.14c.73-.22,1.23-.89,1.23-1.66v-5.13c0-.57-.28-1.1-.75-1.42l-3.79-2.62c-.43-.3-.7-.78-.74-1.3l-1.04-14.55c-.06-.85-.73-1.53-1.59-1.6l-16.52-1.33c-1.01-.08-1.87.71-1.87,1.72v5.79c0,1.04-.92,1.85-1.95,1.72l-3.87-.49v-23.94c0-.27-.05-.53-.14-.79l-4.15-11.7c-.09-.24-.13-.49-.13-.75l-.18-11.31c-.01-.71-.33-1.36-.89-1.8-1.36-1.06-3.06-2.56-4.75-4.56-3.01-3.56-3.49-5.71-5.62-8.23-1.5-1.77-3.92-3.83-8.01-5.32-1.22-.44-2.58.21-3,1.44-1.36,3.98-2.74,9.57-2.83,16.33-.1,7.86,1.57,14.24,3.08,18.45.32.88,1.12,1.51,2.06,1.55,1.45.07,3.27-.02,5.3-.54,2.46-.63,4.43-1.68,5.89-2.69,1.25-.87,2.96-.37,3.53,1.04,1.36,3.37,2.71,6.74,4.07,10.11.1.25.16.52.17.79l.78,21.06c-3.61-1.2-7.22-2.41-10.84-3.61-.72-.24-1.52,0-1.95.63-1.18,1.7-2.93,4.66-4.03,8.6h-20.3c-3.99,0-7.22,3.23-7.22,7.22s3.23,7.22,7.22,7.22h20.2c1.18,4.47,3.21,7.73,4.39,9.37.31.43.79.68,1.31.7l15.66.75c.25.01.5-.03.74-.13,2.54-1.04,5.08-2.08,7.61-3.11.54-.22,1.15-.17,1.62.16,3.35,2.31,7.64,5.82,11.68,10.92,2.39,3.01,4.18,5.94,5.55,8.57l-4.75,2.07,6.02,13.65h23.68l3.21-12.24-8.03-12.24Z"/>
+  <path d="M90.1,170.22l-37.69,16.52-13.72-5.4c-3.29-1.29-6.77,1.37-6.37,4.88l.02.19c.22,1.97,1.67,3.59,3.6,4.04l3.73.86c2.31.53,3.86,2.71,3.6,5.07l-.61,5.61,6.99,5.29,7.62-13.13,36-17.15-3.18-6.78Z"/>
   </symbol>
   <symbol id="vc-field-sprayer" viewBox="0 0 512 512">
 <defs>
     <style>
       .cls-1-vc-field-sprayer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-field-sprayer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-field-sprayer {
-        fill: #fcfbfc;
+        fill: var(--bg-glass, #fcfbfc);
       }
     </style>
   </defs>
@@ -2156,19 +2120,19 @@
 <defs>
     <style>
       .cls-1-vc-fertilizer-spreader {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-fertilizer-spreader {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-fertilizer-spreader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-fertilizer-spreader {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2208,19 +2172,19 @@
 <defs>
     <style>
       .cls-1-vc-manure-spreader {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-manure-spreader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-manure-spreader {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-manure-spreader {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -2257,19 +2221,19 @@
 <defs>
     <style>
       .cls-1-vc-slurry-tanker {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-slurry-tanker {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-slurry-tanker {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-slurry-tanker {
-        fill: #171818;
+        fill: var(--icon-base, #171818);
       }
     </style>
   </defs>
@@ -2313,19 +2277,19 @@
 <defs>
     <style>
       .cls-1-vc-transport-tanker {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-transport-tanker {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-transport-tanker {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-transport-tanker {
-        fill: #fffdfe;
+        fill: var(--bg-glass, #fffdfe);
       }
     </style>
   </defs>
@@ -2356,23 +2320,23 @@
 <defs>
     <style>
       .cls-1-vc-baler {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-baler {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-baler {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-baler {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-baler {
-        fill: #fbfafb;
+        fill: var(--bg-glass, #fbfafb);
       }
     </style>
   </defs>
@@ -2395,19 +2359,19 @@
 <defs>
     <style>
       .cls-1-vc-bale-wrapper {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-bale-wrapper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-bale-wrapper {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-bale-wrapper {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2438,11 +2402,11 @@
 <defs>
     <style>
       .cls-1-vc-tedder {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-tedder {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
     </style>
   </defs>
@@ -2473,19 +2437,19 @@
 <defs>
     <style>
       .cls-1-vc-rake {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-rake {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-rake {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-rake {
-        fill: #fbfafa;
+        fill: var(--bg-glass, #fbfafa);
       }
     </style>
   </defs>
@@ -2503,19 +2467,19 @@
 <defs>
     <style>
       .cls-1-vc-self-loading-wagon-forage-wagon {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-self-loading-wagon-forage-wagon {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-self-loading-wagon-forage-wagon {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-self-loading-wagon-forage-wagon {
-        fill: #fcfbfc;
+        fill: var(--bg-glass, #fcfbfc);
       }
     </style>
   </defs>
@@ -2541,11 +2505,11 @@
 <defs>
     <style>
       .cls-1-vc-enduro {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-enduro {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2559,7 +2523,7 @@
 <defs>
     <style>
       .cls-1-vc-front-loader-tractor-attachment {
-        fill: #fbfbfc;
+        fill: var(--bg-glass, #fbfbfc);
       }
     </style>
   </defs>
@@ -2577,15 +2541,15 @@
 <defs>
     <style>
       .cls-1-vc-implement-carrier {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-implement-carrier {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-implement-carrier {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2605,31 +2569,31 @@
 <defs>
     <style>
       .cls-1-vc-root-crop-harvester {
-        fill: #fbfcfb;
+        fill: var(--bg-glass, #fbfcfb);
       }
 
       .cls-2-vc-root-crop-harvester, .cls-3-vc-root-crop-harvester {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-4-vc-root-crop-harvester {
-        fill: #fcfbfb;
+        fill: var(--bg-glass, #fcfbfb);
       }
 
       .cls-5-vc-root-crop-harvester {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-6-vc-root-crop-harvester {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-7-vc-root-crop-harvester {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-8-vc-root-crop-harvester {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-3-vc-root-crop-harvester {
@@ -2639,7 +2603,7 @@
       }
 
       .cls-9-vc-root-crop-harvester {
-        fill: #fcfbfc;
+        fill: var(--bg-glass, #fcfbfc);
       }
     </style>
   </defs>
@@ -2670,11 +2634,11 @@
 <defs>
     <style>
       .cls-1-vc-ridger {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-ridger {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
     </style>
   </defs>
@@ -2698,15 +2662,15 @@
 <defs>
     <style>
       .cls-1-vc-weeder-harrow {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-weeder-harrow {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-3-vc-weeder-harrow {
-        fill: #fcfcfb;
+        fill: var(--bg-glass, #fcfcfb);
       }
     </style>
   </defs>
@@ -2748,27 +2712,27 @@
 <defs>
     <style>
       .cls-1-vc-feed-mixer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-feed-mixer {
-        fill: #fcfbfb;
+        fill: var(--bg-glass, #fcfbfb);
       }
 
       .cls-3-vc-feed-mixer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-feed-mixer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-feed-mixer {
-        fill: #ef0303;
+        fill: var(--icon-base, #ef0303);
       }
 
       .cls-6-vc-feed-mixer {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -2804,15 +2768,15 @@
 <defs>
     <style>
       .cls-1-vc-silage-defacer-cutter {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-silage-defacer-cutter {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-silage-defacer-cutter {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2832,15 +2796,15 @@
 <defs>
     <style>
       .cls-1-vc-hammer-mill-feed-grinder {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-hammer-mill-feed-grinder {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-hammer-mill-feed-grinder {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2867,19 +2831,19 @@
 <defs>
     <style>
       .cls-1-vc-log-splitter-wood-chipper {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-log-splitter-wood-chipper {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-log-splitter-wood-chipper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-log-splitter-wood-chipper {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2902,19 +2866,19 @@
 <defs>
     <style>
       .cls-1-vc-potato-sorting-machine {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-potato-sorting-machine {
-        fill: #020202;
+        fill: var(--icon-base, #020202);
       }
 
       .cls-3-vc-potato-sorting-machine {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-potato-sorting-machine {
-        fill: #070707;
+        fill: var(--icon-base, #070707);
       }
     </style>
   </defs>
@@ -2937,11 +2901,11 @@
 <defs>
     <style>
       .cls-1-vc-chopper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-chopper {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -2956,23 +2920,23 @@
 <defs>
     <style>
       .cls-1-vc-composting-machine {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-composting-machine {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-composting-machine {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-composting-machine {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-5-vc-composting-machine {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3002,15 +2966,15 @@
 <defs>
     <style>
       .cls-1-vc-vine-trimmer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-vine-trimmer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-vine-trimmer {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
     </style>
   </defs>
@@ -3026,27 +2990,27 @@
 <defs>
     <style>
       .cls-1-vc-farm-trailer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-farm-trailer {
-        fill: #020202;
+        fill: var(--icon-base, #020202);
       }
 
       .cls-3-vc-farm-trailer {
-        fill: #fcfbfb;
+        fill: var(--bg-glass, #fcfbfb);
       }
 
       .cls-4-vc-farm-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-5-vc-farm-trailer {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-6-vc-farm-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3069,19 +3033,19 @@
 <defs>
     <style>
       .cls-1-vc-farm-tipper-trailer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-farm-tipper-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-farm-tipper-trailer {
-        fill: #fbfbfa;
+        fill: var(--bg-glass, #fbfbfa);
       }
 
       .cls-4-vc-farm-tipper-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3100,23 +3064,23 @@
 <defs>
     <style>
       .cls-1-vc-grain-bulk-farm-trailer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-grain-bulk-farm-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-grain-bulk-farm-trailer {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-grain-bulk-farm-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-grain-bulk-farm-trailer {
-        fill: #fc0606;
+        fill: var(--icon-base, #fc0606);
       }
     </style>
   </defs>
@@ -3143,15 +3107,15 @@
 <defs>
     <style>
       .cls-1-vc-bale-trailer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-bale-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-bale-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3175,23 +3139,23 @@
 <defs>
     <style>
       .cls-1-vc-tractor-transport-box-link-box {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-tractor-transport-box-link-box {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-tractor-transport-box-link-box {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-tractor-transport-box-link-box {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-tractor-transport-box-link-box {
-        fill: #fbfafa;
+        fill: var(--bg-glass, #fbfafa);
       }
     </style>
   </defs>
@@ -3213,27 +3177,27 @@
 <defs>
     <style>
       .cls-1-vc-utility-terrain-vehicle-utv {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-utility-terrain-vehicle-utv {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-utility-terrain-vehicle-utv {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-utility-terrain-vehicle-utv {
-        fill: #fbfcfc;
+        fill: var(--bg-glass, #fbfcfc);
       }
 
       .cls-5-vc-utility-terrain-vehicle-utv {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-6-vc-utility-terrain-vehicle-utv {
-        fill: #fafafa;
+        fill: var(--bg-glass, #fafafa);
       }
     </style>
   </defs>
@@ -3259,63 +3223,63 @@
 <defs>
     <style>
       .cls-1-vc-forestry-harvester {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-forestry-harvester {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-forestry-harvester {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-forestry-harvester {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-5-vc-forestry-harvester {
-        fill: #f9f9f9;
+        fill: var(--bg-glass, #f9f9f9);
       }
 
       .cls-6-vc-forestry-harvester {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-7-vc-forestry-harvester {
-        fill: #fbfafb;
+        fill: var(--bg-glass, #fbfafb);
       }
 
       .cls-8-vc-forestry-harvester {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-9-vc-forestry-harvester {
-        fill: #f8f9f8;
+        fill: var(--bg-glass, #f8f9f8);
       }
 
       .cls-10-vc-forestry-harvester {
-        fill: #fbfafa;
+        fill: var(--bg-glass, #fbfafa);
       }
 
       .cls-11-vc-forestry-harvester {
-        fill: #151515;
+        fill: var(--icon-base, #151515);
       }
 
       .cls-12-vc-forestry-harvester {
-        fill: #f7f8f8;
+        fill: var(--bg-glass, #f7f8f8);
       }
 
       .cls-13-vc-forestry-harvester {
-        fill: #fafafa;
+        fill: var(--bg-glass, #fafafa);
       }
 
       .cls-14-vc-forestry-harvester {
-        fill: #f8f8f8;
+        fill: var(--bg-glass, #f8f8f8);
       }
 
       .cls-15-vc-forestry-harvester {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -3364,27 +3328,27 @@
 <defs>
     <style>
       .cls-1-vc-forwarder {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-forwarder {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-forwarder {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-forwarder {
-        fill: #fafbfb;
+        fill: var(--bg-glass, #fafbfb);
       }
 
       .cls-5-vc-forwarder {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-6-vc-forwarder {
-        fill: #fafafa;
+        fill: var(--bg-glass, #fafafa);
       }
     </style>
   </defs>
@@ -3422,11 +3386,11 @@
 <defs>
     <style>
       .cls-1-vc-tourer {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-tourer {
-        fill: #002faa;
+        fill: var(--icon-accent, #002faa);
       }
     </style>
   </defs>
@@ -3452,23 +3416,23 @@
 <defs>
     <style>
       .cls-1-vc-skidding-tractor-cable-grapple-skidder {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-skidding-tractor-cable-grapple-skidder {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-skidding-tractor-cable-grapple-skidder {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-skidding-tractor-cable-grapple-skidder {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-5-vc-skidding-tractor-cable-grapple-skidder {
-        fill: #fafafa;
+        fill: var(--bg-glass, #fafafa);
       }
     </style>
   </defs>
@@ -3494,27 +3458,27 @@
 <defs>
     <style>
       .cls-1-vc-feller-buncher {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-feller-buncher {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-feller-buncher {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-feller-buncher {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-feller-buncher {
-        fill: #fbfafa;
+        fill: var(--bg-glass, #fbfafa);
       }
 
       .cls-6-vc-feller-buncher {
-        fill: #fafafa;
+        fill: var(--bg-glass, #fafafa);
       }
     </style>
   </defs>
@@ -3553,11 +3517,11 @@
 <defs>
     <style>
       .cls-1-vc-forestry-winch {
-        fill: #fbfbfa;
+        fill: var(--bg-glass, #fbfbfa);
       }
 
       .cls-2-vc-forestry-winch {
-        fill: #fafafa;
+        fill: var(--bg-glass, #fafafa);
       }
     </style>
   </defs>
@@ -3581,15 +3545,15 @@
 <defs>
     <style>
       .cls-1-vc-log-loader-forestry-crane {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-2-vc-log-loader-forestry-crane {
-        fill: #fbfafb;
+        fill: var(--bg-glass, #fbfafb);
       }
 
       .cls-3-vc-log-loader-forestry-crane {
-        fill: #fafafa;
+        fill: var(--bg-glass, #fafafa);
       }
     </style>
   </defs>
@@ -3606,19 +3570,19 @@
 <defs>
     <style>
       .cls-1-vc-wood-chipper {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-wood-chipper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-wood-chipper {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-wood-chipper {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3639,23 +3603,23 @@
 <defs>
     <style>
       .cls-1-vc-garbage-truck-refuse-collection-vehicle {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-garbage-truck-refuse-collection-vehicle {
-        fill: #fcfbfb;
+        fill: var(--bg-glass, #fcfbfb);
       }
 
       .cls-3-vc-garbage-truck-refuse-collection-vehicle {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-garbage-truck-refuse-collection-vehicle {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-5-vc-garbage-truck-refuse-collection-vehicle {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3702,19 +3666,19 @@
 <defs>
     <style>
       .cls-1-vc-skip-loader {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-skip-loader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-skip-loader {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-skip-loader {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3761,27 +3725,27 @@
 <defs>
     <style>
       .cls-1-vc-hooklift-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-hooklift-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-hooklift-truck {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-hooklift-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-hooklift-truck {
-        fill: #fbfcfc;
+        fill: var(--bg-glass, #fbfcfc);
       }
 
       .cls-6-vc-hooklift-truck {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
     </style>
   </defs>
@@ -3818,11 +3782,11 @@
 <defs>
     <style>
       .cls-1-vc-supermoto {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-supermoto {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-supermoto {
@@ -3830,7 +3794,7 @@
       }
 
       .cls-4-vc-supermoto {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -3902,15 +3866,15 @@
 <defs>
     <style>
       .cls-1-vc-trial {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-trial {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
 
       .cls-3-vc-trial {
-        fill: #313841;
+        fill: var(--icon-base, #313841);
       }
     </style>
   </defs>
@@ -3926,19 +3890,19 @@
 <defs>
     <style>
       .cls-1-vc-hatchback {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-hatchback {
-        fill: #363e49;
+        fill: var(--icon-base, #363e49);
       }
 
       .cls-3-vc-hatchback {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-4-vc-hatchback {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -3956,15 +3920,15 @@
 <defs>
     <style>
       .cls-1-vc-motocross {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-motocross {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-motocross {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -4012,15 +3976,15 @@
 <defs>
     <style>
       .cls-1-vc-scooter {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-scooter {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-scooter {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
     </style>
   </defs>
@@ -4042,11 +4006,11 @@
 <defs>
     <style>
       .cls-1-vc-pocket-bike-minimoto {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-pocket-bike-minimoto {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4064,11 +4028,11 @@
 <defs>
     <style>
       .cls-1-vc-classic {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-classic {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4090,11 +4054,11 @@
 <defs>
     <style>
       .cls-1-vc-cruiser {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-cruiser {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4115,19 +4079,19 @@
 <defs>
     <style>
       .cls-1-vc-moped {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-moped {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-moped {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-moped {
-        fill: #303941;
+        fill: var(--icon-base, #303941);
       }
     </style>
   </defs>
@@ -4148,7 +4112,7 @@
 <defs>
     <style>
       .cls-1-vc-snowmobile {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4162,15 +4126,15 @@
 <defs>
     <style>
       .cls-1-vc-electric-motorcycles-mopeds {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-electric-motorcycles-mopeds {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-electric-motorcycles-mopeds {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -4218,11 +4182,11 @@
 <defs>
     <style>
       .cls-1-vc-estate-station-wagon {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-estate-station-wagon {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -4236,7 +4200,7 @@
 <defs>
     <style>
       .cls-1-vc-trike {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-1-vc-trike, .cls-2-vc-trike, .cls-3-vc-trike {
@@ -4244,11 +4208,11 @@
       }
 
       .cls-4-vc-trike {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-trike {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -4265,11 +4229,11 @@
 <defs>
     <style>
       .cls-1-vc-go-kart {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-go-kart {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-go-kart {
@@ -4290,11 +4254,11 @@
 <defs>
     <style>
       .cls-1-vc-panel-van {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-panel-van {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4321,11 +4285,11 @@
 <defs>
     <style>
       .cls-1-vc-refrigerated-panel-van {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-refrigerated-panel-van {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-refrigerated-panel-van {
@@ -4354,11 +4318,11 @@
 <defs>
     <style>
       .cls-1-vc-tipper-van {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-tipper-van {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4385,11 +4349,11 @@
 <defs>
     <style>
       .cls-1-vc-dropside-van-with-canopy-box-van {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-dropside-van-with-canopy-box-van {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4414,11 +4378,11 @@
 <defs>
     <style>
       .cls-1-vc-chassis-cab {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-chassis-cab {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4441,7 +4405,7 @@
 <defs>
     <style>
       .cls-1-vc-car-derived-van {
-        fill: #194ac1;
+        fill: var(--icon-accent, #194ac1);
       }
 
       .cls-2-vc-car-derived-van {
@@ -4449,7 +4413,7 @@
       }
 
       .cls-3-vc-car-derived-van {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -4465,19 +4429,19 @@
 <defs>
     <style>
       .cls-1-vc-adr-tanker-hazardous-materials {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-adr-tanker-hazardous-materials {
-        fill: #333b44;
+        fill: var(--icon-base, #333b44);
       }
 
       .cls-3-vc-adr-tanker-hazardous-materials {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-adr-tanker-hazardous-materials {
-        fill: #2e343c;
+        fill: var(--icon-base, #2e343c);
       }
     </style>
   </defs>
@@ -4537,11 +4501,11 @@
 <defs>
     <style>
       .cls-1-vc-suv-off-road {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-suv-off-road {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
 
       .cls-3-vc-suv-off-road {
@@ -4565,7 +4529,7 @@
 <defs>
     <style>
       .cls-1-vc-armored-cash-in-transit-vehicle {
-        fill: #194ac1;
+        fill: var(--icon-accent, #194ac1);
       }
 
       .cls-2-vc-armored-cash-in-transit-vehicle {
@@ -4573,7 +4537,7 @@
       }
 
       .cls-3-vc-armored-cash-in-transit-vehicle {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -4592,7 +4556,7 @@
 <defs>
     <style>
       .cls-1-vc-cargo-tricycle-last-mile-delivery {
-        fill: #323842;
+        fill: var(--icon-base, #323842);
       }
 
       .cls-1-vc-cargo-tricycle-last-mile-delivery, .cls-2-vc-cargo-tricycle-last-mile-delivery {
@@ -4600,11 +4564,11 @@
       }
 
       .cls-3-vc-cargo-tricycle-last-mile-delivery {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-cargo-tricycle-last-mile-delivery {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -4630,19 +4594,19 @@
 <defs>
     <style>
       .cls-1-vc-rigid-truck-lorry {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-rigid-truck-lorry {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-rigid-truck-lorry {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-rigid-truck-lorry {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4667,19 +4631,19 @@
 <defs>
     <style>
       .cls-1-vc-tractor-unit {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-tractor-unit {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-tractor-unit {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-tractor-unit {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4702,19 +4666,19 @@
 <defs>
     <style>
       .cls-1-vc-tractor-chassis {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-tractor-chassis {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-tractor-chassis {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-tractor-chassis {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4738,19 +4702,19 @@
 <defs>
     <style>
       .cls-1-vc-chassis-cab-heavy-duty {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-chassis-cab-heavy-duty {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-chassis-cab-heavy-duty {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-chassis-cab-heavy-duty {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4778,19 +4742,19 @@
 <defs>
     <style>
       .cls-1-vc-construction-chassis {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-construction-chassis {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-construction-chassis {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-construction-chassis {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4816,23 +4780,23 @@
 <defs>
     <style>
       .cls-1-vc-tipper-dump-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-tipper-dump-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-tipper-dump-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-tipper-dump-truck {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-5-vc-tipper-dump-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4867,24 +4831,24 @@
 <defs>
     <style>
       .cls-1-vc-refrigerated-truck-reefer {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-refrigerated-truck-reefer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-refrigerated-truck-reefer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
         fill-rule: evenodd;
       }
 
       .cls-4-vc-refrigerated-truck-reefer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-refrigerated-truck-reefer {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4907,15 +4871,15 @@
 <defs>
     <style>
       .cls-1-vc-logging-truck-timber-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-logging-truck-timber-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-logging-truck-timber-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-logging-truck-timber-truck {
@@ -4929,7 +4893,7 @@
       }
 
       .cls-6-vc-logging-truck-timber-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -4953,11 +4917,11 @@
 <defs>
     <style>
       .cls-1-vc-van-mpv {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-van-mpv {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -4972,23 +4936,23 @@
 <defs>
     <style>
       .cls-1-vc-livestock-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-livestock-truck {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-livestock-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-livestock-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-livestock-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5020,19 +4984,19 @@
 <defs>
     <style>
       .cls-1-vc-skip-loader-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-skip-loader-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-skip-loader-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-skip-loader-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5055,24 +5019,24 @@
 <defs>
     <style>
       .cls-1-vc-adr-tanker-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-adr-tanker-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-adr-tanker-truck {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
         fill-rule: evenodd;
       }
 
       .cls-4-vc-adr-tanker-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-adr-tanker-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5096,23 +5060,23 @@
 <defs>
     <style>
       .cls-1-vc-food-grade-milk-tanker-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-food-grade-milk-tanker-truck {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-food-grade-milk-tanker-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-food-grade-milk-tanker-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-food-grade-milk-tanker-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5139,23 +5103,23 @@
 <defs>
     <style>
       .cls-1-vc-liquid-nitrogen-tanker-truck {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-liquid-nitrogen-tanker-truck {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-liquid-nitrogen-tanker-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-liquid-nitrogen-tanker-truck {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-liquid-nitrogen-tanker-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5182,19 +5146,19 @@
 <defs>
     <style>
       .cls-1-vc-heavy-haulage-tractor {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-heavy-haulage-tractor {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-heavy-haulage-tractor {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-heavy-haulage-tractor {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5226,19 +5190,19 @@
 <defs>
     <style>
       .cls-1-vc-terminal-tractor-yard-mule {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-terminal-tractor-yard-mule {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-terminal-tractor-yard-mule {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-terminal-tractor-yard-mule {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5257,19 +5221,19 @@
 <defs>
     <style>
       .cls-1-vc-straddle-carrier {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-straddle-carrier {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-straddle-carrier {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-straddle-carrier {
-        fill: #30353b;
+        fill: var(--icon-base, #30353b);
       }
     </style>
   </defs>
@@ -5311,23 +5275,23 @@
 <defs>
     <style>
       .cls-1-vc-self-propelled-modular-transporter-spmt {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-self-propelled-modular-transporter-spmt {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-self-propelled-modular-transporter-spmt {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-self-propelled-modular-transporter-spmt {
-        fill: #fefcfc;
+        fill: var(--bg-glass, #fefcfc);
       }
 
       .cls-5-vc-self-propelled-modular-transporter-spmt {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5380,23 +5344,23 @@
 <defs>
     <style>
       .cls-1-vc-port-automated-guided-vehicle-agv {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-port-automated-guided-vehicle-agv {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-port-automated-guided-vehicle-agv {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-port-automated-guided-vehicle-agv {
-        fill: #fdfcfd;
+        fill: var(--bg-glass, #fdfcfd);
       }
 
       .cls-5-vc-port-automated-guided-vehicle-agv {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -5424,15 +5388,15 @@
 <defs>
     <style>
       .cls-1-vc-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-trailer {
-        fill: #fefcfc;
+        fill: var(--bg-glass, #fefcfc);
       }
     </style>
   </defs>
@@ -5451,11 +5415,11 @@
 <defs>
     <style>
       .cls-1-vc-refrigerated-trailer, .cls-2-vc-refrigerated-trailer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-refrigerated-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-refrigerated-trailer {
@@ -5463,11 +5427,11 @@
       }
 
       .cls-4-vc-refrigerated-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-refrigerated-trailer {
-        fill: #fefcfc;
+        fill: var(--bg-glass, #fefcfc);
       }
     </style>
   </defs>
@@ -5496,19 +5460,19 @@
 <defs>
     <style>
       .cls-1-vc-curtainsider-semi-trailer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-curtainsider-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-curtainsider-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-curtainsider-semi-trailer {
-        fill: #fefcfc;
+        fill: var(--bg-glass, #fefcfc);
       }
     </style>
   </defs>
@@ -5538,11 +5502,11 @@
 <defs>
     <style>
       .cls-1-vc-refrigerated-semi-trailer-reefer, .cls-2-vc-refrigerated-semi-trailer-reefer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-refrigerated-semi-trailer-reefer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-refrigerated-semi-trailer-reefer {
@@ -5550,11 +5514,11 @@
       }
 
       .cls-4-vc-refrigerated-semi-trailer-reefer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-refrigerated-semi-trailer-reefer {
-        fill: #fefcfc;
+        fill: var(--bg-glass, #fefcfc);
       }
     </style>
   </defs>
@@ -5581,23 +5545,23 @@
 <defs>
     <style>
       .cls-1-vc-heavy-recovery-vehicle-wrecker {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-heavy-recovery-vehicle-wrecker {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-heavy-recovery-vehicle-wrecker {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-heavy-recovery-vehicle-wrecker {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-heavy-recovery-vehicle-wrecker {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -5623,19 +5587,19 @@
 <defs>
     <style>
       .cls-1-vc-tipper-semi-trailer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-tipper-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-tipper-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-tipper-semi-trailer {
-        fill: #fefcfc;
+        fill: var(--bg-glass, #fefcfc);
       }
     </style>
   </defs>
@@ -5665,19 +5629,19 @@
 <defs>
     <style>
       .cls-1-vc-lowbed-semi-trailer-lowboy {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-lowbed-semi-trailer-lowboy {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-lowbed-semi-trailer-lowboy {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-lowbed-semi-trailer-lowboy {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -5712,11 +5676,11 @@
 <defs>
     <style>
       .cls-1-vc-container-chassis-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-container-chassis-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -5738,15 +5702,15 @@
 <defs>
     <style>
       .cls-1-vc-tanker-semi-trailer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-tanker-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-tanker-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -5773,11 +5737,11 @@
 <defs>
     <style>
       .cls-1-vc-silo-bulk-powder-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-silo-bulk-powder-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -5806,11 +5770,11 @@
 <defs>
     <style>
       .cls-1-vc-coupe {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-coupe {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -5825,15 +5789,15 @@
 <defs>
     <style>
       .cls-1-vc-walking-floor-semi-trailer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-walking-floor-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-walking-floor-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -5865,11 +5829,11 @@
 <defs>
     <style>
       .cls-1-vc-timber-logging-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-timber-logging-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -5898,11 +5862,11 @@
 <defs>
     <style>
       .cls-1-vc-car-transporter-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-car-transporter-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -5931,11 +5895,11 @@
 <defs>
     <style>
       .cls-1-vc-livestock-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-livestock-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -5966,15 +5930,15 @@
 <defs>
     <style>
       .cls-1-vc-precast-concrete-panel-semi-trailer {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-precast-concrete-panel-semi-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-precast-concrete-panel-semi-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6032,11 +5996,11 @@
 <defs>
     <style>
       .cls-1-vc-swap-body-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-swap-body-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6055,23 +6019,23 @@
 <defs>
     <style>
       .cls-1-vc-car-carrier-trailer {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-car-carrier-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-car-carrier-trailer {
-        fill: #363e4a;
+        fill: var(--icon-base, #363e4a);
       }
 
       .cls-4-vc-car-carrier-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-car-carrier-trailer {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -6180,11 +6144,11 @@
 <defs>
     <style>
       .cls-1-vc-livestock-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-livestock-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6206,11 +6170,11 @@
 <defs>
     <style>
       .cls-1-vc-boat-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-boat-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6228,15 +6192,15 @@
 <defs>
     <style>
       .cls-1-vc-rigid-city-bus {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-rigid-city-bus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-rigid-city-bus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6266,11 +6230,11 @@
 <defs>
     <style>
       .cls-1-vc-sports-car {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-sports-car {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -6318,15 +6282,15 @@
 <defs>
     <style>
       .cls-1-vc-articulated-city-bus {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-articulated-city-bus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-articulated-city-bus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6368,19 +6332,19 @@
 <defs>
     <style>
       .cls-1-vc-city-minibus {
-        fill: #fdfbfc;
+        fill: var(--bg-glass, #fdfbfc);
       }
 
       .cls-2-vc-city-minibus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-city-minibus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-city-minibus {
-        fill: #fefcfe;
+        fill: var(--bg-glass, #fefcfe);
       }
     </style>
   </defs>
@@ -6406,19 +6370,19 @@
 <defs>
     <style>
       .cls-1-vc-intercity-bus-coach {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-intercity-bus-coach {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-intercity-bus-coach {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-intercity-bus-coach {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6448,19 +6412,19 @@
 <defs>
     <style>
       .cls-1-vc-touring-coach {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-touring-coach {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-touring-coach {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-touring-coach {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6491,15 +6455,15 @@
 <defs>
     <style>
       .cls-1-vc-double-decker-bus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-double-decker-bus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-3-vc-double-decker-bus {
-        fill: #fbfbfc;
+        fill: var(--bg-glass, #fbfbfc);
       }
     </style>
   </defs>
@@ -6533,15 +6497,15 @@
 <defs>
     <style>
       .cls-1-vc-school-bus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-school-bus {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-3-vc-school-bus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6572,23 +6536,23 @@
 <defs>
     <style>
       .cls-1-vc-electric-minibus {
-        fill: #fdfbfc;
+        fill: var(--bg-glass, #fdfbfc);
       }
 
       .cls-2-vc-electric-minibus {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-electric-minibus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-electric-minibus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-electric-minibus {
-        fill: #fefcfe;
+        fill: var(--bg-glass, #fefcfe);
       }
     </style>
   </defs>
@@ -6620,15 +6584,15 @@
 <defs>
     <style>
       .cls-1-vc-trolleybus {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-trolleybus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-trolleybus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -6660,23 +6624,23 @@
 <defs>
     <style>
       .cls-1-vc-airport-shuttle-bus {
-        fill: #fdfbfc;
+        fill: var(--bg-glass, #fdfbfc);
       }
 
       .cls-2-vc-airport-shuttle-bus {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-airport-shuttle-bus {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-airport-shuttle-bus {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-airport-shuttle-bus {
-        fill: #fefcfe;
+        fill: var(--bg-glass, #fefcfe);
       }
     </style>
   </defs>
@@ -6705,15 +6669,15 @@
 <defs>
     <style>
       .cls-1-vc-crawler-excavator {
-        fill: #fdfcfd;
+        fill: var(--bg-glass, #fdfcfd);
       }
 
       .cls-2-vc-crawler-excavator {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
 
       .cls-3-vc-crawler-excavator {
-        fill: #063dc7;
+        fill: var(--icon-accent, #063dc7);
       }
     </style>
   </defs>
@@ -6738,19 +6702,19 @@
 <defs>
     <style>
       .cls-1-vc-pick-up-truck {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-pick-up-truck {
-        fill: #2d3740;
+        fill: var(--icon-base, #2d3740);
       }
 
       .cls-3-vc-pick-up-truck {
-        fill: #2d363f;
+        fill: var(--icon-base, #2d363f);
       }
 
       .cls-4-vc-pick-up-truck {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -6770,35 +6734,35 @@
 <defs>
     <style>
       .cls-1-vc-wheeled-excavator {
-        fill: #272c30;
+        fill: var(--icon-base, #272c30);
       }
 
       .cls-2-vc-wheeled-excavator {
-        fill: #2a2f34;
+        fill: var(--icon-base, #2a2f34);
       }
 
       .cls-3-vc-wheeled-excavator {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-4-vc-wheeled-excavator {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-5-vc-wheeled-excavator {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-6-vc-wheeled-excavator {
-        fill: #fdfcfd;
+        fill: var(--bg-glass, #fdfcfd);
       }
 
       .cls-7-vc-wheeled-excavator {
-        fill: #2c3135;
+        fill: var(--icon-base, #2c3135);
       }
 
       .cls-8-vc-wheeled-excavator {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
     </style>
   </defs>
@@ -6825,31 +6789,31 @@
 <defs>
     <style>
       .cls-1-vc-mini-midi-excavator {
-        fill: #272c30;
+        fill: var(--icon-base, #272c30);
       }
 
       .cls-2-vc-mini-midi-excavator {
-        fill: #272c32;
+        fill: var(--icon-base, #272c32);
       }
 
       .cls-3-vc-mini-midi-excavator {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-4-vc-mini-midi-excavator {
-        fill: #fdfcfd;
+        fill: var(--bg-glass, #fdfcfd);
       }
 
       .cls-5-vc-mini-midi-excavator {
-        fill: #2c3135;
+        fill: var(--icon-base, #2c3135);
       }
 
       .cls-6-vc-mini-midi-excavator {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
 
       .cls-7-vc-mini-midi-excavator {
-        fill: #063dc7;
+        fill: var(--icon-accent, #063dc7);
       }
     </style>
   </defs>
@@ -6879,31 +6843,31 @@
 <defs>
     <style>
       .cls-1-vc-backhoe-loader {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-backhoe-loader {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-backhoe-loader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-4-vc-backhoe-loader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-5-vc-backhoe-loader {
-        fill: #2b3035;
+        fill: var(--icon-base, #2b3035);
       }
 
       .cls-6-vc-backhoe-loader {
-        fill: #fcfcfd;
+        fill: var(--bg-glass, #fcfcfd);
       }
 
       .cls-7-vc-backhoe-loader {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
     </style>
   </defs>
@@ -6940,11 +6904,11 @@
 <defs>
     <style>
       .cls-1-vc-wheel-loader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-wheel-loader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -6958,7 +6922,7 @@
 <defs>
     <style>
       .cls-1-vc-skid-steer-loader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-1-vc-skid-steer-loader, .cls-2-vc-skid-steer-loader, .cls-3-vc-skid-steer-loader {
@@ -6966,7 +6930,7 @@
       }
 
       .cls-3-vc-skid-steer-loader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -6989,11 +6953,11 @@
 <defs>
     <style>
       .cls-1-vc-articulated-mini-loader, .cls-2-vc-articulated-mini-loader {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-articulated-mini-loader {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-3-vc-articulated-mini-loader, .cls-2-vc-articulated-mini-loader, .cls-4-vc-articulated-mini-loader, .cls-5-vc-articulated-mini-loader, .cls-6-vc-articulated-mini-loader {
@@ -7001,11 +6965,11 @@
       }
 
       .cls-4-vc-articulated-mini-loader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-6-vc-articulated-mini-loader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -7031,7 +6995,7 @@
 <defs>
     <style>
       .cls-1-vc-load-haul-dump-lhd-loader {
-        fill: #2d2d2d;
+        fill: var(--icon-base, #2d2d2d);
       }
 
       .cls-1-vc-load-haul-dump-lhd-loader, .cls-2-vc-load-haul-dump-lhd-loader, .cls-3-vc-load-haul-dump-lhd-loader, .cls-4-vc-load-haul-dump-lhd-loader, .cls-5-vc-load-haul-dump-lhd-loader {
@@ -7039,15 +7003,15 @@
       }
 
       .cls-6-vc-load-haul-dump-lhd-loader, .cls-2-vc-load-haul-dump-lhd-loader {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-load-haul-dump-lhd-loader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-5-vc-load-haul-dump-lhd-loader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -7074,7 +7038,7 @@
 <defs>
     <style>
       .cls-1-vc-bulldozer-dozer {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-bulldozer-dozer, .cls-3-vc-bulldozer-dozer {
@@ -7082,11 +7046,11 @@
       }
 
       .cls-2-vc-bulldozer-dozer, .cls-4-vc-bulldozer-dozer {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-5-vc-bulldozer-dozer {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
     </style>
   </defs>
@@ -7112,7 +7076,7 @@
 <defs>
     <style>
       .cls-1-vc-motor-grader {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-1-vc-motor-grader, .cls-2-vc-motor-grader, .cls-3-vc-motor-grader, .cls-4-vc-motor-grader {
@@ -7120,11 +7084,11 @@
       }
 
       .cls-2-vc-motor-grader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-4-vc-motor-grader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -7155,11 +7119,11 @@
 <defs>
     <style>
       .cls-1-vc-dumper {
-        fill: #2c2c2c;
+        fill: var(--icon-base, #2c2c2c);
       }
 
       .cls-2-vc-dumper {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-2-vc-dumper, .cls-3-vc-dumper, .cls-4-vc-dumper, .cls-5-vc-dumper {
@@ -7167,11 +7131,11 @@
       }
 
       .cls-3-vc-dumper {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-5-vc-dumper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -7194,7 +7158,7 @@
 <defs>
     <style>
       .cls-1-vc-artboard-28 {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-1-vc-artboard-28, .cls-2-vc-artboard-28 {
@@ -7202,7 +7166,7 @@
       }
 
       .cls-2-vc-artboard-28 {
-        fill: #194ac1;
+        fill: var(--icon-accent, #194ac1);
       }
     </style>
   </defs>
@@ -7221,31 +7185,31 @@
 <defs>
     <style>
       .cls-1-vc-cabriolet-convertible {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-cabriolet-convertible {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-cabriolet-convertible {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
 
       .cls-4-vc-cabriolet-convertible {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-5-vc-cabriolet-convertible {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-6-vc-cabriolet-convertible {
-        fill: #feffff;
+        fill: var(--bg-glass, #feffff);
       }
 
       .cls-7-vc-cabriolet-convertible {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -7276,7 +7240,7 @@
 <defs>
     <style>
       .cls-1-vc-utv-side-by-side {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-1-vc-utv-side-by-side, .cls-2-vc-utv-side-by-side {
@@ -7284,7 +7248,7 @@
       }
 
       .cls-2-vc-utv-side-by-side {
-        fill: #194ac1;
+        fill: var(--icon-accent, #194ac1);
       }
     </style>
   </defs>
@@ -7303,19 +7267,19 @@
 <defs>
     <style>
       .cls-1-vc-58-straddle-carrier {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-58-straddle-carrier {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-58-straddle-carrier {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-4-vc-58-straddle-carrier {
-        fill: #30353b;
+        fill: var(--icon-base, #30353b);
       }
     </style>
   </defs>
@@ -7336,23 +7300,23 @@
 <defs>
     <style>
       .cls-1-vc-76-car-carrier-trailer {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-76-car-carrier-trailer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-76-car-carrier-trailer {
-        fill: #363e4a;
+        fill: var(--icon-base, #363e4a);
       }
 
       .cls-4-vc-76-car-carrier-trailer {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-76-car-carrier-trailer {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -7460,15 +7424,15 @@
 <defs>
     <style>
       .cls-1-vc-honda-goldwing {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-honda-goldwing {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-honda-goldwing {
-        fill: #2e58bc;
+        fill: var(--icon-accent, #2e58bc);
       }
     </style>
   </defs>
@@ -7525,15 +7489,15 @@
 <defs>
     <style>
       .cls-1-vc-classic-bike {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-2-vc-classic-bike {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-classic-bike {
-        fill: #002faa;
+        fill: var(--icon-accent, #002faa);
       }
     </style>
   </defs>
@@ -7571,7 +7535,7 @@
 <defs>
     <style>
       .cls-1-vc-food-truck, .cls-2-vc-food-truck {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-food-truck, .cls-3-vc-food-truck, .cls-4-vc-food-truck, .cls-5-vc-food-truck {
@@ -7579,11 +7543,11 @@
       }
 
       .cls-3-vc-food-truck {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-4-vc-food-truck {
-        fill: #002faa;
+        fill: var(--icon-accent, #002faa);
       }
     </style>
   </defs>
@@ -7623,19 +7587,19 @@
       }
 
       .cls-1-vc-armoed-cash-vehicle, .cls-5-vc-armoed-cash-vehicle {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-2-vc-armoed-cash-vehicle {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-armoed-cash-vehicle {
-        fill: #363f4b;
+        fill: var(--icon-base, #363f4b);
       }
 
       .cls-6-vc-armoed-cash-vehicle {
-        fill: #194ac1;
+        fill: var(--icon-accent, #194ac1);
       }
     </style>
   </defs>
@@ -7663,11 +7627,11 @@
 <defs>
     <style>
       .cls-1-vc-sport-bike {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-sport-bike {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
     </style>
   </defs>
@@ -7684,27 +7648,27 @@
 <defs>
     <style>
       .cls-1-vc-touring-bike {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-touring-bike {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-touring-bike {
-        fill: #fefffe;
+        fill: var(--bg-glass, #fefffe);
       }
 
       .cls-4-vc-touring-bike {
-        fill: #1a47b8;
+        fill: var(--icon-accent, #1a47b8);
       }
 
       .cls-5-vc-touring-bike {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-6-vc-touring-bike {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -7750,23 +7714,23 @@
 <defs>
     <style>
       .cls-1-vc-aircraft-tug {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-aircraft-tug {
-        fill: #fffdff;
+        fill: var(--bg-glass, #fffdff);
       }
 
       .cls-3-vc-aircraft-tug {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-aircraft-tug {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-5-vc-aircraft-tug {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
     </style>
   </defs>
@@ -7789,19 +7753,19 @@
 <defs>
     <style>
       .cls-1-vc-deicer {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-deicer {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-deicer {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-deicer {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -7853,23 +7817,23 @@
 <defs>
     <style>
       .cls-1-vc-arff-fire-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-arff-fire-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-arff-fire-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-arff-fire-truck {
-        fill: #fdfefe;
+        fill: var(--bg-glass, #fdfefe);
       }
 
       .cls-5-vc-arff-fire-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -7925,31 +7889,31 @@
 <defs>
     <style>
       .cls-1-vc-fire-engine-pumper {
-        fill: #181818;
+        fill: var(--icon-base, #181818);
       }
 
       .cls-2-vc-fire-engine-pumper {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-fire-engine-pumper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-fire-engine-pumper {
-        fill: #181817;
+        fill: var(--icon-base, #181817);
       }
 
       .cls-5-vc-fire-engine-pumper {
-        fill: #fefcfc;
+        fill: var(--bg-glass, #fefcfc);
       }
 
       .cls-6-vc-fire-engine-pumper {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-7-vc-fire-engine-pumper {
-        fill: #f8f8f8;
+        fill: var(--bg-glass, #f8f8f8);
       }
     </style>
   </defs>
@@ -7987,31 +7951,31 @@
 <defs>
     <style>
       .cls-1-vc-fire-engine-ladder {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-fire-engine-ladder {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-fire-engine-ladder {
-        fill: #fefefd;
+        fill: var(--bg-glass, #fefefd);
       }
 
       .cls-4-vc-fire-engine-ladder {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-fire-engine-ladder {
-        fill: #fdfdfe;
+        fill: var(--bg-glass, #fdfdfe);
       }
 
       .cls-6-vc-fire-engine-ladder {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-7-vc-fire-engine-ladder {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -8059,19 +8023,19 @@
 <defs>
     <style>
       .cls-1-vc-bin-wsasher-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-bin-wsasher-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-bin-wsasher-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-bin-wsasher-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -8118,23 +8082,23 @@
 <defs>
     <style>
       .cls-1-vc-street-sweeper {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-street-sweeper {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-street-sweeper {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-street-sweeper {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-street-sweeper {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -8161,19 +8125,19 @@
 <defs>
     <style>
       .cls-1-vc-high-pressure-street-cleaner {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-high-pressure-street-cleaner {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-high-pressure-street-cleaner {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-high-pressure-street-cleaner {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -8208,19 +8172,19 @@
 <defs>
     <style>
       .cls-1-vc-sewer-cleaining-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-sewer-cleaining-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-sewer-cleaining-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-sewer-cleaining-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -8250,19 +8214,19 @@
 <defs>
     <style>
       .cls-1-vc-vacuum-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-vacuum-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-vacuum-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-vacuum-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -8293,19 +8257,19 @@
 <defs>
     <style>
       .cls-1-vc-winter-maintenance-vehicle-spreader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-winter-maintenance-vehicle-spreader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-winter-maintenance-vehicle-spreader {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-winter-maintenance-vehicle-spreader {
-        fill: #fdfefe;
+        fill: var(--bg-glass, #fdfefe);
       }
     </style>
   </defs>
@@ -8350,27 +8314,27 @@
 <defs>
     <style>
       .cls-1-vc-baggage-tug {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-baggage-tug {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-baggage-tug {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-baggage-tug {
-        fill: #161716;
+        fill: var(--icon-base, #161716);
       }
 
       .cls-5-vc-baggage-tug {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-6-vc-baggage-tug {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -8413,19 +8377,19 @@
 <defs>
     <style>
       .cls-1-vc-snow-plow-for-unimog {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-snow-plow-for-unimog {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-snow-plow-for-unimog {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-snow-plow-for-unimog {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -8452,19 +8416,19 @@
 <defs>
     <style>
       .cls-1-vc-road-rail-vehicle {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-road-rail-vehicle {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-road-rail-vehicle {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-road-rail-vehicle {
-        fill: #fdfefe;
+        fill: var(--bg-glass, #fdfefe);
       }
     </style>
   </defs>
@@ -8502,23 +8466,23 @@
 <defs>
     <style>
       .cls-1-vc-tow-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-tow-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-tow-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-tow-truck {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-5-vc-tow-truck {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -8544,19 +8508,19 @@
 <defs>
     <style>
       .cls-1-vc-counterbalance-forklift {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-counterbalance-forklift {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-counterbalance-forklift {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-counterbalance-forklift {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
     </style>
   </defs>
@@ -8582,19 +8546,19 @@
 <defs>
     <style>
       .cls-1-vc-electric-forklift {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-electric-forklift {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-electric-forklift {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-electric-forklift {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
     </style>
   </defs>
@@ -8625,23 +8589,23 @@
 <defs>
     <style>
       .cls-1-vc-reach-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-reach-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-reach-truck {
-        fill: #fbfbfb;
+        fill: var(--bg-glass, #fbfbfb);
       }
 
       .cls-4-vc-reach-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-reach-truck {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -8659,31 +8623,31 @@
 <defs>
     <style>
       .cls-1-vc-reach-stacker {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-reach-stacker {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-reach-stacker {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-4-vc-reach-stacker {
-        fill: #fdfefd;
+        fill: var(--bg-glass, #fdfefd);
       }
 
       .cls-5-vc-reach-stacker {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-6-vc-reach-stacker {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-7-vc-reach-stacker {
-        fill: #fcfdfd;
+        fill: var(--bg-glass, #fcfdfd);
       }
     </style>
   </defs>
@@ -8722,27 +8686,27 @@
 <defs>
     <style>
       .cls-1-vc-telehandler {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-telehandler {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-telehandler {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-4-vc-telehandler {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-telehandler {
-        fill: #fffffe;
+        fill: var(--bg-glass, #fffffe);
       }
 
       .cls-6-vc-telehandler {
-        fill: #fdfefe;
+        fill: var(--bg-glass, #fdfefe);
       }
     </style>
   </defs>
@@ -8766,19 +8730,19 @@
 <defs>
     <style>
       .cls-1-vc-rough-terrain-forklift {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-rough-terrain-forklift {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-rough-terrain-forklift {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-4-vc-rough-terrain-forklift {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
     </style>
   </defs>
@@ -8810,19 +8774,19 @@
 <defs>
     <style>
       .cls-1-vc-sideloader {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-sideloader {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-sideloader {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-sideloader {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
     </style>
   </defs>
@@ -8851,27 +8815,27 @@
 <defs>
     <style>
       .cls-1-vc-airport-passenger-steps {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-airport-passenger-steps {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-airport-passenger-steps {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-airport-passenger-steps {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-5-vc-airport-passenger-steps {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-6-vc-airport-passenger-steps {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -8899,19 +8863,19 @@
 <defs>
     <style>
       .cls-1-vc-pallet-jack {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-pallet-jack {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-pallet-jack {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-pallet-jack {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -8930,23 +8894,23 @@
 <defs>
     <style>
       .cls-1-vc-order-picker {
-        fill: #0d0d0e;
+        fill: var(--icon-base, #0d0d0e);
       }
 
       .cls-2-vc-order-picker {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-order-picker {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-order-picker {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-order-picker {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -8969,23 +8933,23 @@
 <defs>
     <style>
       .cls-1-vc-vna-very-narrow-aisle-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-vna-very-narrow-aisle-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-vna-very-narrow-aisle-truck {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-4-vc-vna-very-narrow-aisle-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-vna-very-narrow-aisle-truck {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -9007,27 +8971,27 @@
 <defs>
     <style>
       .cls-1-vc-high-level-order-picker {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-high-level-order-picker {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-high-level-order-picker {
-        fill: #fefffe;
+        fill: var(--bg-glass, #fefffe);
       }
 
       .cls-4-vc-high-level-order-picker {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-5-vc-high-level-order-picker {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-6-vc-high-level-order-picker {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9053,23 +9017,23 @@
 <defs>
     <style>
       .cls-1-vc-platform-stacker {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-platform-stacker {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-platform-stacker {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-4-vc-platform-stacker {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-platform-stacker {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9095,19 +9059,19 @@
 <defs>
     <style>
       .cls-1-vc-electric-tow-tractor {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-electric-tow-tractor {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-electric-tow-tractor {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-electric-tow-tractor {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
     </style>
   </defs>
@@ -9141,19 +9105,19 @@
 <defs>
     <style>
       .cls-1-vc-agv-pallet-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-agv-pallet-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-agv-pallet-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-agv-pallet-truck {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9184,15 +9148,15 @@
 <defs>
     <style>
       .cls-1-vc-amr-autonomous-mobile-robot {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-amr-autonomous-mobile-robot {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-3-vc-amr-autonomous-mobile-robot {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9211,7 +9175,7 @@
 <defs>
     <style>
       .cls-1-vc-ambulance {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-1-vc-ambulance, .cls-2-vc-ambulance, .cls-3-vc-ambulance, .cls-4-vc-ambulance {
@@ -9219,11 +9183,11 @@
       }
 
       .cls-2-vc-ambulance {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-4-vc-ambulance {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -9265,19 +9229,19 @@
 <defs>
     <style>
       .cls-1-vc-emergency-atv {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-2-vc-emergency-atv {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-3-vc-emergency-atv {
-        fill: #fffefe;
+        fill: var(--bg-glass, #fffefe);
       }
 
       .cls-4-vc-emergency-atv {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
     </style>
   </defs>
@@ -9310,23 +9274,23 @@
 <defs>
     <style>
       .cls-1-vc-ambulift {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-ambulift {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-ambulift {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-4-vc-ambulift {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-5-vc-ambulift {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -9355,19 +9319,19 @@
 <defs>
     <style>
       .cls-1-vc-police-intervention-vehicle {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-police-intervention-vehicle {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-police-intervention-vehicle {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-police-intervention-vehicle {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -9404,19 +9368,19 @@
 <defs>
     <style>
       .cls-1-vc-armored-vehicle {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-armored-vehicle {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-armored-vehicle {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-armored-vehicle {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
     </style>
   </defs>
@@ -9446,19 +9410,19 @@
 <defs>
     <style>
       .cls-1-vc-mobile-laboratory {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-mobile-laboratory {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-mobile-laboratory {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-mobile-laboratory {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9495,19 +9459,19 @@
 <defs>
     <style>
       .cls-1-vc-tunnel-cleaning-vehicle {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-tunnel-cleaning-vehicle {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-tunnel-cleaning-vehicle {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-tunnel-cleaning-vehicle {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9537,27 +9501,27 @@
 <defs>
     <style>
       .cls-1-vc-power-line-repair-vehicle {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-power-line-repair-vehicle {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-power-line-repair-vehicle {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-power-line-repair-vehicle {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-power-line-repair-vehicle {
-        fill: #0b0b0b;
+        fill: var(--icon-base, #0b0b0b);
       }
 
       .cls-6-vc-power-line-repair-vehicle {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9595,35 +9559,35 @@
 <defs>
     <style>
       .cls-1-vc-snowcat {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-snowcat {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-snowcat {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-snowcat {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-5-vc-snowcat {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-6-vc-snowcat {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-7-vc-snowcat {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-8-vc-snowcat {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -9677,31 +9641,31 @@
 <defs>
     <style>
       .cls-1-vc-snowblower {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-snowblower {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-snowblower {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-snowblower {
-        fill: #043bc5;
+        fill: var(--icon-accent, #043bc5);
       }
 
       .cls-5-vc-snowblower {
-        fill: #fdfdfc;
+        fill: var(--bg-glass, #fdfdfc);
       }
 
       .cls-6-vc-snowblower {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-7-vc-snowblower {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9735,19 +9699,19 @@
 <defs>
     <style>
       .cls-1-vc-salt-spreader-standalone {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-2-vc-salt-spreader-standalone {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-3-vc-salt-spreader-standalone {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-salt-spreader-standalone {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9813,15 +9777,15 @@
 <defs>
     <style>
       .cls-1-vc-speedboat-bowrider {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-2-vc-speedboat-bowrider {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-3-vc-speedboat-bowrider {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -9836,23 +9800,23 @@
 <defs>
     <style>
       .cls-1-vc-airport-ambulance {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-airport-ambulance {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-airport-ambulance {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-airport-ambulance {
-        fill: #181919;
+        fill: var(--icon-base, #181919);
       }
 
       .cls-5-vc-airport-ambulance {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9874,19 +9838,19 @@
 <defs>
     <style>
       .cls-1-vc-cabin-cruiser {
-        fill: #020202;
+        fill: var(--icon-base, #020202);
       }
 
       .cls-2-vc-cabin-cruiser {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-cabin-cruiser {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-4-vc-cabin-cruiser {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -9905,7 +9869,7 @@
 <defs>
     <style>
       .cls-1-vc-center-console-boat {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9923,11 +9887,11 @@
 <defs>
     <style>
       .cls-1-vc-sport-yacht {
-        fill: #fdfefd;
+        fill: var(--bg-glass, #fdfefd);
       }
 
       .cls-2-vc-sport-yacht {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9945,7 +9909,7 @@
 <defs>
     <style>
       .cls-1-vc-fishing-boat {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -9959,7 +9923,7 @@
 <defs>
     <style>
       .cls-1-vc-pontoon-boat {
-        fill: #fefffe;
+        fill: var(--bg-glass, #fefffe);
       }
     </style>
   </defs>
@@ -9978,11 +9942,11 @@
 <defs>
     <style>
       .cls-1-vc-walkaround-boat {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-2-vc-walkaround-boat {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -10003,11 +9967,11 @@
 <defs>
     <style>
       .cls-1-vc-flybridge-yacht {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-2-vc-flybridge-yacht {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -10027,7 +9991,7 @@
 <defs>
     <style>
       .cls-1-vc-motor-yacht {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -10048,11 +10012,11 @@
 <defs>
     <style>
       .cls-1-vc-trawler {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-trawler {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -10081,27 +10045,27 @@
 <defs>
     <style>
       .cls-1-vc-mega-yacht {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-mega-yacht {
-        fill: #fefefd;
+        fill: var(--bg-glass, #fefefd);
       }
 
       .cls-3-vc-mega-yacht {
-        fill: #fcfcfd;
+        fill: var(--bg-glass, #fcfcfd);
       }
 
       .cls-4-vc-mega-yacht {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-mega-yacht {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-6-vc-mega-yacht {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -10144,15 +10108,15 @@
 <defs>
     <style>
       .cls-1-vc-catering-vehicle {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-catering-vehicle {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-catering-vehicle {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
     </style>
   </defs>
@@ -10181,11 +10145,11 @@
 <defs>
     <style>
       .cls-1-vc-monohull-sailboat {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-monohull-sailboat {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
     </style>
   </defs>
@@ -10200,7 +10164,7 @@
 <defs>
     <style>
       .cls-1-vc-racing-sailboat {
-        fill: #050505;
+        fill: var(--icon-base, #050505);
       }
     </style>
   </defs>
@@ -10215,11 +10179,11 @@
 <defs>
     <style>
       .cls-1-vc-cruising-sailboat {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-cruising-sailboat {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -10239,7 +10203,7 @@
 <defs>
     <style>
       .cls-1-vc-motorsailer {
-        fill: #fdfcfc;
+        fill: var(--bg-glass, #fdfcfc);
       }
     </style>
   </defs>
@@ -10258,27 +10222,27 @@
 <defs>
     <style>
       .cls-1-vc-sailing-catamaran {
-        fill: #fcfcfc;
+        fill: var(--bg-glass, #fcfcfc);
       }
 
       .cls-2-vc-sailing-catamaran {
-        fill: #020202;
+        fill: var(--icon-base, #020202);
       }
 
       .cls-3-vc-sailing-catamaran {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-4-vc-sailing-catamaran {
-        fill: #fefdfe;
+        fill: var(--bg-glass, #fefdfe);
       }
 
       .cls-5-vc-sailing-catamaran {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-6-vc-sailing-catamaran {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -10304,15 +10268,15 @@
 <defs>
     <style>
       .cls-1-vc-power-catamaran {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-2-vc-power-catamaran {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-3-vc-power-catamaran {
-        fill: #fdfdfd;
+        fill: var(--bg-glass, #fdfdfd);
       }
     </style>
   </defs>
@@ -10331,19 +10295,19 @@
 <defs>
     <style>
       .cls-1-vc-rib-with-console {
-        fill: #fefffe;
+        fill: var(--bg-glass, #fefffe);
       }
 
       .cls-2-vc-rib-with-console {
-        fill: #fdfefd;
+        fill: var(--bg-glass, #fdfefd);
       }
 
       .cls-3-vc-rib-with-console {
-        fill: #fffefe;
+        fill: var(--bg-glass, #fffefe);
       }
 
       .cls-4-vc-rib-with-console {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10365,15 +10329,15 @@
 <defs>
     <style>
       .cls-1-vc-rib-without-console {
-        fill: #fefffe;
+        fill: var(--bg-glass, #fefffe);
       }
 
       .cls-2-vc-rib-without-console {
-        fill: #fdfefd;
+        fill: var(--bg-glass, #fdfefd);
       }
 
       .cls-3-vc-rib-without-console {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10391,19 +10355,19 @@
 <defs>
     <style>
       .cls-1-vc-hard-bottom-inflatable {
-        fill: #fefffe;
+        fill: var(--bg-glass, #fefffe);
       }
 
       .cls-2-vc-hard-bottom-inflatable {
-        fill: #fdfefd;
+        fill: var(--bg-glass, #fdfefd);
       }
 
       .cls-3-vc-hard-bottom-inflatable {
-        fill: #fffefe;
+        fill: var(--bg-glass, #fffefe);
       }
 
       .cls-4-vc-hard-bottom-inflatable {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10428,15 +10392,15 @@
 <defs>
     <style>
       .cls-1-vc-foldable-inflatable-boat {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-foldable-inflatable-boat {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-3-vc-foldable-inflatable-boat {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10461,31 +10425,31 @@
 <defs>
     <style>
       .cls-1-vc-refueller {
-        fill: #121212;
+        fill: var(--icon-base, #121212);
       }
 
       .cls-2-vc-refueller {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-refueller {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-refueller {
-        fill: #fdfefd;
+        fill: var(--bg-glass, #fdfefd);
       }
 
       .cls-5-vc-refueller {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-6-vc-refueller {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
 
       .cls-7-vc-refueller {
-        fill: #f7f7f7;
+        fill: var(--bg-glass, #f7f7f7);
       }
     </style>
   </defs>
@@ -10519,7 +10483,7 @@
 <defs>
     <style>
       .cls-1-vc-runabout-jet-ski-sit-down {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10534,11 +10498,11 @@
 <defs>
     <style>
       .cls-1-vc-stand-up-jet-ski {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-2-vc-stand-up-jet-ski {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10551,31 +10515,31 @@
 <defs>
     <style>
       .cls-1-vc-milling-cutter {
-        fill: #0c0c0c;
+        fill: var(--icon-base, #0c0c0c);
       }
 
       .cls-2-vc-milling-cutter {
-        fill: #fff;
+        fill: var(--bg-glass, #fff);
       }
 
       .cls-3-vc-milling-cutter {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-milling-cutter {
-        fill: #fdfefd;
+        fill: var(--bg-glass, #fdfefd);
       }
 
       .cls-5-vc-milling-cutter {
-        fill: #fffeff;
+        fill: var(--bg-glass, #fffeff);
       }
 
       .cls-6-vc-milling-cutter {
-        fill: #0035e3;
+        fill: var(--icon-accent, #0035e3);
       }
 
       .cls-7-vc-milling-cutter {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10632,23 +10596,23 @@
 <defs>
     <style>
       .cls-1-vc-potable-water-truck {
-        fill: #121212;
+        fill: var(--icon-base, #121212);
       }
 
       .cls-2-vc-potable-water-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-potable-water-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-potable-water-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-potable-water-truck {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>
@@ -10682,23 +10646,23 @@
 <defs>
     <style>
       .cls-1-vc-lavatory-service-truck {
-        fill: #121212;
+        fill: var(--icon-base, #121212);
       }
 
       .cls-2-vc-lavatory-service-truck {
-        fill: #033cc9;
+        fill: var(--icon-accent, #033cc9);
       }
 
       .cls-3-vc-lavatory-service-truck {
-        fill: #343e47;
+        fill: var(--icon-base, #343e47);
       }
 
       .cls-4-vc-lavatory-service-truck {
-        fill: #fefdfd;
+        fill: var(--bg-glass, #fefdfd);
       }
 
       .cls-5-vc-lavatory-service-truck {
-        fill: #fefefe;
+        fill: var(--bg-glass, #fefefe);
       }
     </style>
   </defs>

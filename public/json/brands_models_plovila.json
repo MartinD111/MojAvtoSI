@@ -1198,6 +1198,183 @@
       ]
     }
   },
+  "Chaparral": {
+    "21 SSi": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "21 SSi"
+        }
+      ]
+    },
+    "23 SSi": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "23 SSi"
+        }
+      ]
+    },
+    "246 SSi": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "246 SSi"
+        }
+      ]
+    },
+    "277 SSX": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "277 SSX"
+        }
+      ]
+    },
+    "290 OS": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "290 OS"
+        }
+      ]
+    },
+    "310 OS": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "310 OS"
+        }
+      ]
+    }
+  },
+  "Cranchi": {
+    "A46 Luxury Tender": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "A46 Luxury Tender"
+        }
+      ]
+    },
+    "E26 Classic": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "E26 Classic"
+        }
+      ]
+    },
+    "E26 Rider": {
+      "type": "Čolni",
+      "category": "KonzolniColn",
+      "variants": [
+        {
+          "trim": "E26 Rider"
+        }
+      ]
+    },
+    "Endurance 30": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "Endurance 30"
+        }
+      ]
+    },
+    "M44 HT": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "M44 HT"
+        }
+      ]
+    },
+    "Settantotto 78": {
+      "type": "Čolni",
+      "category": "MotornaJahta",
+      "variants": [
+        {
+          "trim": "Settantotto 78"
+        }
+      ]
+    },
+    "T36 Crossover": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "T36 Crossover"
+        }
+      ]
+    },
+    "Z35": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "Z35"
+        }
+      ]
+    }
+  },
+  "Crownline": {
+    "195 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "195 SS"
+        }
+      ]
+    },
+    "215 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "215 SS"
+        }
+      ]
+    },
+    "265 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "265 SS"
+        }
+      ]
+    },
+    "270 CR": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "270 CR"
+        }
+      ]
+    },
+    "290 CR": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "290 CR"
+        }
+      ]
+    }
+  },
   "De Antonio": {
     "D29": {
       "type": "Čolni",
@@ -1268,6 +1445,62 @@
       "variants": [
         {
           "trim": "E23 električni"
+        }
+      ]
+    }
+  },
+  "Dehler": {
+    "29": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "29"
+        }
+      ]
+    },
+    "34": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "34"
+        }
+      ]
+    },
+    "42": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "42"
+        }
+      ]
+    },
+    "46": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "46"
+        }
+      ]
+    },
+    "30 one design": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "30 one design"
+        }
+      ]
+    },
+    "38 SQ": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "38 SQ"
         }
       ]
     }
@@ -1737,6 +1970,62 @@
       ]
     }
   },
+  "Four Winns": {
+    "H1": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "H1"
+        }
+      ]
+    },
+    "H2": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "H2"
+        }
+      ]
+    },
+    "H4": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "H4"
+        }
+      ]
+    },
+    "HD3": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "HD3"
+        }
+      ]
+    },
+    "Vista 255": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "Vista 255"
+        }
+      ]
+    },
+    "Vista 275": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "Vista 275"
+        }
+      ]
+    }
+  },
   "Galeon": {
     "335 GTO": {
       "type": "Čolni",
@@ -2042,6 +2331,71 @@
       ]
     }
   },
+  "Hanse": {
+    "315": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "315"
+        }
+      ]
+    },
+    "348": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "348"
+        }
+      ]
+    },
+    "388": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "388"
+        }
+      ]
+    },
+    "418": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "418"
+        }
+      ]
+    },
+    "458": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "458"
+        }
+      ]
+    },
+    "508": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "508"
+        }
+      ]
+    },
+    "548": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "548"
+        }
+      ]
+    }
+  },
   "Highfield": {
     "ADV7": {
       "type": "Gumenjaki",
@@ -2193,6 +2547,109 @@
       ]
     }
   },
+  "Joker Boat": {
+    "Clubman 21": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Clubman 21"
+        }
+      ]
+    },
+    "Clubman 24": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Clubman 24"
+        }
+      ]
+    },
+    "Clubman 28": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Clubman 28"
+        }
+      ]
+    },
+    "Clubman 35": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Clubman 35"
+        }
+      ]
+    },
+    "Coaster 650": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Coaster 650"
+        }
+      ]
+    }
+  },
+  "Karnic": {
+    "CS700 S": {
+      "type": "Čolni",
+      "category": "KonzolniColn",
+      "variants": [
+        {
+          "trim": "CS700 S"
+        }
+      ]
+    },
+    "SL600": {
+      "type": "Čolni",
+      "category": "KonzolniColn",
+      "variants": [
+        {
+          "trim": "SL600"
+        }
+      ]
+    },
+    "SL601": {
+      "type": "Čolni",
+      "category": "KonzolniColn",
+      "variants": [
+        {
+          "trim": "SL601"
+        }
+      ]
+    },
+    "SL701": {
+      "type": "Čolni",
+      "category": "KonzolniColn",
+      "variants": [
+        {
+          "trim": "SL701"
+        }
+      ]
+    },
+    "SL702": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "SL702"
+        }
+      ]
+    },
+    "SL800": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "SL800"
+        }
+      ]
+    }
+  },
   "Kawasaki": {
     "Jet Ski STX": {
       "type": "Jet-ski",
@@ -2283,15 +2740,6 @@
         }
       ]
     },
-    "46 Iconic": {
-      "type": "Jadrnice",
-      "category": "Jadralni katamaran",
-      "variants": [
-        {
-          "trim": "Lagoon 46 Iconic"
-        }
-      ]
-    },
     "47": {
       "type": "Jadrnice",
       "category": "Jadralni katamaran",
@@ -2328,6 +2776,15 @@
         }
       ]
     },
+    "46 Iconic": {
+      "type": "Jadrnice",
+      "category": "Jadralni katamaran",
+      "variants": [
+        {
+          "trim": "Lagoon 46 Iconic"
+        }
+      ]
+    },
     "EIGHTY 2": {
       "type": "Jadrnice",
       "category": "Jadralni katamaran",
@@ -2361,6 +2818,156 @@
       "variants": [
         {
           "trim": "SIXTY 5"
+        }
+      ]
+    }
+  },
+  "Lomac": {
+    "Adrenalina 7.5": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Adrenalina 7.5"
+        }
+      ]
+    },
+    "Adrenalina 8.5": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Adrenalina 8.5"
+        }
+      ]
+    },
+    "Granturismo 10.5": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Granturismo 10.5"
+        }
+      ]
+    },
+    "IN 600": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "IN 600"
+        }
+      ]
+    },
+    "IN 700": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "IN 700"
+        }
+      ]
+    }
+  },
+  "Marlin": {
+    "274": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "274"
+        }
+      ]
+    },
+    "298": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "298"
+        }
+      ]
+    },
+    "330": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "330"
+        }
+      ]
+    },
+    "24 SR": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "24 SR"
+        }
+      ]
+    }
+  },
+  "Monterey": {
+    "215 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "215 SS"
+        }
+      ]
+    },
+    "235 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "235 SS"
+        }
+      ]
+    },
+    "258 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "258 SS"
+        }
+      ]
+    },
+    "278 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "278 SS"
+        }
+      ]
+    },
+    "298 SS": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "298 SS"
+        }
+      ]
+    },
+    "315 SY": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "315 SY"
+        }
+      ]
+    },
+    "345 SY": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "345 SY"
         }
       ]
     }
@@ -2532,15 +3139,6 @@
         }
       ]
     },
-    "38 Outboard": {
-      "type": "Čolni",
-      "category": "Walkaround",
-      "variants": [
-        {
-          "trim": "P38 Outboard"
-        }
-      ]
-    },
     "43": {
       "type": "Čolni",
       "category": "Walkaround",
@@ -2550,21 +3148,30 @@
         }
       ]
     },
-    "43R": {
-      "type": "Čolni",
-      "category": "Walkaround",
-      "variants": [
-        {
-          "trim": "P43R Walkaround"
-        }
-      ]
-    },
     "50": {
       "type": "Čolni",
       "category": "Walkaround",
       "variants": [
         {
           "trim": "P50 Walkaround"
+        }
+      ]
+    },
+    "38 Outboard": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "P38 Outboard"
+        }
+      ]
+    },
+    "43R": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "P43R Walkaround"
         }
       ]
     },
@@ -3111,6 +3718,53 @@
       ]
     }
   },
+  "Rinker": {
+    "196 Captiva": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "196 Captiva"
+        }
+      ]
+    },
+    "246 Captiva": {
+      "type": "Čolni",
+      "category": "Gliser",
+      "variants": [
+        {
+          "trim": "246 Captiva"
+        }
+      ]
+    },
+    "270 EX": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "270 EX"
+        }
+      ]
+    },
+    "290 EX": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "290 EX"
+        }
+      ]
+    },
+    "320 EX": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "320 EX"
+        }
+      ]
+    }
+  },
   "Sacs": {
     "Rebel 40": {
       "type": "Gumenjaki",
@@ -3199,6 +3853,127 @@
       "variants": [
         {
           "trim": "Strider 900"
+        }
+      ]
+    }
+  },
+  "Salona": {
+    "33": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "33"
+        }
+      ]
+    },
+    "35": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "35"
+        }
+      ]
+    },
+    "38": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "38"
+        }
+      ]
+    },
+    "41": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "41"
+        }
+      ]
+    },
+    "44": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "44"
+        }
+      ]
+    },
+    "46": {
+      "type": "Jadrnice",
+      "category": "Regatna",
+      "variants": [
+        {
+          "trim": "46"
+        }
+      ]
+    }
+  },
+  "Salpa": {
+    "Soleil 18": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Soleil 18"
+        }
+      ]
+    },
+    "Soleil 20": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Soleil 20"
+        }
+      ]
+    },
+    "Soleil 23": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Soleil 23"
+        }
+      ]
+    },
+    "Soleil 26": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Soleil 26"
+        }
+      ]
+    },
+    "Soleil 30": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Soleil 30"
+        }
+      ]
+    },
+    "Soleil 33": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Soleil 33"
+        }
+      ]
+    },
+    "Soleil 42": {
+      "type": "Gumenjaki",
+      "category": "RibKonzola",
+      "variants": [
+        {
+          "trim": "Soleil 42"
         }
       ]
     }
@@ -3651,25 +4426,54 @@
       ]
     }
   },
+  "Sessa Marine": {
+    "C38": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "C38"
+        }
+      ]
+    },
+    "C44": {
+      "type": "Čolni",
+      "category": "KabinskiColn",
+      "variants": [
+        {
+          "trim": "C44"
+        }
+      ]
+    },
+    "Key Largo 24": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Key Largo 24"
+        }
+      ]
+    },
+    "Key Largo 27": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Key Largo 27"
+        }
+      ]
+    },
+    "Key Largo 34": {
+      "type": "Čolni",
+      "category": "Walkaround",
+      "variants": [
+        {
+          "trim": "Key Largo 34"
+        }
+      ]
+    }
+  },
   "Sirena": {
-    "118": {
-      "type": "Čolni",
-      "category": "Mega jahta",
-      "variants": [
-        {
-          "trim": "Sirena 118"
-        }
-      ]
-    },
-    "42M": {
-      "type": "Čolni",
-      "category": "Mega jahta",
-      "variants": [
-        {
-          "trim": "Sirena 42M"
-        }
-      ]
-    },
     "48": {
       "type": "Čolni",
       "category": "Motorna jahta",
@@ -3721,6 +4525,24 @@
       "variants": [
         {
           "trim": "Sirena 88"
+        }
+      ]
+    },
+    "118": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Sirena 118"
+        }
+      ]
+    },
+    "42M": {
+      "type": "Čolni",
+      "category": "Mega jahta",
+      "variants": [
+        {
+          "trim": "Sirena 42M"
         }
       ]
     }
@@ -4060,6 +4882,62 @@
       "variants": [
         {
           "trim": "TurboJet 325"
+        }
+      ]
+    }
+  },
+  "X-Yachts": {
+    "X4.0": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "X4.0"
+        }
+      ]
+    },
+    "X4.3": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "X4.3"
+        }
+      ]
+    },
+    "X4.6": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "X4.6"
+        }
+      ]
+    },
+    "X4.9": {
+      "type": "Jadrnice",
+      "category": "Enotrupna",
+      "variants": [
+        {
+          "trim": "X4.9"
+        }
+      ]
+    },
+    "Xc 38": {
+      "type": "Jadrnice",
+      "category": "Potovalna",
+      "variants": [
+        {
+          "trim": "Xc 38"
+        }
+      ]
+    },
+    "Xc 45": {
+      "type": "Jadrnice",
+      "category": "Potovalna",
+      "variants": [
+        {
+          "trim": "Xc 45"
         }
       ]
     }

@@ -20,6 +20,11 @@
                     <span data-i18n-key="hero_word_car_loop">car</span>
                 </div>
             </div>
+            <div class="hero-title-line2">
+                <span data-i18n-key="hero_find_you">find you</span>
+            </div>
+        </h1>
+    </div>
 
 <style>
     .hero-word-items {
@@ -46,12 +51,10 @@
       white-space: nowrap !important;
       color: #2563eb !important;
     }
+    body.dark-mode .hero-word-items span {
+      color: #60a5fa !important;
+    }
 </style>
-            <div class="hero-title-line2">
-                <span data-i18n-key="hero_find_you">find you</span>
-            </div>
-        </h1>
-    </div>
 
     <div class="home-search-mode" id="homeSearchMode">
         <button type="button" class="home-search-mode-pill active" data-search-mode="oglasi">
@@ -160,11 +163,11 @@
                     <div class="home-action-btns" style="flex: 2.5; display: flex; gap: 0.4rem; align-items: center; margin-left: 0.75rem;">
                         <button type="reset" class="pill-btn search-action-pill reset-pill" title="Reset filters">
                             <i data-lucide="refresh-cw"></i>
-                            <span>Reset</span>
+                            <span data-i18n-key="sidebar_reset">Ponastavi</span>
                         </button>
                         <a href="/iskanje?cat=avto" class="pill-btn search-action-pill filters-pill" id="homeAdvancedSearchLink" title="More filters">
                             <i data-lucide="sliders-horizontal"></i>
-                            <span>Več filtrov</span>
+                            <span data-i18n-key="filter_more">Več filtrov</span>
                         </a>
                         <button type="submit" class="pill-btn primary search-submit-btn compact-search">
                             <i data-lucide="search"></i>

@@ -56,12 +56,12 @@ export const AUCTION_DURATIONS = {
     d7:  { id: 'd7',  days: 7,  price: 0 },
     d10: { id: 'd10', days: 10, price: 4.99 },
 };
+export const BASE_AUCTION_FEE = 49.99;
 export const EXTENDED_DURATION_FEE = 4.99;
-export const BINDING_CONTRACT_FEE  = 49.99;
 
 // ── Buyer's premium ───────────────────────────────────────────────────────────
 export const BUYER_PREMIUM_PCT = 0.03;
-export const ESCROW_AUTO_RELEASE_HOURS = 48;
+export const ESCROW_AUTO_RELEASE_HOURS = 48; // Kept for legacy compatibility if needed elsewhere
 
 export function calcBuyerPremium(finalPriceEur) {
     return Math.max(0, Number(finalPriceEur) || 0) * BUYER_PREMIUM_PCT;
@@ -72,9 +72,9 @@ export function calcBuyerTotal(finalPriceEur) {
     return price + calcBuyerPremium(price);
 }
 
-export function calcListingFee({ durationDays = 7, bindingContract = false } = {}) {
-    let fee = Number(durationDays) >= 10 ? EXTENDED_DURATION_FEE : 0;
-    if (bindingContract) fee += BINDING_CONTRACT_FEE;
+export function calcListingFee({ durationDays = 7 } = {}) {
+    let fee = BASE_AUCTION_FEE;
+    if (Number(durationDays) >= 10) fee += EXTENDED_DURATION_FEE;
     return Math.round(fee * 100) / 100;
 }
 
@@ -121,8 +121,8 @@ export async function createAuction(listingId, opts) {
         durationDays: opts.durationDays || 7,
         auctionType: normalizeAuctionType(opts.auctionType),
         reservePriceEur: opts.reservePriceEur ?? null,
-        bindingContract: !!opts.bindingContract,
-        cashAllowed: !!opts.cashAllowed,
+        bindingContract: true,
+        cashAllowed: true,
         sellerContract: opts.sellerContract || null,
     });
     return result?.id ?? listingId;

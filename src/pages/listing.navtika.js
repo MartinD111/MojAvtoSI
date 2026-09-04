@@ -13,7 +13,7 @@ import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite } from '../services/garageService.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { mountReactComponent } from '../core/reactRootTracker.js';
 import CostPanel from '../components/CostPanel.jsx';
 import { getServiceHistoryByVin } from '../services/serviceBookService.js';
 import { t, getCurrentLang } from '../core/i18n.js';
@@ -443,7 +443,7 @@ function renderListing(l) {
     const cpPrice = l.priceRaw || l.priceEur || l.price;
     const cpKw = l.powerKw || l.power;
     if (costPanelRoot && cpPrice && cpKw) {
-        ReactDOM.createRoot(costPanelRoot).render(
+        mountReactComponent('react-cost-panel-root',
             React.createElement(CostPanel, {
                 price: Number(cpPrice),
                 powerKw: Number(cpKw),
@@ -710,9 +710,10 @@ function renderKeyStripHtml(l) {
 
 // ── Technical specs ───────────────────────────────────────────────────────────
 function renderSpecsHtml(l) {
+    const isSl = getCurrentLang() === 'sl';
     const keySpecs = [];
     if (l.year) keySpecs.push({ label: t('spec_first_registration', 'Letnik'), value: l.year, icon: 'calendar-days', pillClass: 'spec-pill year-pill' });
-    if (l.lengthM) keySpecs.push({ label: 'Dolžina', value: `${l.lengthM} m`, icon: 'ruler', pillClass: 'spec-pill length-pill' });
+    if (l.lengthM) keySpecs.push({ label: t('navtika_length', 'Dolžina'), value: `${l.lengthM} m`, icon: 'ruler', pillClass: 'spec-pill length-pill' });
     if (l.fuel) {
         const fuelStr = (l.fuel || '').toLowerCase().trim();
         const fuelClasses = {
@@ -724,23 +725,23 @@ function renderSpecsHtml(l) {
             'lpg': 'fuel-pill-LPG'
         };
         const cls = fuelClasses[fuelStr] || 'fuel-pill-E';
-        keySpecs.push({ label: 'Gorivo', value: l.fuel, icon: 'fuel', pillClass: `spec-pill fuel-coded ${cls}` });
+        keySpecs.push({ label: t('fuel', 'Gorivo'), value: l.fuel, icon: 'fuel', pillClass: `spec-pill fuel-coded ${cls}` });
     }
     if (l.enginePowerHp || l.powerHp) {
         const hp = l.enginePowerHp || l.powerHp;
-        keySpecs.push({ label: 'Moč motorja', value: `${hp} KM`, icon: 'zap', pillClass: 'spec-pill power-pill' });
+        keySpecs.push({ label: t('navtika_power', 'Moč motorja'), value: `${hp} ${isSl ? 'KM' : 'HP'}`, icon: 'zap', pillClass: 'spec-pill power-pill' });
     }
-    if (l.engineHours) keySpecs.push({ label: 'Ure motorja', value: `${l.engineHours} h`, icon: 'clock', pillClass: 'spec-pill hours-pill' });
-    if (l.cabins) keySpecs.push({ label: 'Kabine', value: l.cabins, icon: 'bed', pillClass: 'spec-pill berths-pill' });
+    if (l.engineHours) keySpecs.push({ label: t('navtika_hours', 'Ure motorja'), value: `${l.engineHours} ${isSl ? 'ur' : 'h'}`, icon: 'clock', pillClass: 'spec-pill hours-pill' });
+    if (l.cabins) keySpecs.push({ label: t('navtika_cabins', 'Kabine'), value: l.cabins, icon: 'bed', pillClass: 'spec-pill berths-pill' });
 
     const secondarySpecs = [];
-    if (l.beamM) secondarySpecs.push(['Širina', `${l.beamM} m`]);
-    if (l.draftM) secondarySpecs.push(['Ugrez', `${l.draftM} m`]);
-    if (l.hullMaterial) secondarySpecs.push(['Material trupa', l.hullMaterial]);
-    if (l.ceCategory) secondarySpecs.push(['CE kategorija', l.ceCategory]);
-    if (l.engineCount) secondarySpecs.push(['Število motorjev', l.engineCount]);
-    if (l.engineMountType) secondarySpecs.push(['Tip motorja', l.engineMountType]);
-    if (l.berths) secondarySpecs.push(['Ležišča', l.berths]);
+    if (l.beamM) secondarySpecs.push([t('navtika_beam', 'Širina'), `${l.beamM} m`]);
+    if (l.draftM) secondarySpecs.push([t('navtika_draft', 'Ugrez'), `${l.draftM} m`]);
+    if (l.hullMaterial) secondarySpecs.push([t('navtika_hull_material', 'Material trupa'), l.hullMaterial]);
+    if (l.ceCategory) secondarySpecs.push([t('navtika_ce_category', 'CE kategorija'), l.ceCategory]);
+    if (l.engineCount) secondarySpecs.push([t('navtika_engine_count', 'Število motorjev'), l.engineCount]);
+    if (l.engineMountType) secondarySpecs.push([t('navtika_engine_mount', 'Tip motorja'), l.engineMountType]);
+    if (l.berths) secondarySpecs.push([t('navtika_berths', 'Ležišča'), l.berths]);
 
     return `
         <section class="lp-section">

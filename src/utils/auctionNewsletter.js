@@ -4,6 +4,7 @@
 
 import { createAuctionAlert } from '../services/auctionService.js';
 import { currentUser } from '../lib/currentUser.js';
+import { t } from '../core/i18n.js';
 
 export function newsletterWidgetHtml(prefill = {}) {
     return `
@@ -11,16 +12,16 @@ export function newsletterWidgetHtml(prefill = {}) {
         <div class="an-head">
             <span class="an-icon">🔔</span>
             <div>
-                <p class="an-title">Obvestila o dražbah</p>
-                <p class="an-sub">Pustite e-naslov in obveščali vas bomo o dražbah vozil, ki vas zanimajo.</p>
+                <p class="an-title">${t('auction_alerts_title', 'Obvestila o dražbah')}</p>
+                <p class="an-sub">${t('auction_alerts_sub', 'Pustite e-naslov in obveščali vas bomo o dražbah vozil, ki vas zanimajo.')}</p>
             </div>
         </div>
         <form class="an-form" id="auctionNewsletterForm">
-            <input type="email" class="an-input" id="anEmail" placeholder="vaš@email.si" required
+            <input type="email" class="an-input" id="anEmail" placeholder="vas@email.si" required
                 value="${prefill.email || (currentUser()?.email || '')}" />
-            <input type="text" class="an-input" id="anInterest" placeholder="Npr. BMW, Audi, kombi …"
+            <input type="text" class="an-input" id="anInterest" placeholder="${t('auction_interest_placeholder', 'Npr. BMW, Audi, kombi …')}"
                 value="${prefill.interest || ''}" />
-            <button type="submit" class="an-submit">Prijava</button>
+            <button type="submit" class="an-submit">${t('subscribe', 'Prijava')}</button>
         </form>
         <p class="an-status" id="anStatus" aria-live="polite"></p>
     </div>`;
@@ -36,10 +37,10 @@ export function bindNewsletterWidget(root = document) {
         const interest = root.querySelector('#anInterest').value.trim();
         try {
             await createAuctionAlert(email, { interest }, currentUser()?.id || null);
-            if (status) { status.textContent = '✓ Prijavljeni ste na obvestila.'; status.className = 'an-status ok'; }
+            if (status) { status.textContent = t('auction_subscribed_ok', '✓ Prijavljeni ste na obvestila.'); status.className = 'an-status ok'; }
             form.reset();
         } catch (err) {
-            if (status) { status.textContent = err.message || 'Napaka pri prijavi.'; status.className = 'an-status err'; }
+            if (status) { status.textContent = err.message || t('auction_subscribed_err', 'Napaka pri prijavi.'); status.className = 'an-status err'; }
         }
     });
 }

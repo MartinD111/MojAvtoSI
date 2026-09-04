@@ -27,6 +27,31 @@ export function renderLoading(target, opts = {}) {
     if (!target) return { el: null, destroy: () => {} };
 
     if (opts.skeleton) {
+        if (opts.skeleton === 'cards') {
+            const cols = opts.rows || 6; // Naming is rows but we use it as item count
+            let cardsHtml = '';
+            for(let i = 0; i < cols; i++) {
+                cardsHtml += `
+                    <div class="card-skeleton">
+                        <div class="sk-img skeleton-shimmer"></div>
+                        <div class="sk-body">
+                            <div class="sk-title skeleton-shimmer"></div>
+                            <div class="sk-text skeleton-shimmer"></div>
+                            <div class="sk-tags">
+                                <div class="sk-tag skeleton-shimmer"></div>
+                                <div class="sk-tag skeleton-shimmer"></div>
+                            </div>
+                            <div class="sk-price skeleton-shimmer"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            target.innerHTML = `<div class="search-results-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; width: 100%;">
+                ${cardsHtml}
+            </div>`;
+            return { el: target.firstElementChild, destroy: () => {} };
+        }
+
         const rows = opts.rows || 3;
         target.innerHTML = `<div class="ui-state ui-state--loading" role="status" aria-live="polite">
             ${Array.from({ length: rows }, () => '<div class="ui-skeleton ui-skeleton--row"></div>').join('')}

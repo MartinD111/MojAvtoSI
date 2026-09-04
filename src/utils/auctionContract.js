@@ -29,15 +29,13 @@ export const AUTOHUB_DISCLAIMER_LINES = [
     '2. Prodajna pogodba je sklenjena neposredno med prodajalcem in kupcem. AutoHub vozila ne pregleduje in ne jamči za njegovo stanje, dokumentacijo, homologacijo ali za sposobnost strank, da izpolnijo svoje obveznosti.',
     '3. Reševanje sporov: morebitne spore stranki rešujeta neposredno med seboj oziroma po sodni poti. AutoHub pri reševanju sporov ne sodeluje, ne nudi mediacije in ne odloča o vračilih.',
     `4. Provizija (kupčeva premija ${BUYER_PREMIUM_PCT_DISPLAY} % končne cene) je plačilo za uporabo tehnične platforme in NE plačilo za posredovanje pri prodaji.`,
-    `5. Denarni tok: kupnina se ob plačilu zadrži na varnem računu (escrow) in se ${ESCROW_AUTO_RELEASE_HOURS} ur po plačilu samodejno sprosti prodajalcu, razen če kupec v tem času sproži uradni postopek (prijava policiji ali odvetniški dopis). S sprožitvijo spora pravica do vračila prek platforme ugasne — od tedaj je stvar med strankama in njunimi odvetniki.`,
+    '5. Denarni tok: AutoHub pri plačilu kupnine vozila ne sodeluje. Stranki kupnino uredita izključno med seboj. AutoHub kupcu zaračuna zgolj provizijo za uporabo platforme.',
     '6. Kupec potrjuje, da je imel možnost pregleda vozila (ali se tej pravici odreka) in da vse jamčevalne zahtevke naslavlja izključno na prodajalca.',
 ];
 
 /** Pick the contract scenario from the auction's commercial flags. */
-export function contractScenario({ bindingContract = false, cashAllowed = false } = {}) {
-    if (bindingContract && cashAllowed) return 'cash';
-    if (bindingContract) return 'binding';
-    return 'informative';
+export function contractScenario({ bindingContract = true, cashAllowed = true } = {}) {
+    return 'cash';
 }
 
 /**

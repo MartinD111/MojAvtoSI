@@ -97,11 +97,6 @@ function renderShell() {
           <div class="adm-brand-text">${PLATFORM.brandName} <span>Admin</span></div>
         </div>
 
-        <div class="adm-sidebar-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="adm-global-search" id="adm-global-search" type="search" placeholder="Išči…" />
-        </div>
-
         <nav class="adm-nav">
           <div class="adm-nav-group-label">Pregled</div>
           ${navItem('dashboard',    'dashboard', 'Dashboard')}
@@ -131,30 +126,52 @@ function renderShell() {
         </nav>
 
         <div class="adm-sidebar-footer">
-          <div class="adm-user-badge">
-            <span class="adm-user-avatar">${(_adminUser.displayName || 'A')[0].toUpperCase()}</span>
-            <div class="adm-user-info">
-              <div class="adm-user-name">${_adminUser.displayName || _adminUser.email}</div>
-              <div class="adm-user-role">${roleLabel(_adminRole)}</div>
-            </div>
-          </div>
           <a href="#/" class="adm-logout-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Na stran
+            <span class="adm-logout-text">Na stran</span>
           </a>
         </div>
       </aside>
 
-      <!-- Main content — no topbar, content starts at top -->
+      <!-- Topbar -->
+      <div class="adm-topbar" id="adm-topbar">
+        <div class="adm-topbar-left">
+          <button class="adm-toggle-sidebar" id="adm-toggle-sidebar" aria-label="Toggle Sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="adm-breadcrumbs" id="adm-breadcrumbs">
+            Pregled <span class="adm-breadcrumbs-sep">/</span> <span>Dashboard</span>
+          </div>
+        </div>
+        
+        <div class="adm-topbar-right">
+          <button class="adm-cmd-trigger" id="adm-cmd-trigger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Iskanje... <kbd>Cmd K</kbd>
+          </button>
+          
+          <div class="adm-user-badge" style="margin-bottom:0;">
+            <span class="adm-user-avatar">${(_adminUser.displayName || 'A')[0].toUpperCase()}</span>
+            <div class="adm-user-info" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content -->
       <div class="adm-main">
-        <button class="adm-menu-toggle" id="adm-menu-toggle" aria-label="Menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
         <div class="adm-content" id="adm-content">
           <div class="adm-loading">Nalagam…</div>
         </div>
       </div>
     </div>`;
+
+    document.getElementById('adm-toggle-sidebar')?.addEventListener('click', () => {
+        document.getElementById('adm-sidebar').classList.toggle('is-collapsed');
+    });
+
+    document.getElementById('adm-cmd-trigger')?.addEventListener('click', () => {
+        if (typeof openCommandPalette === 'function') openCommandPalette();
+    });
 }
 
 function navItem(id, iconKey, label) {
@@ -174,17 +191,29 @@ function attachSidebarNav() {
         btn.addEventListener('click', () => adminNavTo(btn.dataset.section));
     });
 
-    document.getElementById('adm-menu-toggle').addEventListener('click', () => {
+    document.getElementById('adm-menu-toggle')?.addEventListener('click', () => {
         document.getElementById('adm-sidebar').classList.toggle('adm-sidebar--open');
     });
-
-    document.getElementById('adm-global-search').addEventListener('input', debounce(onGlobalSearch, 400));
 }
 
 function adminNavTo(section) {
     _activeSection = section;
     document.querySelectorAll('.adm-nav-item').forEach(b => b.classList.toggle('active', b.dataset.section === section));
-    document.getElementById('adm-content').innerHTML = '<div class="adm-loading"><div class="adm-spinner"></div> Nalagam…</div>';
+    
+    // Update breadcrumbs
+    const activeBtn = document.querySelector(`.adm-nav-item[data-section="${section}"]`);
+    if (activeBtn) {
+        const groupLabel = activeBtn.previousElementSibling?.classList.contains('adm-nav-group-label') 
+            ? activeBtn.previousElementSibling.textContent 
+            : 'Admin';
+        const label = activeBtn.querySelector('.adm-nav-label').textContent;
+        const breadcrumbs = document.getElementById('adm-breadcrumbs');
+        if (breadcrumbs) {
+            breadcrumbs.innerHTML = `${groupLabel} <span class="adm-breadcrumbs-sep">/</span> <span>${label}</span>`;
+        }
+    }
+
+    document.getElementById('adm-content').innerHTML = '<div class="adm-skeleton-wrap"><div class="adm-skeleton-row"></div><div class="adm-skeleton-row" style="height:200px"></div><div class="adm-skeleton-row" style="height:300px"></div></div>';
     sections[section]?.();
 }
 
@@ -222,10 +251,10 @@ async function renderDashboard() {
 
         c.innerHTML = `
           <div class="adm-kpi-grid">
-            ${kpi('Skupaj oglasov', stats.totalListings, '📋', 'blue')}
+            ${kpi('Skupaj oglasov', stats.totalListings, '📋', 'blue', { val: '↑ 12 %', status: 'is-positive' })}
             ${kpi('Aktivnih',       stats.activeCount,   '✅', 'green')}
             ${kpi('V pregledu',     stats.pendingCount,  '⏳', 'yellow')}
-            ${kpi('Uporabnikov',    stats.totalUsers,    '👥', 'purple')}
+            ${kpi('Uporabnikov',    stats.totalUsers,    '👥', 'purple', { val: '↑ 2 %', status: 'is-positive' })}
             ${kpi('Novih danes',    stats.newToday,      '🆕', 'orange')}
             ${kpi('Znamk',          stats.totalBrands,   '🏷️', 'teal')}
           </div>
@@ -331,18 +360,22 @@ async function renderListings() {
           </select>
           <button class="adm-btn" id="lst-filter-btn">Filtriraj</button>
         </div>
-        <div class="adm-bulk-group" id="lst-bulk-group" style="display:none">
-          <span id="lst-selected-count">0 izbranih</span>
-          <button class="adm-btn adm-btn-green" id="lst-bulk-approve">✓ Odobri</button>
-          <button class="adm-btn adm-btn-red"   id="lst-bulk-reject">✗ Zavrni</button>
-          <button class="adm-btn adm-btn-red"   id="lst-bulk-delete">🗑 Izbriši</button>
-        </div>
       </div>
       <div class="adm-card">
         <div class="adm-table-wrap" id="lst-table-wrap">
-          <div class="adm-loading"><div class="adm-spinner"></div></div>
+          <div class="adm-skeleton-wrap"><div class="adm-skeleton-row"></div><div class="adm-skeleton-row"></div></div>
         </div>
         <div class="adm-pagination" id="lst-pagination"></div>
+      </div>
+      
+      <!-- New floating bulk actions bar -->
+      <div class="adm-bulk-bar" id="lst-bulk-group">
+        <div class="adm-bulk-bar-count"><span id="lst-selected-count">0</span> izbranih</div>
+        <div class="adm-bulk-bar-actions">
+          <button class="adm-btn" id="lst-bulk-approve">✓ Odobri</button>
+          <button class="adm-btn adm-btn-red" id="lst-bulk-reject">✗ Zavrni</button>
+          <button class="adm-btn adm-btn-red" id="lst-bulk-delete">🗑 Izbriši</button>
+        </div>
       </div>`;
 
     document.getElementById('lst-filter-btn').addEventListener('click', () => {
@@ -368,7 +401,7 @@ async function loadListingsTable() {
     try {
         const { docs } = await getAllListings(_listingsPage.filters, 50, _listingsPage.lastDoc);
         if (docs.length === 0) {
-            wrap.innerHTML = '<div class="adm-empty">Ni oglasov za prikaz.</div>';
+            wrap.innerHTML = '<div class="adm-empty"><div style="font-size:3rem;margin-bottom:1rem">📭</div><div style="font-size:1.1rem;font-weight:600;color:#111827">Ni oglasov za prikaz</div><div style="margin-top:0.5rem">Poskusite spremeniti filtre.</div></div>';
             return;
         }
 
@@ -393,7 +426,14 @@ async function loadListingsTable() {
                     </div>
                   </td>
                   <td><span class="adm-cat-badge adm-cat-${l.category || 'avto'}">${l.category || 'avto'}</span></td>
-                  <td>${statusBadge(l.status)}</td>
+                  <td>
+                    <select class="adm-inline-select" onchange="window.__lstStatusChange('${l.id}', this.value)">
+                      <option value="active" ${l.status === 'active' ? 'selected' : ''}>Aktiven</option>
+                      <option value="pending" ${l.status === 'pending' ? 'selected' : ''}>V pregledu</option>
+                      <option value="rejected" ${l.status === 'rejected' ? 'selected' : ''}>Zavrnjen</option>
+                      <option value="expired" ${l.status === 'expired' ? 'selected' : ''}>Potekel</option>
+                    </select>
+                  </td>
                   <td class="adm-sub">${escHtml(l.authorName || l.authorId?.slice(0, 8) || '—')}</td>
                   <td><strong>${fmtPrice(l.priceEur || l.price)}</strong></td>
                   <td class="adm-sub">${fmtDate(l.createdAt)}</td>
@@ -420,6 +460,7 @@ async function loadListingsTable() {
         window.__lstReject   = id => openRejectModal(id);
         window.__lstFeatured = id => openFeaturedModal(id);
         window.__lstDelete   = id => confirmAction(`Izbrisati oglas ${id}?`, () => doDeleteListing(id));
+        window.__lstStatusChange = (id, st) => quickStatus(id, st);
 
     } catch (e) {
         wrap.innerHTML = errBox(e);
@@ -451,8 +492,14 @@ function updateBulkBar() {
     const bulkGroup = document.getElementById('lst-bulk-group');
     const selCount = document.getElementById('lst-selected-count');
     if (!bulkGroup) return;
-    bulkGroup.style.display = sel.length > 0 ? 'flex' : 'none';
-    if (selCount) selCount.textContent = `${sel.length} izbranih`;
+    
+    if (sel.length > 0) {
+        bulkGroup.classList.add('is-visible');
+    } else {
+        bulkGroup.classList.remove('is-visible');
+    }
+    
+    if (selCount) selCount.textContent = sel.length;
 }
 
 async function quickStatus(id, status) {
@@ -1801,7 +1848,7 @@ function openEditVariantModal(cat, brand, model, trimName) {
 
     const specFieldsHtml = buildSpecFieldsHtml(cat, variantObj);
 
-    openModal(`Uredi različico — ${escHtml(trimName)}`, `
+    openDrawer(`Uredi različico — ${escHtml(trimName)}`, `
       <div class="adm-form-row">
         <label>Ime različice <span style="color:#ef4444">*</span></label>
         <input id="edit-trim-name" class="adm-input" value="${escHtml(variantObj.trim || trimName)}">
@@ -1844,7 +1891,7 @@ function openEditVariantModal(cat, brand, model, trimName) {
 
 function openTaxAddBrandModal(cat) {
     const hasType = cat !== 'avto';
-    openModal(`Dodaj znamko — ${TAX_SOURCES[cat].label}`, `
+    openDrawer(`Dodaj znamko — ${TAX_SOURCES[cat].label}`, `
       <div class="adm-form-row"><label>Ime znamke</label>
         <input id="tax-new-brand" class="adm-input" placeholder="npr. Lamborghini">
       </div>`, async el => {
@@ -1869,7 +1916,7 @@ function openTaxAddModelModal(cat, brand) {
         : cat === 'gospodarska'
         ? ['Dostavna','Tovorna','Avtobus','TovornePrikolice','Gradbena','Kmetijska','Komunalna','Gozdarska','Vilicarji']
         : [];
-    openModal(`Dodaj model — ${escHtml(brand)}`, `
+    openDrawer(`Dodaj model — ${escHtml(brand)}`, `
       <div class="adm-form-row"><label>Ime modela</label>
         <input id="tax-new-model" class="adm-input" placeholder="npr. S 1000 RR">
       </div>
@@ -1899,7 +1946,7 @@ function openTaxAddModelModal(cat, brand) {
 function openTaxAddVariantModal(cat, brand, model) {
     const specFieldsHtml = buildSpecFieldsHtml(cat, {});
 
-    openModal(`Dodaj različico — ${escHtml(model)}`, `
+    openDrawer(`Dodaj različico — ${escHtml(model)}`, `
       <div class="adm-form-row"><label>Ime različice <span style="color:#ef4444">*</span></label>
         <input id="tax-new-variant" class="adm-input" placeholder="npr. S 1000 RR M">
       </div>
@@ -3388,6 +3435,104 @@ function openModal(title, bodyHtml, onConfirm = null) {
     return el;
 }
 
+function openDrawer(title, bodyHtml, onConfirm = null) {
+    document.getElementById('adm-drawer-overlay')?.remove();
+    const el = document.createElement('div');
+    el.id = 'adm-drawer-overlay';
+    el.className = 'adm-drawer-overlay';
+    el.innerHTML = `
+      <div class="adm-drawer">
+        <div class="adm-drawer-header">
+          <h3>${escHtml(title)}</h3>
+          <button class="adm-modal-close" id="adm-drawer-close">✕</button>
+        </div>
+        <div class="adm-drawer-body">${bodyHtml}</div>
+        ${onConfirm ? `<div class="adm-drawer-footer">
+          <button class="adm-btn" id="adm-drawer-cancel">Prekliči</button>
+          <button class="adm-btn adm-btn-primary" id="adm-drawer-confirm">Shrani</button>
+        </div>` : ''}
+      </div>`;
+    document.body.appendChild(el);
+    
+    // trigger animation
+    setTimeout(() => el.classList.add('is-open'), 10);
+
+    const close = () => {
+        el.classList.remove('is-open');
+        setTimeout(() => el.remove(), 300);
+    };
+    el.addEventListener('click', e => { if (e.target === el) close(); });
+    document.getElementById('adm-drawer-close').addEventListener('click', close);
+    document.getElementById('adm-drawer-cancel')?.addEventListener('click', close);
+    if (onConfirm) {
+        document.getElementById('adm-drawer-confirm').addEventListener('click', () => {
+            onConfirm(el);
+        });
+    }
+    return el;
+}
+
+// ── Command Palette ──────────────────────────────────────────────────────────
+function openCommandPalette() {
+    let overlay = document.getElementById('adm-cmd-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'adm-cmd-overlay';
+        overlay.className = 'adm-cmd-overlay';
+        overlay.innerHTML = `
+          <div class="adm-cmd-palette">
+            <div class="adm-cmd-input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" class="adm-cmd-input" id="adm-cmd-input" placeholder="Kam želite iti? (npr. 'oglasi', 'uporabniki')">
+            </div>
+            <div class="adm-cmd-results" id="adm-cmd-results"></div>
+          </div>`;
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeCmd(); });
+        document.getElementById('adm-cmd-input').addEventListener('input', e => renderCmdResults(e.target.value));
+        document.getElementById('adm-cmd-input').addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeCmd();
+            if (e.key === 'Enter') {
+                const first = document.querySelector('.adm-cmd-result-item');
+                if (first) first.click();
+            }
+        });
+    }
+
+    const closeCmd = () => overlay.classList.remove('is-active');
+
+    const renderCmdResults = (q) => {
+        const query = q.toLowerCase();
+        const routes = [
+            { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+            { id: 'listings', label: 'Oglasi', icon: '📋' },
+            { id: 'users', label: 'Uporabniki', icon: '👥' },
+            { id: 'taxonomy', label: 'Taksonomija', icon: '🏷️' },
+            { id: 'settings', label: 'Nastavitve', icon: '⚙️' }
+        ].filter(r => r.label.toLowerCase().includes(query) || r.id.includes(query));
+
+        let html = '<div class="adm-cmd-result-group">Navigacija</div>';
+        if (routes.length === 0) html += '<div style="padding:1rem;color:#9ca3af;font-size:.85rem;">Ni rezultatov.</div>';
+        
+        routes.forEach(r => {
+            html += `<div class="adm-cmd-result-item" onclick="document.getElementById('adm-cmd-overlay').classList.remove('is-active'); adminNavTo('${r.id}')">${r.icon} ${r.label}</div>`;
+        });
+        document.getElementById('adm-cmd-results').innerHTML = html;
+    };
+
+    overlay.classList.add('is-active');
+    renderCmdResults('');
+    setTimeout(() => document.getElementById('adm-cmd-input').focus(), 100);
+}
+
+document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openCommandPalette();
+    }
+});
+
 function openRejectModal(listingId) {
     const el = openModal('Zavrni oglas', `
       <div class="adm-form-row">
@@ -3581,10 +3726,14 @@ async function onGlobalSearch(e) {
 // UI HELPERS
 // ══════════════════════════════════════════════════════════════════════════════
 
-function kpi(label, value, icon, color) {
+function kpi(label, value, icon, color, trend = null) {
+    const trendHtml = trend ? `<div class="adm-kpi-trend ${trend.status}">${trend.val}</div>` : '';
     return `
       <div class="adm-kpi adm-kpi--${color}">
-        <div class="adm-kpi-icon">${icon}</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div class="adm-kpi-icon">${icon}</div>
+          ${trendHtml}
+        </div>
         <div class="adm-kpi-value">${value}</div>
         <div class="adm-kpi-label">${label}</div>
       </div>`;

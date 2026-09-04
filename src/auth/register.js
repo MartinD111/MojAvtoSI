@@ -1,6 +1,7 @@
 // Register page logic — MojAvto.si
 import { registerWithEmail, loginWithGoogle } from '../auth/auth.js';
 import { navigateTo } from '../router.js';
+import { t } from '../core/i18n.js';
 
 export function initRegisterPage() {
     // ── Private form elements ─────────────────────────────────────────────────
@@ -38,13 +39,13 @@ export function initRegisterPage() {
     googleBtn?.addEventListener('click', async () => {
         try {
             googleBtn.disabled = true;
-            googleBtn.innerHTML = '<i class="fab fa-google"></i> Registriram...';
+            googleBtn.innerHTML = `<i class="fab fa-google"></i> ${t('register_btn_loading', 'Registriram...')}`;
             await loginWithGoogle();
             navigateTo('/dashboard');
         } catch (err) {
             errorEl.textContent = err.message;
             googleBtn.disabled = false;
-            googleBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg> Registracija z Google';
+            googleBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg> ${t('register_google', 'Registracija z Google')}`;
         }
     });
 
@@ -59,25 +60,25 @@ export function initRegisterPage() {
         const confirmPassword = document.getElementById('confirmPassword').value;
         const region = document.getElementById('region').value;
 
-        if (password !== confirmPassword) { errorEl.textContent = 'Gesli se ne ujemata.'; return; }
-        if (password.length < 6) { errorEl.textContent = 'Geslo mora imeti vsaj 6 znakov.'; return; }
+        if (password !== confirmPassword) { errorEl.textContent = t('register_err_password_mismatch', 'Gesli se ne ujemata.'); return; }
+        if (password.length < 6) { errorEl.textContent = t('register_err_password_short', 'Geslo mora imeti vsaj 6 znakov.'); return; }
 
         const submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Registriram...';
+        submitBtn.textContent = t('register_btn_loading', 'Registriram...');
 
         try {
             await registerWithEmail({ fullname, email, password, region });
             navigateTo('/dashboard');
         } catch (err) {
             const msgs = {
-                'auth/email-already-in-use': 'Ta e-mail je že v uporabi.',
-                'auth/weak-password': 'Geslo je prešibko.',
-                'auth/invalid-email': 'Neveljaven e-mail naslov.',
+                'auth/email-already-in-use': t('auth_email_in_use', 'Ta e-mail je že v uporabi.'),
+                'auth/weak-password': t('auth_weak_password', 'Geslo je prešibko.'),
+                'auth/invalid-email': t('auth_invalid_email', 'Neveljaven e-mail naslov.'),
             };
             errorEl.textContent = msgs[err.code] || err.message;
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Registracija';
+            submitBtn.textContent = t('register_title', 'Ustvari račun');
         }
     });
 
@@ -119,7 +120,7 @@ export function initRegisterPage() {
         bizSteps.forEach((el, i) => { el.hidden = i !== step - 1; });
         const pct = step === 3 ? 100 : step === 2 ? 66 : 33;
         bizProgressBar.style.width = pct + '%';
-        bizStepLabel.textContent = step < 3 ? `Korak ${step} od 3` : 'Registracija zaključena';
+        bizStepLabel.textContent = step < 3 ? `Korak ${step} od 3` : t('register_completed', 'Registracija zaključena');
     }
 
     // Step 1 → 2
@@ -135,13 +136,13 @@ export function initRegisterPage() {
         const taxId = document.getElementById('biz-tax-id').value.trim();
         const address = document.getElementById('biz-address').value.trim();
 
-        if (!fullname) { err.textContent = 'Vnesite ime in priimek.'; return; }
-        if (!email || !email.includes('@')) { err.textContent = 'Vnesite veljaven e-mail.'; return; }
-        if (password.length < 6) { err.textContent = 'Geslo mora imeti vsaj 6 znakov.'; return; }
-        if (password !== confirm) { err.textContent = 'Gesli se ne ujemata.'; return; }
-        if (!companyName) { err.textContent = 'Vnesite ime podjetja.'; return; }
-        if (!taxId) { err.textContent = 'Vnesite davčno številko.'; return; }
-        if (!address) { err.textContent = 'Vnesite naslov podjetja.'; return; }
+        if (!fullname) { err.textContent = t('register_err_name', 'Vnesite ime in priimek.'); return; }
+        if (!email || !email.includes('@')) { err.textContent = t('register_err_email', 'Vnesite veljaven e-mail.'); return; }
+        if (password.length < 6) { err.textContent = t('register_err_password_short', 'Geslo mora imeti vsaj 6 znakov.'); return; }
+        if (password !== confirm) { err.textContent = t('register_err_password_mismatch', 'Gesli se ne ujemata.'); return; }
+        if (!companyName) { err.textContent = t('register_err_company', 'Vnesite ime podjetja.'); return; }
+        if (!taxId) { err.textContent = t('register_err_tax', 'Vnesite davčno številko.'); return; }
+        if (!address) { err.textContent = t('register_err_address', 'Vnesite naslov podjetja.'); return; }
 
         setWizardStep(2);
     });
@@ -156,13 +157,13 @@ export function initRegisterPage() {
 
         const selectedRoles = [...document.querySelectorAll('.role-checkbox:checked')].map(cb => cb.value);
         if (selectedRoles.length === 0) {
-            err.textContent = 'Izberite vsaj eno dejavnost.';
+            err.textContent = t('register_err_roles', 'Izberite vsaj eno dejavnost.');
             return;
         }
 
         const submitBtn = document.getElementById('bizSubmit');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:6px"></i> Registriram...';
+        submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin" style="margin-right:6px"></i> ${t('register_btn_loading', 'Registriram...')}`;
 
         const payload = {
             fullname: document.getElementById('biz-fullname').value.trim(),
@@ -184,13 +185,13 @@ export function initRegisterPage() {
             // auto-redirects business users to /b2b when they hit /dashboard.
         } catch (e) {
             const msgs = {
-                'auth/email-already-in-use': 'Ta e-mail je že v uporabi.',
-                'auth/weak-password': 'Geslo je prešibko.',
-                'auth/invalid-email': 'Neveljaven e-mail naslov.',
+                'auth/email-already-in-use': t('auth_email_in_use', 'Ta e-mail je že v uporabi.'),
+                'auth/weak-password': t('auth_weak_password', 'Geslo je prešibko.'),
+                'auth/invalid-email': t('auth_invalid_email', 'Neveljaven e-mail naslov.'),
             };
             err.textContent = msgs[e.code] || e.message;
             submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Zaključi registracijo <i class="fas fa-check" style="margin-left:6px"></i>';
+            submitBtn.innerHTML = `${t('register_btn_finish', 'Zaključi registracijo')} <i class="fas fa-check" style="margin-left:6px"></i>`;
         }
     });
 

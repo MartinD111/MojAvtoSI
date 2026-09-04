@@ -13,10 +13,21 @@ import './src/index.css';
 // Hijack window.fetch to automatically prefix absolute resource fetches with the base path
 const originalFetch = window.fetch;
 window.fetch = function (resource, options) {
-    if (typeof resource === 'string' && resource.startsWith('/') && !resource.startsWith('//')) {
+    let urlStr = null;
+    if (typeof resource === 'string') urlStr = resource;
+    else if (resource instanceof URL) urlStr = resource.pathname + resource.search + resource.hash;
+    
+    if (urlStr && urlStr.startsWith('/') && !urlStr.startsWith('//')) {
         const base = import.meta.env.BASE_URL;
         if (base !== '/') {
-            resource = `${base.slice(0, -1)}${resource}`;
+            const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+            const newUrl = `${cleanBase}${urlStr}`;
+            
+            if (resource instanceof URL) {
+                resource = new URL(newUrl, window.location.origin);
+            } else if (typeof resource === 'string') {
+                resource = newUrl;
+            }
         }
     }
     return originalFetch.call(this, resource, options);
@@ -69,7 +80,7 @@ fetch('views/footer.html')
             let htmlText = html;
             const base = import.meta.env.BASE_URL;
             if (base !== '/') {
-                const cleanBase = base.slice(0, -1);
+                const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
                 htmlText = htmlText
                     .replaceAll('href="/icons/', `href="${cleanBase}/icons/`)
                     .replaceAll('src="/images/', `src="${cleanBase}/images/`);

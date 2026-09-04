@@ -80,6 +80,13 @@ export async function updateBookingStatus(id, status) {
     await supabase.from('bookings').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
 }
 
+export async function confirmBookingSlot(id, date, time) {
+    const uid = await requireProvider();
+    const { data: row } = await supabase.from('bookings').select('provider_id').eq('id', id).single();
+    if (!row || row.provider_id !== uid) throw new Error('Access denied.');
+    await supabase.from('bookings').update({ status: 'confirmed', date, time, updated_at: new Date().toISOString() }).eq('id', id);
+}
+
 export async function blockSlot(date, time, reason) {
     const uid = await requireProvider();
     await supabase.from('bookings').insert({ provider_id: uid, date, time, status: 'blocked', notes: reason || 'Blocked slot', created_at: new Date().toISOString() });

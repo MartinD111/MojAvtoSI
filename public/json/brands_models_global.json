@@ -1,22 +1,5 @@
 {
   "Abarth": {
-    "124 Spider": [
-      {
-        "trim": "124 Spider",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1368
-      },
-      {
-        "trim": "124 Spider Scorpione",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1368
-      },
-      {
-        "trim": "124 GT",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1368
-      }
-    ],
     "500": [
       {
         "trim": "500",
@@ -60,12 +43,6 @@
         "engine_capacity_cc": 1368
       }
     ],
-    "600e": [
-      {
-        "trim": "Scorpionissima",
-        "fuel_type": "Electric"
-      }
-    ],
     "695": [
       {
         "trim": "695",
@@ -96,6 +73,29 @@
         "trim": "695 70th Anniversario",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1368
+      }
+    ],
+    "124 Spider": [
+      {
+        "trim": "124 Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1368
+      },
+      {
+        "trim": "124 Spider Scorpione",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1368
+      },
+      {
+        "trim": "124 GT",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1368
+      }
+    ],
+    "600e": [
+      {
+        "trim": "Scorpionissima",
+        "fuel_type": "Electric"
       }
     ],
     "Fastback": [
@@ -480,6 +480,32 @@
     ]
   },
   "Alfa Romeo": {
+    "33": [
+      {
+        "trim": "33",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1490
+      }
+    ],
+    "75": [
+      {
+        "trim": "75",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Turbo Evoluzione",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1995
+      }
+    ],
+    "90": [
+      {
+        "trim": "90",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      }
+    ],
     "145": [
       {
         "trim": "1.4 TS",
@@ -728,13 +754,6 @@
         "engine_capacity_cc": 1884
       }
     ],
-    "33": [
-      {
-        "trim": "33",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1490
-      }
-    ],
     "33 Stradale": [
       {
         "trim": "33 Stradale",
@@ -759,30 +778,11 @@
         "engine_capacity_cc": 1750
       }
     ],
-    "75": [
-      {
-        "trim": "75",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2000
-      },
-      {
-        "trim": "Turbo Evoluzione",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1995
-      }
-    ],
     "8C 2900": [
       {
         "trim": "B Corto Touring Berlinetta",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2905
-      }
-    ],
-    "90": [
-      {
-        "trim": "90",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2000
       }
     ],
     "Alfasud": [
@@ -1716,6 +1716,13 @@
     ]
   },
   "Audi": {
+    "50": [
+      {
+        "trim": "50",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1100
+      }
+    ],
     "100 (C1)": [
       {
         "trim": "100 (C1)",
@@ -1743,13 +1750,6 @@
         "trim": "S4",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2200
-      }
-    ],
-    "50": [
-      {
-        "trim": "50",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1100
       }
     ],
     "60 (F103)": [
@@ -2589,13 +2589,6 @@
     ]
   },
   "BMW": {
-    "2002": [
-      {
-        "trim": "ti",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1990
-      }
-    ],
     "328": [
       {
         "trim": "328",
@@ -2615,6 +2608,13 @@
         "trim": "700",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 697
+      }
+    ],
+    "2002": [
+      {
+        "trim": "ti",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1990
       }
     ],
     "i3": [
@@ -5198,6 +5198,12 @@
         "fuel_type": "Petrol",
         "engine_capacity_cc": 6000
       }
+    ],
+    "V16T": [
+      {
+        "trim": "V16T",
+        "fuel_type": "Petrol"
+      }
     ]
   },
   "Cord": {
@@ -5567,6 +5573,18 @@
     ]
   },
   "Datsun": {
+    "510": [
+      {
+        "trim": "510",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "Bluebird",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1595
+      }
+    ],
     "240Z": [
       {
         "trim": "240Z",
@@ -5591,18 +5609,6 @@
         "trim": "280ZX",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2800
-      }
-    ],
-    "510": [
-      {
-        "trim": "510",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1600
-      },
-      {
-        "trim": "Bluebird",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1595
       }
     ],
     "B210": [
@@ -5655,15 +5661,6 @@
         "trim": "135",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3558
-      }
-    ]
-  },
-  "DeLorean": {
-    "DMC-12": [
-      {
-        "trim": "DMC-12",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2850
       }
     ]
   },
@@ -6198,6 +6195,44 @@
     ]
   },
   "Ferrari": {
+    "328": [
+      {
+        "trim": "328",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3200
+      }
+    ],
+    "348": [
+      {
+        "trim": "348 TB/TS",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 3400
+      }
+    ],
+    "430": [
+      {
+        "trim": "F430",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4300
+      },
+      {
+        "trim": "F430 Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4300
+      },
+      {
+        "trim": "430 Scuderia",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 4300
+      }
+    ],
+    "456": [
+      {
+        "trim": "456 GT",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5500
+      }
+    ],
     "12Cilindri": [
       {
         "trim": "12Cilindri",
@@ -6262,20 +6297,6 @@
         "engine_capacity_cc": 2900
       }
     ],
-    "328": [
-      {
-        "trim": "328",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 3200
-      }
-    ],
-    "348": [
-      {
-        "trim": "348 TB/TS",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 3400
-      }
-    ],
     "360 Modena": [
       {
         "trim": "360 Modena",
@@ -6305,30 +6326,6 @@
         "trim": "412",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4800
-      }
-    ],
-    "430": [
-      {
-        "trim": "F430",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 4300
-      },
-      {
-        "trim": "F430 Spider",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 4300
-      },
-      {
-        "trim": "430 Scuderia",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 4300
-      }
-    ],
-    "456": [
-      {
-        "trim": "456 GT",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 5500
       }
     ],
     "458 Italia": [
@@ -6647,18 +6644,6 @@
     ]
   },
   "Fiat": {
-    "1100": [
-      {
-        "trim": "1100",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1089
-      },
-      {
-        "trim": "103",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1089
-      }
-    ],
     "124": [
       {
         "trim": "124 Sport Spider",
@@ -6718,13 +6703,6 @@
         "engine_capacity_cc": 1600
       }
     ],
-    "1400": [
-      {
-        "trim": "1400",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1395
-      }
-    ],
     "500": [
       {
         "trim": "500",
@@ -6754,6 +6732,50 @@
         "trim": "Abarth 595 Esseesse",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1400
+      }
+    ],
+    "501": [
+      {
+        "trim": "501",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1460
+      }
+    ],
+    "600": [
+      {
+        "trim": "600",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1200
+      },
+      {
+        "trim": "600e",
+        "fuel_type": "Electric"
+      }
+    ],
+    "850": [
+      {
+        "trim": "Spider",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 843
+      }
+    ],
+    "1100": [
+      {
+        "trim": "1100",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1089
+      },
+      {
+        "trim": "103",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1089
+      }
+    ],
+    "1400": [
+      {
+        "trim": "1400",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1395
       }
     ],
     "500 Nuova": [
@@ -6797,36 +6819,11 @@
         "engine_capacity_cc": 1400
       }
     ],
-    "501": [
-      {
-        "trim": "501",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1460
-      }
-    ],
     "508 Balilla": [
       {
         "trim": "508 Balilla",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 995
-      }
-    ],
-    "600": [
-      {
-        "trim": "600",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1200
-      },
-      {
-        "trim": "600e",
-        "fuel_type": "Electric"
-      }
-    ],
-    "850": [
-      {
-        "trim": "Spider",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 843
       }
     ],
     "Argenta": [
@@ -12161,13 +12158,6 @@
     ]
   },
   "Mazda": {
-    "121": [
-      {
-        "trim": "121",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1300
-      }
-    ],
     "2": [
       {
         "trim": "2",
@@ -12202,18 +12192,6 @@
         "engine_capacity_cc": 2500
       }
     ],
-    "323": [
-      {
-        "trim": "323",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1500
-      },
-      {
-        "trim": "323F",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1800
-      }
-    ],
     "5": [
       {
         "trim": "5",
@@ -12241,6 +12219,25 @@
         "trim": "Mazda6 Signature",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2500
+      }
+    ],
+    "121": [
+      {
+        "trim": "121",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1300
+      }
+    ],
+    "323": [
+      {
+        "trim": "323",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1500
+      },
+      {
+        "trim": "323F",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1800
       }
     ],
     "626": [
@@ -14093,6 +14090,13 @@
     ]
   },
   "Mitsubishi": {
+    "500": [
+      {
+        "trim": "500",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 493
+      }
+    ],
     "3000GT": [
       {
         "trim": "3000GT",
@@ -14103,13 +14107,6 @@
         "trim": "VR-4",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
-      }
-    ],
-    "500": [
-      {
-        "trim": "500",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 493
       }
     ],
     "ASX": [
@@ -14951,18 +14948,18 @@
         "engine_capacity_cc": 3800
       }
     ],
-    "88 (1949)": [
-      {
-        "trim": "Rocket",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 5026
-      }
-    ],
     "98": [
       {
         "trim": "98",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3800
+      }
+    ],
+    "88 (1949)": [
+      {
+        "trim": "Rocket",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 5026
       }
     ],
     "Achieva": [
@@ -15613,17 +15610,6 @@
         "engine_capacity_cc": 1000
       }
     ],
-    "2008": [
-      {
-        "trim": "2008",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1200
-      },
-      {
-        "trim": "e-2008",
-        "fuel_type": "Electric"
-      }
-    ],
     "201": [
       {
         "trim": "201",
@@ -15720,27 +15706,6 @@
         "trim": "GTi 30th",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1600
-      }
-    ],
-    "3008": [
-      {
-        "trim": "3008",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1200
-      },
-      {
-        "trim": "Hybrid",
-        "fuel_type": "Plug-in Hybrid",
-        "engine_capacity_cc": 1600
-      },
-      {
-        "trim": "Hybrid4",
-        "fuel_type": "Diesel",
-        "engine_capacity_cc": 2000
-      },
-      {
-        "trim": "e-3008",
-        "fuel_type": "Electric"
       }
     ],
     "301": [
@@ -15881,17 +15846,6 @@
         "engine_capacity_cc": 1200
       }
     ],
-    "5008": [
-      {
-        "trim": "5008",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1200
-      },
-      {
-        "trim": "e-5008",
-        "fuel_type": "Electric"
-      }
-    ],
     "504": [
       {
         "trim": "504",
@@ -15954,6 +15908,49 @@
         "trim": "807",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2200
+      }
+    ],
+    "2008": [
+      {
+        "trim": "2008",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1200
+      },
+      {
+        "trim": "e-2008",
+        "fuel_type": "Electric"
+      }
+    ],
+    "3008": [
+      {
+        "trim": "3008",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1200
+      },
+      {
+        "trim": "Hybrid",
+        "fuel_type": "Plug-in Hybrid",
+        "engine_capacity_cc": 1600
+      },
+      {
+        "trim": "Hybrid4",
+        "fuel_type": "Diesel",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "e-3008",
+        "fuel_type": "Electric"
+      }
+    ],
+    "5008": [
+      {
+        "trim": "5008",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1200
+      },
+      {
+        "trim": "e-5008",
+        "fuel_type": "Electric"
       }
     ],
     "E-3008": [
@@ -16336,13 +16333,6 @@
         "engine_capacity_cc": 1600
       }
     ],
-    "550 Spyder": [
-      {
-        "trim": "550 Spyder",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1498
-      }
-    ],
     "718": [
       {
         "trim": "Cayman",
@@ -16514,13 +16504,6 @@
         "engine_capacity_cc": 1700
       }
     ],
-    "918 Spyder": [
-      {
-        "trim": "918 Spyder",
-        "fuel_type": "Plug-in Hybrid",
-        "engine_capacity_cc": 4600
-      }
-    ],
     "924": [
       {
         "trim": "924",
@@ -16554,6 +16537,20 @@
         "trim": "968",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 3000
+      }
+    ],
+    "550 Spyder": [
+      {
+        "trim": "550 Spyder",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1498
+      }
+    ],
+    "918 Spyder": [
+      {
+        "trim": "918 Spyder",
+        "fuel_type": "Plug-in Hybrid",
+        "engine_capacity_cc": 4600
       }
     ],
     "Boxster": [
@@ -16857,18 +16854,72 @@
     ]
   },
   "Renault": {
+    "4": [
+      {
+        "trim": "4",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 850
+      },
+      {
+        "trim": "E-Tech Electric",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "E-Tech 150 hp",
+        "fuel_type": "Electric"
+      }
+    ],
+    "5": [
+      {
+        "trim": "5",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1100
+      },
+      {
+        "trim": "E-Tech Electric",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "Turbo",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
+      },
+      {
+        "trim": "E-Tech 150 hp",
+        "fuel_type": "Electric"
+      },
+      {
+        "trim": "Turbo 2",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
+      }
+    ],
+    "6": [
+      {
+        "trim": "6",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 850
+      }
+    ],
+    "8": [
+      {
+        "trim": "8",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1100
+      }
+    ],
+    "9": [
+      {
+        "trim": "9",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
+      }
+    ],
     "10": [
       {
         "trim": "10",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1300
-      }
-    ],
-    "10CV": [
-      {
-        "trim": "10CV",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2120
       }
     ],
     "11": [
@@ -16955,19 +17006,11 @@
         "engine_capacity_cc": 2700
       }
     ],
-    "4": [
+    "10CV": [
       {
-        "trim": "4",
+        "trim": "10CV",
         "fuel_type": "Petrol",
-        "engine_capacity_cc": 850
-      },
-      {
-        "trim": "E-Tech Electric",
-        "fuel_type": "Electric"
-      },
-      {
-        "trim": "E-Tech 150 hp",
-        "fuel_type": "Electric"
+        "engine_capacity_cc": 2120
       }
     ],
     "4CV": [
@@ -16975,52 +17018,6 @@
         "trim": "4CV",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 747
-      }
-    ],
-    "5": [
-      {
-        "trim": "5",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1100
-      },
-      {
-        "trim": "E-Tech Electric",
-        "fuel_type": "Electric"
-      },
-      {
-        "trim": "Turbo",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1400
-      },
-      {
-        "trim": "E-Tech 150 hp",
-        "fuel_type": "Electric"
-      },
-      {
-        "trim": "Turbo 2",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1400
-      }
-    ],
-    "6": [
-      {
-        "trim": "6",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 850
-      }
-    ],
-    "8": [
-      {
-        "trim": "8",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1100
-      }
-    ],
-    "9": [
-      {
-        "trim": "9",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1400
       }
     ],
     "Alpine A110": [
@@ -17544,6 +17541,32 @@
     ]
   },
   "Rover": {
+    "25": [
+      {
+        "trim": "25",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1400
+      }
+    ],
+    "45": [
+      {
+        "trim": "45",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1600
+      }
+    ],
+    "75": [
+      {
+        "trim": "75",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1800
+      },
+      {
+        "trim": "Tourer",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 1800
+      }
+    ],
     "100": [
       {
         "trim": "100",
@@ -17558,13 +17581,6 @@
         "engine_capacity_cc": 1400
       }
     ],
-    "25": [
-      {
-        "trim": "25",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1400
-      }
-    ],
     "400 Series": [
       {
         "trim": "400 Series",
@@ -17572,30 +17588,11 @@
         "engine_capacity_cc": 1400
       }
     ],
-    "45": [
-      {
-        "trim": "45",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1600
-      }
-    ],
     "600 Series": [
       {
         "trim": "600 Series",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 2000
-      }
-    ],
-    "75": [
-      {
-        "trim": "75",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1800
-      },
-      {
-        "trim": "Tourer",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 1800
       }
     ],
     "800 Series": [
@@ -17649,6 +17646,56 @@
     ]
   },
   "Saab": {
+    "90": [
+      {
+        "trim": "90",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      }
+    ],
+    "92": [
+      {
+        "trim": "92",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 764
+      }
+    ],
+    "96": [
+      {
+        "trim": "96",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 841
+      }
+    ],
+    "900": [
+      {
+        "trim": "900",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Turbo",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Cabriolet",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      }
+    ],
+    "9000": [
+      {
+        "trim": "9000",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2000
+      },
+      {
+        "trim": "Aero",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2300
+      }
+    ],
     "09-Mar": [
       {
         "trim": "09-Mar",
@@ -17746,56 +17793,6 @@
         "trim": "9-7X",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 4200
-      }
-    ],
-    "90": [
-      {
-        "trim": "90",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2000
-      }
-    ],
-    "900": [
-      {
-        "trim": "900",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2000
-      },
-      {
-        "trim": "Turbo",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2000
-      },
-      {
-        "trim": "Cabriolet",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2000
-      }
-    ],
-    "9000": [
-      {
-        "trim": "9000",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2000
-      },
-      {
-        "trim": "Aero",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 2300
-      }
-    ],
-    "92": [
-      {
-        "trim": "92",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 764
-      }
-    ],
-    "96": [
-      {
-        "trim": "96",
-        "fuel_type": "Petrol",
-        "engine_capacity_cc": 841
       }
     ],
     "Sonett": [
@@ -21161,6 +21158,623 @@
         "trim": "Outdoor",
         "fuel_type": "Petrol",
         "engine_capacity_cc": 1200
+      }
+    ]
+  },
+  "DMC": {
+    "DMC-12": [
+      {
+        "trim": "DMC-12",
+        "fuel_type": "Petrol",
+        "engine_capacity_cc": 2850
+      }
+    ],
+    "DeLorean-12": [
+      {
+        "trim": "DeLorean-12",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "RUF": {
+    "CTR": [
+      {
+        "trim": "CTR",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "CTR2": [
+      {
+        "trim": "CTR2",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "CTR3": [
+      {
+        "trim": "CTR3",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "SCR": [
+      {
+        "trim": "SCR",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Rt 12": [
+      {
+        "trim": "Rt 12",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Turbo R": [
+      {
+        "trim": "Turbo R",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Ariel": {
+    "Atom": [
+      {
+        "trim": "Atom",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Nomad": [
+      {
+        "trim": "Nomad",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Hipercar": [
+      {
+        "trim": "Hipercar",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Caterham": {
+    "21": [
+      {
+        "trim": "21",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Seven": [
+      {
+        "trim": "Seven",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "SP/300.R": [
+      {
+        "trim": "SP/300.R",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Project V": [
+      {
+        "trim": "Project V",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Ultima": {
+    "GTR": [
+      {
+        "trim": "GTR",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Can-Am": [
+      {
+        "trim": "Can-Am",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Evolution": [
+      {
+        "trim": "Evolution",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "RS": [
+      {
+        "trim": "RS",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Tramontana": {
+    "Tramontana": [
+      {
+        "trim": "Tramontana",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Tramontana R": [
+      {
+        "trim": "Tramontana R",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Tramontana XTR": [
+      {
+        "trim": "Tramontana XTR",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Lotec": {
+    "C1000": [
+      {
+        "trim": "C1000",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Sirius": [
+      {
+        "trim": "Sirius",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Sabra": {
+    "Sport": [
+      {
+        "trim": "Sport",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Carmel": [
+      {
+        "trim": "Carmel",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Sussita": [
+      {
+        "trim": "Sussita",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Gilboa": [
+      {
+        "trim": "Gilboa",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Fornasari": {
+    "RR99": [
+      {
+        "trim": "RR99",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "RR600": [
+      {
+        "trim": "RR600",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Tender": [
+      {
+        "trim": "Tender",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Gigi": [
+      {
+        "trim": "Gigi",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Hunter": [
+      {
+        "trim": "Hunter",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Yulon": {
+    "Feeling 101": [
+      {
+        "trim": "Feeling 101",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Feeling 102": [
+      {
+        "trim": "Feeling 102",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Arex": [
+      {
+        "trim": "Arex",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "KTM": {
+    "X-Bow": [
+      {
+        "trim": "X-Bow",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Sungreen": {
+    "Model 1": [
+      {
+        "trim": "Model 1",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "VIA Motors": {
+    "VTRUX": [
+      {
+        "trim": "VTRUX",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "VTRUX Truck": [
+      {
+        "trim": "VTRUX Truck",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "VTRUX Van": [
+      {
+        "trim": "VTRUX Van",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Bristol": {
+    "400": [
+      {
+        "trim": "400",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "401": [
+      {
+        "trim": "401",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "403": [
+      {
+        "trim": "403",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "404": [
+      {
+        "trim": "404",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "405": [
+      {
+        "trim": "405",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "406": [
+      {
+        "trim": "406",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "407": [
+      {
+        "trim": "407",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "408": [
+      {
+        "trim": "408",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "409": [
+      {
+        "trim": "409",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "410": [
+      {
+        "trim": "410",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "411": [
+      {
+        "trim": "411",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "412": [
+      {
+        "trim": "412",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "603": [
+      {
+        "trim": "603",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Beaufighter": [
+      {
+        "trim": "Beaufighter",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Blenheim": [
+      {
+        "trim": "Blenheim",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Fighter": [
+      {
+        "trim": "Fighter",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Bullet": [
+      {
+        "trim": "Bullet",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Gordon Murray": {
+    "T.50": [
+      {
+        "trim": "T.50",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "T.33": [
+      {
+        "trim": "T.33",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Dome": {
+    "Zero": [
+      {
+        "trim": "Zero",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Ascari": {
+    "Ecosse": [
+      {
+        "trim": "Ecosse",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "KZ1": [
+      {
+        "trim": "KZ1",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "A10": [
+      {
+        "trim": "A10",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Keating": {
+    "TKR": [
+      {
+        "trim": "TKR",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "SKR": [
+      {
+        "trim": "SKR",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "ZKR": [
+      {
+        "trim": "ZKR",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Bolt": [
+      {
+        "trim": "Bolt",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Berus": [
+      {
+        "trim": "Berus",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Beck": {
+    "904": [
+      {
+        "trim": "904",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "550 Spyder": [
+      {
+        "trim": "550 Spyder",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "GTS": [
+      {
+        "trim": "GTS",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Apollo": {
+    "Intensa Emozione": [
+      {
+        "trim": "Intensa Emozione",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Project Evo": [
+      {
+        "trim": "Project Evo",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Arrow": [
+      {
+        "trim": "Arrow",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Arash": {
+    "AF10": [
+      {
+        "trim": "AF10",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "AF8": [
+      {
+        "trim": "AF8",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Farboud GT": [
+      {
+        "trim": "Farboud GT",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Vencer": {
+    "Sarthe": [
+      {
+        "trim": "Sarthe",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Trident": {
+    "Iceni": [
+      {
+        "trim": "Iceni",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Devon": {
+    "GTX": [
+      {
+        "trim": "GTX",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Trion": {
+    "Nemesis": [
+      {
+        "trim": "Nemesis",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Hulme": {
+    "CanAm": [
+      {
+        "trim": "CanAm",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Gunther Werks": {
+    "400R": [
+      {
+        "trim": "400R",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Speedster": [
+      {
+        "trim": "Speedster",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Tornado": [
+      {
+        "trim": "Tornado",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "RWB": {
+    "911": [
+      {
+        "trim": "911",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "930": [
+      {
+        "trim": "930",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "964": [
+      {
+        "trim": "964",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "993": [
+      {
+        "trim": "993",
+        "fuel_type": "Petrol"
+      }
+    ]
+  },
+  "Singer": {
+    "Classic Study": [
+      {
+        "trim": "Classic Study",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "DLS": [
+      {
+        "trim": "DLS",
+        "fuel_type": "Petrol"
+      }
+    ],
+    "Turbo Study": [
+      {
+        "trim": "Turbo Study",
+        "fuel_type": "Petrol"
       }
     ]
   }

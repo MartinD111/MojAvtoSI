@@ -8,9 +8,16 @@ export default defineConfig({
         baseURL: 'http://localhost:4173',
         headless: true,
     },
-    webServer: {
-        command: 'cross-env VITE_PLATFORM=avto npx vite preview --outDir dist-avto --port 4173',
-        url: 'http://localhost:4173',
-        reuseExistingServer: !process.env.CI,
-    },
+    webServer: [
+        {
+            command: 'cross-env VITE_PLATFORM=avto npx vite preview --outDir dist-avto --port 4173',
+            url: 'http://localhost:4173',
+            reuseExistingServer: !process.env.CI,
+        },
+        {
+            command: 'cross-env VITE_PLATFORM=navtika npx vite preview --outDir dist-navtika --port 4174',
+            url: 'http://localhost:4174',
+            reuseExistingServer: !process.env.CI,
+        },
+    ],
 });

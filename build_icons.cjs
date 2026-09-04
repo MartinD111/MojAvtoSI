@@ -191,11 +191,16 @@ body.dark-mode .custom-v-icon .v-base {
 }
 
 /* Hover/Active state overrides */
+.body-type-card:hover .custom-v-icon {
+    transform: scale(1.06);
+}
 .body-type-card:hover .custom-v-icon .v-base,
-.body-type-card.active .custom-v-icon .v-base,
+.body-type-card.active .custom-v-icon .v-base {
+    fill: #0f172a;
+}
 .body-type-card:hover .custom-v-icon .v-accent,
 .body-type-card.active .custom-v-icon .v-accent {
-    fill: #ffffff;
+    fill: var(--color-primary-start);
 }
 
 /* Make them slightly larger in the cards */

@@ -9,6 +9,7 @@
 // fallback derived from the local price-ratio heuristic — see ratingFallbackStars().
 // ═══════════════════════════════════════════════════════════════════════════════
 import { escHtml } from './escHtml.js';
+import { t } from '../core/i18n.js';
 
 const STAR_COLOR = 'var(--color-primary-start, #f59e0b)';
 const EMPTY_COLOR = '#374151';
@@ -35,12 +36,12 @@ export function renderStarsHtml(stars, dim = 16) {
 
 // Fallback when there are too few comparables for getVehicleRating().
 // Maps the local getPriceRating() heuristic (score 3/2/1) to a star value
-// and a Slovenian label, so we always show stars — never an English text pill.
+// and a localized label.
 export function ratingFallbackStars(priceRating) {
     const score = priceRating?.score;
-    if (score === 3) return { stars: 4.5, label: 'Odlična vrednost' };
-    if (score === 1) return { stars: 2,   label: 'Nad povprečjem' };
-    return { stars: 3, label: 'Poštena cena' };
+    if (score === 3) return { stars: 4.5, label: t('rating_excellent_val', 'Odlična vrednost') };
+    if (score === 1) return { stars: 2,   label: t('rating_above_avg', 'Nad povprečjem') };
+    return { stars: 3, label: t('rating_fair_val', 'Poštena cena') };
 }
 
 // Compact stacked badge for listing cards: stars on top, Slovenian label beneath.

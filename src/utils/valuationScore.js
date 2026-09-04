@@ -137,22 +137,32 @@ export function calcFinalRating(priceScore, equipmentScore) {
     const stars = Math.min(5, Math.max(1, roundHalf(raw)));
 
     // Label
-    const labels = { 5: 'Odlična vrednost', 4.5: 'Odlična vrednost', 4: 'Dobra vrednost', 3.5: 'Poštena cena', 3: 'Poštena cena', 2.5: 'Nad povprečjem', 2: 'Nad povprečjem', 1.5: 'Predrago', 1: 'Predrago' };
-    const label = labels[stars] || 'Poštena cena';
+    const labels = {
+        5: t('rating_excellent_val', 'Odlična vrednost'),
+        4.5: t('rating_excellent_val', 'Odlična vrednost'),
+        4: t('rating_good_val', 'Dobra vrednost'),
+        3.5: t('rating_fair_val', 'Poštena cena'),
+        3: t('rating_fair_val', 'Poštena cena'),
+        2.5: t('rating_above_avg', 'Nad povprečjem'),
+        2: t('rating_above_avg', 'Nad povprečjem'),
+        1.5: t('rating_too_high', 'Predrago'),
+        1: t('rating_too_high', 'Predrago')
+    };
+    const label = labels[stars] || t('rating_fair_val', 'Poštena cena');
 
     // priceSignal
     const absPct = Math.abs(deltaPercent).toFixed(0);
     const priceSignal = deltaPercent < 0
-        ? `${absPct} % pod tržno mediano`
+        ? t('pct_below_median', '{pct} % pod tržno mediano').replace('{pct}', absPct)
         : deltaPercent > 0
-            ? `${absPct} % nad tržno mediano`
-            : 'Na ravni tržne mediane';
+            ? t('pct_above_median', '{pct} % nad tržno mediano').replace('{pct}', absPct)
+            : t('at_market_median', 'Na ravni tržne mediane');
 
-    // equipmentSignal — max 3 rare items, Slovenian labels
+    // equipmentSignal — max 3 rare items
     let equipmentSignal = '';
     if (rareItems.length > 0) {
         const labels3 = rareItems.slice(0, 3).map(slug => getEquipmentLabel(slug));
-        equipmentSignal = labels3.join(', ') + ' — redko pri tem modelu';
+        equipmentSignal = labels3.join(', ') + ' — ' + t('rare_for_this_model', 'redko pri tem modelu');
     }
 
     return { stars, label, priceSignal, equipmentSignal };

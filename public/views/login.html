@@ -3,7 +3,7 @@
         <div class="auth-logo">
             <a href="/">MojAvto<span class="logo-dot">.si</span></a>
         </div>
-        <h1 class="auth-title">Sign In</h1>
+        <h1 class="auth-title" data-i18n-key="login_title">Prijava</h1>
 
         <button id="googleLoginBtn" class="btn-google">
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -20,34 +20,34 @@
                     d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"
                     fill="#EA4335" />
             </svg>
-            Sign In with Google
+            <span data-i18n-key="login_google">Prijava z Google</span>
         </button>
 
-        <div class="auth-divider"><span>or</span></div>
+        <div class="auth-divider"><span data-i18n-key="or_divider">ali</span></div>
 
         <form id="loginForm" novalidate>
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email" data-i18n-key="form_email">Email</label>
                 <input type="email" id="email" name="email" placeholder="you@email.com" required autocomplete="email" />
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password" data-i18n-key="form_password">Geslo</label>
                 <div class="password-wrapper">
                     <input type="password" id="password" name="password" placeholder="••••••••" required
                         autocomplete="current-password" />
-                    <button type="button" class="toggle-pw" aria-label="Show password"><i
+                    <button type="button" class="toggle-pw" aria-label="Toggle password"><i
                             class="fas fa-eye"></i></button>
                 </div>
             </div>
             <div class="forgot-link-container">
-                <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+                <a href="/forgot-password" class="forgot-link" data-i18n-key="login_forgot_password">Ste pozabili geslo?</a>
             </div>
 
             <p id="error-message" class="auth-error" aria-live="polite"></p>
 
-            <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+            <button type="submit" class="btn btn-primary btn-full" id="loginSubmitBtn"><span data-i18n-key="login_title">Prijava</span></button>
         </form>
 
-        <p class="auth-switch">Don't have an account? <a href="/register">Sign Up</a></p>
+        <p class="auth-switch"><span data-i18n-key="login_no_account">Še nimate računa?</span> <a href="/register" data-i18n-key="register_title">Ustvari račun</a></p>
     </div>
 </section>

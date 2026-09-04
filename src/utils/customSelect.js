@@ -1,4 +1,32 @@
 import { t } from '../core/i18n.js';
+import { getBrandLogo, getBrandInitial, isBrandMonochrome } from '../data/brandLogos.js';
+import { getBrandRgb } from '../data/brandColors.js';
+
+function getBrandOptionHtml(optText, optValue) {
+    if (!optValue) return optText;
+    const logoUrl = getBrandLogo(optValue);
+    const brandRgb = getBrandRgb(optValue || optText);
+    const initial = getBrandInitial(optText);
+    const isAdaptive = isBrandMonochrome(optValue || optText);
+    const adaptiveClass = isAdaptive ? 'logo-adaptive' : '';
+    if (logoUrl) {
+        return `<div class="custom-select-brand-item" style="--brand-rgb: ${brandRgb};"><span class="custom-select-brand-name">${optText}</span><div class="custom-select-brand-watermark"><img src="${logoUrl}" class="custom-select-brand-logo ${adaptiveClass}" alt="" loading="lazy" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';" /><span class="custom-select-brand-badge" style="display:none;">${initial}</span></div></div>`;
+    }
+    return `<div class="custom-select-brand-item" style="--brand-rgb: ${brandRgb};"><span class="custom-select-brand-name">${optText}</span><div class="custom-select-brand-watermark"><span class="custom-select-brand-badge">${initial}</span></div></div>`;
+}
+
+function getBrandTriggerHtml(optText, optValue) {
+    if (!optValue) return optText;
+    const logoUrl = getBrandLogo(optValue);
+    const brandRgb = getBrandRgb(optValue || optText);
+    const initial = getBrandInitial(optText);
+    const isAdaptive = isBrandMonochrome(optValue || optText);
+    const adaptiveClass = isAdaptive ? 'logo-adaptive' : '';
+    if (logoUrl) {
+        return `<div class="custom-select-brand-item trigger-item" style="--brand-rgb: ${brandRgb};"><span class="custom-select-brand-name">${optText}</span><div class="custom-select-brand-watermark"><img src="${logoUrl}" class="custom-select-brand-logo ${adaptiveClass}" alt="" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';" /><span class="custom-select-brand-badge" style="display:none;">${initial}</span></div></div>`;
+    }
+    return `<div class="custom-select-brand-item trigger-item" style="--brand-rgb: ${brandRgb};"><span class="custom-select-brand-name">${optText}</span><div class="custom-select-brand-watermark"><span class="custom-select-brand-badge">${initial}</span></div></div>`;
+}
 
 function getColorDotHtml(colorName) {
     if (!colorName) return '';
@@ -55,23 +83,15 @@ function getColorDotHtml(colorName) {
 /**
  * CustomSelect - Transforms standard HTML selects into searchable, pill-shaped dropdowns.
  */
-export function initCustomSelects() {
-    const selects = document.querySelectorAll('select:not(.custom-select-hidden)');
+export function initCustomSelects(scope = document) {
+    const selects = scope.querySelectorAll('select:not(.custom-select-hidden)');
     selects.forEach(select => {
-        // Skip already processed
-        // We allow hidden selects if they are form inputs or have explicit glass-select class
-        const isFormInput = select.classList.contains('pill-input') || 
-                           select.classList.contains('cl-select') || 
-                           select.classList.contains('pill-select') ||
-                           select.classList.contains('glass-select');
-                           
-        if (select.offsetParent === null && !isFormInput) return;
         createCustomSelect(select);
     });
 }
 
 export function createCustomSelect(select) {
-    if (select.dataset.customSelectInit) return;
+    if (!select || select.dataset.customSelectInit) return;
     select.dataset.customSelectInit = "true";
     select.classList.add('custom-select-hidden');
     select.style.display = 'none';
@@ -88,10 +108,25 @@ export function createCustomSelect(select) {
     container.className = 'custom-select-container';
 
     const isColorSelect = select.id === 'fColor';
+    const isBrandSelect = select.name === 'make' ||
+                          select.id === 'home-make' ||
+                          select.id === 'nav-home-make' ||
+                          select.id === 'make' ||
+                          select.id === 'sidebarMake' ||
+                          select.id === 'eval-make' ||
+                          select.id === 'fMake' ||
+                          select.name === 'engineMake' ||
+                          select.id === 'advEngineMake' ||
+                          select.id === 'sidebarEngineMake' ||
+                          select.dataset.type === 'make' ||
+                          select.dataset.type === 'brand';
     const initialOpt = select.options[select.selectedIndex];
-    const initialValHtml = (isColorSelect && initialOpt && initialOpt.value)
-        ? `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(initialOpt.value)}<span>${initialOpt.text}</span></div>`
-        : initialOpt?.text || '';
+    let initialValHtml = initialOpt?.text || '';
+    if (isColorSelect && initialOpt && initialOpt.value) {
+        initialValHtml = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(initialOpt.value)}<span>${initialOpt.text}</span></div>`;
+    } else if (isBrandSelect && initialOpt && initialOpt.value) {
+        initialValHtml = getBrandTriggerHtml(initialOpt.text, initialOpt.value);
+    }
 
     const noChevron = select.dataset.noChevron === "true";
 
@@ -101,6 +136,19 @@ export function createCustomSelect(select) {
         <span class="custom-select-value">${initialValHtml}</span>
         ${noChevron ? '' : '<i data-lucide="chevron-down" class="select-icon"></i>'}
     `;
+
+    function syncTriggerBrand(opt) {
+        if (!isBrandSelect || !trigger) return;
+        if (opt && opt.value) {
+            const rgb = getBrandRgb(opt.value || opt.text);
+            trigger.style.setProperty('--brand-rgb', rgb);
+            trigger.classList.add('brand-selected');
+        } else {
+            trigger.style.removeProperty('--brand-rgb');
+            trigger.classList.remove('brand-selected');
+        }
+    }
+    syncTriggerBrand(initialOpt);
 
     const menu = document.createElement('div');
     menu.className = 'custom-select-menu';
@@ -128,6 +176,103 @@ export function createCustomSelect(select) {
 
     select.parentNode.insertBefore(container, select);
 
+    let liftedAncestors = [];
+
+    function openMenu() {
+        container.classList.add('open');
+        menu.classList.add('open');
+        trigger.classList.add('open');
+
+        // Lift ancestor elements to ensure dropdown is not clipped and displays above other sections
+        liftedAncestors = [];
+        let curr = container.parentElement;
+        let z = 9000;
+        while (curr && curr !== document.body && curr !== document.documentElement) {
+            const comp = window.getComputedStyle(curr);
+            const overflowHidden = comp.overflow !== 'visible' || comp.overflowX !== 'visible' || comp.overflowY !== 'visible';
+            const positionStatic = comp.position === 'static';
+
+            if (overflowHidden || positionStatic || comp.zIndex !== 'auto') {
+                liftedAncestors.push({
+                    el: curr,
+                    hadZIndex: curr.style.zIndex,
+                    hadOverflow: curr.style.overflow,
+                    hadPosition: curr.style.position
+                });
+                curr.style.zIndex = String(z--);
+                curr.style.overflow = 'visible';
+                if (positionStatic) {
+                    curr.style.position = 'relative';
+                }
+            }
+            curr = curr.parentElement;
+        }
+
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus({ preventScroll: true });
+            searchInput.dispatchEvent(new Event('input'));
+        }
+
+        // Scroll so the label is visible above the pill — mobile only
+        if (window.innerWidth < 768) {
+            const fieldGroup = container.closest('.form-group, .field-group, .adv-field-group');
+            const scrollTarget = fieldGroup || container;
+            const stickyNav = document.querySelector('.sticky-nav');
+            const navHeight = stickyNav ? stickyNav.getBoundingClientRect().height : 0;
+            const rect = scrollTarget.getBoundingClientRect();
+            const absoluteTop = rect.top + window.scrollY - navHeight - 8;
+            window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
+        }
+    }
+
+    function closeMenu() {
+        container.classList.remove('open');
+        if (menu) menu.classList.remove('open');
+        if (trigger) trigger.classList.remove('open');
+
+        liftedAncestors.forEach(({ el, hadZIndex, hadOverflow, hadPosition }) => {
+            el.style.zIndex = hadZIndex || '';
+            el.style.overflow = hadOverflow || '';
+            el.style.position = hadPosition || '';
+        });
+        liftedAncestors = [];
+
+        if (searchInput) searchInput.value = '';
+    }
+
+    container.__closeMenu = closeMenu;
+
+    function syncDisabledState() {
+        const isDisabled = Boolean(select.disabled);
+        container.classList.toggle('disabled', isDisabled);
+        if (isDisabled) {
+            closeMenu();
+        }
+    }
+
+    // Intercept JS property assignments to select.disabled
+    try {
+        let disabledVal = select.disabled;
+        Object.defineProperty(select, 'disabled', {
+            get() {
+                return disabledVal;
+            },
+            set(val) {
+                disabledVal = Boolean(val);
+                if (val) {
+                    select.setAttribute('disabled', '');
+                } else {
+                    select.removeAttribute('disabled');
+                }
+                syncDisabledState();
+            },
+            configurable: true
+        });
+    } catch (e) {
+        // Fallback for non-configurable properties
+    }
+
     // Sync options
     function updateOptions() {
         optionsContainer.innerHTML = '';
@@ -138,21 +283,33 @@ export function createCustomSelect(select) {
             if (opt.dataset.popularLabel) optionElem.classList.add('popular-label');
             if (opt.dataset.popular) optionElem.dataset.popular = 'true';
 
-            if (isColorSelect && opt.value) {
+            if (opt.dataset.popularLabel) {
+                optionElem.textContent = opt.text;
+            } else if (isColorSelect && opt.value) {
                 optionElem.innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(opt.value)}<span>${opt.text}</span></div>`;
+            } else if (isBrandSelect && opt.value) {
+                optionElem.classList.add('brand-option');
+                const brandRgb = getBrandRgb(opt.value || opt.text);
+                optionElem.style.setProperty('--brand-rgb', brandRgb);
+                optionElem.innerHTML = getBrandOptionHtml(opt.text, opt.value);
             } else {
                 optionElem.textContent = opt.text;
             }
             optionElem.dataset.value = opt.value;
 
-            optionElem.addEventListener('click', () => {
+            optionElem.addEventListener('click', (e) => {
+                e.stopPropagation();
                 if (select.disabled) return;
                 select.selectedIndex = index;
                 select.dispatchEvent(new Event('change'));
                 if (isColorSelect && opt.value) {
                     trigger.querySelector('.custom-select-value').innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(opt.value)}<span>${opt.text}</span></div>`;
+                } else if (isBrandSelect && opt.value) {
+                    trigger.querySelector('.custom-select-value').innerHTML = getBrandTriggerHtml(opt.text, opt.value);
+                    syncTriggerBrand(opt);
                 } else {
                     trigger.querySelector('.custom-select-value').textContent = opt.text;
+                    if (isBrandSelect) syncTriggerBrand(null);
                 }
                 closeMenu();
             });
@@ -163,72 +320,43 @@ export function createCustomSelect(select) {
             const selectedOpt = select.options[select.selectedIndex];
             if (isColorSelect && selectedOpt && selectedOpt.value) {
                 trigger.querySelector('.custom-select-value').innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(selectedOpt.value)}<span>${selectedOpt.text}</span></div>`;
+            } else if (isBrandSelect && selectedOpt && selectedOpt.value) {
+                trigger.querySelector('.custom-select-value').innerHTML = getBrandTriggerHtml(selectedOpt.text, selectedOpt.value);
+                syncTriggerBrand(selectedOpt);
             } else {
                 trigger.querySelector('.custom-select-value').textContent = selectedOpt?.text || '';
+                if (isBrandSelect) syncTriggerBrand(null);
             }
         }
         syncDisabledState();
-    }
-
-    function syncDisabledState() {
-        if (select.disabled) {
-            container.classList.add('disabled');
-        } else {
-            container.classList.remove('disabled');
-        }
     }
 
     updateOptions();
 
     // Toggle menu
     trigger.addEventListener('click', (e) => {
+        syncDisabledState();
         if (select.disabled) return;
         e.stopPropagation();
         const isOpen = menu.classList.contains('open');
         closeAllMenus();
         if (!isOpen) {
-            container.classList.add('open');
-            menu.classList.add('open');
-            trigger.classList.add('open');
-            
-            // Lift parent container to ensure dropdown overlaps subsequent sections
-            const liftParent = container.closest('.search-box, .adv-accordion, .glass-card, .search-box-container');
-            if (liftParent) {
-                // Store original z-index if not already stored
-                if (!liftParent.dataset.hadZIndex) {
-                    liftParent.dataset.hadZIndex = liftParent.style.zIndex || 'undefined';
-                }
-                liftParent.style.zIndex = "4000";
-                
-                // Store original overflow to restore it later
-                if (!liftParent.dataset.oldOverflow) {
-                    liftParent.dataset.oldOverflow = liftParent.style.overflow || 'undefined';
-                }
-                liftParent.style.overflow = "visible";
-
-                if (window.getComputedStyle(liftParent).position === 'static') {
-                    liftParent.style.position = 'relative';
-                }
-            }
-
-            if (searchInput) {
-                searchInput.value = '';
-                searchInput.focus({ preventScroll: true });
-                searchInput.dispatchEvent(new Event('input'));
-            }
-
-            // Scroll so the label is visible above the pill — mobile only
-            if (window.innerWidth < 768) {
-                const fieldGroup = container.closest('.form-group, .field-group');
-                const scrollTarget = fieldGroup || container;
-                const stickyNav = document.querySelector('.sticky-nav');
-                const navHeight = stickyNav ? stickyNav.getBoundingClientRect().height : 0;
-                const rect = scrollTarget.getBoundingClientRect();
-                const absoluteTop = rect.top + window.scrollY - navHeight - 8;
-                window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
-            }
+            openMenu();
         }
     });
+
+    // Associated label click listener
+    if (select.id) {
+        const label = document.querySelector(`label[for="${select.id}"]`);
+        if (label) {
+            label.addEventListener('click', (e) => {
+                syncDisabledState();
+                if (select.disabled) return;
+                e.preventDefault();
+                trigger.click();
+            });
+        }
+    }
 
     // Search logic
     let highlightedIndex = -1;
@@ -248,9 +376,16 @@ export function createCustomSelect(select) {
         }
     }
 
+    function normStr(str) {
+        return (str || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    }
+
     if (searchInput) {
         searchInput.addEventListener('input', () => {
-            const term = searchInput.value.toLowerCase();
+            const term = normStr(searchInput.value.trim());
             const options = optionsContainer.querySelectorAll('.custom-select-option');
             let hasResults = false;
 
@@ -258,14 +393,23 @@ export function createCustomSelect(select) {
                 // When searching, always hide the popular group (labels + duplicates)
                 if (term && (opt.classList.contains('popular-label') || opt.dataset.popular === 'true')) {
                     opt.classList.add('hidden');
+                    opt.style.display = 'none';
                     return;
                 }
-                const text = opt.textContent.toLowerCase();
-                if (text.includes(term)) {
+                const text = normStr(opt.textContent);
+                const value = normStr(opt.dataset.value);
+                let isAliasMatch = false;
+                if (value === 'dmc' && 'delorean'.includes(term)) isAliasMatch = true;
+
+                if (!term || text.includes(term) || isAliasMatch) {
                     opt.classList.remove('hidden');
-                    hasResults = true;
+                    opt.style.display = '';
+                    if (!opt.classList.contains('popular-label')) {
+                        hasResults = true;
+                    }
                 } else {
                     opt.classList.add('hidden');
+                    opt.style.display = 'none';
                 }
             });
 
@@ -314,30 +458,6 @@ export function createCustomSelect(select) {
         searchInput.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    function closeMenu() {
-        container.classList.remove('open');
-        if (menu) menu.classList.remove('open');
-        if (trigger) trigger.classList.remove('open');
-        
-        // Find the highest parent we lifted
-        const liftParent = container.closest('.search-box-container, .main-search-card, .adv-accordion, .glass-card, .search-box');
-        if (liftParent) {
-            // Restore z-index
-            if (liftParent.dataset.hadZIndex !== undefined) {
-                liftParent.style.zIndex = liftParent.dataset.hadZIndex === 'undefined' ? "" : liftParent.dataset.hadZIndex;
-                delete liftParent.dataset.hadZIndex;
-            }
-            
-            // Restore overflow
-            if (liftParent.dataset.oldOverflow !== undefined) {
-                liftParent.style.overflow = liftParent.dataset.oldOverflow === 'undefined' ? "" : liftParent.dataset.oldOverflow;
-                delete liftParent.dataset.oldOverflow;
-            }
-        }
-        
-        if (searchInput) searchInput.value = '';
-    }
-
     // Observer to handle dynamic content changes in original select
     const observer = new MutationObserver((mutations) => {
         mutations.forEach(mutation => {
@@ -363,8 +483,12 @@ export function createCustomSelect(select) {
         if (trigger.querySelector('.custom-select-value')) {
             if (isColorSelect && selectedOpt && selectedOpt.value) {
                 trigger.querySelector('.custom-select-value').innerHTML = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(selectedOpt.value)}<span>${selectedOpt.text}</span></div>`;
+            } else if (isBrandSelect && selectedOpt && selectedOpt.value) {
+                trigger.querySelector('.custom-select-value').innerHTML = getBrandTriggerHtml(selectedOpt.text, selectedOpt.value);
+                syncTriggerBrand(selectedOpt);
             } else {
                 trigger.querySelector('.custom-select-value').textContent = selectedText;
+                if (isBrandSelect) syncTriggerBrand(null);
             }
         }
         // Highlight correct option
@@ -373,31 +497,19 @@ export function createCustomSelect(select) {
         });
     });
 
-
     if (window.lucide) window.lucide.createIcons({ scope: container });
 }
 
-function closeAllMenus() {
+export function closeAllMenus() {
     document.querySelectorAll('.custom-select-container.open').forEach(container => {
-        container.classList.remove('open');
-        const menu = container.querySelector('.custom-select-menu');
-        const trigger = container.querySelector('.custom-select-trigger');
-        if (menu) menu.classList.remove('open');
-        if (trigger) trigger.classList.remove('open');
-        
-        const liftParent = container.closest('.search-box-container, .main-search-card, .adv-accordion, .glass-card, .search-box');
-        if (liftParent) {
-            // Restore z-index
-            if (liftParent.dataset.hadZIndex !== undefined) {
-                liftParent.style.zIndex = liftParent.dataset.hadZIndex === 'undefined' ? "" : liftParent.dataset.hadZIndex;
-                delete liftParent.dataset.hadZIndex;
-            }
-
-            // Restore overflow
-            if (liftParent.dataset.oldOverflow !== undefined) {
-                liftParent.style.overflow = liftParent.dataset.oldOverflow === 'undefined' ? "" : liftParent.dataset.oldOverflow;
-                delete liftParent.dataset.oldOverflow;
-            }
+        if (typeof container.__closeMenu === 'function') {
+            container.__closeMenu();
+        } else {
+            container.classList.remove('open');
+            const menu = container.querySelector('.custom-select-menu');
+            const trigger = container.querySelector('.custom-select-trigger');
+            if (menu) menu.classList.remove('open');
+            if (trigger) trigger.classList.remove('open');
         }
     });
 }

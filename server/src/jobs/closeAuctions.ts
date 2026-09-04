@@ -111,27 +111,25 @@ export async function runCloseDueAuctions(): Promise<{
         auctionId: a.id,
         buyerId: outcome.winnerId!,
         finalPrice: outcome.finalPrice,
-        isCash: !!a.cash_allowed,
         idempotencyKey: `auction_pi_${a.id}`,
       });
-      const escrowReleaseAt = new Date(Date.now() + env.AUCTION_ESCROW_HOURS * 3600 * 1000).toISOString();
       await supabaseAdmin.from('auction_payments').upsert(
         {
           auction_id: a.id,
           buyer_id: outcome.winnerId!,
           seller_id: a.seller_id,
-          flow: a.cash_allowed ? 'premium_only' : 'escrow',
-          price_amount: a.cash_allowed ? 0 : outcome.finalPrice,
+          flow: 'premium_only',
+          price_amount: 0,
           premium_amount: premium,
           payment_intent_id: pi.id,
           status: 'pending',
-          escrow_release_at: escrowReleaseAt,
+          escrow_release_at: null,
         },
         { onConflict: 'payment_intent_id' },
       );
       await supabaseAdmin
         .from('auctions')
-        .update({ payment_intent_id: pi.id, escrow_release_at: escrowReleaseAt })
+        .update({ payment_intent_id: pi.id })
         .eq('id', a.id);
     } catch (e) {
       // eslint-disable-next-line no-console

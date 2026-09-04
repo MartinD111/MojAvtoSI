@@ -5,10 +5,12 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 import { getListings } from '../services/listingService.js';
 import { MAIN_CATEGORIES } from '../data/categories.js';
-import { t } from '../core/i18n.js';
+import { t, getCurrentLang } from '../core/i18n.js';
 import { initWordSlider } from './home.js';
 import { navigateTo } from '../router.js';
-import { initCustomSelects } from '../utils/customSelect.js';
+import { initCustomSelects, createCustomSelect } from '../utils/customSelect.js';
+import { brandsFileFor } from '../data/brandFiles.js';
+import { popularBrandsFor } from '../data/popularBrands.js';
 
 const SEA_JOKES = {
     sl: [
@@ -49,7 +51,8 @@ const SEA_JOKES = {
 };
 
 function initSeaJoke() {
-    const jokes = SEA_JOKES.en;
+    const lang = getCurrentLang() === 'en' ? 'en' : 'sl';
+    const jokes = SEA_JOKES[lang] || SEA_JOKES.sl;
     const joke = jokes[Math.floor(Math.random() * jokes.length)];
     const el = document.getElementById('seaJokeText');
     const sub = document.getElementById('seaJokeQuote');
@@ -78,6 +81,81 @@ export async function initNavtikaHomePage() {
     if (window.lucide) window.lucide.createIcons();
 }
 
+let _currentBrandModelData = null;
+
+function reloadNavtikaBrands(category) {
+    const brandSelect = document.getElementById("nav-home-make");
+    const modelSelect = document.getElementById("nav-home-model");
+    if (!brandSelect) return;
+
+    const jsonFile = brandsFileFor(category);
+
+    const applyBrandData = (brandModelData) => {
+        _currentBrandModelData = brandModelData;
+        brandSelect.innerHTML = `<option value="">${t('all_brands', 'Vse znamke')}</option>`;
+        if (modelSelect) {
+            modelSelect.innerHTML = `<option value="">${t('all_models', 'Vsi modeli')}</option>`;
+            modelSelect.disabled = true;
+        }
+
+        const popular = popularBrandsFor(category).filter(b => brandModelData[b]);
+        if (popular.length) {
+            const lbl = document.createElement('option');
+            lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+            lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+            brandSelect.appendChild(lbl);
+            popular.forEach(brand => {
+                const o = document.createElement('option');
+                o.value = brand; o.textContent = brand;
+                o.dataset.popular = 'true';
+                brandSelect.appendChild(o);
+            });
+            const sep = document.createElement('option');
+            sep.value = ''; sep.textContent = '──────────────';
+            sep.disabled = true; sep.dataset.popularLabel = 'true';
+            brandSelect.appendChild(sep);
+        }
+
+        Object.keys(brandModelData).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
+            const option = document.createElement("option");
+            option.value = brand;
+            option.textContent = brand;
+            brandSelect.appendChild(option);
+        });
+
+        createCustomSelect(brandSelect);
+        if (modelSelect) createCustomSelect(modelSelect);
+
+        brandSelect.onchange = function () {
+            const selectedMake = brandSelect.value;
+            if (!modelSelect) return;
+            modelSelect.innerHTML = `<option value="">${t('all_models', 'Vsi modeli')}</option>`;
+            modelSelect.disabled = true;
+
+            if (selectedMake && brandModelData[selectedMake]) {
+                const models = brandModelData[selectedMake];
+                const modelKeys = Array.isArray(models) ? models : Object.keys(models);
+                modelKeys.sort((a, b) => a.localeCompare(b, 'sl')).forEach(model => {
+                    const option = document.createElement("option");
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+                modelSelect.disabled = false;
+            }
+
+            createCustomSelect(modelSelect);
+            const form = document.getElementById('navtikaHomeSearch');
+            if (form) form.dispatchEvent(new Event('change'));
+        };
+    };
+
+    fetch(jsonFile)
+        .then(res => res.json())
+        .then(applyBrandData)
+        .catch(err => console.error('[NavtikaHome] brand file load failed:', jsonFile, err));
+}
+
 // "Vrsta plovila" select = the platform's main categories.
 function fillCategorySelect() {
     const sel = document.getElementById('nav-home-cat');
@@ -86,6 +164,7 @@ function fillCategorySelect() {
         .map(c => `<option value="${c.slug}">${t(c.label)}</option>`).join('');
     const advLink = document.getElementById('navHomeAdvLink');
     fillSubcatSelect(sel.value);
+    reloadNavtikaBrands(sel.value);
 
     const form = document.getElementById('navtikaHomeSearch');
 
@@ -95,6 +174,12 @@ function fillCategorySelect() {
         const params = new URLSearchParams({ cat });
         const sc = document.getElementById('nav-home-subcat')?.value;
         if (sc) params.set('vtype', sc);
+        const mk = document.getElementById('nav-home-make')?.value;
+        if (mk) params.set('make', mk);
+        const md = document.getElementById('nav-home-model')?.value;
+        if (md) params.set('model', md);
+        const pr = document.getElementById('nav-home-price-to')?.value?.replace(/\D/g, '');
+        if (pr) params.set('priceTo', pr);
         const lf = document.getElementById('nav-home-length-from')?.value;
         const lt = document.getElementById('nav-home-length-to')?.value;
         const pt = document.getElementById('nav-home-power-to')?.value;
@@ -118,7 +203,11 @@ function fillCategorySelect() {
         const hash = target.startsWith('#') ? target.slice(1) : target;
         navigateTo(hash);
     });
-    sel.addEventListener('change', () => { fillSubcatSelect(sel.value); updateAdvLink(); });
+    sel.addEventListener('change', () => {
+        fillSubcatSelect(sel.value);
+        reloadNavtikaBrands(sel.value);
+        updateAdvLink();
+    });
 
     if (form) {
         form.addEventListener('change', updateAdvLink);
@@ -231,13 +320,24 @@ function bindSearch() {
         updateSlider();
     }
 
-    // Reset: restore slider display
+    // Reset: restore slider display & brand/model selects
     form.addEventListener('reset', () => {
         setTimeout(() => {
             if (sliderFrom && sliderTo) {
                 sliderFrom.value = 3;
                 sliderTo.value = 50;
                 sliderFrom.dispatchEvent(new Event('input'));
+            }
+            const brandSelect = document.getElementById('nav-home-make');
+            const modelSelect = document.getElementById('nav-home-model');
+            if (brandSelect) {
+                brandSelect.value = '';
+                createCustomSelect(brandSelect);
+            }
+            if (modelSelect) {
+                modelSelect.value = '';
+                modelSelect.disabled = true;
+                createCustomSelect(modelSelect);
             }
         }, 0);
     });
@@ -247,6 +347,9 @@ function bindSearch() {
         if (e.submitter?.id === 'navHomeAdvLink') return;
         const cat = document.getElementById('nav-home-cat')?.value || 'colni';
         const sc = document.getElementById('nav-home-subcat')?.value || '';
+        const mk = document.getElementById('nav-home-make')?.value || '';
+        const md = document.getElementById('nav-home-model')?.value || '';
+        const pr = document.getElementById('nav-home-price-to')?.value?.replace(/\D/g, '') || '';
         const lf = sliderFrom?.value || '';
         const lt = sliderTo?.value || '';
         const pt = document.getElementById('nav-home-power-to')?.value || '';
@@ -255,6 +358,9 @@ function bindSearch() {
         const najem = document.getElementById('homeNavNajemToggle')?.checked;
         const params = new URLSearchParams({ cat });
         if (sc) params.set('vtype', sc);
+        if (mk) params.set('make', mk);
+        if (md) params.set('model', md);
+        if (pr) params.set('priceTo', pr);
         if (lf && Number(lf) > 3) params.set('lengthFrom', lf);
         if (lt && Number(lt) < 50) params.set('lengthTo', lt);
         if (pt) params.set('powerTo', pt);

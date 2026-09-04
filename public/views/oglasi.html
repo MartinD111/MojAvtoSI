@@ -149,7 +149,7 @@
 
         <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
         <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
-            <span class="mft-label"><i data-lucide="sliders-horizontal"></i> Filtri</span>
+            <span class="mft-label"><i data-lucide="sliders-horizontal"></i> <span data-i18n-key="sidebar_filters_title">Filtri</span></span>
             <i data-lucide="chevron-down" class="mft-chevron"></i>
         </button>
 
@@ -167,7 +167,7 @@
                     <div class="adv-acc-header">
                         <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="car" style="width: 16px; height: 16px;"></i>
-                            <span class="adv-acc-title">Osnovni podatki</span>
+                            <span class="adv-acc-title" data-i18n-key="filter_basic_info">Osnovni podatki</span>
                             <span class="acc-filter-summary" id="summaryOsnovni" style="display:none;"></span>
                         </button>
                     </div>
@@ -177,7 +177,7 @@
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="make">Znamka</label>
                             <select id="sidebarMake" name="make" class="glass-select">
-                                <option value="">Vse znamke</option>
+                                <option value="" data-i18n-key="filter_all_makes">Vse znamke</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeMake"></div>
                         </div>
@@ -186,25 +186,25 @@
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="model">Model</label>
                             <select id="sidebarModel" name="model" class="glass-select" disabled>
-                                <option value="">Vsi modeli</option>
+                                <option value="" data-i18n-key="filter_all_models">Vsi modeli</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeModel"></div>
                         </div>
 
                         <!-- Različica -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Različica</label>
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="variant">Različica</label>
                             <select id="sidebarVariant" name="variant" class="glass-select" disabled>
-                                <option value="">Vse različice</option>
+                                <option value="" data-i18n-key="filter_all_variants">Vse različice</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeVariant"></div>
                         </div>
 
                         <!-- Linija -->
                         <div class="form-group" id="sidebarLineGroup" style="display:none; flex-direction:column; gap:0.4rem;">
-                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Linija</label>
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="line">Linija</label>
                             <select id="sidebarLine" name="line" class="glass-select">
-                                <option value="">Vse linije</option>
+                                <option value="" data-i18n-key="filter_all_lines">Vse linije</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeLine"></div>
                         </div>
@@ -214,9 +214,9 @@
 
                         <!-- Tip vozila (Karoserija) -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Oblika / Karoserija</label>
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="filter_body_type">Oblika / Karoserija</label>
                             <select id="sidebarBodyType" name="bodyType" class="glass-select">
-                                <option value="">Vse oblike</option>
+                                <option value="" data-i18n-key="filter_all_body_types">Vse oblike</option>
                                 <option value="Limuzina">Limuzina</option>
                                 <option value="Kombilimuzina">Kombilimuzina</option>
                                 <option value="Karavan">Karavan</option>
@@ -249,7 +249,7 @@
                     <div class="adv-acc-header">
                         <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="tag" style="width: 16px; height: 16px;"></i>
-                            <span class="adv-acc-title">Cena in letnik</span>
+                            <span class="adv-acc-title" data-i18n-key="filter_price_and_year">Cena in letnik</span>
                             <span class="acc-filter-summary" id="summaryCena" style="display:none;"></span>
                         </button>
                     </div>
@@ -282,7 +282,7 @@
                     <div class="adv-acc-header">
                         <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="cog" style="width: 16px; height: 16px;"></i>
-                            <span class="adv-acc-title">Motor in pogon</span>
+                            <span class="adv-acc-title" data-i18n-key="filter_engine_and_drive">Motor in pogon</span>
                             <span class="acc-filter-summary" id="summaryMotor" style="display:none;"></span>
                         </button>
                     </div>
@@ -290,7 +290,7 @@
                         <div class="adv-acc-body-inner">
                         <!-- Gorivo -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Gorivo</label>
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="filter_fuel">Gorivo</label>
                             <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
                                 <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Bencin"> Bencin</label>
                                 <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="fuel" value="Dizel"> Dizel</label>
@@ -312,7 +312,7 @@
 
                         <!-- Menjalnik -->
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
-                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Menjalnik</label>
+                            <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);" data-i18n-key="filter_transmission">Menjalnik</label>
                             <div class="adv-chip-group" style="display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;">
                                 <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Ročni"> Ročni</label>
                                 <label class="adv-chip" style="font-size:0.75rem; padding:0.35rem 0.75rem;"><input type="checkbox" name="transmission" value="Avtomatski"> Avtomatski</label>
@@ -516,6 +516,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- Active Filters UI (UX Enhancement) -->
+        <div id="activeFiltersTopbar" class="active-filters-topbar"></div>
 
         <div id="carListingsContainer">
             <!-- Listings are dynamically generated via JS -->

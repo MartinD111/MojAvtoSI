@@ -1,12 +1,12 @@
 <!-- Booking Wizard — MojAvto.si -->
-<link rel="stylesheet" href="css/booking.css" />
+
 
 <div class="booking-page">
 
     <!-- Back navigation -->
     <a class="booking-back" id="bookingBack" href="/map">
         <i data-lucide="arrow-left"></i>
-        <span id="bookingBackLabel">Back to map</span>
+        <span id="bookingBackLabel" data-i18n-key="booking_back_map">Nazaj na zemljevid</span>
     </a>
 
     <!-- Business context card (populated by JS) -->
@@ -34,10 +34,10 @@
             <div class="booking-summary-inner">
                 <div class="booking-summary-title">
                     <i data-lucide="receipt"></i>
-                    Price Summary
+                    <span data-i18n-key="booking_price_summary">Povzetek cene</span>
                 </div>
                 <div class="booking-summary-empty" id="bookingSummaryEmpty">
-                    Select services to display price.
+                    <span data-i18n-key="booking_select_services_hint">Izberite storitve za prikaz cene.</span>
                 </div>
                 <div class="booking-summary-lines" id="bookingSummaryLines">
                     <!-- Line items injected by JS -->
@@ -48,7 +48,7 @@
                 </div>
                 <div class="booking-summary-quote" id="bookingSummaryQuote" style="display:none;">
                     <i data-lucide="info" style="width:12px;height:12px;"></i>
-                    Nekatere storitve so po ogledu
+                    <span data-i18n-key="booking_quote_notice">Nekatere storitve so po ogledu</span>
                 </div>
             </div>
         </aside>

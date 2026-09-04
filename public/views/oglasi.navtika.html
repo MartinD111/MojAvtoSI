@@ -116,7 +116,7 @@
 
         <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
         <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
-            <span class="mft-label"><i data-lucide="sliders-horizontal"></i> Filtri</span>
+            <span class="mft-label"><i data-lucide="sliders-horizontal"></i> <span data-i18n-key="sidebar_filters_title">Filtri</span></span>
             <span class="mft-active-pills" id="mftActivePills"></span>
         </button>
 
@@ -133,24 +133,24 @@
                     <div class="adv-acc-header">
                         <button class="adv-acc-trigger" type="button" aria-expanded="true">
                             <i data-lucide="anchor" style="width: 16px; height: 16px;"></i>
-                            <span class="adv-acc-title">Osnovni podatki</span>
+                            <span class="adv-acc-title" data-i18n-key="navtika_basic_info">Osnovni podatki</span>
                         </button>
                     </div>
                     <div class="adv-acc-body" style="display:flex;">
                         <!-- Vessel Type — populated from MAIN_CATEGORIES taxonomy by JS -->
                         <div class="form-group">
-                            <label>Tip plovila</label>
+                            <label data-i18n-key="navtika_vessel_type">Tip plovila</label>
                             <select id="sidebarBoatType" name="vtype" class="glass-select">
-                                <option value="">Vsi tipi</option>
+                                <option value="" data-i18n-key="navtika_all_types">Vsi tipi</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeBoatType"></div>
                         </div>
 
                         <!-- Vrsta plovila (vehicle types — matches advanced search grid) -->
                         <div class="form-group">
-                            <label>Vrsta plovila</label>
+                            <label data-i18n-key="navtika_boat_types">Vrsta plovila</label>
                             <select id="sidebarBoatSubcat" name="boatSubcat" class="glass-select" disabled>
-                                <option value="">Vse vrste</option>
+                                <option value="" data-i18n-key="navtika_all_categories">Vse vrste</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeBoatSubcat"></div>
                         </div>
@@ -159,7 +159,7 @@
                         <div class="form-group">
                             <label data-i18n-key="make">Znamka</label>
                             <select id="sidebarMake" name="make" class="glass-select">
-                                <option value="">Vse znamke</option>
+                                <option value="" data-i18n-key="filter_all_makes">Vse znamke</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeMake"></div>
                         </div>
@@ -168,7 +168,7 @@
                         <div class="form-group">
                             <label data-i18n-key="model">Model</label>
                             <select id="sidebarModel" name="model" class="glass-select" disabled>
-                                <option value="">Vsi modeli</option>
+                                <option value="" data-i18n-key="filter_all_models">Vsi modeli</option>
                             </select>
                             <div class="sidebar-active-pills" id="activeModel"></div>
                         </div>
@@ -272,7 +272,7 @@
                     <div class="adv-acc-header">
                         <button class="adv-acc-trigger" type="button" aria-expanded="false">
                             <i data-lucide="tag" style="width: 16px; height: 16px;"></i>
-                            <span class="adv-acc-title">Cena in letnik</span>
+                            <span class="adv-acc-title" data-i18n-key="navtika_price_year">Cena in letnik</span>
                         </button>
                     </div>
                     <div class="adv-acc-body" style="display:none;">

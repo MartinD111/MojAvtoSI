@@ -7,6 +7,7 @@ import { getExtensionsForRoles } from '../core/extensions.js';
 import { logout } from '../auth/auth.js';
 import { navigateTo } from '../router.js';
 import { PLATFORM } from '../config/platform.js';
+import { t } from '../core/i18n.js';
 
 /**
  * Mounts the B2B shell. Returns the #b2b-main element where the page should render.
@@ -21,9 +22,9 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
     if (!profile || profile.sellerType !== 'business') {
         container.innerHTML = `
             <div style="padding:3rem;text-align:center;">
-                <h2>Dostop ni mogoč</h2>
-                <p>Ta sekcija je namenjena samo poslovnim uporabnikom.</p>
-                <a href="/dashboard" class="btn btn-primary">Domov</a>
+                <h2>${t('access_denied_title', 'Dostop ni mogoč')}</h2>
+                <p>${t('b2b_only_section', 'Ta sekcija je namenjena samo poslovnim uporabnikom.')}</p>
+                <a href="/dashboard" class="btn btn-primary">${t('nav_home', 'Domov')}</a>
             </div>`;
         return null;
     }
@@ -46,10 +47,10 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
                 </div>
 
                 <div class="b2b-company">
-                    <div class="b2b-company-name" title="${escapeHtml(company.companyName || '')}">${escapeHtml(company.companyName || profile.displayName || 'Podjetje')}</div>
+                    <div class="b2b-company-name" title="${escapeHtml(company.companyName || '')}">${escapeHtml(company.companyName || profile.displayName || t('company', 'Podjetje'))}</div>
                     <div class="b2b-company-tier ${verified ? 'verified' : 'unverified'}">
                         <i data-lucide="${verified ? 'badge-check' : 'clock'}"></i>
-                        ${verified ? 'Verificirano podjetje' : 'V preverjanju'}
+                        ${verified ? t('verified_business', 'Verificirano podjetje') : t('pending_verification', 'V preverjanju')}
                     </div>
                 </div>
 
@@ -64,10 +65,10 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
 
                 <div class="b2b-sidebar-footer">
                     <a href="/dashboard" class="b2b-nav-item b2b-exit">
-                        <i data-lucide="user"></i> <span>Osebni račun</span>
+                        <i data-lucide="user"></i> <span>${t('personal_account', 'Osebni račun')}</span>
                     </a>
                     <button id="b2bLogoutBtn" class="b2b-nav-item b2b-logout">
-                        <i data-lucide="log-out"></i> <span>Odjava</span>
+                        <i data-lucide="log-out"></i> <span>${t('nav_logout', 'Odjava')}</span>
                     </button>
                 </div>
             </aside>
@@ -76,14 +77,14 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
             <div class="b2b-main-wrap">
                 <header class="b2b-topbar">
                     <div class="b2b-topbar-title">
-                        <button class="b2b-sidebar-toggle" id="b2bSidebarToggle" aria-label="Meni"><i data-lucide="menu"></i></button>
+                        <button class="b2b-sidebar-toggle" id="b2bSidebarToggle" aria-label="${t('menu', 'Meni')}"><i data-lucide="menu"></i></button>
                         <h1>${escapeHtml(title)}</h1>
                     </div>
                     <div class="b2b-topbar-actions">
                         ${!verified ? `
                             <div class="b2b-verify-banner">
                                 <i data-lucide="info"></i>
-                                <span>Vaše podjetje še ni verificirano — nekatere funkcije so omejene.</span>
+                                <span>${t('b2b_unverified_warning', 'Vaše podjetje še ni verificirano — nekatere funkcije so omejene.')}</span>
                             </div>` : ''}
                         <div class="b2b-role-chips">
                             ${roles.map(r => `<span class="b2b-role-chip b2b-role-${r}">${roleLabel(r)}</span>`).join('')}
@@ -115,7 +116,15 @@ export function mountB2BShell({ activeRoute = '/b2b', title = '' } = {}) {
 
 function roleLabel(r) {
     // Platform-specific role names (avto: Avtohiša/Servis/Vulkanizer, navtika: vessel roles)
+    const roleKeys = {
+        dealer: t('role_dealer', 'Avtohiša'),
+        mechanic: t('role_mechanic', 'Servis'),
+        vulcanizer: t('role_vulcanizer', 'Vulkanizer'),
+        tuner: t('role_tuner', 'Tuning center'),
+        detailing: t('role_detailing', 'Avto detajling'),
+        carwash: t('role_carwash', 'Avtopralnica'),
+    };
     return (PLATFORM.b2bRoleLabels && PLATFORM.b2bRoleLabels[r])
-        || { dealer: 'Avtohiša', mechanic: 'Servis', vulcanizer: 'Vulkanizer', tuner: 'Tuning center', detailing: 'Avto detajling', carwash: 'Avtopralnica' }[r]
+        || roleKeys[r]
         || r;
 }

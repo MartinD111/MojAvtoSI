@@ -200,30 +200,56 @@
                 }
             </style>
 
-            <!-- Vrstica 1: Vrsta plovila · Moč motorja · Ure motorja -->
+            <!-- Vrstica 1: Vrsta plovila · Kategorija · Znamka · Model -->
             <div class="nh-row">
                 <div class="nh-field">
-                    <label for="nav-home-cat">Vrsta plovila</label>
+                    <label for="nav-home-cat" data-i18n-key="navtika_vessel_type">Vrsta plovila</label>
                     <div class="pill-select-wrapper">
                         <select id="nav-home-cat" name="cat" class="pill-input"></select>
                     </div>
                 </div>
                 <div class="nh-field">
-                    <label for="nav-home-subcat">Kategorija</label>
+                    <label for="nav-home-subcat" data-i18n-key="category">Kategorija</label>
                     <div class="pill-select-wrapper">
                         <select id="nav-home-subcat" name="subcat" class="pill-input" disabled></select>
                     </div>
                 </div>
                 <div class="nh-field">
-                    <label for="nav-home-power-to">Moč motorja do (KM)</label>
+                    <label for="nav-home-make" data-i18n-key="form_make">Znamka</label>
+                    <div class="pill-select-wrapper">
+                        <select id="nav-home-make" name="make" class="pill-input">
+                            <option value="" data-i18n-key="all_brands">Vse znamke</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="nh-field" id="group-nav-home-model">
+                    <label for="nav-home-model" data-i18n-key="form_model">Model</label>
+                    <div class="pill-select-wrapper">
+                        <select id="nav-home-model" name="model" class="pill-input" disabled>
+                            <option value="" data-i18n-key="all_models">Vsi modeli</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vrstica 2: Moč motorja · Ure motorja · Cena do -->
+            <div class="nh-row">
+                <div class="nh-field">
+                    <label for="nav-home-power-to" data-i18n-key="navtika_power">Moč motorja do (KM)</label>
                     <div class="pill-input-wrapper" style="width:100%;">
-                        <input type="number" min="0" id="nav-home-power-to" name="powerTo" class="pill-input" placeholder="Brez omejitve">
+                        <input type="number" min="0" id="nav-home-power-to" name="powerTo" class="pill-input" placeholder="Brez omejitve" data-i18n-key="navtika_no_limit" data-i18n-target="placeholder">
                     </div>
                 </div>
                 <div class="nh-field">
-                    <label for="nav-home-hours-to">Ure motorja do</label>
+                    <label for="nav-home-hours-to" data-i18n-key="navtika_hours">Ure motorja do</label>
                     <div class="pill-input-wrapper" style="width:100%;">
-                        <input type="number" min="0" id="nav-home-hours-to" name="engineHoursTo" class="pill-input" placeholder="Brez omejitve">
+                        <input type="number" min="0" id="nav-home-hours-to" name="engineHoursTo" class="pill-input" placeholder="Brez omejitve" data-i18n-key="navtika_no_limit" data-i18n-target="placeholder">
+                    </div>
+                </div>
+                <div class="nh-field">
+                    <label for="nav-home-price-to" data-i18n-key="form_price_to">Cena do (€)</label>
+                    <div class="pill-input-wrapper" style="width:100%;">
+                        <input type="text" id="nav-home-price-to" name="priceTo" class="pill-input js-format-number" placeholder="Brez omejitve" data-i18n-key="no_limit" data-i18n-target="placeholder" inputmode="numeric">
                     </div>
                 </div>
             </div>
@@ -231,7 +257,7 @@
             <!-- Vrstica 2: Dolžina slider -->
             <div style="margin-bottom:1.25rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-                    <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;">Dolžina plovila</label>
+                    <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted,#64748b); letter-spacing:0.02em;" data-i18n-key="navtika_length">Dolžina plovila</label>
                     <span class="nh-slider-val" id="navHomeLengthVal"><strong id="navHomeLengthMinDisplay">3</strong> - <strong id="navHomeLengthMaxDisplay">50+</strong> m</span>
                 </div>
                 <div class="nh-slider-wrap" id="navHomeSliderWrap">
@@ -253,12 +279,12 @@
                     <label style="display:inline-flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:0.5rem; cursor:pointer;">
                         <input type="checkbox" class="remember-check" id="homeNavProdajaToggle" checked style="display:none;">
                         <span class="toggle-slider" style="width:32px; height:18px; flex-shrink:0;"></span>
-                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted,#64748b); text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;">Prodaja</span>
+                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted,#64748b); text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;" data-i18n-key="navtika_prodaja">Prodaja</span>
                     </label>
                     <label style="display:inline-flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:0.5rem; cursor:pointer;">
                         <input type="checkbox" class="remember-check" id="homeNavNajemToggle" style="display:none;">
                         <span class="toggle-slider" style="width:32px; height:18px; flex-shrink:0;"></span>
-                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted,#64748b); text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;">Najem</span>
+                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted,#64748b); text-transform:uppercase; letter-spacing:0.025em; white-space:nowrap;" data-i18n-key="navtika_najem">Najem</span>
                     </label>
                 </div>
             </div>
@@ -266,13 +292,13 @@
             <!-- Vrstica 4: 3 gumbi -->
             <div class="nh-actions">
                 <button type="reset" class="pill-btn secondary" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem;" title="Ponastavi">
-                    <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Ponastavi
+                    <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> <span data-i18n-key="sidebar_reset">Ponastavi</span>
                 </button>
                 <button type="button" class="pill-btn secondary" id="navHomeAdvLink" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.4rem;" title="Več filtrov">
-                    <i data-lucide="sliders-horizontal" style="width:16px;height:16px;"></i> Več filtrov
+                    <i data-lucide="sliders-horizontal" style="width:16px;height:16px;"></i> <span data-i18n-key="filter_more">Več filtrov</span>
                 </button>
                 <button type="submit" class="pill-btn primary search-submit-btn" style="flex: 1; min-width: 140px; max-width: 240px; justify-content: center; gap: 0.5rem;">
-                    <i data-lucide="search" style="width:16px;height:16px;"></i> Išči plovila
+                    <i data-lucide="search" style="width:16px;height:16px;"></i> <span data-i18n-key="search_btn">Išči plovila</span>
                 </button>
             </div>
         </form>

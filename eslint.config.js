@@ -16,6 +16,7 @@ export default [
                 lucide: 'readonly',
                 Chart: 'readonly',
                 XLSX: 'readonly',
+                __BUILD_HASH__: 'readonly',
             },
         },
         rules: {

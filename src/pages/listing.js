@@ -14,7 +14,7 @@ import { showAuthGate } from '../utils/authGate.js';
 import { addToFavourites, removeFromFavourites, isFavourite } from '../services/garageService.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { mountReactComponent } from '../core/reactRootTracker.js';
 import CostPanel from '../components/CostPanel.jsx';
 import { getServiceHistoryByVin } from '../services/serviceBookService.js';
 import { t, getCurrentLang } from '../core/i18n.js';
@@ -448,7 +448,7 @@ function renderListing(l) {
     const cpPrice = l.priceRaw || l.priceEur || l.price;
     const cpKw = l.powerKw || l.power;
     if (costPanelRoot && cpPrice && cpKw) {
-        ReactDOM.createRoot(costPanelRoot).render(
+        mountReactComponent('react-cost-panel-root',
             React.createElement(CostPanel, {
                 price: Number(cpPrice),
                 powerKw: Number(cpKw),
@@ -778,8 +778,8 @@ function renderSpecsHtml(l) {
                 return `spec-pill transmission-pill ${typeCls}`;
             })()
         },
-        isMoto && l.engineStroke ? { label: 'Takt motorja', value: l.engineStroke, icon: 'activity', pillClass: 'spec-pill stroke-pill' } : null,
-        isMoto && l.engineType ? { label: 'Vrsta motorja', value: l.engineType, icon: 'cpu', pillClass: 'spec-pill type-pill' } : null,
+        isMoto && l.engineStroke ? { label: t('engine_stroke', 'Takt motorja'), value: l.engineStroke, icon: 'activity', pillClass: 'spec-pill stroke-pill' } : null,
+        isMoto && l.engineType ? { label: t('engine_type', 'Vrsta motorja'), value: l.engineType, icon: 'cpu', pillClass: 'spec-pill type-pill' } : null,
         { label: t('spec_displacement'), value: l.engineCc ? formatDisplacement(l.engineCc, localStorage.getItem(lsKey('displacement_unit')) || 'cc', getCurrentLang()) : null, icon: 'cpu', pillClass: 'spec-pill displacement-pill' },
         {
             label: isElectric ? t('spec_range') : t('spec_fuel_economy'),
@@ -819,8 +819,8 @@ function renderSpecsHtml(l) {
         [t('consumption_highway'), l.fuelL100kmHighway ? t('unit_l100km', { val: l.fuelL100kmHighway }) : null],
         [t('battery_capacity'), l.batteryKwh ? t('unit_kwh', { val: l.batteryKwh }) : null],
         [t('range_wltp'), l.rangeKm ? t('unit_km', { val: l.rangeKm }) : null],
-        ['Zdravje baterije', l.batteryHealth ? `${l.batteryHealth} %` : null],
-        ['Poraba', l.consumptionKwh100 ? `${l.consumptionKwh100} kWh/100 km` : null],
+        [t('battery_health', 'Zdravje baterije'), l.batteryHealth ? `${l.batteryHealth} %` : null],
+        [t('consumption', 'Poraba'), l.consumptionKwh100 ? `${l.consumptionKwh100} kWh/100 km` : null],
         [t('towing_capacity'), l.towingKg ? t('unit_kg', { val: l.towingKg }) : null],
         [t('registered_until'), l.registeredUntil],
     ].filter(([, v]) => v !== null && v !== undefined && v !== '');

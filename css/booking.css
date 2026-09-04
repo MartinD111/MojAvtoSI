@@ -289,8 +289,9 @@
     font-weight: 700;
     color: #1e293b;
 }
-
+.summary-total-value {
     color: var(--color-primary-start);
+}
 
 .booking-summary-quote {
     display: flex;

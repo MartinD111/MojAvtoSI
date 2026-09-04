@@ -51,78 +51,42 @@ export interface AuctionChargeInput {
   auctionId: string;
   buyerId: string;
   finalPrice: number;      // winning price in EUR
-  isCash: boolean;         // cash-on-pickup → charge premium only
   /** Buyer's idempotency key (Stripe will collapse duplicate submits). */
   idempotencyKey?: string;
 }
 
 /**
- * Create the PaymentIntent the winning buyer pays. For a normal sale this is
- * (price + premium) held in escrow on the platform balance; for a cash sale it
- * is the premium only. The seller transfer happens later via releasePriceToSeller.
+ * Create the PaymentIntent the winning buyer pays.
+ * For auctions, this is now always the premium only, since the vehicle price is handled off-platform.
  */
 export async function createAuctionPaymentIntent(
   input: AuctionChargeInput,
 ): Promise<Stripe.PaymentIntent> {
   const stripe = getStripe();
   const premium = premiumCents(input.finalPrice);
-  const price = input.isCash ? 0 : toCents(input.finalPrice);
-  const amount = price + premium;
+  const price = 0; // The platform no longer escrows the vehicle price
+  const amount = premium;
 
   return stripe.paymentIntents.create(
     {
       amount,
       currency: 'eur',
-      // Auto-capture to the PLATFORM balance — this IS the escrow hold.
       capture_method: 'automatic',
       metadata: {
         kind: 'auction',
         auctionId: input.auctionId,
         buyerId: input.buyerId,
-        flow: input.isCash ? 'premium_only' : 'escrow',
+        flow: 'premium_only',
         priceCents: String(price),
         premiumCents: String(premium),
       },
-      description: input.isCash
-        ? `AutoHub kupčeva premija — dražba ${input.auctionId}`
-        : `AutoHub dražba ${input.auctionId} (cena + premija)`,
+      description: `AutoHub kupčeva premija — dražba ${input.auctionId}`,
     },
     input.idempotencyKey ? { idempotencyKey: input.idempotencyKey } : undefined,
   );
 }
 
-export interface ReleaseInput {
-  auctionId: string;
-  sellerStripeAccountId: string; // acct_...
-  priceCents: number;            // vehicle price to transfer (premium stays w/ platform)
-  sourcePaymentIntentId?: string;
-}
-
-/**
- * Release the held vehicle price to the seller's connected account (the 48 h
- * escrow auto-release). The 3 % premium is NOT transferred — it stays on the
- * platform balance as the platform-usage fee.
- */
-export async function releasePriceToSeller(input: ReleaseInput): Promise<Stripe.Transfer> {
-  const stripe = getStripe();
-  if (input.priceCents <= 0) {
-    const err = new Error('Nič za sprostiti (gotovinska prodaja).') as Error & { statusCode?: number };
-    err.statusCode = 400;
-    throw err;
-  }
-  return stripe.transfers.create(
-    {
-      amount: input.priceCents,
-      currency: 'eur',
-      destination: input.sellerStripeAccountId,
-      metadata: { kind: 'auction_release', auctionId: input.auctionId },
-    },
-    // Idempotent per auction so a retry of the release job never double-pays.
-    { idempotencyKey: `auction_release_${input.auctionId}` },
-  );
-}
-
-/** Charge the up-front seller listing fee (10-day upgrade and/or binding contract). */
+/** Charge the up-front seller listing fee. */
 export async function createListingFeePaymentIntent(opts: {
   auctionId: string;
   sellerId: string;

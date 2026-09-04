@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { mountReactComponent } from '../core/reactRootTracker.js';
 import TCOPreferencesPanel from '../components/TCOPreferencesPanel.jsx';
 import { currentUser } from '../lib/currentUser.js';
 import { navigateTo } from '../router.js';
@@ -45,7 +45,7 @@ export async function initTCOSettingsPage() {
 
     // Mount React component
     const settingsRoot = document.getElementById('tco-settings-root');
-    ReactDOM.createRoot(settingsRoot).render(
+    mountReactComponent('tco-settings-root',
         React.createElement(TCOPreferencesPanel, {
             onSave: () => {
                 // Notify parent app that preferences were updated

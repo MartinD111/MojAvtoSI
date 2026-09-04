@@ -338,6 +338,8 @@ function setupCarousels() {
     }
 }
 
+const brandModelCache = new Map();
+
 function reloadBrands(category) {
     const brandSelect = document.getElementById("home-make");
     const modelSelect = document.getElementById("home-model");
@@ -345,102 +347,111 @@ function reloadBrands(category) {
 
     const jsonFile = brandsFileFor(category);
 
-    fetch(jsonFile)
-        .then(res => res.ok ? res.json() : {})
-        .then(brandModelData => {
-            // Clear current options
-            brandSelect.innerHTML = `<option value="">${t('all_brands', 'All makes')}</option>`;
+    const applyBrandData = (brandModelData) => {
+        // Clear current options
+        brandSelect.innerHTML = `<option value="">${t('all_brands', 'All makes')}</option>`;
+        modelSelect.innerHTML = `<option value="">${t('all_models', 'All models')}</option>`;
+        modelSelect.disabled = true;
+
+        // Surface the top-10 popular brands in a group at the top, mirroring
+        // the advanced-search make dropdown (customSelect styles/handles the
+        // data-popular* options).
+        const popular = popularBrandsFor(category).filter(b => brandModelData[b]);
+        if (popular.length) {
+            const lbl = document.createElement('option');
+            lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+            lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+            brandSelect.appendChild(lbl);
+            popular.forEach(brand => {
+                const o = document.createElement('option');
+                o.value = brand; o.textContent = brand;
+                o.dataset.popular = 'true';
+                brandSelect.appendChild(o);
+            });
+            const sep = document.createElement('option');
+            sep.value = ''; sep.textContent = '──────────────';
+            sep.disabled = true; sep.dataset.popularLabel = 'true';
+            brandSelect.appendChild(sep);
+        }
+
+        Object.keys(brandModelData).sort().forEach(brand => {
+            const option = document.createElement("option");
+            option.value = brand;
+            option.textContent = brand;
+            brandSelect.appendChild(option);
+        });
+
+        // Update custom selects
+        import('../utils/customSelect.js').then(m => {
+            m.createCustomSelect(brandSelect);
+            m.createCustomSelect(modelSelect);
+        });
+
+        const variantSelect = document.getElementById("home-variant");
+        const resetVariants = () => {
+            if (!variantSelect) return;
+            variantSelect.innerHTML = `<option value="">${t('cl_trim_variant', 'Različica')}</option>`;
+            variantSelect.disabled = true;
+            import('../utils/customSelect.js').then(m => m.createCustomSelect(variantSelect));
+        };
+
+        // Brand change: reset model + variant
+        brandSelect.onchange = function () {
+            const selectedMake = brandSelect.value;
             modelSelect.innerHTML = `<option value="">${t('all_models', 'All models')}</option>`;
             modelSelect.disabled = true;
+            resetVariants();
 
-            // Surface the top-10 popular brands in a group at the top, mirroring
-            // the advanced-search make dropdown (customSelect styles/handles the
-            // data-popular* options).
-            const popular = popularBrandsFor(category).filter(b => brandModelData[b]);
-            if (popular.length) {
-                const lbl = document.createElement('option');
-                lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
-                lbl.disabled = true; lbl.dataset.popularLabel = 'true';
-                brandSelect.appendChild(lbl);
-                popular.forEach(brand => {
-                    const o = document.createElement('option');
-                    o.value = brand; o.textContent = brand;
-                    o.dataset.popular = 'true';
-                    brandSelect.appendChild(o);
+            if (selectedMake && brandModelData[selectedMake]) {
+                const models = brandModelData[selectedMake];
+                const modelKeys = Array.isArray(models) ? models : Object.keys(models);
+                modelKeys.forEach(model => {
+                    const option = document.createElement("option");
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
                 });
-                const sep = document.createElement('option');
-                sep.value = ''; sep.textContent = '──────────────';
-                sep.disabled = true; sep.dataset.popularLabel = 'true';
-                brandSelect.appendChild(sep);
+                modelSelect.disabled = false;
             }
 
-            Object.keys(brandModelData).sort().forEach(brand => {
-                const option = document.createElement("option");
-                option.value = brand;
-                option.textContent = brand;
-                brandSelect.appendChild(option);
-            });
+            import('../utils/customSelect.js').then(m => m.createCustomSelect(modelSelect));
+        };
 
-            // Update custom selects
-            import('../utils/customSelect.js').then(m => {
-                m.createCustomSelect(brandSelect);
-                m.createCustomSelect(modelSelect);
-            });
-
-            const variantSelect = document.getElementById("home-variant");
-            const resetVariants = () => {
-                if (!variantSelect) return;
-                variantSelect.innerHTML = `<option value="">${t('cl_trim_variant', 'Različica')}</option>`;
-                variantSelect.disabled = true;
-                import('../utils/customSelect.js').then(m => m.createCustomSelect(variantSelect));
-            };
-
-            // Brand change: reset model + variant
-            brandSelect.addEventListener("change", function () {
-                const selectedMake = brandSelect.value;
-                modelSelect.innerHTML = `<option value="">${t('all_models', 'All models')}</option>`;
-                modelSelect.disabled = true;
-                resetVariants();
-
-                if (selectedMake && brandModelData[selectedMake]) {
-                    const models = brandModelData[selectedMake];
-                    const modelKeys = Array.isArray(models) ? models : Object.keys(models);
-                    modelKeys.forEach(model => {
-                        const option = document.createElement("option");
-                        option.value = model;
-                        option.textContent = model;
-                        modelSelect.appendChild(option);
-                    });
-                    modelSelect.disabled = false;
-                }
-
-                import('../utils/customSelect.js').then(m => m.createCustomSelect(modelSelect));
-            });
-
-            // Model change: populate variants
-            modelSelect.addEventListener("change", function () {
-                resetVariants();
-                const mk = brandSelect.value;
-                const md = modelSelect.value;
-                if (!mk || !md || !brandModelData[mk]) return;
-                const entry = brandModelData[mk][md];
-                if (!entry) return;
-                import('../utils/bodyType.js').then(({ getModelVariants }) => {
-                    const variants = getModelVariants(entry);
-                    if (!variants || !variants.length || !variantSelect) return;
-                    variants.forEach(v => {
-                        const name = typeof v === 'string' ? v : (v.trim || v.name || '');
-                        if (!name) return;
-                        const opt = document.createElement("option");
-                        opt.value = name;
-                        opt.textContent = name;
-                        variantSelect.appendChild(opt);
-                    });
-                    variantSelect.disabled = false;
-                    import('../utils/customSelect.js').then(m => m.createCustomSelect(variantSelect));
+        // Model change: populate variants
+        modelSelect.onchange = function () {
+            resetVariants();
+            const mk = brandSelect.value;
+            const md = modelSelect.value;
+            if (!mk || !md || !brandModelData[mk]) return;
+            const entry = brandModelData[mk][md];
+            if (!entry) return;
+            import('../utils/bodyType.js').then(({ getModelVariants }) => {
+                const variants = getModelVariants(entry);
+                if (!variants || !variants.length || !variantSelect) return;
+                variants.forEach(v => {
+                    const name = typeof v === 'string' ? v : (v.trim || v.name || '');
+                    if (!name) return;
+                    const opt = document.createElement("option");
+                    opt.value = name;
+                    opt.textContent = name;
+                    variantSelect.appendChild(opt);
                 });
+                variantSelect.disabled = false;
+                import('../utils/customSelect.js').then(m => m.createCustomSelect(variantSelect));
             });
-        });
+        };
+    };
+
+    if (brandModelCache.has(jsonFile)) {
+        applyBrandData(brandModelCache.get(jsonFile));
+    } else {
+        fetch(jsonFile)
+            .then(res => res.ok ? res.json() : {})
+            .then(brandModelData => {
+                brandModelCache.set(jsonFile, brandModelData);
+                applyBrandData(brandModelData);
+            });
+    }
 }
 
 function setupSearchForm() {

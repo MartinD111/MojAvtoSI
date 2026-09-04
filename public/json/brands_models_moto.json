@@ -2948,6 +2948,51 @@
         }
       ]
     },
+    "F 650 GS": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "F 650 GS",
+          "displacement_cc": 652,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "F 700 GS": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "F 700 GS",
+          "displacement_cc": 798,
+          "stroke": "4T",
+          "engine_code": "I2",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "F 800 GS": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "F 800 GS",
+          "displacement_cc": 798,
+          "stroke": "4T",
+          "engine_code": "I2",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "F 900 R": {
       "type": "NakedBike",
       "variants": [
@@ -3100,6 +3145,81 @@
           "cylinders": "4",
           "cylinder_layout": "Inline-four",
           "drivetrain": "veriga"
+        }
+      ]
+    },
+    "R 1100 GS": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "R 1100 GS",
+          "displacement_cc": 1085,
+          "stroke": "4T",
+          "engine_code": "B2",
+          "engine_type": "Bokser",
+          "cylinders": "2",
+          "cylinder_layout": "Boxer",
+          "drivetrain": "kardan"
+        }
+      ]
+    },
+    "R 1150 GS": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "R 1150 GS",
+          "displacement_cc": 1130,
+          "stroke": "4T",
+          "engine_code": "B2",
+          "engine_type": "Bokser",
+          "cylinders": "2",
+          "cylinder_layout": "Boxer",
+          "drivetrain": "kardan"
+        }
+      ]
+    },
+    "R 1200 GS": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "R 1200 GS",
+          "displacement_cc": 1170,
+          "stroke": "4T",
+          "engine_code": "B2",
+          "engine_type": "Bokser",
+          "cylinders": "2",
+          "cylinder_layout": "Boxer",
+          "drivetrain": "kardan"
+        }
+      ]
+    },
+    "R 1200 R": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "R 1200 R",
+          "displacement_cc": 1170,
+          "stroke": "4T",
+          "engine_code": "B2",
+          "engine_type": "Bokser",
+          "cylinders": "2",
+          "cylinder_layout": "Boxer",
+          "drivetrain": "kardan"
+        }
+      ]
+    },
+    "R 1200 RT": {
+      "type": "Touring",
+      "variants": [
+        {
+          "trim": "R 1200 RT",
+          "displacement_cc": 1170,
+          "stroke": "4T",
+          "engine_code": "B2",
+          "engine_type": "Bokser",
+          "cylinders": "2",
+          "cylinder_layout": "Boxer",
+          "drivetrain": "kardan"
         }
       ]
     },
@@ -4752,6 +4872,21 @@
     }
   },
   "CFMoto": {
+    "450MT": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "450MT",
+          "displacement_cc": 449,
+          "stroke": "4T",
+          "engine_code": "I2 270°",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "650 NK": {
       "type": "NakedBike",
       "variants": [
@@ -5841,6 +5976,68 @@
       ]
     }
   },
+  "ČZ": {
+    "125": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "125 Trail",
+          "displacement_cc": 123,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "175": {
+      "type": "Classic",
+      "variants": [
+        {
+          "trim": "175",
+          "displacement_cc": 172,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "250": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "250 Trail",
+          "displacement_cc": 248,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "350": {
+      "type": "Classic",
+      "variants": [
+        {
+          "trim": "350",
+          "displacement_cc": 343,
+          "stroke": "2T",
+          "engine_code": "I2",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    }
+  },
   "Denago": {
     "Daytona 250FI": {
       "type": "ATV",
@@ -6314,6 +6511,151 @@
     }
   },
   "Ducati": {
+    "748": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "748 Biposto",
+          "displacement_cc": 748,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "749": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "749 Dark",
+          "displacement_cc": 748,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "848": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "848 EVO",
+          "displacement_cc": 849,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "851": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "851 Strada",
+          "displacement_cc": 851,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "888": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "888 Strada",
+          "displacement_cc": 888,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "916": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "916 SP",
+          "displacement_cc": 916,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        },
+        {
+          "trim": "916 Strada",
+          "displacement_cc": 916,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "996": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "996 Biposto",
+          "displacement_cc": 996,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "998": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "998 Testastretta",
+          "displacement_cc": 998,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "999": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "999",
+          "displacement_cc": 998,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "1098": {
       "type": "SportniMotor",
       "variants": [
@@ -6419,36 +6761,6 @@
         }
       ]
     },
-    "748": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "748 Biposto",
-          "displacement_cc": 748,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "749": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "749 Dark",
-          "displacement_cc": 748,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
     "750 GT": {
       "type": "Classic",
       "variants": [
@@ -6494,51 +6806,6 @@
         }
       ]
     },
-    "848": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "848 EVO",
-          "displacement_cc": 849,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "851": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "851 Strada",
-          "displacement_cc": 851,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "888": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "888 Strada",
-          "displacement_cc": 888,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
     "899 Panigale": {
       "type": "SportniMotor",
       "variants": [
@@ -6569,82 +6836,12 @@
         }
       ]
     },
-    "916": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "916 SP",
-          "displacement_cc": 916,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        },
-        {
-          "trim": "916 Strada",
-          "displacement_cc": 916,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
     "959 Panigale": {
       "type": "SportniMotor",
       "variants": [
         {
           "trim": "959 Panigale",
           "displacement_cc": 955,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "996": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "996 Biposto",
-          "displacement_cc": 996,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "998": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "998 Testastretta",
-          "displacement_cc": 998,
-          "stroke": "4T",
-          "engine_code": "V2 90°",
-          "engine_type": "Dvovaljnik (V)",
-          "cylinders": "2",
-          "cylinder_layout": "V-twin",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "999": {
-      "type": "SportniMotor",
-      "variants": [
-        {
-          "trim": "999",
-          "displacement_cc": 998,
           "stroke": "4T",
           "engine_code": "V2 90°",
           "engine_type": "Dvovaljnik (V)",
@@ -10931,6 +11128,21 @@
         }
       ]
     },
+    "CB 125F": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "CB 125F",
+          "displacement_cc": 124,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "CB 1300": {
       "type": "NakedBike",
       "variants": [
@@ -10967,6 +11179,21 @@
         {
           "trim": "CB 600F Hornet",
           "displacement_cc": 599,
+          "stroke": "4T",
+          "engine_code": "I4",
+          "engine_type": "Štirivaljnik",
+          "cylinders": "4",
+          "cylinder_layout": "Inline-four",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CB 650F": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "CB 650F",
+          "displacement_cc": 649,
           "stroke": "4T",
           "engine_code": "I4",
           "engine_type": "Štirivaljnik",
@@ -11206,6 +11433,21 @@
         }
       ]
     },
+    "CBR 250R": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "CBR 250R",
+          "displacement_cc": 249,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "CBR 500R": {
       "type": "SportniMotor",
       "variants": [
@@ -11217,6 +11459,21 @@
           "engine_type": "Dvovaljnik (vrstni)",
           "cylinders": "2",
           "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CBR 600F": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "CBR 600F",
+          "displacement_cc": 599,
+          "stroke": "4T",
+          "engine_code": "I4",
+          "engine_type": "Štirivaljnik",
+          "cylinders": "4",
+          "cylinder_layout": "Inline-four",
           "drivetrain": "veriga"
         }
       ]
@@ -11242,6 +11499,51 @@
         {
           "trim": "CBR 650R",
           "displacement_cc": 649,
+          "stroke": "4T",
+          "engine_code": "I4",
+          "engine_type": "Štirivaljnik",
+          "cylinders": "4",
+          "cylinder_layout": "Inline-four",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CBR 900RR Fireblade": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "CBR 900RR Fireblade",
+          "displacement_cc": 893,
+          "stroke": "4T",
+          "engine_code": "I4",
+          "engine_type": "Štirivaljnik",
+          "cylinders": "4",
+          "cylinder_layout": "Inline-four",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CBR 929RR Fireblade": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "CBR 929RR Fireblade",
+          "displacement_cc": 929,
+          "stroke": "4T",
+          "engine_code": "I4",
+          "engine_type": "Štirivaljnik",
+          "cylinders": "4",
+          "cylinder_layout": "Inline-four",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CBR 954RR Fireblade": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "CBR 954RR Fireblade",
+          "displacement_cc": 954,
           "stroke": "4T",
           "engine_code": "I4",
           "engine_type": "Štirivaljnik",
@@ -11292,6 +11594,36 @@
           "engine_type": "Dvovaljnik (vrstni)",
           "cylinders": "2",
           "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CR 125R": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "CR 125R",
+          "displacement_cc": 124,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CR 250R": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "CR 250R",
+          "displacement_cc": 249,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
           "drivetrain": "veriga"
         }
       ]
@@ -11372,6 +11704,36 @@
         {
           "trim": "CRF 230",
           "displacement_cc": 223,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CRF 250L": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "CRF 250L",
+          "displacement_cc": 249,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "CRF 250R": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "CRF 250R",
+          "displacement_cc": 249,
           "stroke": "4T",
           "engine_code": "I1",
           "engine_type": "Enovaljnik",
@@ -12133,6 +12495,21 @@
         }
       ]
     },
+    "Vision 110": {
+      "type": "Skuter",
+      "variants": [
+        {
+          "trim": "Vision 110",
+          "displacement_cc": 109,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "jekleni jermen"
+        }
+      ]
+    },
     "VTX": {
       "type": "Cruiser",
       "variants": [
@@ -12159,6 +12536,36 @@
           "engine_type": "Dvovaljnik (vrstni)",
           "cylinders": "2",
           "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "XL 1000V Varadero": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "XL 1000V Varadero",
+          "displacement_cc": 996,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "XL 125V Varadero": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "XL 125V Varadero",
+          "displacement_cc": 125,
+          "stroke": "4T",
+          "engine_code": "V2 90°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
           "drivetrain": "veriga"
         }
       ]
@@ -12526,6 +12933,141 @@
     }
   },
   "Husqvarna": {
+    "701 Enduro": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "701 Enduro",
+          "displacement_cc": 692,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "701 Supermoto": {
+      "type": "Supermoto",
+      "variants": [
+        {
+          "trim": "701 Supermoto",
+          "displacement_cc": 692,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "FC 250": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "FC 250",
+          "displacement_cc": 249,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "FC 350": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "FC 350",
+          "displacement_cc": 349,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "FC 450": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "FC 450",
+          "displacement_cc": 449,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "FE 250": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "FE 250",
+          "displacement_cc": 249,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "FE 350": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "FE 350",
+          "displacement_cc": 349,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "FE 450": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "FE 450",
+          "displacement_cc": 449,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "FE 501": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "FE 501",
+          "displacement_cc": 510,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "Norden 901": {
       "type": "Adventure",
       "variants": [
@@ -12556,7 +13098,82 @@
         }
       ]
     },
+    "TC 125": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "TC 125",
+          "displacement_cc": 124,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "TC 250": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "TC 250",
+          "displacement_cc": 249,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "TE": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "TE 300",
+          "displacement_cc": 293,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "TE 150": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "TE 150",
+          "displacement_cc": 143,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "TE 250": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "TE 250",
+          "displacement_cc": 249,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "TE 300": {
       "type": "Enduro",
       "variants": [
         {
@@ -13854,6 +14471,51 @@
         }
       ]
     },
+    "KX 125": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "KX 125",
+          "displacement_cc": 124,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "KX 250": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "KX 250",
+          "displacement_cc": 249,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "KX 250F": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "KX 250F",
+          "displacement_cc": 249,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "KX 450": {
       "type": "Cross",
       "variants": [
@@ -13871,6 +14533,21 @@
           "trim": "KX 450SR",
           "displacement_cc": 449,
           "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "KX 85": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "KX 85",
+          "displacement_cc": 84,
+          "stroke": "2T",
           "engine_code": "I1",
           "engine_type": "Enovaljnik",
           "cylinders": "1",
@@ -14775,6 +15452,51 @@
     }
   },
   "KTM": {
+    "1050 Adventure": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "1050 Adventure",
+          "displacement_cc": 1050,
+          "stroke": "4T",
+          "engine_code": "V2 75°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "1090 Adventure": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "1090 Adventure",
+          "displacement_cc": 1050,
+          "stroke": "4T",
+          "engine_code": "V2 75°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "1190 Adventure": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "1190 Adventure",
+          "displacement_cc": 1195,
+          "stroke": "4T",
+          "engine_code": "V2 75°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "125 Duke": {
       "type": "NakedBike",
       "variants": [
@@ -14782,6 +15504,36 @@
           "trim": "125 Duke",
           "displacement_cc": 125,
           "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "125 EXC": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "125 EXC",
+          "displacement_cc": 124,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "125 SX": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "125 SX",
+          "displacement_cc": 124,
+          "stroke": "2T",
           "engine_code": "I1",
           "engine_type": "Enovaljnik",
           "cylinders": "1",
@@ -14840,6 +15592,81 @@
         }
       ]
     },
+    "150 EXC": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "150 EXC",
+          "displacement_cc": 143,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "150 SX": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "150 SX",
+          "displacement_cc": 143,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "200 Duke": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "200 Duke",
+          "displacement_cc": 199,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "200 EXC": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "200 EXC",
+          "displacement_cc": 193,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "250 Duke": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "250 Duke",
+          "displacement_cc": 248,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "250 EXC": {
       "type": "Enduro",
       "variants": [
@@ -14855,12 +15682,87 @@
         }
       ]
     },
+    "250 SX": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "250 SX",
+          "displacement_cc": 249,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "250 SX-F": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "250 SX-F",
+          "displacement_cc": 249,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "300 EXC": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "300 EXC",
+          "displacement_cc": 293,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "350 EXC-F": {
       "type": "Enduro",
       "variants": [
         {
           "trim": "350 EXC-F",
           "displacement_cc": 350,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "350 SX-F": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "350 SX-F",
+          "displacement_cc": 349,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "390 Adventure": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "390 Adventure",
+          "displacement_cc": 373,
           "stroke": "4T",
           "engine_code": "I1",
           "engine_type": "Enovaljnik",
@@ -14910,12 +15812,132 @@
         }
       ]
     },
+    "450 SX-F": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "450 SX-F",
+          "displacement_cc": 449,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "50 SX": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "50 SX",
+          "displacement_cc": 49,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "500 EXC-F": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "500 EXC-F",
+          "displacement_cc": 510,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "640 Adventure": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "640 Adventure",
+          "displacement_cc": 625,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "640 LC4": {
       "type": "Enduro",
       "variants": [
         {
           "trim": "640 LC4 Adventure",
           "displacement_cc": 625,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "65 SX": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "65 SX",
+          "displacement_cc": 64,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "690 Duke": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "690 Duke",
+          "displacement_cc": 690,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "690 Enduro R": {
+      "type": "Enduro",
+      "variants": [
+        {
+          "trim": "690 Enduro R",
+          "displacement_cc": 690,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "690 SMC R": {
+      "type": "Supermoto",
+      "variants": [
+        {
+          "trim": "690 SMC R",
+          "displacement_cc": 690,
           "stroke": "4T",
           "engine_code": "I1",
           "engine_type": "Enovaljnik",
@@ -14936,6 +15958,36 @@
           "engine_type": "Dvovaljnik (vrstni)",
           "cylinders": "2",
           "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "790 Duke": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "790 Duke",
+          "displacement_cc": 799,
+          "stroke": "4T",
+          "engine_code": "I2 270°",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "85 SX": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "85 SX",
+          "displacement_cc": 84,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
           "drivetrain": "veriga"
         }
       ]
@@ -14965,6 +16017,21 @@
         }
       ]
     },
+    "890 Duke": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "890 Duke",
+          "displacement_cc": 889,
+          "stroke": "4T",
+          "engine_code": "I2 270°",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "890 SMT": {
       "type": "SportniTourer",
       "variants": [
@@ -14973,6 +16040,51 @@
           "displacement_cc": 889,
           "stroke": "4T",
           "engine_code": "I2 285°",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "950 Adventure": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "950 Adventure",
+          "displacement_cc": 942,
+          "stroke": "4T",
+          "engine_code": "V2 75°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "990 Adventure": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "990 Adventure",
+          "displacement_cc": 999,
+          "stroke": "4T",
+          "engine_code": "V2 75°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "990 Duke": {
+      "type": "NakedBike",
+      "variants": [
+        {
+          "trim": "990 Duke",
+          "displacement_cc": 947,
+          "stroke": "4T",
+          "engine_code": "I2 270°",
           "engine_type": "Dvovaljnik (vrstni)",
           "cylinders": "2",
           "cylinder_layout": "Parallel-twin",
@@ -15383,6 +16495,21 @@
         }
       ]
     },
+    "RC 125": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "RC 125",
+          "displacement_cc": 124,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "RC 390": {
       "type": "SportniMotor",
       "variants": [
@@ -15394,6 +16521,21 @@
           "engine_type": "Enovaljnik",
           "cylinders": "1",
           "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "RC 8": {
+      "type": "SportniMotor",
+      "variants": [
+        {
+          "trim": "RC 8",
+          "displacement_cc": 1148,
+          "stroke": "4T",
+          "engine_code": "V2 75°",
+          "engine_type": "Dvovaljnik (V)",
+          "cylinders": "2",
+          "cylinder_layout": "V-twin",
           "drivetrain": "veriga"
         }
       ]
@@ -25884,6 +27026,66 @@
         }
       ]
     },
+    "RM 125": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "RM 125",
+          "displacement_cc": 124,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "RM 250": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "RM 250",
+          "displacement_cc": 249,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "RM-Z 250": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "RM-Z 250",
+          "displacement_cc": 249,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "RM-Z 450": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "RM-Z 450",
+          "displacement_cc": 449,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "Savage": {
       "type": "Cruiser",
       "variants": [
@@ -27334,6 +28536,21 @@
         }
       ]
     },
+    "Šport": {
+      "type": "Moped",
+      "variants": [
+        {
+          "trim": "Šport 50",
+          "displacement_cc": 49,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "Sprint": {
       "type": "Moped",
       "variants": [
@@ -27714,21 +28931,6 @@
       "variants": [
         {
           "trim": "Zing",
-          "displacement_cc": 49,
-          "stroke": "2T",
-          "engine_code": "I1",
-          "engine_type": "Enovaljnik",
-          "cylinders": "1",
-          "cylinder_layout": "Single",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "Šport": {
-      "type": "Moped",
-      "variants": [
-        {
-          "trim": "Šport 50",
           "displacement_cc": 49,
           "stroke": "2T",
           "engine_code": "I1",
@@ -29288,6 +30490,31 @@
     }
   },
   "Vespa": {
+    "98": {
+      "type": "Skuter",
+      "variants": [
+        {
+          "trim": "98",
+          "displacement_cc": 98,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "jekleni jermen"
+        },
+        {
+          "trim": "98 (1946)",
+          "displacement_cc": 98,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "jekleni jermen"
+        }
+      ]
+    },
     "125": {
       "type": "Skuter",
       "variants": [
@@ -29339,31 +30566,6 @@
         {
           "trim": "200 Rally",
           "displacement_cc": 198,
-          "stroke": "2T",
-          "engine_code": "I1",
-          "engine_type": "Enovaljnik",
-          "cylinders": "1",
-          "cylinder_layout": "Single",
-          "drivetrain": "jekleni jermen"
-        }
-      ]
-    },
-    "98": {
-      "type": "Skuter",
-      "variants": [
-        {
-          "trim": "98",
-          "displacement_cc": 98,
-          "stroke": "2T",
-          "engine_code": "I1",
-          "engine_type": "Enovaljnik",
-          "cylinders": "1",
-          "cylinder_layout": "Single",
-          "drivetrain": "jekleni jermen"
-        },
-        {
-          "trim": "98 (1946)",
-          "displacement_cc": 98,
           "stroke": "2T",
           "engine_code": "I1",
           "engine_type": "Enovaljnik",
@@ -29749,11 +30951,11 @@
     }
   },
   "Voskhod": {
-    "2M": {
+    "3": {
       "type": "Classic",
       "variants": [
         {
-          "trim": "2M",
+          "trim": "3",
           "displacement_cc": 175,
           "stroke": "2T",
           "engine_code": "I1",
@@ -29764,11 +30966,11 @@
         }
       ]
     },
-    "3": {
+    "2M": {
       "type": "Classic",
       "variants": [
         {
-          "trim": "3",
+          "trim": "2M",
           "displacement_cc": 175,
           "stroke": "2T",
           "engine_code": "I1",
@@ -32131,6 +33333,31 @@
         }
       ]
     },
+    "Ténéré 700": {
+      "type": "Adventure",
+      "variants": [
+        {
+          "trim": "Ténéré 700",
+          "displacement_cc": 689,
+          "stroke": "4T",
+          "engine_code": "I2 270°",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        },
+        {
+          "trim": "Ténéré 700 World Raid",
+          "displacement_cc": 689,
+          "stroke": "4T",
+          "engine_code": "I2 270°",
+          "engine_type": "Dvovaljnik (vrstni)",
+          "cylinders": "2",
+          "cylinder_layout": "Parallel-twin",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
     "TMAX": {
       "type": "Skuter",
       "variants": [
@@ -32382,31 +33609,6 @@
           "engine_type": "Enovaljnik",
           "cylinders": "1",
           "cylinder_layout": "Single",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "Ténéré 700": {
-      "type": "Adventure",
-      "variants": [
-        {
-          "trim": "Ténéré 700",
-          "displacement_cc": 689,
-          "stroke": "4T",
-          "engine_code": "I2 270°",
-          "engine_type": "Dvovaljnik (vrstni)",
-          "cylinders": "2",
-          "cylinder_layout": "Parallel-twin",
-          "drivetrain": "veriga"
-        },
-        {
-          "trim": "Ténéré 700 World Raid",
-          "displacement_cc": 689,
-          "stroke": "4T",
-          "engine_code": "I2 270°",
-          "engine_type": "Dvovaljnik (vrstni)",
-          "cylinders": "2",
-          "cylinder_layout": "Parallel-twin",
           "drivetrain": "veriga"
         }
       ]
@@ -32802,6 +34004,81 @@
         {
           "trim": "YZ 250",
           "displacement_cc": 250,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "YZ 125": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "YZ 125",
+          "displacement_cc": 124,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "YZ 250": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "YZ 250",
+          "displacement_cc": 249,
+          "stroke": "2T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "YZ 250F": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "YZ 250F",
+          "displacement_cc": 250,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "YZ 450F": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "YZ 450F",
+          "displacement_cc": 449,
+          "stroke": "4T",
+          "engine_code": "I1",
+          "engine_type": "Enovaljnik",
+          "cylinders": "1",
+          "cylinder_layout": "Single",
+          "drivetrain": "veriga"
+        }
+      ]
+    },
+    "YZ 85": {
+      "type": "Motokros",
+      "variants": [
+        {
+          "trim": "YZ 85",
+          "displacement_cc": 84,
           "stroke": "2T",
           "engine_code": "I1",
           "engine_type": "Enovaljnik",
@@ -33213,68 +34490,6 @@
           "engine_type": "Enovaljnik",
           "cylinders": "1",
           "cylinder_layout": "Single",
-          "drivetrain": "veriga"
-        }
-      ]
-    }
-  },
-  "ČZ": {
-    "125": {
-      "type": "Enduro",
-      "variants": [
-        {
-          "trim": "125 Trail",
-          "displacement_cc": 123,
-          "stroke": "2T",
-          "engine_code": "I1",
-          "engine_type": "Enovaljnik",
-          "cylinders": "1",
-          "cylinder_layout": "Single",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "175": {
-      "type": "Classic",
-      "variants": [
-        {
-          "trim": "175",
-          "displacement_cc": 172,
-          "stroke": "2T",
-          "engine_code": "I1",
-          "engine_type": "Enovaljnik",
-          "cylinders": "1",
-          "cylinder_layout": "Single",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "250": {
-      "type": "Enduro",
-      "variants": [
-        {
-          "trim": "250 Trail",
-          "displacement_cc": 248,
-          "stroke": "2T",
-          "engine_code": "I1",
-          "engine_type": "Enovaljnik",
-          "cylinders": "1",
-          "cylinder_layout": "Single",
-          "drivetrain": "veriga"
-        }
-      ]
-    },
-    "350": {
-      "type": "Classic",
-      "variants": [
-        {
-          "trim": "350",
-          "displacement_cc": 343,
-          "stroke": "2T",
-          "engine_code": "I2",
-          "engine_type": "Dvovaljnik (vrstni)",
-          "cylinders": "2",
-          "cylinder_layout": "Parallel-twin",
           "drivetrain": "veriga"
         }
       ]

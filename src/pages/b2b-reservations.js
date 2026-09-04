@@ -1,6 +1,6 @@
 // b2b-reservations.js — Provider-side booking management
 import { mountB2BShell } from '../layouts/b2b-layout.js';
-import { listMyBookings, updateBookingStatus, blockSlot, listPendingTireOrders, confirmTireOrderReceival } from '../services/b2bService.js';
+import { listMyBookings, updateBookingStatus, confirmBookingSlot, blockSlot, listPendingTireOrders, confirmTireOrderReceival } from '../services/b2bService.js';
 
 const STATUS_META = {
     pending:   { label: 'Čaka potrditve', color: '#d97706', bg: '#fffbeb' },
@@ -174,17 +174,60 @@ export async function initB2bReservationsPage() {
         });
     }
 
-    async function openBlockDialog() {
-        const date = prompt('Datum (YYYY-MM-DD):');
-        if (!date) return;
-        const time = prompt('Ura (HH:MM), lahko prazno za cel dan:') || 'cel dan';
-        const reason = prompt('Opomba (neobvezno):') || '';
-        try {
-            await blockSlot(date, time, reason);
-            await load();
-        } catch (err) {
-            alert('Napaka: ' + err.message);
-        }
+    function openBlockDialog() {
+        const modalHtml = `
+            <div id="blockSlotModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;">
+                <div class="b2b-card" style="width:100%;max-width:400px;background:white;padding:1.5rem;border-radius:0.75rem;box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+                    <h3 style="margin-top:0;margin-bottom:1rem;font-size:1.1rem;"><i data-lucide="ban" style="width:18px;height:18px;margin-right:0.5rem;"></i>Blokiraj termin</h3>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block;margin-bottom:0.25rem;font-size:0.85rem;font-weight:500;">Datum (obvezno)</label>
+                        <input type="date" id="blockDateInput" style="width:100%;padding:0.5rem;border:1px solid #cbd5e1;border-radius:0.375rem;" />
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block;margin-bottom:0.25rem;font-size:0.85rem;font-weight:500;">Ura (prazno za cel dan)</label>
+                        <input type="time" id="blockTimeInput" style="width:100%;padding:0.5rem;border:1px solid #cbd5e1;border-radius:0.375rem;" />
+                    </div>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block;margin-bottom:0.25rem;font-size:0.85rem;font-weight:500;">Opomba</label>
+                        <input type="text" id="blockReasonInput" style="width:100%;padding:0.5rem;border:1px solid #cbd5e1;border-radius:0.375rem;" placeholder="Npr. Dopust" />
+                    </div>
+                    <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+                        <button class="btn b2b-btn-secondary" id="cancelBlockBtn">Prekliči</button>
+                        <button class="btn b2b-btn-primary" id="confirmBlockBtn">Shrani blokado</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        if (window.lucide) window.lucide.createIcons();
+
+        document.getElementById('cancelBlockBtn').addEventListener('click', () => {
+            document.getElementById('blockSlotModal').remove();
+        });
+
+        document.getElementById('confirmBlockBtn').addEventListener('click', async () => {
+            const date = document.getElementById('blockDateInput').value;
+            const time = document.getElementById('blockTimeInput').value || 'cel dan';
+            const reason = document.getElementById('blockReasonInput').value;
+
+            if (!date) {
+                alert('Datum je obvezen!');
+                return;
+            }
+
+            const btn = document.getElementById('confirmBlockBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Shranjujem...';
+            try {
+                await blockSlot(date, time, reason);
+                document.getElementById('blockSlotModal').remove();
+                await load();
+            } catch (err) {
+                alert('Napaka: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = 'Shrani blokado';
+            }
+        });
     }
 
     function bindRowActions(root) {
@@ -199,6 +242,25 @@ export async function initB2bReservationsPage() {
                 } catch (err) {
                     alert('Napaka: ' + err.message);
                     sel.disabled = false;
+                }
+            });
+        });
+
+        root.querySelectorAll('[data-action="confirm-slot"]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = btn.dataset.id;
+                const date = btn.dataset.date;
+                const time = btn.dataset.time;
+                btn.disabled = true;
+                btn.innerHTML = '<i data-lucide="loader"></i> Potrjujem...';
+                if (window.lucide) window.lucide.createIcons();
+                try {
+                    await confirmBookingSlot(id, date, time);
+                    await load();
+                } catch (err) {
+                    alert('Napaka pri potrjevanju: ' + err.message);
+                    btn.disabled = false;
+                    btn.innerHTML = `${esc(date)} ob ${esc(time)}`;
                 }
             });
         });
@@ -228,16 +290,32 @@ function renderList(bookings) {
 function rowHtml(b) {
     const meta = STATUS_META[b.status] || { label: b.status, color: '#64748b', bg: '#f1f5f9' };
     const services = Array.isArray(b.services) ? b.services.join(', ') : (b.serviceId || '—');
+    const price = b.total_price !== undefined ? b.total_price : b.totalPrice;
+    const priceStr = price ? price + ' €' : '—';
+    const slots = b.proposed_slots || b.proposedSlots || [];
+
+    let dateCol = `<td>${esc(b.date || '—')}</td><td>${esc(b.time || '—')}</td>`;
+    if (b.status === 'pending' && slots.length > 0) {
+        dateCol = `<td colspan="2">
+            <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+                ${slots.map(s => `
+                    <button class="btn btn-sm b2b-btn-secondary" style="font-size:0.75rem;padding:0.25rem 0.5rem;" data-action="confirm-slot" data-id="${b.id}" data-date="${s.date}" data-time="${s.time}">
+                        ${esc(s.date)} ob ${esc(s.time)}
+                    </button>
+                `).join('')}
+            </div>
+        </td>`;
+    }
+
     return `
         <tr>
-            <td>${esc(b.date || '—')}</td>
-            <td>${esc(b.time || '—')}</td>
+            ${dateCol}
             <td>
-                <div class="b2b-cell-primary">${esc(b.customerName || b.customerId || 'Anonimno')}</div>
+                <div class="b2b-cell-primary">${esc(b.customerName || b.customer_name || b.customerId || 'Anonimno')}</div>
                 <div class="b2b-cell-sub">${esc(b.customerContact || '')}</div>
             </td>
             <td>${esc(services)}</td>
-            <td>${b.totalPrice ? b.totalPrice + ' €' : '—'}</td>
+            <td>${priceStr}</td>
             <td>
                 <select class="b2b-status-select" data-action="status" data-id="${b.id}" style="background:${meta.bg};color:${meta.color};">
                     ${Object.entries(STATUS_META).map(([k, v]) => `<option value="${k}" ${k === b.status ? 'selected' : ''}>${v.label}</option>`).join('')}

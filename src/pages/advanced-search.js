@@ -59,6 +59,8 @@ export function initAdvancedSearchPage() {
     bindSearchLogic(catContext);
     bindHybridSubOptions();
 
+    bindStickyMobileBar();
+    
     // Setup numeric formatters
     document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
 
@@ -279,6 +281,21 @@ function showGridForTab(tabKey) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // Accordions
 // ═══════════════════════════════════════════════════════════════════════════════
+function bindStickyMobileBar() {
+    const searchForm = document.getElementById("advancedSearchForm");
+    const stickyBar = document.getElementById("advStickyBar");
+    const stickyBtn = document.getElementById("advStickySubmit");
+    if (!searchForm || !stickyBar || !stickyBtn) return;
+    const showSticky = () => stickyBar.classList.add('visible');
+    searchForm.addEventListener('change', showSticky);
+    searchForm.addEventListener('input', showSticky);
+    stickyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const mainSubmit = searchForm.querySelector('.filter-search-btn');
+        if (mainSubmit) mainSubmit.click();
+    });
+}
+
 function bindAccordions() {
     const triggers = document.querySelectorAll('.adv-acc-trigger');
     triggers.forEach(trigger => {

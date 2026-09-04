@@ -3,12 +3,20 @@
 // two stay in lockstep. Keyed by canonical category slug ('avto', 'moto', …).
 export const POPULAR_BRANDS = {
     avto: ['Audi', 'Dacia', 'Ford', 'Hyundai', 'Kia', 'Peugeot', 'Renault', 'Škoda', 'Toyota', 'Volkswagen'],
-    moto: ['BMW', 'CF Moto', 'Ducati', 'Honda', 'Husqvarna', 'Kawasaki', 'KTM', 'Piaggio', 'Suzuki', 'Yamaha'],
+    moto: ['BMW Motorrad', 'BMW', 'CFMoto', 'CF Moto', 'Ducati', 'Honda', 'Husqvarna', 'Kawasaki', 'KTM', 'Piaggio', 'Suzuki', 'Yamaha'],
+    plovila: ['Axopar', 'Bavaria', 'Bayliner', 'Beneteau', 'Elan', 'Jeanneau', 'Quicksilver', 'Sea Ray', 'Yamaha', 'Zodiac'],
+    izvenkrmni: ['Yamaha', 'Mercury', 'Honda', 'Suzuki', 'Tohatsu', 'Torqeedo', 'Evinrude', 'Volvo Penta', 'Selva', 'Parsun'],
 };
 
 // Normalise the various category slugs used across the app to a POPULAR_BRANDS
 // key. The home page emits 'motor' for motorbikes; advanced search uses 'moto'.
 export function popularBrandsFor(category) {
-    const key = category === 'motor' ? 'moto' : category;
-    return POPULAR_BRANDS[key] || [];
+    if (!category) return [];
+    const norm = String(category).toLowerCase().replace(/_/g, '-');
+    if (norm === 'motor' || norm === 'moto') return POPULAR_BRANDS.moto;
+    if (norm === 'izvenkrmni' || norm === 'izvenkrmni-motorji') return POPULAR_BRANDS.izvenkrmni;
+    if (norm === 'colni' || norm === 'jadrnice' || norm === 'gumenjaki' || norm === 'jet-ski' || norm === 'plovila' || norm === 'navtika' || norm === 'plovilo') {
+        return POPULAR_BRANDS.plovila;
+    }
+    return POPULAR_BRANDS[norm] || [];
 }

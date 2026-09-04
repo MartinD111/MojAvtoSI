@@ -13,6 +13,7 @@ import {
 } from '../services/businessService.js';
 import { allBrands, serviceLabels } from '../data/businesses.js';
 import { PLATFORM } from '../config/platform.js';
+import '../../css/map.css';
 import { navigateTo } from '../router.js';
 
 // ── State ────────────────────────────────────────────────────

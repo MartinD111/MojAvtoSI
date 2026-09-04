@@ -1,5 +1,5 @@
 <!-- Map Discovery — MojAvto.si -->
-<link rel="stylesheet" href="css/map.css" />
+
 
 <div class="map-page">
 
@@ -11,7 +11,7 @@
             <div class="map-filters-header" id="mapFiltersToggle">
                 <div class="map-filters-title">
                     <i data-lucide="sliders-horizontal"></i>
-                    Filtri
+                    <span data-i18n-key="map_filter_title">Filtri</span>
                     <span id="activeFiltersCount" style="display:none; background:var(--color-primary-start); color:white; border-radius:9999px; padding:1px 7px; font-size:0.65rem;">0</span>
                 </div>
                 <div class="map-filters-toggle">
@@ -21,7 +21,7 @@
 
             <!-- Type Filter -->
             <div class="filter-section">
-                <div class="filter-section-label">Vrsta podjetja</div>
+                <div class="filter-section-label" data-i18n-key="map_company_type">Vrsta podjetja</div>
                 <div class="type-filter-pills">
                     <button class="type-pill dealer" data-type="dealer" id="typeDealer">
                         <span class="type-pill-dot" style="background:#2563eb;"></span>
@@ -52,14 +52,14 @@
 
             <!-- Brand Filter -->
             <div class="filter-section">
-                <div class="filter-section-label">Znamke</div>
-                <select id="brandSelect"><option value="">Izberite znamko...</option></select>
+                <div class="filter-section-label" data-i18n-key="map_brands">Znamke</div>
+                <select id="brandSelect"><option value="" data-i18n-key="map_select_brand">Izberite znamko...</option></select>
                 <div id="brandSelectedPills" class="brand-selected-pills"></div>
             </div>
 
             <!-- Toggles -->
             <div class="filter-section">
-                <div class="filter-section-label">Posebnosti</div>
+                <div class="filter-section-label" data-i18n-key="map_features">Posebnosti</div>
                 <div class="toggle-filters">
                     <div class="toggle-row">
                         <label class="toggle-row-label" for="filterAuthorized">
@@ -93,7 +93,7 @@
 
             <!-- Rating Slider -->
             <div class="filter-section">
-                <div class="filter-section-label">Minimalna ocena</div>
+                <div class="filter-section-label" data-i18n-key="map_min_rating">Minimalna ocena</div>
                 <div class="rating-slider-wrap">
                     <input type="range" min="0" max="5" step="0.5" value="0" class="rating-slider" id="ratingSlider" />
                     <div class="rating-value">
@@ -105,7 +105,7 @@
 
             <!-- Distance -->
             <div class="filter-section">
-                <div class="filter-section-label">Razdalja od moje lokacije</div>
+                <div class="filter-section-label" data-i18n-key="map_distance_from_me">Razdalja od moje lokacije</div>
                 <div class="distance-radios">
                     <input type="radio" name="dist" id="dist5" class="dist-radio" value="5" />
                     <label for="dist5" class="dist-label">5 km</label>

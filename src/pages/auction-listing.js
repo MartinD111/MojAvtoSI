@@ -51,7 +51,7 @@ export async function initAuctionListingPage() {
     const id = params.get('id');
     const page = document.getElementById('listingPage');
     if (!id || !page) {
-        if (page) page.innerHTML = `<div class="error-page"><h1>404</h1><p>Dražba ni najdena.</p></div>`;
+        if (page) page.innerHTML = `<div class="error-page"><h1>404</h1><p>${t('auction_not_found', 'Dražba ni najdena.')}</p></div>`;
         return;
     }
 

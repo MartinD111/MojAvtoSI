@@ -2,7 +2,9 @@
 // Multi-step wizard: Vehicle → Type → Services → Products → DateTime → Confirm
 
 import { getBusinessById } from '../services/businessService.js';
+import '../../css/booking.css';
 import { key as lsKey } from '../config/storageKeys.js';
+import { t } from '../core/i18n.js';
 import {
     getServicesForBusiness,
     getProductsForServices,
@@ -84,7 +86,13 @@ function getEffectiveSteps(biz) {
 }
 
 function getStepLabels() {
-    return ['Vozilo', 'Storitve', 'Izdelki', 'Termin', 'Potrditev'];
+    return [
+        t('booking_step_vehicle', 'Vozilo'),
+        t('booking_step_services', 'Storitve'),
+        t('booking_step_products', 'Izdelki'),
+        t('booking_step_datetime', 'Termin'),
+        t('booking_step_confirm', 'Potrditev')
+    ];
 }
 
 // Converts display step index (1-based) to logical step number
@@ -213,7 +221,7 @@ function updateSummaryPanel() {
             totalEl.style.display = 'flex';
             if (dividerEl) dividerEl.style.display = 'block';
             totalEl.innerHTML = `
-                <span class="summary-total-label">Skupaj od</span>
+                <span class="summary-total-label">${t('total_from', 'Skupaj od')}</span>
                 <span class="summary-total-price">${total} €</span>
             `;
         } else {
@@ -282,7 +290,7 @@ function updateNavButtons() {
 
     const isLast = state.currentStep === state.totalSteps;
     nextBtn.style.display = isLast ? 'none' : 'inline-flex';
-    nextBtn.innerHTML = 'Naprej <i data-lucide="chevron-right"></i>';
+    nextBtn.innerHTML = `${t('next_step', 'Naprej')} <i data-lucide="chevron-right"></i>`;
     if (window.lucide) window.lucide.createIcons();
 }
 
@@ -1110,11 +1118,18 @@ function bindStep6() {
 }
 
 // ── Confirm and save booking ──────────────────────────────────
-function confirmBooking() {
+async function confirmBooking() {
     const userId = getUserId();
     const vehicle = state.vehicles.find(v => v.id === state.selectedVehicleId);
     const { total } = calculateTotal(state.selectedServiceIds, state.selectedProducts);
     const serviceNumber = state.serviceNumber || generateServiceNumber();
+
+    const btn = document.getElementById('confirmBookingBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader"></i> Shranjujem...';
+        if (window.lucide) window.lucide.createIcons();
+    }
 
     const bookingData = {
         userId,
@@ -1128,6 +1143,7 @@ function confirmBooking() {
         products: state.selectedProducts,
         bookingType: isVulcanizer(state.business) ? state.bookingType : null,
         totalPrice: total,
+        total_price: total, // Add snake_case for Supabase compatibility
         date: state.proposedSlots[0]?.date || null,
         time: state.proposedSlots[0]?.time || null,
         proposedSlots: state.proposedSlots,
@@ -1136,10 +1152,24 @@ function confirmBooking() {
         sendConfirmEmail: state.sendConfirmEmail,
         sendConfirmSms: state.sendConfirmSms,
         ...(state.tireHandoff ? { tireHandoff: state.tireHandoff } : {}),
+        customerName: window.__currentUser?.user_metadata?.full_name || 'Anonimno',
     };
 
-    const saved = saveBooking(bookingData);
-    store.addBooking(saved);
+    let saved;
+    try {
+        saved = await saveBooking(bookingData);
+        if (window.store && window.store.addBooking) {
+            window.store.addBooking(saved);
+        }
+    } catch (e) {
+        alert('Napaka pri shranjevanju rezervacije. Poskusite ponovno.');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="check-circle"></i> Potrdi rezervacijo';
+            if (window.lucide) window.lucide.createIcons();
+        }
+        return;
+    }
 
     // Mark tire order as ordered if applicable
     if (state.tireOrderId) {

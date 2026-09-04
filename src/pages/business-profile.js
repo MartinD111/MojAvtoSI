@@ -3,6 +3,7 @@
 
 import { escHtml } from '../utils/escHtml.js';
 import { navigateTo } from '../router.js';
+import '../../css/business-profile.css';
 import { getBusinessById, getTypeLabels, getBusinessTypeInfo } from '../services/businessService.js';
 import { serviceLabels } from '../data/businesses.js';
 import { SAMPLE_LISTINGS as sampleCars } from '../data/sampleListings.js'; // Reuse platform listings

@@ -67,7 +67,8 @@ const PLATFORM_VIEW_VARIANTS = {
 // ── Programmatic navigation ───────────────────────────────────────────────────
 export function navigateTo(path) {
     const base = import.meta.env.BASE_URL;
-    const targetPath = (base !== '/' && path.startsWith('/')) ? `${base.slice(0, -1)}${path}` : path;
+    const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    const targetPath = (base !== '/' && path.startsWith('/')) ? `${cleanBase}${path}` : path;
     history.pushState({}, '', targetPath);
     router();
 }
@@ -97,7 +98,7 @@ async function loadView(viewName) {
             // JS-only pages: clear container and let the page init render into it.
             APP.innerHTML = '';
         } else {
-            const v = `?v=${new Date().getTime()}`;
+            const v = import.meta.env.DEV ? `?v=${new Date().getTime()}` : `?v=${__BUILD_HASH__}`;
             // Prefer a platform-specific view variant (e.g. advanced-search.navtika.html)
             // only when one is known to exist; otherwise load the shared view.
             const hasVariant = PLATFORM_VIEW_VARIANTS[PLATFORM.id]?.has(viewName);
@@ -109,7 +110,7 @@ async function loadView(viewName) {
             // Rewrite absolute paths inside dynamically-loaded view HTML to match base url
             const base = import.meta.env.BASE_URL;
             if (base !== '/') {
-                const cleanBase = base.slice(0, -1);
+                const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
                 htmlText = htmlText
                     .replaceAll('href="/icons/', `href="${cleanBase}/icons/`)
                     .replaceAll('src="/images/', `src="${cleanBase}/images/`);
@@ -142,8 +143,12 @@ async function router() {
     let path = decodeURIComponent(window.location.pathname);
 
     // Strip base path prefix to match routes (e.g. /MojAvtoSI/oglasi -> /oglasi)
-    if (base !== '/' && path.startsWith(base)) {
-        path = path.slice(base.length - 1);
+    if (base !== '/') {
+        const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+        if (path.startsWith(cleanBase)) {
+            path = path.slice(cleanBase.length);
+            if (!path.startsWith('/')) path = '/' + path;
+        }
     }
 
     // If only query params changed (same path already loaded), let the page

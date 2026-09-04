@@ -6,6 +6,7 @@ import { PLATFORM } from '../config/platform.js';
 import { endsAtMillis, startCountdown } from '../utils/countdown.js';
 import { newsletterWidgetHtml, bindNewsletterWidget } from '../utils/auctionNewsletter.js';
 import { renderCarCard, bindCardEvents, initDrazbeFilters } from './oglasi.js';
+import { t } from '../core/i18n.js';
 
 const PRIMARY_ITEM_TYPES = PLATFORM.id === 'navtika' ? ['plovilo', 'motor', 'vehicle'] : ['vehicle'];
 const _timers = [];
@@ -28,8 +29,8 @@ function renderAuctionCards(filtered) {
 
     if (filtered.length === 0) {
         grid.innerHTML = `<div class="drazbe-empty">
-            <p>🔨 Trenutno ni aktivnih dražb za izbrane filtre.</p>
-            <p class="drazbe-empty-sub">Prijavite se na obvestila spodaj in sporočili vam bomo, ko se odpre dražba.</p>
+            <p>${t('auction_empty_title', '🔨 Trenutno ni aktivnih dražb za izbrane filtre.')}</p>
+            <p class="drazbe-empty-sub">${t('auction_empty_sub', 'Prijavite se na obvestila spodaj in sporočili vam bomo, ko se odpre dražba.')}</p>
         </div>`;
         if (countEl) countEl.textContent = '';
         if (window.lucide) window.lucide.createIcons();
@@ -49,7 +50,7 @@ function renderAuctionCards(filtered) {
         return renderCarCard({ ...r.listing, price: fmtEur(currentPrice), priceRaw: currentPrice }, r.auction);
     }).join('');
 
-    if (countEl) countEl.textContent = `(${rows.length} dražb)`;
+    if (countEl) countEl.textContent = `(${rows.length} ${t('auctions_count', 'dražb')})`;
 
     bindCardEvents(grid, filtered);
 

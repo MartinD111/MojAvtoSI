@@ -2,6 +2,7 @@
 // Lets dealer/mechanic/vulcanizer tools register themselves declaratively.
 
 import { PLATFORM } from '../config/platform.js';
+import { t } from '../core/i18n.js';
 
 const _registry = new Map(); // id → extension definition
 
@@ -17,6 +18,26 @@ const NAME_OVERRIDES = {
 
 function platformName(id, fallback) {
     return NAME_OVERRIDES[PLATFORM.id]?.[id] || fallback;
+}
+
+function getLocalizedExtensionName(id, fallback) {
+    const isNavtika = PLATFORM.id === 'navtika';
+    switch (id) {
+        case 'b2b-dashboard': return t('b2b_nav_dashboard', 'Pregled');
+        case 'b2b-reservations': return t('b2b_nav_reservations', 'Rezervacije');
+        case 'b2b-services': return t('b2b_nav_services', 'Storitve in cenik');
+        case 'b2b-profile': return t('b2b_nav_profile', 'Javni profil');
+        case 'b2b-inventory': return isNavtika ? t('b2b_nav_inventory_navtika', 'Zaloga plovil') : t('b2b_nav_inventory', 'Zaloga vozil');
+        case 'b2b-leads': return t('b2b_nav_leads', 'Povpraševanja (CRM)');
+        case 'b2b-workshop': return t('b2b_nav_workshop', 'Delavnica');
+        case 'b2b-service-entry': return isNavtika ? t('b2b_nav_service_entry_navtika', 'Vnos servisa') : t('b2b_nav_service_entry', 'VIN vnos servisa');
+        case 'b2b-tire-hotel': return isNavtika ? t('b2b_nav_tire_hotel_navtika', 'Zimovanje / privez') : t('b2b_nav_tire_hotel', 'Hotel za gume');
+        case 'b2b-bulk-import': return t('b2b_nav_bulk_import', 'Skupinski uvoz');
+        case 'b2b-tuning': return t('b2b_nav_tuning', 'Tuning projekti');
+        case 'b2b-detailing': return t('b2b_nav_detailing', 'Detajling termini');
+        case 'b2b-carwash': return t('b2b_nav_carwash', 'Pranje termini');
+        default: return fallback;
+    }
 }
 
 /**
@@ -41,11 +62,18 @@ export function getExtensionsForRoles(roles) {
     const all = [..._registry.values()];
     return all
         .filter(e => e.role === 'any' || roles.includes(e.role))
-        .sort((a, b) => (a.order ?? 100) - (b.order ?? 100));
+        .sort((a, b) => (a.order ?? 100) - (b.order ?? 100))
+        .map(e => ({
+            ...e,
+            name: getLocalizedExtensionName(e.id, e.name)
+        }));
 }
 
 export function getAllExtensions() {
-    return [..._registry.values()];
+    return [..._registry.values()].map(e => ({
+        ...e,
+        name: getLocalizedExtensionName(e.id, e.name)
+    }));
 }
 
 // ── Default B2B extensions ────────────────────────────────────

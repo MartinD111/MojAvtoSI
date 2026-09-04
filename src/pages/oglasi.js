@@ -18,11 +18,12 @@ import { addToFavourites, removeFromFavourites, isFavourite, getFavourites } fro
 import { getListings, getListingsPaged } from '../services/listingService.js';
 import { renderLoading } from '../utils/uiState.js';
 import { initCustomSelects } from '../utils/customSelect.js';
-import { getCurrentLang } from '../core/i18n.js';
+import { getCurrentLang, t } from '../core/i18n.js';
 import { showCompareLimitToast } from '../utils/listingUtils.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { brandsFileFor } from '../data/brandFiles.js';
 import { COMMERCIAL_BY_KEY } from '../data/commercialTaxonomy.js';
+import { showToast } from '../utils/toast.js';
 
 import {
     getFuelPill,
@@ -72,15 +73,15 @@ function getPriceRating(car, allCars) {
     });
 
     if (comps.length === 0) {
-        return { score: 2, label: 'Average price', color: 'amber' };
+        return { score: 2, label: t('rating_fair_val', 'Poštena cena'), color: 'amber' };
     }
 
     const avgPrice = comps.reduce((s, c) => s + c.priceRaw, 0) / comps.length;
     const ratio = car.priceRaw / avgPrice;
 
-    if (ratio <= 0.88) return { score: 3, label: 'Great price', color: 'green' };
-    if (ratio <= 1.08) return { score: 2, label: 'Average price', color: 'amber' };
-    return { score: 1, label: 'Above average', color: 'red' };
+    if (ratio <= 0.88) return { score: 3, label: t('rating_excellent_val', 'Odlična vrednost'), color: 'green' };
+    if (ratio <= 1.08) return { score: 2, label: t('rating_fair_val', 'Poštena cena'), color: 'amber' };
+    return { score: 1, label: t('rating_above_avg', 'Nad povprečjem'), color: 'red' };
 }
 
 // ── Comparison State ─────────────────────────────────────────
@@ -161,10 +162,14 @@ async function toggleFavourite(btn, carId, car) {
     // Optimistic UI update
     if (liked) {
         btn.classList.remove('active');
+        btn.classList.remove('heart-bump');
         userFavouritesCache.delete(carId);
+        showToast('Oglas odstranjen iz priljubljenih', 'info');
     } else {
         btn.classList.add('active');
+        btn.classList.add('heart-bump');
         userFavouritesCache.add(carId);
+        showToast('Oglas uspešno shranjen!', 'heart');
     }
 
     btn.disabled = true;
@@ -235,20 +240,15 @@ function auctionCardBadges(car, auction) {
 
 export function renderCarCard(car, auction = null) {
     const inCompare = isInCompare(car.id);
-    // Display logic: 1st exterior and 1st interior if available, otherwise first 2 images
     let displayImages = [];
     if (car.images) {
-        if (car.images.exterior?.[0]) displayImages.push(car.images.exterior[0]);
-        if (car.images.interior?.[0]) {
-            displayImages.push(car.images.interior[0]);
-        } else if (car.images.exterior?.[1]) {
-            displayImages.push(car.images.exterior[1]);
-        }
+        if (car.images.exterior) displayImages.push(...car.images.exterior);
+        if (car.images.interior) displayImages.push(...car.images.interior);
     }
     if (displayImages.length === 0) displayImages.push(car.image || 'images/car-placeholder.png');
     
-    // Ensure unique images and limit to 2 for the board view
-    const images = [...new Set(displayImages)].slice(0, 2);
+    // Zberi do 5 unikatnih slik za novo UX drsno galerijo
+    const images = [...new Set(displayImages)].slice(0, 5);
 
     try {
         const rating = getPriceRating(car, SAMPLE_LISTINGS);
@@ -282,29 +282,29 @@ export function renderCarCard(car, auction = null) {
         return `
     <div class="listing-card" data-car-id="${car.id}">
         <!-- Image Container -->
-        <div class="listing-card-img" data-current-idx="0">
-            <div class="carousel-track">
+        <div class="listing-card-img card-gallery-wrapper">
+            <div class="card-gallery-scroll">
                 ${images.map(img => `<img src="${img}" alt="${escHtml(car.title)}" loading="lazy">`).join('')}
             </div>
             
-            ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
+            ${car.isNew ? `<span class="badge-new-pill overlay">${t('badge_new', 'NOVO')}</span>` : ''}
             ${car.condition ? `<span class="condition-overlay-badge" data-condition="${car.condition}">${car.condition}</span>` : ''}
             
             ${(auction || car.entryType === 'auction') ? `
                 <span class="drazba-card-timer" data-ends="${(auction?.endsAt || car.endsAt) ? new Date(auction?.endsAt || car.endsAt).getTime() : ''}">—</span>
-                ${(auction?.bidCount > 0) ? `<span class="drazba-card-live">● V ŽIVO</span>` : ''}
+                ${(auction?.bidCount > 0) ? `<span class="drazba-card-live">${t('auction_live_badge', '● V ŽIVO')}</span>` : ''}
             ` : ''}
 
             ${images.length > 1 ? `
-                <div class="listing-carousel-dots">
-                    ${images.map((_, i) => `<span class="mini-dot ${i === 0 ? 'active' : ''}"></span>`).join('')}
-                </div>
-                <button class="carousel-btn prev" aria-label="Previous image">
+                <button type="button" class="card-gallery-arrow card-gallery-prev" aria-label="${t('gallery_prev', 'Prejšnja slika')}" title="${t('gallery_prev', 'Prejšnja slika')}">
                     <i data-lucide="chevron-left"></i>
                 </button>
-                <button class="carousel-btn next" aria-label="Next image">
+                <button type="button" class="card-gallery-arrow card-gallery-next" aria-label="${t('gallery_next', 'Naslednja slika')}" title="${t('gallery_next', 'Naslednja slika')}">
                     <i data-lucide="chevron-right"></i>
                 </button>
+                <div class="card-gallery-dots">
+                    ${images.map((_, i) => `<span class="card-gallery-dot ${i === 0 ? 'active' : ''}" data-dot-idx="${i}"></span>`).join('')}
+                </div>
             ` : ''}
         </div>
 
@@ -323,7 +323,7 @@ export function renderCarCard(car, auction = null) {
                     <div style="display:flex;align-items:center;gap:0.4rem;">
                         <span class="price-value">${car.price}</span>
                         ${car.salePriceEur ? `
-                        <span class="discount-tag-icon" title="Znižana cena">
+                        <span class="discount-tag-icon" title="${t('discount_reduced_price', 'Znižana cena')}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
                                 <line x1="7" y1="7" x2="7.01" y2="7"/>
@@ -344,13 +344,13 @@ export function renderCarCard(car, auction = null) {
                 </div>
 
                 <div class="listing-card-actions">
-                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="Save to favorites">
+                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="${t('save_favorite', 'Shrani med priljubljene')}">
                         <i data-lucide="heart"></i>
                     </button>
-                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
+                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="${t('compare_btn', 'Primerjaj')}">
                         <i data-lucide="scale"></i>
                     </button>
-                    <button class="action-pill-btn contact-btn grid-contact-btn" data-car-id="${car.id}" title="Contact">
+                    <button class="action-pill-btn contact-btn grid-contact-btn" data-car-id="${car.id}" title="${t('contact_seller', 'Kontaktiraj prodajalca')}">
                         <i data-lucide="phone"></i>
                     </button>
                 </div>
@@ -376,10 +376,10 @@ export function renderCarCard(car, auction = null) {
                      Contact lives in .note-contact-row in list view, so it is omitted
                      here to avoid a duplicate phone button. -->
                 <div class="listing-card-bottom-actions">
-                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="Save to favorites">
+                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="${t('save_favorite', 'Shrani med priljubljene')}">
                         <i data-lucide="heart"></i>
                     </button>
-                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
+                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="${t('compare_btn', 'Primerjaj')}">
                         <i data-lucide="scale"></i>
                     </button>
                 </div>
@@ -419,7 +419,7 @@ window.showContactPopup = function (carId) {
             <div class="contact-popup-header">
                 <img src="${escHtml(car.sellerImage)}" class="seller-avatar">
                 <h3 class="seller-name">${escHtml(car.seller)}</h3>
-                <p class="seller-type-label">${car.sellerType === 'dealer' ? 'Authorized Dealer' : 'Private Seller'}</p>
+                <p class="seller-type-label">${car.sellerType === 'dealer' ? t('seller_authorized_dealer', 'Pooblaščeni prodajalec') : t('seller_private', 'Zasebni prodajalec')}</p>
             </div>
             <div class="contact-popup-info-box">
                 <div class="contact-row">
@@ -428,18 +428,18 @@ window.showContactPopup = function (carId) {
                 </div>
                 <div class="contact-row">
                     <i data-lucide="phone" class="row-icon"></i>
-                    <span class="row-text">+1 (555) 123-4567</span>
+                    <span class="row-text">+386 1 234 5678</span>
                 </div>
                 <div class="contact-row">
                     <i data-lucide="mail" class="row-icon"></i>
-                    <span class="row-text">info@mojavto.com</span>
+                    <span class="row-text">info@mojavto.si</span>
                 </div>
 
                 ${car.sellerType === 'dealer' && car.openingHours ? `
                 <div class="contact-popup-footer-row">
                     <i data-lucide="clock" class="footer-row-icon"></i>
                     <div>
-                        <p class="footer-row-label">Business Hours</p>
+                        <p class="footer-row-label">${t('business_hours', 'Delovni čas')}</p>
                         <p class="footer-row-value">${escHtml(car.openingHours)}</p>
                     </div>
                 </div>` : ''}
@@ -448,12 +448,12 @@ window.showContactPopup = function (carId) {
                 <div class="contact-popup-footer-row">
                     <i data-lucide="info" class="footer-row-icon"></i>
                     <div>
-                        <p class="footer-row-label">Seller Note</p>
+                        <p class="footer-row-label">${t('seller_note', 'Opomba prodajalca')}</p>
                         <p class="footer-row-value">${escHtml(car.sellerNote)}</p>
                     </div>
                 </div>` : ''}
             </div>
-            <button class="pill-btn primary w-full">Send Message</button>
+            <button class="pill-btn primary w-full">${t('send_message', 'Pošlji sporočilo')}</button>
         </div>
     `;
 
@@ -479,57 +479,126 @@ function renderListings(cars) {
     if (!container) return;
     container.innerHTML = cars.map(c => renderCarCard(c)).join('');
     bindCardEvents(container, cars);
+    renderActiveFilterChips();
 }
 
-// ── Bind Card Events ─────────────────────────────────────────
+const _containerCarsMap = new WeakMap();
+
+// UX Enhancement: Active Filter Chips
+function renderActiveFilterChips() {
+    const container = document.getElementById('activeFiltersTopbar');
+    if (!container) return;
+    const params = parseHashParams();
+    let chipsHtml = '';
+    
+    // We can show chips for interesting parameters
+    const ignoreParams = ['cat', 'sort', 'mode'];
+    for (const [key, value] of params.entries()) {
+        if (!ignoreParams.includes(key) && value) {
+            // Split comma values
+            value.split(',').forEach(val => {
+                if (val.trim()) {
+                    chipsHtml += `<span class="active-filter-chip" data-key="${key}" data-val="${val}">
+                        ${escHtml(val)} <i class="close" title="Odstrani"></i>
+                    </span>`;
+                }
+            });
+        }
+    }
+    if (chipsHtml) {
+        chipsHtml += `<span class="active-filter-clear-all">Počisti vse</span>`;
+    }
+    container.innerHTML = chipsHtml;
+
+    // Bind events
+    container.onclick = (e) => {
+        if (e.target.matches('.close')) {
+            const chip = e.target.closest('.active-filter-chip');
+            const key = chip.getAttribute('data-key');
+            const val = chip.getAttribute('data-val');
+            removeSidebarFilter(key, val);
+        } else if (e.target.matches('.active-filter-clear-all')) {
+            clearAllSidebarFilters();
+        }
+    };
+}
+
+function removeSidebarFilter(key, val) {
+    const params = parseHashParams();
+    let current = params.get(key) ? params.get(key).split(',') : [];
+    current = current.filter(c => c !== val);
+    if (current.length) {
+        params.set(key, current.join(','));
+    } else {
+        params.delete(key);
+    }
+    window.history.replaceState(null, '', `#/oglasi${params.toString() ? '?' + params.toString() : ''}`);
+    
+    // Update Sidebar UI fields
+    const el = document.querySelector(`[name="${key}"]`);
+    if (el) el.value = '';
+    // Let's just reload the page hash to make things simple and consistent
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+}
+
+function clearAllSidebarFilters() {
+    window.location.hash = '#/oglasi';
+}
 export function bindCardEvents(container, cars) {
-    if (window.lucide) window.lucide.createIcons();
+    _containerCarsMap.set(container, cars);
+
+    if (window.lucide) window.lucide.createIcons({ root: container });
     applyPowerUnit(currentPowerUnit);
+    checkFavouriteStates();
 
-    // Card click → navigate to listing
-    container.querySelectorAll('.listing-card').forEach(card => {
-        card.addEventListener('click', e => {
-            if (e.target.closest('.pill-btn') || e.target.closest('.action-pill-btn') ||
-                e.target.closest('.action-circle-btn') ||
-                e.target.closest('.carousel-btn') || e.target.closest('.carousel-dots')) return;
-            
-            const carId = card.getAttribute('data-car-id');
-            const car = cars.find(c => c.id === carId);
-            if (car && car.entryType === 'auction') {
-                navigateTo(`/drazba?id=${carId}`);
-            } else {
-                navigateTo(`/oglas?id=${carId}`);
-            }
-        });
-    });
+    if (container.dataset.eventsBound) return;
+    container.dataset.eventsBound = "true";
 
-    // Contact buttons
-    container.querySelectorAll('.contact-btn').forEach(btn => {
-        btn.addEventListener('click', e => {
+    // Sync dots on scroll (capture phase because scroll doesn't bubble)
+    container.addEventListener('scroll', e => {
+        if (!e.target.classList || !e.target.classList.contains('card-gallery-scroll')) return;
+        const scrollElem = e.target;
+        const wrapper = scrollElem.closest('.card-gallery-wrapper');
+        if (!wrapper) return;
+        const dots = wrapper.querySelectorAll('.card-gallery-dot');
+        if (!dots.length) return;
+        
+        const scrollLeft = scrollElem.scrollLeft;
+        const width = scrollElem.offsetWidth;
+        const idx = Math.round(scrollLeft / width);
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === idx));
+    }, { capture: true });
+
+    container.addEventListener('click', async e => {
+        const card = e.target.closest('.listing-card');
+        if (!card) return;
+        
+        const carId = card.getAttribute('data-car-id');
+        const currentCars = _containerCarsMap.get(container) || [];
+        const car = currentCars.find(c => String(c.id) === String(carId));
+
+        // Handle Contact Button
+        const contactBtn = e.target.closest('.contact-btn');
+        if (contactBtn) {
             e.stopPropagation();
-            const carId = btn.getAttribute('data-car-id');
             window.showContactPopup(carId);
-        });
-    });
+            return;
+        }
 
-    // Favourite buttons
-    container.querySelectorAll('.listing-fav-btn').forEach(btn => {
-        btn.addEventListener('click', async e => {
+        // Handle Favourite Button
+        const favBtn = e.target.closest('.listing-fav-btn');
+        if (favBtn) {
             e.stopPropagation();
-            const carId = btn.getAttribute('data-car-id');
-            const car = cars.find(c => c.id === carId);
             if (!car) return;
-            await toggleFavourite(btn, carId, car);
-        });
-    });
+            await toggleFavourite(favBtn, carId, car);
+            return;
+        }
 
-    // Compare buttons
-    container.querySelectorAll('.listing-compare-btn').forEach(btn => {
-        btn.addEventListener('click', async e => {
+        // Handle Compare Button
+        const compareBtn = e.target.closest('.listing-compare-btn');
+        if (compareBtn) {
             e.stopPropagation();
-            const carId = btn.getAttribute('data-car-id');
             const user = currentUser();
-
             if (!user) {
                 try {
                     await showAuthGate({
@@ -541,66 +610,78 @@ export function bindCardEvents(container, cars) {
                     return;
                 }
             }
-
-            const car = cars.find(c => c.id === carId);
             if (!car) return;
-
             if (isInCompare(carId)) {
                 removeFromCompare(carId);
-                btn.classList.remove('active');
+                compareBtn.classList.remove('active');
             } else {
                 const added = addToCompare(car);
-                if (added) btn.classList.add('active');
+                if (added) compareBtn.classList.add('active');
             }
             if (window.updateHeaderCompare) window.updateHeaderCompare();
-        });
-    });
-
-    // Carousel
-    container.querySelectorAll('.listing-card-img').forEach(imageWrapper => {
-        const track = imageWrapper.querySelector('.carousel-track');
-        const dots = imageWrapper.querySelectorAll('.mini-dot');
-        const prevBtn = imageWrapper.querySelector('.carousel-btn.prev');
-        const nextBtn = imageWrapper.querySelector('.carousel-btn.next');
-        const imagesCount = imageWrapper.querySelectorAll('img').length;
-
-        if (imagesCount <= 1) return;
-        let currentIdx = 0;
-
-        function updateCarousel() {
-            if (track) track.style.transform = `translateX(-${currentIdx * 100}%)`;
-            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentIdx));
+            return;
         }
 
-        prevBtn?.addEventListener('click', e => {
+        // Handle Gallery Arrows
+        const arrowBtn = e.target.closest('.card-gallery-arrow');
+        if (arrowBtn) {
             e.stopPropagation();
-            currentIdx = (currentIdx - 1 + imagesCount) % imagesCount;
-            updateCarousel();
-        });
-        nextBtn?.addEventListener('click', e => {
-            e.stopPropagation();
-            currentIdx = (currentIdx + 1) % imagesCount;
-            updateCarousel();
-        });
+            e.preventDefault();
+            const wrapper = arrowBtn.closest('.card-gallery-wrapper');
+            if (!wrapper) return;
+            const scrollElem = wrapper.querySelector('.card-gallery-scroll');
+            if (!scrollElem) return;
 
-        // Touch swipe support
-        let touchStartX = 0;
-        imageWrapper.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-        }, { passive: true });
-        imageWrapper.addEventListener('touchend', e => {
-            const dx = e.changedTouches[0].clientX - touchStartX;
-            if (Math.abs(dx) < 30) return;
+            const isPrev = arrowBtn.classList.contains('card-gallery-prev');
+            const step = scrollElem.clientWidth;
+            const currentScroll = scrollElem.scrollLeft;
+            const maxScroll = scrollElem.scrollWidth - scrollElem.clientWidth;
+
+            if (isPrev) {
+                if (currentScroll <= 10) {
+                    scrollElem.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                } else {
+                    scrollElem.scrollBy({ left: -step, behavior: 'smooth' });
+                }
+            } else {
+                if (currentScroll >= maxScroll - 10) {
+                    scrollElem.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    scrollElem.scrollBy({ left: step, behavior: 'smooth' });
+                }
+            }
+            return;
+        }
+
+        // Handle Gallery Dot Click
+        const dot = e.target.closest('.card-gallery-dot');
+        if (dot) {
             e.stopPropagation();
-            currentIdx = dx < 0
-                ? (currentIdx + 1) % imagesCount
-                : (currentIdx - 1 + imagesCount) % imagesCount;
-            updateCarousel();
-        });
+            e.preventDefault();
+            const wrapper = dot.closest('.card-gallery-wrapper');
+            const scrollElem = wrapper?.querySelector('.card-gallery-scroll');
+            const dotIdx = parseInt(dot.getAttribute('data-dot-idx'), 10);
+            if (scrollElem && !isNaN(dotIdx)) {
+                scrollElem.scrollTo({ left: dotIdx * scrollElem.clientWidth, behavior: 'smooth' });
+            }
+            return;
+        }
+
+        // Handle Card Click (Navigation)
+        if (e.target.closest('.pill-btn') || e.target.closest('.action-pill-btn') ||
+            e.target.closest('.action-circle-btn') ||
+            e.target.closest('.card-gallery-dots') ||
+            e.target.closest('.card-gallery-arrow')) {
+            return;
+        }
+
+        if (car && car.entryType === 'auction') {
+            navigateTo(`/drazba?id=${carId}`);
+        } else {
+            navigateTo(`/oglas?id=${carId}`);
+        }
     });
 
-    // Async: mark already-favourited cars
-    checkFavouriteStates();
 }
 
 // ── Legend popup ─────────────────────────────────────────────
@@ -952,7 +1033,7 @@ async function loadMoreListings() {
 async function initSidebarFiltering() {
     // Show skeleton placeholders while the first page loads.
     const _feedContainer = document.getElementById('carListingsContainer');
-    if (_feedContainer) renderLoading(_feedContainer, { skeleton: true, rows: 6 });
+    if (_feedContainer) renderLoading(_feedContainer, { skeleton: 'cards', rows: 8 });
 
     // 1. Fetch first page of listings
     try {

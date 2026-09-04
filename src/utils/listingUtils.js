@@ -1,5 +1,5 @@
 // Shared utilities for vehicle listing cards (US-localized)
-import { getCurrentLang } from '../core/i18n.js';
+import { getCurrentLang, t } from '../core/i18n.js';
 import { key as lsKey } from '../config/storageKeys.js';
 
 // =====================================================================
@@ -44,7 +44,7 @@ export function formatMiles(km) {
 export function formatHp(kw) {
     const hp = kwToHp(kw);
     if (hp === null) return '';
-    return hp + ' HP';
+    return hp + (getCurrentLang() === 'sl' ? ' KM' : ' HP');
 }
 
 export function formatMpg(l) {
@@ -83,12 +83,17 @@ export function getFuelPill(car) {
     if (!fuelStr) return '';
 
     const key = fuelStr.toLowerCase().trim();
-    const isElectric = key === 'elektrika' || key === 'električno' || key === 'electric' || key === 'e';
-    
-
-
+    const fuelTitleKeys = {
+        'P': 'fuel_petrol',
+        'D': 'fuel_diesel',
+        'H': 'fuel_hybrid',
+        'PH': 'fuel_plugin_hybrid',
+        'E': 'fuel_electric',
+        'LPG': 'fuel_lpg',
+    };
     const f = FUEL_MAP[key] || { code: 'E', cls: 'fuel-pill-E', icon: 'zap', title: 'Electric' };
-    return `<div class="spec-pill fuel-coded ${f.cls}" title="${f.title}">
+    const title = fuelTitleKeys[f.code] ? t(fuelTitleKeys[f.code], f.title) : f.title;
+    return `<div class="spec-pill fuel-coded ${f.cls}" title="${title}">
         <i data-lucide="${f.icon}"></i>
         <strong>${f.code}</strong>
     </div>`;
@@ -97,9 +102,10 @@ export function getFuelPill(car) {
 export function getPowerPill(powerKw) {
     if (!powerKw) return '';
     const hp = kwToHp(powerKw);
+    const unit = getCurrentLang() === 'sl' ? 'KM' : 'HP';
     return `<div class="spec-pill power-pill" data-kw="${powerKw}" data-hp="${hp}">
         <i data-lucide="zap"></i>
-        <span class="power-val">${hp} HP</span>
+        <span class="power-val">${hp} ${unit}</span>
     </div>`;
 }
 
@@ -113,7 +119,7 @@ export function getConsumptionPill(car) {
         if (rangeKm <= 250) statusCls = 'status-high';
         else if (rangeKm <= 400) statusCls = 'status-medium';
 
-        return `<div class="spec-pill consumption-pill ${statusCls}" title="Doseg">
+        return `<div class="spec-pill consumption-pill ${statusCls}" title="${t('range_title', 'Doseg')}">
             <i data-lucide="battery-charging"></i>
             ${rangeKm} km
         </div>`;
@@ -127,13 +133,13 @@ export function getConsumptionPill(car) {
     else if (cons >= 7.0) statusCls = 'status-high';
 
     if (car.electricRangeKm && cons) {
-        return `<div class="spec-pill consumption-pill ${statusCls}" title="Poraba / doseg EV">
+        return `<div class="spec-pill consumption-pill ${statusCls}" title="${t('consumption_ev_range', 'Poraba / doseg EV')}">
             <i data-lucide="droplets"></i>
             ${cons.toFixed(1)} L/100km · ${car.electricRangeKm} km E
         </div>`;
     }
 
-    return `<div class="spec-pill consumption-pill ${statusCls}" title="Fuel Economy">
+    return `<div class="spec-pill consumption-pill ${statusCls}" title="${t('fuel_economy', 'Poraba goriva')}">
         <i data-lucide="droplets"></i>
         ${cons.toFixed(1)} L/100km
     </div>`;
@@ -155,23 +161,24 @@ export function getTransmissionPill(car) {
 
     if (!transStr) return '';
 
-    const t = transStr.toLowerCase().trim();
+    const tStr = transStr.toLowerCase().trim();
+    const isSl = getCurrentLang() === 'sl';
     let code = 'A';
-    let label = 'Automatic';
+    let label = isSl ? 'Samodejni' : 'Automatic';
     let typeCls = 'type-auto';
 
-    if (t.includes('roč') || t.includes('manual')) {
+    if (tStr.includes('roč') || tStr.includes('manual')) {
         code = 'R';
-        label = 'Manual';
+        label = isSl ? 'Ročni' : 'Manual';
         typeCls = 'type-manual';
     }
-    else if (t.includes('sekven') || t.includes('sequen')) {
+    else if (tStr.includes('sekven') || tStr.includes('sequen')) {
         code = 'S';
-        label = 'Sequential';
+        label = isSl ? 'Sekvenčni' : 'Sequential';
         typeCls = 'type-auto';
     }
 
-    let html = `<div class="spec-pill transmission-pill ${typeCls}" title="Transmission: ${label}">
+    let html = `<div class="spec-pill transmission-pill ${typeCls}" title="${isSl ? 'Menjalnik:' : 'Transmission:'} ${label}">
         <i data-lucide="settings"></i>
         <strong>${code}</strong>
     </div>`;
@@ -180,14 +187,14 @@ export function getTransmissionPill(car) {
     if (typeof car === 'object' && (car.category === 'moto' || car.category === 'motor')) {
         if (car.engineStroke) {
             html += `
-            <div class="spec-pill stroke-pill" title="Takt motorja: ${car.engineStroke}">
+            <div class="spec-pill stroke-pill" title="${isSl ? 'Takt motorja:' : 'Engine stroke:'} ${car.engineStroke}">
                 <i data-lucide="activity"></i>
                 <strong>${car.engineStroke}</strong>
             </div>`;
         }
         if (car.engineType) {
             html += `
-            <div class="spec-pill type-pill" title="Vrsta motorja: ${car.engineType}">
+            <div class="spec-pill type-pill" title="${isSl ? 'Vrsta motorja:' : 'Engine type:'} ${car.engineType}">
                 <i data-lucide="cpu"></i>
                 <strong>${car.engineType}</strong>
             </div>`;
@@ -211,7 +218,7 @@ export function getBatteryPill(car) {
     const isPhev = fuelKey === 'hibrid' && car.hybridType === 'PlugIn';
     if (!isElectric && !isPhev) return '';
     if (!car.batteryKwh) return '';
-    return `<div class="spec-pill battery-pill" title="Kapaciteta baterije">
+    return `<div class="spec-pill battery-pill" title="${t('battery_capacity_title', 'Kapaciteta baterije')}">
         <i data-lucide="battery"></i>
         <span>${car.batteryKwh} kWh</span>
     </div>`;
@@ -233,18 +240,12 @@ export function formatDisplacement(cc, unit, lang = 'sl') {
     
     if (unit === 'l') {
         const liters = cc / 1000;
-        // Round to 1 decimal place
         const rounded = Number(liters.toFixed(1));
-        const formatted = lang === 'sl'
-            ? rounded.toLocaleString('sl-SI', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-            : rounded.toLocaleString('sl-SI', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        const formatted = rounded.toLocaleString('sl-SI', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
         return formatted + 'L';
     } else {
-        // cc format
-        const formatted = lang === 'sl'
-            ? new Intl.NumberFormat('sl-SI').format(cc)
-            : new Intl.NumberFormat('sl-SI').format(cc);
-        return formatted + (lang === 'sl' ? ' cc' : ' cc'); // Slovenians usually write 'cc' or 'ccm' (let's use cc for standard)
+        const formatted = new Intl.NumberFormat('sl-SI').format(cc);
+        return formatted + ' cc';
     }
 }
 
@@ -274,8 +275,8 @@ export function showCompareLimitToast() {
     ].join(';');
     toast.innerHTML = `
         <span style="font-size:1.1rem;flex-shrink:0">⚖️</span>
-        <span>Primerjaš lahko največ <strong>3</strong> vozila naenkrat.</span>
-        <a href="#/primerjava" style="background:#2563eb;color:#fff;border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;">Primerjalni kotiček →</a>
+        <span>${t('compare_limit_toast_msg', 'Primerjaš lahko največ 3 vozila naenkrat.')}</span>
+        <a href="#/primerjava" style="background:#2563eb;color:#fff;border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;">${t('compare_nav', 'Primerjalni kotiček')} →</a>
         <button onclick="this.closest('#compare-limit-toast').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:2px;flex-shrink:0;font-size:1rem;line-height:1;">✕</button>
     `;
     document.body.appendChild(toast);

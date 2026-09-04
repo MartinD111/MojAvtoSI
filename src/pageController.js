@@ -56,8 +56,11 @@ const pageModules = {
     'bulk-import': () => import('./pages/bulk-import.js').then(m => m.initBulkImportPage()),
 };
 
+import { unmountAllReactRoots } from './core/reactRootTracker.js';
+
 document.addEventListener('beforeRouteChange', () => {
     // Tear down oglasi subscriptions and React sidebar when navigating away
+    unmountAllReactRoots();
     if (window._oglasiUnsubscribe) {
         window._oglasiUnsubscribe();
         delete window._oglasiUnsubscribe;

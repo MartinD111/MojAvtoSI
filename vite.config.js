@@ -41,22 +41,6 @@ function injectHtmlMeta() {
   };
 }
 
-// Per-page stylesheets (css/map.css, css/advanced-search.css, …) are loaded via a
-// raw <link> inside dynamically-fetched view HTML, so Vite does NOT bundle them.
-// In dev the root css/ folder is served directly; in the production build it must
-// be copied into the platform output dir or those pages render unstyled.
-// (public/* — json, lang, views, images, icons — is copied automatically by Vite's
-// default publicDir handling.)
-function copyCssFolder() {
-  return {
-    name: 'copy-css-folder',
-    closeBundle() {
-      if (existsSync('css')) {
-        cpSync('css', `${OUT_DIR}/css`, { recursive: true });
-      }
-    },
-  };
-}
 
 export default defineConfig({
   base: BASE_URL,
@@ -64,8 +48,9 @@ export default defineConfig({
   define: {
     // Statically inject the active platform so src/config/platform.js can read it.
     'import.meta.env.VITE_PLATFORM': JSON.stringify(PLATFORM),
+    '__BUILD_HASH__': JSON.stringify(Date.now().toString(36)),
   },
-  plugins: [react(), injectHtmlMeta(), copyCssFolder()],
+  plugins: [react(), injectHtmlMeta()],
   build: {
     outDir: OUT_DIR,
     emptyOutDir: true,

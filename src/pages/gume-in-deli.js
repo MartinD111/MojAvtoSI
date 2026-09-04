@@ -53,8 +53,24 @@ export async function initGumeInDeliPage() {
         return;
     }
 
-    state = { itemType: 'tire', vehicleCategory: 'avto', source: 'all', filters: {} };
-    renderMojAvtoLanding(root);
+    state = { itemType: 'tire', vehicleCategory: 'avto', source: 'all', sort: 'recommended', filters: {} };
+
+    // MojAvto uses one continuous search surface: useful results are visible
+    // immediately and every control refines them in place.
+    renderShell(root);
+    initCustomSelects();
+    bindChrome();
+
+    const brandLoads = [
+        fetch('/json/tire_brands.json').then(r => r.json()).then(d => { tireBrands = d || []; }).catch(() => {}),
+        fetch('/json/equipment_brands.json').then(r => r.json()).then(d => { equipmentBrands = d || []; }).catch(() => {}),
+        fetch('/json/parts_brands.json').then(r => r.json()).then(d => { partsBrands = d || {}; }).catch(() => {}),
+    ];
+
+    renderFilters();
+    await Promise.all([loadData(), ...brandLoads]);
+    renderFilters();
+    applyAndRender();
 }
 
 // ── MojAvto: landing search UI (pick what you're looking for, then search) ──────
@@ -131,7 +147,7 @@ function renderMojAvtoLanding(root) {
         // Brand field — always a select dropdown
         const brands = brandList();
         const brandFieldHtml = `<div class="pill-select-wrapper">
-                   <select id="gdLandBrand" class="pill-input">
+                   <select id="gdLandBrand" class="pill-input" data-type="brand">
                        <option value="">${t('all_brands', 'Vse znamke')}</option>
                        ${brands.map(b => `<option value="${escAttr(b)}" ${state.filters.brand === b ? 'selected' : ''}>${escHtml(b)}</option>`).join('')}
                    </select>
@@ -380,7 +396,7 @@ function renderNavtikaLanding(root) {
                     <div class="nh-field">
                         <label>Znamka</label>
                         <div class="pill-select-wrapper">
-                            <select id="navBrand" class="pill-input">
+                            <select id="navBrand" class="pill-input" data-type="brand">
                                 <option value="">Vse znamke</option>
                             </select>
                         </div>
@@ -531,16 +547,50 @@ async function loadData() {
 
 
 // ── Shell ─────────────────────────────────────────────────────────────────────
+function quickFiltersHtml() {
+    const f = state.filters;
+
+    if (state.itemType === 'tire') {
+        const widths = []; for (let w = 125; w <= 355; w += 5) widths.push(w);
+        const aspects = [25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85];
+        const rims = []; for (let r = 10; r <= 24; r++) rims.push(r);
+        const options = (items, selected) => items.map(value =>
+            `<option value="${value}" ${String(selected) === String(value) ? 'selected' : ''}>${value}</option>`
+        ).join('');
+
+        return `
+            <div class="gd-quick-group" aria-label="${t('gd_tire_size', 'Dimenzija pnevmatike')}">
+                <span class="gd-quick-label">${t('gd_tire_size', 'Dimenzija')}</span>
+                <select id="gdQuickWidth" class="gd-quick-select" data-no-search="true" aria-label="${t('gd_tire_width', 'Širina')}">
+                    <option value="">${t('gd_tire_width', 'Širina')}</option>${options(widths, f.width)}
+                </select>
+                <span class="gd-size-separator">/</span>
+                <select id="gdQuickAspect" class="gd-quick-select" data-no-search="true" aria-label="${t('gd_tire_aspect', 'Profil')}">
+                    <option value="">${t('gd_tire_aspect', 'Profil')}</option>${options(aspects, f.aspect)}
+                </select>
+                <span class="gd-size-separator">R</span>
+                <select id="gdQuickRim" class="gd-quick-select gd-quick-select--rim" data-no-search="true" aria-label="Premer">
+                    <option value="">—</option>${options(rims, f.rim)}
+                </select>
+            </div>`;
+    }
+
+    const groups = state.itemType === 'oprema' ? getEquipmentGroups() : getPartGroups(state.vehicleCategory);
+    const selected = state.itemType === 'oprema' ? f.eqGroup : f.partGroup;
+    return `
+        <label class="gd-quick-group gd-quick-group--category">
+            <span class="gd-quick-label">${state.itemType === 'oprema' ? t('gd_eq_group', 'Sklop opreme') : t('gd_part_group', 'Sklop')}</span>
+            <select id="gdQuickGroup" class="gd-quick-select">
+                <option value="">${state.itemType === 'oprema' ? t('gd_eq_all_groups', 'Vsa oprema') : t('gd_all_groups', 'Vsi sklopi')}</option>
+                ${groups.map(group => `<option value="${escAttr(group.value)}" ${selected === group.value ? 'selected' : ''}>${escHtml(group.label)}</option>`).join('')}
+            </select>
+        </label>`;
+}
+
 function renderShell(root) {
     const itemBtn = (type, icon, label) => `
         <button type="button" class="gd-itemtype-btn ${state.itemType === type ? 'active' : ''}" data-item="${type}">
             <i data-lucide="${icon}"></i> <span>${label}</span>
-        </button>`;
-
-    const vehCard = (vc) => `
-        <button type="button" class="tab-btn ${state.vehicleCategory === vc.value ? 'active' : ''}" data-vehcat="${vc.value}" title="${vc.label}">
-            <i data-lucide="${vc.icon}"></i>
-            <span class="hidden-md">${vc.label}</span>
         </button>`;
 
     const heroHtml = isNavtika()
@@ -548,16 +598,47 @@ function renderShell(root) {
             <h1 style="text-align:center;font-size:1.75rem;font-weight:700;margin-bottom:0.5rem;">Oprema za plovila</h1>
             <p style="text-align:center;color:var(--text-secondary);margin-bottom:1.5rem;">Motorji, navigacija, varnostna oprema in dodatki za plovila.</p>
            </div>`
-        : `<div class="gd-hero-container">
-            <div class="glass-card rounded-pill tabs-glass" id="gdVehCat" style="width:fit-content; margin-inline:auto; margin-bottom:1.5rem;">
-                ${VEHICLE_CATEGORIES.map(vehCard).join('')}
+        : `<section class="gd-search-hero glass-card">
+            <div class="gd-search-heading">
+                <div>
+                    <span class="gd-eyebrow">MojAvto iskalnik</span>
+                    <h1>${t('gd_title', 'Gume in deli')}</h1>
+                    <p>${t('gd_subtitle', 'Poiščite pravi izdelek med oglasi in ponudbami trgovin.')}</p>
+                </div>
+                <a href="/novi-oglas" class="gd-sell-link"><i data-lucide="circle-plus"></i> Objavi oglas</a>
             </div>
-            <div class="gd-itemtype-toggle" id="gdItemType">
-                ${itemBtn('tire', 'disc-3', t('gd_item_tires', 'Gume'))}
-                ${itemBtn('part', 'wrench', t('gd_item_parts', 'Deli'))}
-                ${state.vehicleCategory === 'moto' ? itemBtn('oprema', 'shield', t('cl_sub_oprema', 'Moto oprema')) : ''}
+
+            <div class="gd-search-input-wrap">
+                <i data-lucide="search"></i>
+                <input id="gdSearchQuery" type="search" autocomplete="off" value="${escAttr(state.filters.query || '')}"
+                    placeholder="${state.itemType === 'tire' ? 'Išči znamko ali model pnevmatike' : 'Išči del, znamko ali OEM številko'}"
+                    aria-label="Išči med gumami in deli">
+                <button type="button" id="gdSearchClear" class="gd-search-clear ${state.filters.query ? 'visible' : ''}" aria-label="Počisti iskanje">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
-           </div>`;
+
+            <div class="gd-search-controls">
+                <div class="gd-control-block">
+                    <span class="gd-control-label">Za katero vozilo?</span>
+                    <div class="gd-smart-field gd-smart-field--vehicle">
+                        <i data-lucide="car"></i>
+                        <select id="gdVehCatSelect" class="gd-vehicle-select" aria-label="Za katero vozilo?"><option value="">Izberite kategorijo</option>
+                            ${VEHICLE_CATEGORIES.map(vc => `<option value="${vc.value}" ${state.vehicleCategory === vc.value ? 'selected' : ''}>${vc.label}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="gd-control-block">
+                    <span class="gd-control-label">Kaj iščete?</span>
+                    <div class="gd-itemtype-toggle" id="gdItemType">
+                        ${itemBtn('tire', 'disc-3', t('gd_item_tires', 'Gume'))}
+                        ${itemBtn('part', 'wrench', t('gd_item_parts', 'Deli'))}
+                        ${state.vehicleCategory === 'moto' ? itemBtn('oprema', 'shield', t('cl_sub_oprema', 'Moto oprema')) : ''}
+                    </div>
+                </div>
+                ${quickFiltersHtml()}
+            </div>
+           </section>`;
 
     root.innerHTML = `
         ${heroHtml}
@@ -569,17 +650,32 @@ function renderShell(root) {
                     <i data-lucide="chevron-down" class="mft-chevron"></i>
                 </button>
                 <div class="oglasi-sidebar-card glass-card" id="gdFilters"></div>
+                <button type="button" class="gd-mobile-apply" id="gdMobileApply">Prikaži <span id="gdMobileCount">0</span> zadetkov</button>
             </aside>
+            <button type="button" class="gd-filter-backdrop" id="gdFilterBackdrop" aria-label="Zapri filtre"></button>
 
             <main class="gd-main">
                 <div class="gd-results-header">
                     <div class="gd-source-toggle" id="gdSource">
-                        <button type="button" class="gd-source-btn active" data-source="all">${t('gd_source_all', 'Vse')}</button>
-                        <button type="button" class="gd-source-btn" data-source="peer">${t('gd_source_peer', 'Rabljeni oglasi')}</button>
-                        <button type="button" class="gd-source-btn" data-source="catalog">${t('gd_source_catalog', 'Cenik trgovin')}</button>
+                        <button type="button" class="gd-source-btn ${state.source === 'all' ? 'active' : ''}" data-source="all">${t('gd_source_all', 'Vse')} <span id="gdSourceAllCount">0</span></button>
+                        <button type="button" class="gd-source-btn ${state.source === 'peer' ? 'active' : ''}" data-source="peer">${t('all_listings', 'Oglasi')} <span id="gdSourcePeerCount">0</span></button>
+                        <button type="button" class="gd-source-btn ${state.source === 'catalog' ? 'active' : ''}" data-source="catalog">${t('gd_source_catalog', 'Trgovine')} <span id="gdSourceCatalogCount">0</span></button>
                     </div>
-                    <span class="gd-count" id="gdCount"></span>
+                    <div class="gd-results-tools">
+                        <span class="gd-count" id="gdCount"></span>
+                        <label class="gd-sort-wrap">
+                            <span class="sr-only">Razvrsti rezultate</span>
+                            <select id="gdSort" class="gd-sort-select">
+                                <option value="recommended" ${state.sort === 'recommended' ? 'selected' : ''}>Priporočeno</option>
+                                <option value="price-asc" ${state.sort === 'price-asc' ? 'selected' : ''}>Najnižja cena</option>
+                                <option value="price-desc" ${state.sort === 'price-desc' ? 'selected' : ''}>Najvišja cena</option>
+                                <option value="newest" ${state.sort === 'newest' ? 'selected' : ''}>Najnovejše</option>
+                            </select>
+                            <i data-lucide="chevron-down"></i>
+                        </label>
+                    </div>
                 </div>
+                <div class="gd-active-filters" id="gdActiveFilters" aria-live="polite"></div>
                 <div class="gd-results-grid" id="gdResults"></div>
             </main>
         </div>
@@ -588,6 +684,16 @@ function renderShell(root) {
 }
 
 function bindChrome() {
+    let queryTimer;
+
+    const refreshShell = () => {
+        const root = document.getElementById('gd-root');
+        renderShell(root);
+        bindChrome();
+        renderFilters();
+        applyAndRender();
+    };
+
     // Item type toggle
     document.getElementById('gdItemType')?.addEventListener('click', (e) => {
         const btn = e.target.closest('.gd-itemtype-btn');
@@ -596,16 +702,13 @@ function bindChrome() {
         state.itemType = type;
         state.filters = {};
 
-        document.querySelectorAll('#gdItemType .gd-itemtype-btn').forEach(b => b.classList.toggle('active', b === btn));
-        renderFilters();
-        applyAndRender();
+        refreshShell();
     });
 
     // Vehicle category tabs
-    document.getElementById('gdVehCat')?.addEventListener('click', (e) => {
-        const card = e.target.closest('.tab-btn');
-        if (!card) return;
-        state.vehicleCategory = card.dataset.vehcat;
+    document.getElementById('gdVehCatSelect')?.addEventListener('change', (e) => {
+        if (!e.target.value) return;
+        state.vehicleCategory = e.target.value;
         
         // Oprema is moto-only — drop back to tire when leaving the moto category
         if (state.itemType === 'oprema' && state.vehicleCategory !== 'moto') {
@@ -616,12 +719,7 @@ function bindChrome() {
         state.filters = {};
         
         // Re-render shell to show/hide Moto Oprema button
-        const root = document.getElementById('gd-root');
-        renderShell(root);
-        bindChrome();
-        
-        renderFilters();
-        applyAndRender();
+        refreshShell();
     });
 
     // Source toggle
@@ -633,11 +731,66 @@ function bindChrome() {
         applyAndRender();
     });
 
-    // Mobile filter toggle
-    document.getElementById('gdMobileFilterToggle')?.addEventListener('click', () => {
-        document.getElementById('gdFilters')?.classList.toggle('open');
-        document.getElementById('gdMobileFilterToggle')?.classList.toggle('open');
+    // Primary text search with a short debounce so typing remains calm.
+    const queryInput = document.getElementById('gdSearchQuery');
+    queryInput?.addEventListener('input', (e) => {
+        state.filters.query = e.target.value;
+        document.getElementById('gdSearchClear')?.classList.toggle('visible', Boolean(e.target.value));
+        clearTimeout(queryTimer);
+        queryTimer = setTimeout(applyAndRender, 160);
     });
+    document.getElementById('gdSearchClear')?.addEventListener('click', () => {
+        state.filters.query = '';
+        if (queryInput) queryInput.value = '';
+        document.getElementById('gdSearchClear')?.classList.remove('visible');
+        queryInput?.focus();
+        applyAndRender();
+    });
+
+    // Contextual quick filters mirror the detailed sidebar controls.
+    const setQuick = (id, key) => document.getElementById(id)?.addEventListener('change', (e) => {
+        state.filters[key] = e.target.value;
+        renderFilters();
+        applyAndRender();
+    });
+    setQuick('gdQuickWidth', 'width');
+    setQuick('gdQuickAspect', 'aspect');
+    setQuick('gdQuickRim', 'rim');
+    document.getElementById('gdQuickGroup')?.addEventListener('change', (e) => {
+        const key = state.itemType === 'oprema' ? 'eqGroup' : 'partGroup';
+        state.filters[key] = e.target.value;
+        state.filters[state.itemType === 'oprema' ? 'eqType' : 'partType'] = '';
+        renderFilters();
+        applyAndRender();
+    });
+
+    document.getElementById('gdSort')?.addEventListener('change', (e) => {
+        state.sort = e.target.value;
+        applyAndRender();
+    });
+
+    document.getElementById('gdActiveFilters')?.addEventListener('click', (e) => {
+        const chip = e.target.closest('[data-clear-filter]');
+        if (!chip) return;
+        clearFilterGroup(chip.dataset.clearFilter);
+        refreshShell();
+    });
+
+    // Mobile filter toggle
+    const closeMobileFilters = () => {
+        document.getElementById('gdFilters')?.classList.remove('open');
+        document.getElementById('gdMobileFilterToggle')?.classList.remove('open');
+        document.getElementById('gdFilterBackdrop')?.classList.remove('open');
+        document.body.classList.remove('gd-filters-open');
+    };
+    document.getElementById('gdMobileFilterToggle')?.addEventListener('click', () => {
+        document.getElementById('gdFilters')?.classList.add('open');
+        document.getElementById('gdMobileFilterToggle')?.classList.add('open');
+        document.getElementById('gdFilterBackdrop')?.classList.add('open');
+        document.body.classList.add('gd-filters-open');
+    });
+    document.getElementById('gdMobileApply')?.addEventListener('click', closeMobileFilters);
+    document.getElementById('gdFilterBackdrop')?.addEventListener('click', closeMobileFilters);
 }
 
 // ── Filters sidebar (depends on item type) ────────────────────────────────────
@@ -686,9 +839,9 @@ function tireFiltersHtml() {
 
         <div class="gd-filter-group">
             <label class="gd-flabel">${t('gd_part_brand', 'Znamka')}</label>
-            <select class="glass-select" id="fBrand">
+            <select class="glass-select" id="fBrand" data-type="brand">
                 <option value="">${t('all_brands', 'Vse znamke')}</option>
-                ${tireBrands.map(b => `<option value="${b}" ${f.brand === b ? 'selected' : ''}>${b}</option>`).join('')}
+                ${tireBrands.map(b => `<option value="${escAttr(b)}" ${f.brand === b ? 'selected' : ''}>${escHtml(b)}</option>`).join('')}
             </select>
         </div>
 
@@ -703,6 +856,12 @@ function partFiltersHtml() {
     const groupOpts = groups.map(g => `<option value="${g.value}" ${f.partGroup === g.value ? 'selected' : ''}>${g.label}</option>`).join('');
     const types = f.partGroup ? getPartTypes(state.vehicleCategory, f.partGroup) : [];
     const typeOpts = types.map(tp => `<option value="${tp.value}" ${f.partType === tp.value ? 'selected' : ''}>${tp.label}</option>`).join('');
+    // Without a selected group, expose the complete unique catalog. This keeps
+    // the brand picker immediately useful while still narrowing to the relevant
+    // manufacturers as soon as the user selects a part group.
+    const partBrands = f.partGroup
+        ? (partsBrands[f.partGroup] || [])
+        : [...new Set(Object.values(partsBrands).flat())].sort((a, b) => a.localeCompare(b, 'sl'));
 
     return `
         <div class="gd-filter-header">
@@ -727,8 +886,11 @@ function partFiltersHtml() {
         </div>
 
         <div class="gd-filter-group">
-            <label class="gd-flabel">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
-            <input type="text" class="pill-input" id="fBrandText" value="${escAttr(f.brand || '')}" placeholder="npr. Bosch" />
+            <label class="gd-flabel" for="fPartBrand">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
+            <select class="glass-select" id="fPartBrand" data-type="brand">
+                <option value="">${t('all_brands', 'Vse znamke')}</option>
+                ${partBrands.map(b => `<option value="${escAttr(b)}" ${f.brand === b ? 'selected' : ''}>${escHtml(b)}</option>`).join('')}
+            </select>
         </div>
 
         <div class="gd-filter-group">
@@ -772,8 +934,8 @@ function equipmentFiltersHtml() {
         </div>
 
         <div class="gd-filter-group">
-            <label class="gd-flabel">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
-            <select class="glass-select" id="fEqBrand">
+            <label class="gd-flabel" for="fEqBrand">${t('gd_part_brand', 'Znamka / proizvajalec')}</label>
+            <select class="glass-select" id="fEqBrand" data-type="brand">
                 <option value="">${t('all_brands', 'Vse znamke')}</option>
                 ${equipmentBrands.map(b => `<option value="${escAttr(b)}" ${f.brand === b ? 'selected' : ''}>${escHtml(b)}</option>`).join('')}
             </select>
@@ -838,11 +1000,12 @@ function bindFilters() {
     box.querySelector('#fGroup')?.addEventListener('change', e => {
         f.partGroup = e.target.value;
         f.partType = '';
+        f.brand = '';
         renderFilters();
         applyAndRender();
     });
     box.querySelector('#fType')?.addEventListener('change', e => { f.partType = e.target.value; onChange(); });
-    box.querySelector('#fBrandText')?.addEventListener('input', e => { f.brand = e.target.value; onChange(); });
+    box.querySelector('#fPartBrand')?.addEventListener('change', e => { f.brand = e.target.value; onChange(); });
     box.querySelector('#fOemText')?.addEventListener('input', e => { f.oem = e.target.value; onChange(); });
 
     // Equipment (oprema) group/type/brand/size
@@ -883,10 +1046,27 @@ function bindFilters() {
 // ── Matching ──────────────────────────────────────────────────────────────────
 function num(v) { const n = parseFloat(String(v).replace(/[^0-9.]/g, '')); return isNaN(n) ? null : n; }
 
+function normalized(value) {
+    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function matchesQuery(values) {
+    const terms = normalized(state.filters.query).trim().split(/\s+/).filter(Boolean);
+    if (!terms.length) return true;
+    const haystack = normalized(values.filter(Boolean).join(' '));
+    return terms.every(term => haystack.includes(term));
+}
+
 function matchesPeer(l) {
     const f = state.filters;
     if (l.itemType !== state.itemType) return false;
     if ((l.vehicleCategory || l.category) !== state.vehicleCategory) return false;
+
+    if (!matchesQuery([
+        l.title, l.brand, l.oemNumber, l.tireSize, l.tireSeason,
+        l.partGroup, l.partType, l.equipmentGroup, l.equipmentType,
+        l.description,
+    ])) return false;
 
     const price = num(l.priceEur ?? l.price);
     if (f.priceFrom && price != null && price < parseFormattedNumber(f.priceFrom)) return false;
@@ -920,6 +1100,11 @@ function matchesCatalog(p) {
     if (p.vehicleCategory !== state.vehicleCategory) return false;
 
     const a = p.attributes || {};
+    if (!matchesQuery([
+        p.title, p.brand, a.oemNumber, a.size, a.season,
+        a.partGroup, a.partType, a.equipmentGroup, a.equipmentType,
+    ])) return false;
+
     const price = getLowestPrice(p);
     if (f.priceFrom && price != null && price < parseFormattedNumber(f.priceFrom)) return false;
     if (f.priceTo && price != null && price > parseFormattedNumber(f.priceTo)) return false;
@@ -945,25 +1130,125 @@ function matchesCatalog(p) {
 }
 
 // ── Render results ────────────────────────────────────────────────────────────
+function sortedResults(items, source) {
+    const rows = [...items];
+    if (state.sort === 'recommended') return rows;
+
+    const price = item => source === 'catalog'
+        ? (getLowestPrice(item) ?? Number.POSITIVE_INFINITY)
+        : (num(item.priceEur ?? item.price) ?? Number.POSITIVE_INFINITY);
+    const date = item => new Date(item.createdAt || item.updatedAt || item.created_at || item.updated_at || 0).getTime();
+
+    if (state.sort === 'price-asc') rows.sort((a, b) => price(a) - price(b));
+    if (state.sort === 'price-desc') rows.sort((a, b) => price(b) - price(a));
+    if (state.sort === 'newest') rows.sort((a, b) => date(b) - date(a));
+    return rows;
+}
+
+function activeFiltersHtml() {
+    const f = state.filters;
+    const chips = [];
+    const add = (key, label) => { if (label) chips.push({ key, label }); };
+    add('query', f.query ? `“${f.query.trim()}”` : '');
+    if (f.width || f.aspect || f.rim) add('dimension', `${f.width || '…'} / ${f.aspect || '…'} R${f.rim || '…'}`);
+    if (f.seasons?.length) add('seasons', f.seasons.map(seasonLabel).join(', '));
+    add('brand', f.brand);
+    add('oem', f.oem ? `OEM ${f.oem}` : '');
+    if (f.partGroup) add('partGroup', getPartGroups(state.vehicleCategory).find(g => g.value === f.partGroup)?.label);
+    if (f.partType) add('partType', getPartTypes(state.vehicleCategory, f.partGroup).find(tp => tp.value === f.partType)?.label);
+    if (f.eqGroup) add('eqGroup', getEquipmentGroups().find(g => g.value === f.eqGroup)?.label);
+    if (f.eqType) add('eqType', getEquipmentTypeLabel(f.eqGroup, f.eqType));
+    add('eqSize', f.eqSize);
+    if (f.priceFrom || f.priceTo) add('price', `${f.priceFrom ? `od ${f.priceFrom} €` : ''}${f.priceFrom && f.priceTo ? ' · ' : ''}${f.priceTo ? `do ${f.priceTo} €` : ''}`);
+    if (f.conditions?.length) add('conditions', f.conditions.join(', '));
+
+    return chips.map(chip => `
+        <button type="button" class="gd-filter-chip" data-clear-filter="${chip.key}">
+            ${escHtml(chip.label)} <i data-lucide="x"></i>
+        </button>`).join('');
+}
+
+function clearFilterGroup(key) {
+    const f = state.filters;
+    if (key === 'dimension') {
+        f.width = ''; f.aspect = ''; f.rim = '';
+    } else if (key === 'price') {
+        f.priceFrom = ''; f.priceTo = '';
+    } else if (key === 'partGroup') {
+        f.partGroup = ''; f.partType = '';
+    } else if (key === 'eqGroup') {
+        f.eqGroup = ''; f.eqType = '';
+    } else if (key === 'seasons' || key === 'conditions') {
+        f[key] = [];
+    } else {
+        f[key] = '';
+    }
+}
+
 function applyAndRender() {
     const grid = document.getElementById('gdResults');
     const countEl = document.getElementById('gdCount');
     if (!grid) return;
 
-    const peers = (state.source === 'catalog') ? [] : peerListings.filter(matchesPeer);
-    const cats = (state.source === 'peer') ? [] : catalogProducts.filter(matchesCatalog);
+    const allPeers = peerListings.filter(matchesPeer);
+    const allCats = catalogProducts.filter(matchesCatalog);
+    const peers = state.source === 'catalog' ? [] : sortedResults(allPeers, 'peer');
+    const cats = state.source === 'peer' ? [] : sortedResults(allCats, 'catalog');
 
     const total = peers.length + cats.length;
+    const quickValues = {
+        gdQuickWidth: state.filters.width,
+        gdQuickAspect: state.filters.aspect,
+        gdQuickRim: state.filters.rim,
+        gdQuickGroup: state.itemType === 'oprema' ? state.filters.eqGroup : state.filters.partGroup,
+    };
+    Object.entries(quickValues).forEach(([id, value]) => {
+        const control = document.getElementById(id);
+        if (control && control.value !== String(value || '')) control.value = value || '';
+    });
+
     if (countEl) countEl.textContent = `${total} ${t('gd_results', 'zadetkov')}`;
+    const setCount = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    setCount('gdSourceAllCount', allPeers.length + allCats.length);
+    setCount('gdSourcePeerCount', allPeers.length);
+    setCount('gdSourceCatalogCount', allCats.length);
+    setCount('gdMobileCount', total);
+
+    const active = document.getElementById('gdActiveFilters');
+    if (active) {
+        active.innerHTML = activeFiltersHtml();
+        if (window.lucide) window.lucide.createIcons({ scope: active });
+    }
 
     if (total === 0) {
-        grid.innerHTML = `<div class="gd-empty"><i data-lucide="search-x"></i><p>${t('gd_no_results', 'Ni zadetkov.')}</p></div>`;
+        grid.innerHTML = `<div class="gd-empty">
+            <span class="gd-empty-icon"><i data-lucide="search-x"></i></span>
+            <h3>${t('gd_no_results', 'Ni zadetkov')}</h3>
+            <p>Poskusite s krajšim izrazom ali odstranite katerega od filtrov.</p>
+            <button type="button" class="pill-btn secondary" id="gdEmptyReset">Počisti filtre</button>
+        </div>`;
+        document.getElementById('gdEmptyReset')?.addEventListener('click', () => {
+            state.filters = {};
+            const root = document.getElementById('gd-root');
+            renderShell(root); bindChrome(); renderFilters(); applyAndRender();
+        });
         if (window.lucide) window.lucide.createIcons({ scope: grid });
         return;
     }
 
-    // Peer listings first (fresh user content), then catalog products.
-    grid.innerHTML = peers.map(peerCard).join('') + cats.map(catalogCard).join('');
+    if (state.source === 'all' && peers.length && cats.length) {
+        grid.innerHTML = `
+            <section class="gd-result-section">
+                <div class="gd-section-heading"><div><span class="gd-section-kicker">Iz skupnosti</span><h2>Oglasi</h2></div><span>${peers.length}</span></div>
+                <div class="gd-result-section-grid">${peers.map(peerCard).join('')}</div>
+            </section>
+            <section class="gd-result-section">
+                <div class="gd-section-heading"><div><span class="gd-section-kicker">Primerjava cen</span><h2>Ponudbe trgovin</h2></div><span>${cats.length}</span></div>
+                <div class="gd-result-section-grid">${cats.map(catalogCard).join('')}</div>
+            </section>`;
+    } else {
+        grid.innerHTML = peers.map(peerCard).join('') + cats.map(catalogCard).join('');
+    }
     if (window.lucide) window.lucide.createIcons({ scope: grid });
 }
 

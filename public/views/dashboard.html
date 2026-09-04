@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n-key="page_title_dashboard">Moj profil - MojAvto.si</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- CSS and fonts are already loaded globally in index.html -->
 </head>
 <body>
     <div id="header"></div>
@@ -62,28 +60,28 @@
     <div id="print-template">
         <div class="print-header">
             <h1 id="print-title">Make Model</h1>
-            <h2 id="print-price">Price $</h2>
+            <h2 id="print-price">Price €</h2>
         </div>
 
         <div class="print-content">
             <img id="print-image" src="" alt="Vehicle image" />
             <ul id="print-specs">
-                <li><strong>Year</strong><span id="print-year"></span></li>
-                <li><strong>Mileage</strong><span id="print-mileage"></span></li>
-                <li><strong>Fuel</strong><span id="print-fuel"></span></li>
-                <li><strong>Transmission</strong><span id="print-transmission"></span></li>
-                <li><strong>Power</strong><span id="print-power"></span></li>
+                <li><strong data-i18n-key="print_year">Letnik</strong><span id="print-year"></span></li>
+                <li><strong data-i18n-key="print_mileage">Prevoženi km</strong><span id="print-mileage"></span></li>
+                <li><strong data-i18n-key="print_fuel">Gorivo</strong><span id="print-fuel"></span></li>
+                <li><strong data-i18n-key="print_transmission">Menjalnik</strong><span id="print-transmission"></span></li>
+                <li><strong data-i18n-key="print_power">Moč</strong><span id="print-power"></span></li>
             </ul>
         </div>
 
         <div class="print-footer">
             <div class="qr-container">
                 <canvas id="print-qr-canvas"></canvas>
-                <p>Scan for more photos and details</p>
+                <p data-i18n-key="print_scan_qr">Skenirajte za več fotografij in podrobnosti o oglasu</p>
             </div>
             <div class="print-branding">
-                <p>Posted on</p>
-                <strong>MojAvto</strong>
+                <p data-i18n-key="print_posted_on">Objavljeno na</p>
+                <strong id="printBrandName">AutoHub</strong>
             </div>
         </div>
     </div>

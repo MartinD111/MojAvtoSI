@@ -22,6 +22,7 @@ import { getCurrentLang, t } from '../core/i18n.js';
 import { showCompareLimitToast } from '../utils/listingUtils.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { brandsFileFor } from '../data/brandFiles.js';
+import { popularBrandsFor } from '../data/popularBrands.js';
 
 import {
     getFuelPill,
@@ -70,15 +71,15 @@ function getPriceRating(car, allCars) {
     });
 
     if (comps.length === 0) {
-        return { score: 2, label: 'Average price', color: 'amber' };
+        return { score: 2, label: t('rating_fair_val', 'Poštena cena'), color: 'amber' };
     }
 
     const avgPrice = comps.reduce((s, c) => s + c.priceRaw, 0) / comps.length;
     const ratio = car.priceRaw / avgPrice;
 
-    if (ratio <= 0.88) return { score: 3, label: 'Great price', color: 'green' };
-    if (ratio <= 1.08) return { score: 2, label: 'Average price', color: 'amber' };
-    return { score: 1, label: 'Above average', color: 'red' };
+    if (ratio <= 0.88) return { score: 3, label: t('rating_excellent_val', 'Odlična vrednost'), color: 'green' };
+    if (ratio <= 1.08) return { score: 2, label: t('rating_fair_val', 'Poštena cena'), color: 'amber' };
+    return { score: 1, label: t('rating_above_avg', 'Nad povprečjem'), color: 'red' };
 }
 
 // ── Comparison State ─────────────────────────────────────────
@@ -438,7 +439,7 @@ function renderCarCard(car) {
                 ${images.map(img => `<img src="${img}" alt="${escHtml(car.title)}" loading="lazy">`).join('')}
             </div>
             
-            ${car.isNew ? '<span class="badge-new-pill overlay">NEW</span>' : ''}
+            ${car.isNew ? `<span class="badge-new-pill overlay">${t('badge_new', 'NOVO')}</span>` : ''}
             ${car.isRental
                 ? `<span class="rental-overlay-badge">${lang === 'sl' ? 'Najem' : 'Rental'}${car.skipperOptional ? (lang === 'sl' ? ' · skipper opcijsko' : ' · skipper optional') : ''}</span>`
                 : (car.condition ? `<span class="condition-overlay-badge">${car.condition}</span>` : '')}
@@ -460,9 +461,9 @@ function renderCarCard(car) {
         <div class="listing-card-content">
             <div class="listing-card-header">
                 <div class="car-info">
-                    <h2 class="listing-card-title navtika-title">
-                        <span class="navtika-title-make">${escHtml(car.make || car.title)}</span>
-                        ${(car.variant || car.model) ? `<span class="navtika-title-model">${escHtml(car.variant || car.model)}</span>` : ''}
+                    <h2 class="listing-card-title vehicle-title">
+                        <span class="vehicle-title-make-model">${escHtml(car.make || car.title)} ${car.make ? escHtml(car.model || '') : ''}</span>
+                        ${(car.make && car.variant) ? `<span class="vehicle-title-variant">${escHtml(car.variant)}</span>` : ''}
                     </h2>
                 </div>
                 
@@ -470,7 +471,7 @@ function renderCarCard(car) {
                     <div style="display:flex;align-items:center;gap:0.4rem;">
                         <span class="price-value">${car.price}</span>
                         ${car.salePriceEur ? `
-                        <span class="discount-tag-icon" title="Znižana cena">
+                        <span class="discount-tag-icon" title="${t('discount_reduced_price', 'Znižana cena')}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
                                 <line x1="7" y1="7" x2="7.01" y2="7"/>
@@ -511,13 +512,13 @@ function renderCarCard(car) {
                     ` : ''}
                 </div>
                 <div class="navtika-card-actions">
-                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="Save to favorites">
+                    <button class="action-pill-btn listing-fav-btn ${userFavouritesCache.has(car.id) ? 'active' : ''}" data-car-id="${car.id}" title="${t('save_favorite', 'Shrani med priljubljene')}">
                         <i data-lucide="heart"></i>
                     </button>
-                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="Compare">
+                    <button class="action-pill-btn listing-compare-btn ${inCompare ? 'active' : ''}" data-car-id="${car.id}" title="${t('compare_btn', 'Primerjaj')}">
                         <i data-lucide="scale"></i>
                     </button>
-                    <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="Contact">
+                    <button class="action-pill-btn contact-btn list-contact-btn" data-car-id="${car.id}" title="${t('contact_seller', 'Kontaktiraj prodajalca')}">
                         <i data-lucide="phone"></i>
                     </button>
                 </div>
@@ -545,7 +546,7 @@ window.showContactPopup = function (carId) {
             <div class="contact-popup-header">
                 <img src="${escHtml(car.sellerImage)}" class="seller-avatar">
                 <h3 class="seller-name">${escHtml(car.seller)}</h3>
-                <p class="seller-type-label">${car.sellerType === 'dealer' ? 'Authorized Dealer' : 'Private Seller'}</p>
+                <p class="seller-type-label">${car.sellerType === 'dealer' ? t('seller_authorized_dealer', 'Pooblaščeni prodajalec') : t('seller_private', 'Zasebni prodajalec')}</p>
             </div>
             <div class="contact-popup-info-box">
                 <div class="contact-row">
@@ -554,18 +555,18 @@ window.showContactPopup = function (carId) {
                 </div>
                 <div class="contact-row">
                     <i data-lucide="phone" class="row-icon"></i>
-                    <span class="row-text">+1 (555) 123-4567</span>
+                    <span class="row-text">+386 1 234 5678</span>
                 </div>
                 <div class="contact-row">
                     <i data-lucide="mail" class="row-icon"></i>
-                    <span class="row-text">info@mojavto.com</span>
+                    <span class="row-text">info@mojanavtika.si</span>
                 </div>
 
                 ${car.sellerType === 'dealer' && car.openingHours ? `
                 <div class="contact-popup-footer-row">
                     <i data-lucide="clock" class="footer-row-icon"></i>
                     <div>
-                        <p class="footer-row-label">Business Hours</p>
+                        <p class="footer-row-label">${t('business_hours', 'Delovni čas')}</p>
                         <p class="footer-row-value">${escHtml(car.openingHours)}</p>
                     </div>
                 </div>` : ''}
@@ -574,12 +575,12 @@ window.showContactPopup = function (carId) {
                 <div class="contact-popup-footer-row">
                     <i data-lucide="info" class="footer-row-icon"></i>
                     <div>
-                        <p class="footer-row-label">Seller Note</p>
+                        <p class="footer-row-label">${t('seller_note', 'Opomba prodajalca')}</p>
                         <p class="footer-row-value">${escHtml(car.sellerNote)}</p>
                     </div>
                 </div>` : ''}
             </div>
-            <button class="pill-btn primary w-full">Send Message</button>
+            <button class="pill-btn primary w-full">${t('send_message', 'Pošlji sporočilo')}</button>
         </div>
     `;
 
@@ -950,10 +951,31 @@ function loadSidebarBrands(category, onReady) {
         window._sidebarBrandModelData = data;
         const prevBrand = makeSelect.value;
         makeSelect.innerHTML = '<option value="">Vse znamke</option>';
-        Object.keys(data).sort().forEach(brand => {
+
+        const popular = popularBrandsFor(category).filter(b => data[b]);
+        if (popular.length) {
+            const lbl = document.createElement('option');
+            lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+            lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+            makeSelect.appendChild(lbl);
+            popular.forEach(brand => {
+                const o = document.createElement('option');
+                o.value = brand; o.textContent = brand;
+                o.dataset.popular = 'true';
+                if (brand === prevBrand) o.selected = true;
+                makeSelect.appendChild(o);
+            });
+            const sep = document.createElement('option');
+            sep.value = ''; sep.textContent = '──────────────';
+            sep.disabled = true; sep.dataset.popularLabel = 'true';
+            makeSelect.appendChild(sep);
+        }
+
+        Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
             const o = document.createElement("option");
             o.value = brand;
             o.textContent = brand;
+            if (brand === prevBrand) o.selected = true;
             makeSelect.appendChild(o);
         });
         // Keep the previously selected brand only if it still exists in the new list.
@@ -1035,6 +1057,24 @@ async function initSidebarFiltering() {
         fetch('/json/brands_models_izvenkrmni.json')
             .then(r => r.ok ? r.json() : {})
             .then(data => {
+                const popular = popularBrandsFor('izvenkrmni').filter(b => data[b]);
+                if (popular.length) {
+                    const lbl = document.createElement('option');
+                    lbl.value = ''; lbl.textContent = '— Najbolj priljubljene —';
+                    lbl.disabled = true; lbl.dataset.popularLabel = 'true';
+                    engineMakeSel.appendChild(lbl);
+                    popular.forEach(brand => {
+                        const o = document.createElement('option');
+                        o.value = brand; o.textContent = brand;
+                        o.dataset.popular = 'true';
+                        engineMakeSel.appendChild(o);
+                    });
+                    const sep = document.createElement('option');
+                    sep.value = ''; sep.textContent = '──────────────';
+                    sep.disabled = true; sep.dataset.popularLabel = 'true';
+                    engineMakeSel.appendChild(sep);
+                }
+
                 Object.keys(data).sort((a, b) => a.localeCompare(b, 'sl')).forEach(brand => {
                     const o = document.createElement('option');
                     o.value = brand; o.textContent = brand;
@@ -1043,6 +1083,7 @@ async function initSidebarFiltering() {
                 // Re-prefill after options are loaded
                 const urlVal = parseHashParams().get('engineMake');
                 if (urlVal) engineMakeSel.value = urlVal;
+                initCustomSelects();
             })
             .catch(() => {});
     }
