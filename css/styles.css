@@ -10616,6 +10616,7 @@ body.dark-mode .spec-pill.type-pill:hover {
   background: #8b5cf6 !important;
 }
 
+
 /* Brand Select Dropdowns */
 .custom-select-brand-item {
   display: flex;
@@ -10634,15 +10635,15 @@ body.dark-mode .spec-pill.type-pill:hover {
 
 .custom-select-brand-watermark {
   position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 40px;
-  width: 60px;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 50px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  opacity: 0.15;
+  opacity: 0.35;
   pointer-events: none;
   z-index: 1;
 }
@@ -10668,15 +10669,26 @@ body.dark-mode .logo-adaptive {
 .custom-select-option:hover .custom-select-brand-watermark,
 .custom-select-option.highlighted .custom-select-brand-watermark,
 .custom-select-option.selected .custom-select-brand-watermark {
-  opacity: 0.4;
+  opacity: 0.75;
 }
 
 .custom-select-trigger .custom-select-brand-item {
   min-height: auto;
+  justify-content: flex-start;
 }
 
 .custom-select-trigger .custom-select-brand-watermark {
-  display: none;
+  display: flex;
+  position: relative;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  height: 22px;
+  width: 32px;
+  opacity: 1;
+  order: -1;
+  margin-right: 8px;
+  justify-content: center;
 }
 
 /* Restore fading brand colors and pill shape selection */
@@ -10688,7 +10700,7 @@ body.dark-mode .logo-adaptive {
 .custom-select-option.brand-option:hover,
 .custom-select-option.brand-option.highlighted,
 .custom-select-option.brand-option.selected {
-  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.15) 0%, transparent 100%) !important;
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.3) 0%, rgba(var(--brand-rgb), 0.05) 100%) !important;
   color: var(--color-text, #1e293b);
 }
 
@@ -10700,13 +10712,13 @@ body.dark-mode .logo-adaptive {
 body.dark-mode .custom-select-option.brand-option:hover,
 body.dark-mode .custom-select-option.brand-option.highlighted,
 body.dark-mode .custom-select-option.brand-option.selected {
-  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.25) 0%, transparent 100%) !important;
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.45) 0%, rgba(var(--brand-rgb), 0.05) 100%) !important;
 }
 
 .custom-select-trigger.brand-selected {
   border-radius: 99px !important;
-  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.1) 0%, transparent 100%);
-  border-color: rgba(var(--brand-rgb), 0.3);
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.25) 0%, rgba(var(--brand-rgb), 0.05) 100%);
+  border-color: rgba(var(--brand-rgb), 0.4);
 }
 
 .custom-select-trigger.brand-selected .custom-select-brand-name {
@@ -10715,5 +10727,5 @@ body.dark-mode .custom-select-option.brand-option.selected {
 }
 
 body.dark-mode .custom-select-trigger.brand-selected {
-  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.2) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.35) 0%, rgba(var(--brand-rgb), 0.05) 100%);
 }
