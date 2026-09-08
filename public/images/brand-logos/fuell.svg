@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#0f172a"/>
+  <path d="M25 22h32v8H35v6h18v8H35v11H25V22z" fill="#06b6d4"/>
+  <text x="68" y="44" font-family="'Arial Black', sans-serif" font-weight="900" font-size="18" fill="#fff">FUELL</text>
+</svg>

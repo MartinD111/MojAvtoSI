@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.13 -14.05 162.51 54.54" fill="currentColor">
+  <g transform="translate(18, 25)">
+    <circle cx="0" cy="0" r="13" fill="#e11d48"/>
+    <path d="M-6 4c3-8 9-8 12 0" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+  <text x="40" y="27" font-family="'Arial Black', sans-serif" font-weight="900" font-size="13" letter-spacing="1" fill="currentColor">JOKER BOAT</text>
+  <text x="41" y="38" font-family="sans-serif" font-weight="700" font-size="7" letter-spacing="2" fill="#e11d48">ITALIA</text>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#111"/>
+  <path d="M22 18h18c7 0 12 4 12 9s-5 9-12 9h-6l10 14H32l-9-13v13H14V18h8zm8 12h8c2.5 0 4.5-1.5 4.5-3.5S40.5 23 38 23h-8v7z" fill="#dc2626"/>
+  <text x="56" y="44" font-family="sans-serif" font-weight="900" font-style="italic" font-size="22" fill="#fff">IEJU</text>
+</svg>

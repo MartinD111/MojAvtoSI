@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#0284c7"/>
+  <path d="M20 18h12v11h18V18h12v30H50V37H32v11H20V18z" fill="#f97316"/>
+  <text x="78" y="38" font-family="'Arial Black', sans-serif" font-weight="900" font-style="italic" font-size="14" fill="#fff">BIKE</text>
+</svg>

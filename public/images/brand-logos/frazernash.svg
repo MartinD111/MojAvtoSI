@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#1e293b"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="4"/>
+  <text x="50" y="48" font-family="'Arial Black', sans-serif" font-weight="900" font-size="16" fill="#fff" text-anchor="middle">FN</text>
+  <text x="50" y="72" font-family="sans-serif" font-weight="800" font-size="6.5" fill="#fff" text-anchor="middle" letter-spacing="1">FRAZER NASH</text>
+</svg>

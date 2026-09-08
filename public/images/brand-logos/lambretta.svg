@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 65">
+  <rect width="130" height="65" rx="12" fill="#003882"/>
+  <path d="M12 44c18-2 36-2 54-2 16 0 32 1 48 2" stroke="#fff" stroke-width="2" stroke-dasharray="3 3"/>
+  <text x="65" y="38" font-family="'Brush Script MT', 'Segoe Script', cursive, sans-serif" font-weight="bold" font-style="italic" font-size="28" fill="#fff" text-anchor="middle">Lambretta</text>
+  <text x="65" y="55" font-family="sans-serif" font-weight="800" font-size="8" fill="#ffc72c" text-anchor="middle" letter-spacing="3">INNOCENTI</text>
+</svg>

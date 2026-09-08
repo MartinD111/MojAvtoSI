@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#111"/>
+  <!-- Energica neon green spark -->
+  <path d="M54 18L32 48h18L42 78 70 42H50z" fill="#84cc16"/>
+  <text x="50" y="88" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="1">ENERGICA</text>
+</svg>

@@ -12,6 +12,7 @@ import { t } from '../core/i18n.js';
 import { startProgressiveMessages } from './progressiveLoader.js';
 import { navigateTo } from '../router.js';
 import { showAuthGate } from './authGate.js';
+import { key as lsKey } from '../config/storageKeys.js';
 
 /**
  * Render a loading state into `target`.
@@ -20,6 +21,7 @@ import { showAuthGate } from './authGate.js';
  * @param {boolean} [opts.progressive]  rotate reassuring messages every 3s
  * @param {boolean} [opts.skeleton]     render skeleton rows instead of a spinner
  * @param {number}  [opts.rows]         skeleton row count (default 3)
+ * @param {string}  [opts.viewMode]     'list' or 'grid' (defaults to saved viewmode)
  * @param {string}  [opts.messageKey]   static message i18n key (non-progressive)
  * @returns {{ el: HTMLElement, destroy: () => void }}
  */
@@ -28,11 +30,29 @@ export function renderLoading(target, opts = {}) {
 
     if (opts.skeleton) {
         if (opts.skeleton === 'cards') {
-            const cols = opts.rows || 6; // Naming is rows but we use it as item count
+            const cols = opts.rows || 6;
+
+            // Determine whether to render list or grid skeleton
+            let viewMode = opts.viewMode;
+            if (!viewMode) {
+                if (target.classList.contains('grid-layout')) {
+                    viewMode = 'grid';
+                } else if (target.classList.contains('list-layout')) {
+                    viewMode = 'list';
+                } else {
+                    try {
+                        viewMode = localStorage.getItem(lsKey('viewmode')) || 'list';
+                    } catch {
+                        viewMode = 'list';
+                    }
+                }
+            }
+            const isList = viewMode === 'list';
+
             let cardsHtml = '';
             for(let i = 0; i < cols; i++) {
                 cardsHtml += `
-                    <div class="card-skeleton">
+                    <div class="card-skeleton ${isList ? 'list-skeleton' : 'grid-skeleton'}">
                         <div class="sk-img skeleton-shimmer"></div>
                         <div class="sk-body">
                             <div class="sk-title skeleton-shimmer"></div>
@@ -40,13 +60,14 @@ export function renderLoading(target, opts = {}) {
                             <div class="sk-tags">
                                 <div class="sk-tag skeleton-shimmer"></div>
                                 <div class="sk-tag skeleton-shimmer"></div>
+                                ${isList ? '<div class="sk-tag skeleton-shimmer"></div>' : ''}
                             </div>
                             <div class="sk-price skeleton-shimmer"></div>
                         </div>
                     </div>
                 `;
             }
-            target.innerHTML = `<div class="search-results-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; width: 100%;">
+            target.innerHTML = `<div class="search-results-skeleton-wrap ${isList ? 'skeleton-list' : 'skeleton-grid'}">
                 ${cardsHtml}
             </div>`;
             return { el: target.firstElementChild, destroy: () => {} };

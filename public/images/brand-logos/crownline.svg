@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="9.41 11.52 134.57 25.01" fill="currentColor">
+  <!-- Crownline crown -->
+  <path d="M12 32l4-16 8 8 8-8 4 16H12z" fill="#d97706"/>
+  <circle cx="16" cy="14" r="2" fill="#d97706"/>
+  <circle cx="24" cy="22" r="2" fill="#d97706"/>
+  <circle cx="32" cy="14" r="2" fill="#d97706"/>
+  <text x="44" y="32" font-family="'Arial Black', sans-serif" font-weight="900" font-size="13" letter-spacing="1" fill="currentColor">CROWNLINE</text>
+</svg>

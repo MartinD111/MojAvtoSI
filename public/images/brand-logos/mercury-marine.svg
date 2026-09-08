@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.62 -15.1 136.39 57.43" fill="currentColor">
+  <!-- Mercury Marine iconic racing M with wave crest -->
+  <g transform="translate(18, 25)">
+    <circle cx="0" cy="0" r="14" fill="#1e293b"/>
+    <path d="M-8 8L-4 -8L0 2L4 -8L8 8H4L2 -2L0 4L-2 -2L-4 8Z" fill="#dc2626"/>
+  </g>
+  <text x="38" y="28" font-family="'Arial Black', sans-serif" font-weight="900" font-size="13" letter-spacing="1" fill="currentColor">MERCURY</text>
+  <text x="39" y="39" font-family="sans-serif" font-weight="800" font-size="7" letter-spacing="3" fill="#dc2626">MARINE</text>
+</svg>

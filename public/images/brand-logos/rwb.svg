@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 60">
+  <rect width="140" height="60" rx="8" fill="#09090b"/>
+  <rect x="6" y="6" width="128" height="48" rx="4" fill="none" stroke="#ffffff" stroke-width="2"/>
+  <text x="70" y="34" font-family="'Arial Black', Impact, sans-serif" font-weight="900" font-size="15" fill="#ffffff" text-anchor="middle" letter-spacing="2">RAUH-Welt</text>
+  <text x="70" y="47" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="6.5" fill="#e2e8f0" text-anchor="middle" letter-spacing="4">BEGRIFF</text>
+</svg>

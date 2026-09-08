@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-15.13 -13.03 162.75 53.54" fill="currentColor">
+  <!-- Greenline eco-hybrid wave/leaf -->
+  <g transform="translate(20, 25)">
+    <path d="M-12 6C-8 -6 4 -12 14 -12c-4 10-12 18-26 18z" fill="#16a34a"/>
+    <circle cx="-4" cy="-2" r="3" fill="#fff"/>
+  </g>
+  <text x="42" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="13" letter-spacing="2" fill="currentColor">GREENLINE</text>
+  <text x="43" y="38" font-family="sans-serif" font-weight="700" font-size="7" letter-spacing="3.5" fill="#16a34a">YACHTS</text>
+</svg>

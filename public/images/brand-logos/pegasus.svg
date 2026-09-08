@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#1e3a8a"/>
+  <!-- Winged horse silhouette -->
+  <path d="M28 60l12-16 10 2 14-18c-4 12-2 18 2 22l-10 2-8 12H28z" fill="#fff"/>
+  <text x="50" y="82" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="1.5">PEGASUS</text>
+</svg>

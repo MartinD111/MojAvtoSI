@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16.72 10.36 66.56 85.28">
+  <path d="M18 12 H82 V58 C82 76 50 94 50 94 C50 94 18 76 18 58 Z" fill="#005eb8" stroke="#cbd5e1" stroke-width="2.5"/>
+  <path d="M18 12 L82 76 V58 C82 76 50 94 50 94 L18 58 Z" fill="#003d7a"/>
+  <rect x="20" y="14" width="60" height="13" fill="#091829"/>
+  <text x="50" y="24" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="8" fill="#ffffff" text-anchor="middle" letter-spacing="2.5">ASCARI</text>
+  <path d="M46 36 C50 36 54 39 54 43 C54 47 50 49 46 51 C52 55 54 62 52 70 H44 C46 64 44 60 40 58 L40 72 H34 L34 38 H42 Z" fill="#f8fafc"/>
+</svg>

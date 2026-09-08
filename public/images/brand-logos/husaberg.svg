@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0284c7"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#facc15" stroke-width="3"/>
+  <path d="M34 28v44h11V54h10v18h11V28H55v16H45V28H34z" fill="#facc15"/>
+  <text x="50" y="84" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="1">HUSABERG</text>
+</svg>

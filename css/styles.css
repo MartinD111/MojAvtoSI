@@ -219,8 +219,14 @@ body.dark-mode .body-type-card.active i {
   color: var(--color-primary-start) !important;
 }
 
-body.dark-mode .hero-title {
+body.dark-mode .hero-title,
+body.dark-mode .hero-title-line1,
+body.dark-mode .hero-title-line2 {
   color: #ffffff !important;
+}
+
+body.dark-mode .site-logo {
+  filter: brightness(0) invert(1);
 }
 
 body.dark-mode .hero-subtitle {
@@ -479,6 +485,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transition: filter 0.3s ease;
 }
 
 .logo-accent {
@@ -1950,7 +1957,7 @@ main {
   padding: 0;
 }
 
-.hero-title-line1, .hero-title-line2 { color: #111827; }
+.hero-title-line1, .hero-title-line2 { color: inherit; }
 .hero-word-items span { color: #2563eb !important; }
 
 .hero-word-slider {
@@ -2045,7 +2052,9 @@ main {
   }
 }
 
-body.dark-mode .hero-title {
+body.dark-mode .hero-title,
+body.dark-mode .hero-title-line1,
+body.dark-mode .hero-title-line2 {
   color: #ffffff;
 }
 
@@ -3748,6 +3757,12 @@ body.dark-mode .custom-select-container.disabled .custom-select-trigger {
 .custom-select-search:focus {
   border-color: var(--color-primary-start);
   background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .custom-select-search {
+    font-size: 16px;
+  }
 }
 
 .custom-select-options {
@@ -9577,10 +9592,27 @@ body.dark-mode .catalog-offers-title {
 
 /* ── Home search form mobile layout ── */
 @media (max-width: 768px) {
-  /* 2-column grid: Znamka+Model / Različica / Prevoženi km+Cena / Letnik / Location(full) */
+  /* 2-column grid: Znamka (full) / Model (full) / Različica (full) / Prevoženi km+Cena (split) / Letnik (full) / Location (full) */
   #homeSearchForm .search-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    gap: 8px 12px !important;
+  }
+
+  #homeSearchForm #group-home-make,
+  #homeSearchForm .form-group:has(#home-make) {
+    grid-column: span 2 !important;
+  }
+
+  #homeSearchForm #group-home-model {
+    grid-column: span 2 !important;
+  }
+
+  #homeSearchForm #group-home-variant {
+    grid-column: span 2 !important;
+  }
+
+  #homeSearchForm .form-group:has(#home-reg-from) {
+    grid-column: span 2 !important;
   }
 
   /* Uniform pill size across all home search inputs */
@@ -9598,16 +9630,18 @@ body.dark-mode .catalog-offers-title {
     box-sizing: border-box !important;
   }
 
-  /* Center every form-group label + input */
+  /* Center every form-group label + input with tighter spacing */
   #homeSearchForm .form-group {
     align-items: center !important;
     text-align: center !important;
+    gap: 5px !important;
   }
 
   #homeSearchForm .form-group label {
     text-align: center !important;
     width: 100% !important;
     font-size: 0.78rem !important;
+    margin-bottom: 0 !important;
   }
 
   /* Location + buttons: full width, stack vertically, centered */
@@ -10635,23 +10669,27 @@ body.dark-mode .spec-pill.type-pill:hover {
 
 .custom-select-brand-watermark {
   position: absolute;
-  right: 12px;
+  right: 16px;
   top: 0;
   bottom: 0;
   height: 100%;
-  width: 50px;
+  width: 54px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  opacity: 0.35;
+  justify-content: center;
+  opacity: 0.45;
   pointer-events: none;
   z-index: 1;
 }
 
 .custom-select-brand-logo {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 48px;
+  max-height: 24px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  margin: 0 auto;
+  display: block;
 }
 
 body.dark-mode .logo-adaptive {
@@ -10659,22 +10697,28 @@ body.dark-mode .logo-adaptive {
 }
 
 .custom-select-brand-badge {
-  font-size: 2rem;
+  font-size: 1.35rem;
   font-weight: 900;
   color: rgb(var(--brand-rgb));
   line-height: 1;
   text-transform: uppercase;
+  text-align: center;
+  width: 100%;
 }
 
 .custom-select-option:hover .custom-select-brand-watermark,
 .custom-select-option.highlighted .custom-select-brand-watermark,
 .custom-select-option.selected .custom-select-brand-watermark {
-  opacity: 0.75;
+  opacity: 0.85;
 }
 
 .custom-select-trigger .custom-select-brand-item {
   min-height: auto;
-  justify-content: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: auto;
 }
 
 .custom-select-trigger .custom-select-brand-watermark {
@@ -10683,12 +10727,97 @@ body.dark-mode .logo-adaptive {
   right: auto;
   top: auto;
   bottom: auto;
-  height: 22px;
+  height: 24px;
   width: 32px;
+  max-width: 38px;
   opacity: 1;
   order: -1;
-  margin-right: 8px;
+  margin-right: 0;
   justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.custom-select-trigger .custom-select-brand-logo {
+  max-width: 38px;
+  max-height: 24px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Country Select Dropdowns */
+.custom-select-country-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  min-height: 24px;
+}
+
+.custom-select-country-name {
+  position: relative;
+  z-index: 2;
+  font-weight: 500;
+}
+
+.custom-select-country-watermark {
+  position: absolute;
+  right: 16px;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.custom-select-country-flag-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.custom-select-country-flag {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.custom-select-trigger .custom-select-country-item {
+  min-height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: auto;
+}
+
+.custom-select-trigger .custom-select-country-watermark {
+  display: flex;
+  position: relative;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  height: 20px;
+  width: 28px;
+  opacity: 1;
+  order: -1;
+  margin-right: 0;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 /* Restore fading brand colors and pill shape selection */

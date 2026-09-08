@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect x="8" y="8" width="84" height="84" rx="14" fill="#dc2626"/>
+  <!-- Famous IH logo -->
+  <path d="M26 26h18v48H26zM56 26h18v48H56z" fill="#fff"/>
+  <circle cx="50" cy="36" r="8" fill="#111"/>
+  <rect x="44" y="48" width="12" height="26" fill="#111"/>
+</svg>

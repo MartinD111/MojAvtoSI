@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="14.64 12.56 70.72 74.88" fill="currentColor">
+  <!-- Cube Bikes iconic cube outline -->
+  <path d="M50 14L84 34v32L50 86 16 66V34z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M50 14v40L84 34M50 54L16 34M50 54v32" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/>
+</svg>

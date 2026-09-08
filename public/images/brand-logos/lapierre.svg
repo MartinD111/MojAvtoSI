@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0f172a"/>
+  <!-- Lapierre LP crest -->
+  <path d="M32 24v50h24v-8H42V24H32zm20 12h14c6 0 10 4 10 9s-4 9-10 9H52V36zm9 11h5c2 0 3-1 3-2.5s-1-2.5-3-2.5h-5v5z" fill="#ef4444"/>
+  <text x="50" y="86" font-family="sans-serif" font-weight="900" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1.5">LAPIERRE</text>
+</svg>

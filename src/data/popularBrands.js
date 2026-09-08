@@ -2,7 +2,32 @@
 // Shared by the advanced-search page and the landing-page quick search so the
 // two stay in lockstep. Keyed by canonical category slug ('avto', 'moto', …).
 export const POPULAR_BRANDS = {
-    avto: ['Audi', 'Dacia', 'Ford', 'Hyundai', 'Kia', 'Peugeot', 'Renault', 'Škoda', 'Toyota', 'Volkswagen'],
+    avto: [
+        'Alfa Romeo',
+        'Audi',
+        'BMW',
+        'BYD',
+        'Citroën',
+        'Cupra',
+        'Dacia',
+        'Fiat',
+        'Ford',
+        'Honda',
+        'Hyundai',
+        'Jaecoo',
+        'Kia',
+        'Mercedes-Benz',
+        'Mini',
+        'Nissan',
+        'Opel',
+        'Peugeot',
+        'Polestar',
+        'Renault',
+        'Škoda',
+        'Tesla',
+        'Toyota',
+        'Volkswagen'
+    ],
     moto: ['BMW Motorrad', 'BMW', 'CFMoto', 'CF Moto', 'Ducati', 'Honda', 'Husqvarna', 'Kawasaki', 'KTM', 'Piaggio', 'Suzuki', 'Yamaha'],
     plovila: ['Axopar', 'Bavaria', 'Bayliner', 'Beneteau', 'Elan', 'Jeanneau', 'Quicksilver', 'Sea Ray', 'Yamaha', 'Zodiac'],
     izvenkrmni: ['Yamaha', 'Mercury', 'Honda', 'Suzuki', 'Tohatsu', 'Torqeedo', 'Evinrude', 'Volvo Penta', 'Selva', 'Parsun'],

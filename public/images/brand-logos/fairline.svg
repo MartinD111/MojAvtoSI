@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-15.04 -8.49 158.14 51.72" fill="currentColor">
+  <!-- Fairline wing crest -->
+  <g transform="translate(20, 25)">
+    <path d="M-12 0c8-10 20-10 24 0-10 2-18 2-24 0z" fill="#1e3a8a"/>
+    <circle cx="0" cy="-2" r="3" fill="#d97706"/>
+  </g>
+  <text x="42" y="32" font-family="'Montserrat', sans-serif" font-weight="800" font-size="16" letter-spacing="2" fill="currentColor">FAIRLINE</text>
+  <text x="43" y="41" font-family="sans-serif" font-weight="600" font-size="6" letter-spacing="4" fill="#d97706">YACHTS</text>
+</svg>

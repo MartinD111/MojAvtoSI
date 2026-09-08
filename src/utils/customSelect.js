@@ -1,6 +1,7 @@
 import { t } from '../core/i18n.js';
 import { getBrandLogo, getBrandInitial, isBrandMonochrome } from '../data/brandLogos.js';
 import { getBrandRgb } from '../data/brandColors.js';
+import { getCountryRgb, getCountryOptionHtml, getCountryTriggerHtml } from '../data/countryFlags.js';
 
 function getBrandOptionHtml(optText, optValue) {
     if (!optValue) return optText;
@@ -120,12 +121,21 @@ export function createCustomSelect(select) {
                           select.id === 'sidebarEngineMake' ||
                           select.dataset.type === 'make' ||
                           select.dataset.type === 'brand';
+    const isCountrySelect = select.name === 'country' ||
+                            select.id === 'home-country' ||
+                            select.id === 'sidebarCountry' ||
+                            select.id === 'vendor-country' ||
+                            select.id === 'country' ||
+                            select.id === 'reCountry' ||
+                            select.dataset.type === 'country';
     const initialOpt = select.options[select.selectedIndex];
     let initialValHtml = initialOpt?.text || '';
     if (isColorSelect && initialOpt && initialOpt.value) {
         initialValHtml = `<div style="display:flex;align-items:center;gap:4px;">${getColorDotHtml(initialOpt.value)}<span>${initialOpt.text}</span></div>`;
     } else if (isBrandSelect && initialOpt && initialOpt.value) {
         initialValHtml = getBrandTriggerHtml(initialOpt.text, initialOpt.value);
+    } else if (isCountrySelect && initialOpt && initialOpt.value) {
+        initialValHtml = getCountryTriggerHtml(initialOpt.text, initialOpt.value);
     }
 
     const noChevron = select.dataset.noChevron === "true";
@@ -150,8 +160,22 @@ export function createCustomSelect(select) {
     }
     syncTriggerBrand(initialOpt);
 
+    function syncTriggerCountry(opt) {
+        if (!isCountrySelect || !trigger) return;
+        if (opt && opt.value) {
+            const rgb = getCountryRgb(opt.value || opt.text);
+            trigger.style.setProperty('--country-rgb', rgb);
+            trigger.classList.add('country-selected');
+        } else {
+            trigger.style.removeProperty('--country-rgb');
+            trigger.classList.remove('country-selected');
+        }
+    }
+    syncTriggerCountry(initialOpt);
+
     const menu = document.createElement('div');
     menu.className = 'custom-select-menu';
+    menu.addEventListener('click', (e) => e.stopPropagation());
 
     const noSearch = select.dataset.noSearch === "true";
     let searchInput = null;
@@ -163,6 +187,9 @@ export function createCustomSelect(select) {
         searchInput.type = 'text';
         searchInput.className = 'custom-select-search';
         searchInput.placeholder = t('search_placeholder', 'Search...');
+        searchInput.autocomplete = 'off';
+        searchInput.autocapitalize = 'none';
+        searchInput.spellcheck = false;
         searchWrapper.appendChild(searchInput);
         menu.appendChild(searchWrapper);
     }
@@ -183,35 +210,48 @@ export function createCustomSelect(select) {
         menu.classList.add('open');
         trigger.classList.add('open');
 
+        // Check if menu would overflow viewport bottom, open upward if needed
+        const rect = container.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        if (spaceBelow < 280 && spaceAbove > spaceBelow) {
+            menu.classList.add('open-up');
+        } else {
+            menu.classList.remove('open-up');
+        }
+
         // Lift ancestor elements to ensure dropdown is not clipped and displays above other sections
         liftedAncestors = [];
         let curr = container.parentElement;
-        let z = 9000;
+        const z = 99999;
         while (curr && curr !== document.body && curr !== document.documentElement) {
             const comp = window.getComputedStyle(curr);
             const overflowHidden = comp.overflow !== 'visible' || comp.overflowX !== 'visible' || comp.overflowY !== 'visible';
             const positionStatic = comp.position === 'static';
 
-            if (overflowHidden || positionStatic || comp.zIndex !== 'auto') {
-                liftedAncestors.push({
-                    el: curr,
-                    hadZIndex: curr.style.zIndex,
-                    hadOverflow: curr.style.overflow,
-                    hadPosition: curr.style.position
-                });
-                curr.style.zIndex = String(z--);
+            liftedAncestors.push({
+                el: curr,
+                hadZIndex: curr.style.zIndex,
+                hadOverflow: curr.style.overflow,
+                hadPosition: curr.style.position
+            });
+            curr.style.zIndex = String(z);
+            if (overflowHidden) {
                 curr.style.overflow = 'visible';
-                if (positionStatic) {
-                    curr.style.position = 'relative';
-                }
+            }
+            if (positionStatic) {
+                curr.style.position = 'relative';
             }
             curr = curr.parentElement;
         }
 
         if (searchInput) {
             searchInput.value = '';
-            searchInput.focus({ preventScroll: true });
             searchInput.dispatchEvent(new Event('input'));
+            const isMobile = window.innerWidth < 768 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+            if (!isMobile) {
+                searchInput.focus({ preventScroll: true });
+            }
         }
 
         // Scroll so the label is visible above the pill — mobile only
@@ -220,15 +260,18 @@ export function createCustomSelect(select) {
             const scrollTarget = fieldGroup || container;
             const stickyNav = document.querySelector('.sticky-nav');
             const navHeight = stickyNav ? stickyNav.getBoundingClientRect().height : 0;
-            const rect = scrollTarget.getBoundingClientRect();
-            const absoluteTop = rect.top + window.scrollY - navHeight - 8;
+            const targetRect = scrollTarget.getBoundingClientRect();
+            const absoluteTop = targetRect.top + window.scrollY - navHeight - 8;
             window.scrollTo({ top: absoluteTop, behavior: 'smooth' });
         }
     }
 
     function closeMenu() {
         container.classList.remove('open');
-        if (menu) menu.classList.remove('open');
+        if (menu) {
+            menu.classList.remove('open');
+            menu.classList.remove('open-up');
+        }
         if (trigger) trigger.classList.remove('open');
 
         liftedAncestors.forEach(({ el, hadZIndex, hadOverflow, hadPosition }) => {
@@ -238,7 +281,12 @@ export function createCustomSelect(select) {
         });
         liftedAncestors = [];
 
-        if (searchInput) searchInput.value = '';
+        if (searchInput) {
+            searchInput.value = '';
+            if (document.activeElement === searchInput) {
+                searchInput.blur();
+            }
+        }
     }
 
     container.__closeMenu = closeMenu;
@@ -292,6 +340,11 @@ export function createCustomSelect(select) {
                 const brandRgb = getBrandRgb(opt.value || opt.text);
                 optionElem.style.setProperty('--brand-rgb', brandRgb);
                 optionElem.innerHTML = getBrandOptionHtml(opt.text, opt.value);
+            } else if (isCountrySelect && opt.value) {
+                optionElem.classList.add('country-option');
+                const countryRgb = getCountryRgb(opt.value || opt.text);
+                optionElem.style.setProperty('--country-rgb', countryRgb);
+                optionElem.innerHTML = getCountryOptionHtml(opt.text, opt.value);
             } else {
                 optionElem.textContent = opt.text;
             }
@@ -307,9 +360,13 @@ export function createCustomSelect(select) {
                 } else if (isBrandSelect && opt.value) {
                     trigger.querySelector('.custom-select-value').innerHTML = getBrandTriggerHtml(opt.text, opt.value);
                     syncTriggerBrand(opt);
+                } else if (isCountrySelect && opt.value) {
+                    trigger.querySelector('.custom-select-value').innerHTML = getCountryTriggerHtml(opt.text, opt.value);
+                    syncTriggerCountry(opt);
                 } else {
                     trigger.querySelector('.custom-select-value').textContent = opt.text;
                     if (isBrandSelect) syncTriggerBrand(null);
+                    if (isCountrySelect) syncTriggerCountry(null);
                 }
                 closeMenu();
             });
@@ -323,9 +380,13 @@ export function createCustomSelect(select) {
             } else if (isBrandSelect && selectedOpt && selectedOpt.value) {
                 trigger.querySelector('.custom-select-value').innerHTML = getBrandTriggerHtml(selectedOpt.text, selectedOpt.value);
                 syncTriggerBrand(selectedOpt);
+            } else if (isCountrySelect && selectedOpt && selectedOpt.value) {
+                trigger.querySelector('.custom-select-value').innerHTML = getCountryTriggerHtml(selectedOpt.text, selectedOpt.value);
+                syncTriggerCountry(selectedOpt);
             } else {
                 trigger.querySelector('.custom-select-value').textContent = selectedOpt?.text || '';
                 if (isBrandSelect) syncTriggerBrand(null);
+                if (isCountrySelect) syncTriggerCountry(null);
             }
         }
         syncDisabledState();
@@ -486,9 +547,13 @@ export function createCustomSelect(select) {
             } else if (isBrandSelect && selectedOpt && selectedOpt.value) {
                 trigger.querySelector('.custom-select-value').innerHTML = getBrandTriggerHtml(selectedOpt.text, selectedOpt.value);
                 syncTriggerBrand(selectedOpt);
+            } else if (isCountrySelect && selectedOpt && selectedOpt.value) {
+                trigger.querySelector('.custom-select-value').innerHTML = getCountryTriggerHtml(selectedOpt.text, selectedOpt.value);
+                syncTriggerCountry(selectedOpt);
             } else {
                 trigger.querySelector('.custom-select-value').textContent = selectedText;
                 if (isBrandSelect) syncTriggerBrand(null);
+                if (isCountrySelect) syncTriggerCountry(null);
             }
         }
         // Highlight correct option
@@ -515,3 +580,11 @@ export function closeAllMenus() {
 }
 
 document.addEventListener('click', closeAllMenus);
+
+let lastWindowWidth = window.innerWidth;
+window.addEventListener('resize', () => {
+    if (window.innerWidth !== lastWindowWidth) {
+        lastWindowWidth = window.innerWidth;
+        closeAllMenus();
+    }
+});

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#b91c1c"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" stroke-width="3"/>
+  <!-- Morini Eagle head & wings -->
+  <path d="M50 20l12 12-6 4 10 10-16-6v16h-4V40L30 46l10-10-6-4z" fill="#f59e0b"/>
+  <text x="50" y="74" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="1">MOTO MORINI</text>
+  <text x="50" y="83" font-family="sans-serif" font-weight="700" font-size="6" fill="#f59e0b" text-anchor="middle">BOLOGNA</text>
+</svg>

@@ -23,6 +23,7 @@ import { showCompareLimitToast } from '../utils/listingUtils.js';
 import { key as lsKey } from '../config/storageKeys.js';
 import { brandsFileFor } from '../data/brandFiles.js';
 import { popularBrandsFor } from '../data/popularBrands.js';
+import { renderLoading } from '../utils/uiState.js';
 
 import {
     getFuelPill,
@@ -821,10 +822,20 @@ function applyViewMode(mode) {
     const container = document.getElementById('carListingsContainer');
     if (!container) return;
     currentViewMode = mode;
-    localStorage.setItem(lsKey('viewmode'), mode);
+    try { localStorage.setItem(lsKey('viewmode'), mode); } catch (e) {}
 
     container.classList.toggle('grid-layout', mode === 'grid');
     container.classList.toggle('list-layout', mode === 'list');
+
+    const skWrap = container.querySelector('.search-results-skeleton-wrap');
+    if (skWrap) {
+        skWrap.classList.toggle('skeleton-grid', mode === 'grid');
+        skWrap.classList.toggle('skeleton-list', mode === 'list');
+        skWrap.querySelectorAll('.card-skeleton').forEach(card => {
+            card.classList.toggle('grid-skeleton', mode === 'grid');
+            card.classList.toggle('list-skeleton', mode === 'list');
+        });
+    }
 
     document.querySelectorAll('.view-toggle-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === mode);
@@ -850,17 +861,16 @@ export function initNavtikaOglasiPage() {
         console.error('[OglasiPage] carListingsContainer NOT FOUND!');
     }
 
+    // Initialize Grid/List view toggle with persistent settings FIRST (so loading skeleton matches layout)
+    initViewToggle();
+
     // Initialize dynamic sidebar filters (handles loading user listings, population, prefill & events)
     initSidebarFiltering();
 
     // Setup numeric formatters
     document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
 
-
     if (window.updateHeaderCompare) window.updateHeaderCompare();
-
-    // Initialize Grid/List view toggle with persistent settings
-    initViewToggle();
 
     // Subscribe to store — re-render on filter changes, swap layout on viewMode changes.
     /*
@@ -1019,6 +1029,10 @@ function updateSidebarHybridGroup() {
 }
 
 async function initSidebarFiltering() {
+    // Show skeleton placeholders while the first page loads.
+    const _feedContainer = document.getElementById('carListingsContainer');
+    if (_feedContainer) renderLoading(_feedContainer, { skeleton: 'cards', rows: 8, viewMode: currentViewMode });
+
     // 1. Fetch all listings
     try {
         const userListings = await getListings();

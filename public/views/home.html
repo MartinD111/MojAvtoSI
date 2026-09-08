@@ -27,6 +27,15 @@
     </div>
 
 <style>
+    .hero-title-line1,
+    .hero-title-line2 {
+      color: inherit;
+    }
+    body.dark-mode .hero-title,
+    body.dark-mode .hero-title-line1,
+    body.dark-mode .hero-title-line2 {
+      color: #ffffff !important;
+    }
     .hero-word-items {
       display: flex;
       flex-direction: column;
@@ -96,7 +105,7 @@
         <form id="homeSearchForm" class="search-box compact glass-card main-search-card card-squircle">
             <div class="search-grid">
                 <!-- Row 1 -->
-                <div class="form-group">
+                <div class="form-group" id="group-home-make">
                     <label for="home-make" data-i18n-key="form_make">Make</label>
                     <div class="pill-select-wrapper">
                         <select id="home-make" name="make" class="pill-input">

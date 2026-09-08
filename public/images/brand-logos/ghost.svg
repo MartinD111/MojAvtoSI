@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0f172a"/>
+  <!-- Ghost icon -->
+  <path d="M30 64c-4-12 0-32 20-32s24 20 20 32l-8-6-6 6-6-6-6 6-6-6-8 6z" fill="#fff"/>
+  <circle cx="44" cy="46" r="3" fill="#0f172a"/>
+  <circle cx="56" cy="46" r="3" fill="#0f172a"/>
+  <text x="50" y="82" font-family="sans-serif" font-weight="900" font-size="9" fill="#fff" text-anchor="middle" letter-spacing="2">GHOST</text>
+</svg>

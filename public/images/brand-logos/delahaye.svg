@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#1e3a8a"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <polygon points="50,18 76,70 24,70" fill="none" stroke="#d4af37" stroke-width="3"/>
+  <text x="50" y="54" font-family="serif" font-weight="bold" font-size="20" fill="#d4af37" text-anchor="middle">DH</text>
+  <text x="50" y="82" font-family="sans-serif" font-weight="900" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1">DELAHAYE</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="9.74 9.21 117.63 32.2" fill="currentColor">
+  <!-- Brig bold nautical wing -->
+  <path d="M12 36L28 12h14L32 36H12z" fill="#dc2626"/>
+  <path d="M26 36L40 16h10L38 36H26z" fill="#1e293b"/>
+  <text x="56" y="34" font-family="'Arial Black', sans-serif" font-weight="900" font-size="22" letter-spacing="2" fill="currentColor">BRIG</text>
+</svg>

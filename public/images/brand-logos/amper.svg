@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#2563eb"/>
+  <path d="M50 18L32 68h14l4-10h16l-6-16-4 10z" fill="#fff"/>
+  <text x="50" y="84" font-family="sans-serif" font-weight="900" font-size="9" fill="#fff" text-anchor="middle" letter-spacing="1">AMPER</text>
+</svg>

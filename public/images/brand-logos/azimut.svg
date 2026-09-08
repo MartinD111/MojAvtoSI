@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 50" fill="currentColor">
+  <!-- Azimut starburst diamond -->
+  <g transform="translate(18, 25)">
+    <path d="M0 -15L4 -4L15 0L4 4L0 15L-4 4L-15 0L-4 -4Z" fill="#c49a45"/>
+    <circle cx="0" cy="0" r="2.5" fill="#fff"/>
+  </g>
+  <text x="46" y="32" font-family="'Cinzel', 'Times New Roman', serif" font-weight="700" font-size="19" letter-spacing="3" fill="currentColor">AZIMUT</text>
+  <text x="47" y="42" font-family="sans-serif" font-weight="600" font-size="6" letter-spacing="4" fill="#c49a45">YACHTS</text>
+</svg>

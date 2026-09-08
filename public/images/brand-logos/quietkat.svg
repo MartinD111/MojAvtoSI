@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#14532d"/>
+  <text x="55" y="38" font-family="'Arial Black', sans-serif" font-weight="900" font-size="12" fill="#fff" text-anchor="middle">QUIETKAT</text>
+  <circle cx="55" cy="48" r="3" fill="#84cc16"/>
+</svg>

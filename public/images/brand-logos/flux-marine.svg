@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.24 -14.04 168.53 54.3" fill="currentColor">
+  <g transform="translate(18, 25)">
+    <circle cx="0" cy="0" r="13" fill="#0ea5e9"/>
+    <path d="M-4 6L2 -6M-2 6L4 -6" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <text x="38" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="13" letter-spacing="1" fill="currentColor">FLUX MARINE</text>
+  <text x="39" y="38" font-family="sans-serif" font-weight="700" font-size="6" letter-spacing="2" fill="#0ea5e9">ELECTRIC OUTBOARDS</text>
+</svg>

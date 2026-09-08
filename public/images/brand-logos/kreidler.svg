@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#dc2626"/>
+  <!-- Maltese cross / Florett crest -->
+  <path d="M50 18l8 18h18l-14 10 5 18-17-11-17 11 5-18-14-10h18z" fill="#fff"/>
+  <circle cx="50" cy="46" r="6" fill="#dc2626"/>
+  <text x="50" y="82" font-family="sans-serif" font-weight="900" font-size="9" fill="#fff" text-anchor="middle" letter-spacing="1">KREIDLER</text>
+</svg>

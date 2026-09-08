@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#111"/>
+  <path d="M32 64V36a18 18 0 0 1 36 0v28" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  <text x="50" y="84" font-family="sans-serif" font-weight="900" font-size="9" fill="#fff" text-anchor="middle" letter-spacing="2">UNAGI</text>
+</svg>

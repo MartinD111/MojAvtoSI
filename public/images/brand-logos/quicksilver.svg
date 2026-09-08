@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-13.41 -12.97 177.21 50.22" fill="currentColor">
+  <!-- Quicksilver dynamic silver / red chevron wing -->
+  <g transform="translate(18, 25)">
+    <path d="M-10 6L6 -12L12 -8L-4 10Z" fill="#dc2626"/>
+    <path d="M-4 10L12 -8L16 -4L0 14Z" fill="#64748b"/>
+  </g>
+  <text x="42" y="32" font-family="'Arial Black', sans-serif" font-weight="900" font-size="14" letter-spacing="1" fill="currentColor">QUICKSILVER</text>
+</svg>

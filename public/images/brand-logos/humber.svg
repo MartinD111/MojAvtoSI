@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#1e293b"/>
+  <circle cx="55" cy="28" r="16" fill="none" stroke="#d4af37" stroke-width="2.5"/>
+  <text x="55" y="34" font-family="serif" font-weight="bold" font-size="16" fill="#d4af37" text-anchor="middle">H</text>
+  <text x="55" y="54" font-family="sans-serif" font-weight="900" font-size="9" fill="#fff" text-anchor="middle" letter-spacing="2">HUMBER</text>
+</svg>

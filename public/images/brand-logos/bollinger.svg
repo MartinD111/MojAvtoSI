@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="23.2 13.6 93.6 72.8" fill="currentColor">
+  <!-- Left solid vertical bar -->
+  <rect x="25" y="15" width="22" height="70" rx="3" fill="currentColor"/>
+  <!-- Right upper bar with rounded right corners -->
+  <path d="M57 15h32c12 0 22 8 22 20s-10 20-22 20H57V15zm22 26c4 0 8-3 8-6s-4-6-8-6H69v12h10z" fill="currentColor"/>
+  <!-- Right lower bar with rounded right corners -->
+  <path d="M57 45h35c12 0 23 9 23 20s-11 20-23 20H57V45zm25 26c4 0 9-3 9-6s-5-6-9-6H69v12h13z" fill="currentColor"/>
+</svg>

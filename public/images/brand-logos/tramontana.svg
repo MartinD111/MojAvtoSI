@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70">
+  <rect width="120" height="70" rx="12" fill="#09090b"/>
+  <path d="M60 30 C45 16 20 18 18 32 C16 46 42 46 60 32 C78 18 104 18 102 32 C100 46 75 44 60 30 Z" fill="none" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="60" cy="31" r="5" fill="#94a3b8"/>
+  <circle cx="60" cy="31" r="2.5" fill="#f8fafc"/>
+  <text x="60" y="58" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="6.5" fill="#cbd5e1" text-anchor="middle" letter-spacing="2.5">TRAMONTANA</text>
+</svg>

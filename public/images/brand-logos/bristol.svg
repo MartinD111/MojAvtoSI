@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#111827"/>
+  <circle cx="50" cy="50" r="45" fill="#800000" stroke="#d4af37" stroke-width="2"/>
+  <circle cx="50" cy="50" r="32" fill="#8b0000" stroke="#d4af37" stroke-width="1.5"/>
+  <path d="M22 50 A28 28 0 0 1 78 50" id="bristolArc" fill="none"/>
+  <text font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="8.5" fill="#ffffff" letter-spacing="3.5">
+    <textPath href="#bristolArc" startOffset="50%" text-anchor="middle">BRISTOL</textPath>
+  </text>
+  <path d="M24 64 Q32 60 40 64 T56 64 T72 64 T80 64 L80 76 A32 32 0 0 1 20 72 L24 64 Z" fill="#1e3a8a"/>
+  <path d="M48 50 L58 50 L64 62 L44 62 Z" fill="#d4af37"/>
+  <rect x="52" y="38" width="2" height="12" fill="#ffffff"/>
+  <polygon points="54,39 63,44 54,49" fill="#ffffff"/>
+  <path d="M26 44 h14 v22 h-14 z" fill="#e2e8f0"/>
+  <path d="M25 40 h16 v4 h-16 z M27 38 h3 v2 h-3 z M32 38 h3 v2 h-3 z M37 38 h3 v2 h-3 z" fill="#cbd5e1"/>
+  <path d="M30 52 a4 4 0 0 1 8 0 v14 h-8 z" fill="#111827"/>
+</svg>

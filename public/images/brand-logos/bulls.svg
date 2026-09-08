@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#dc2626"/>
+  <!-- Bull horns icon -->
+  <path d="M24 34c10 8 18 16 26 30 8-14 16-22 26-30-6 16-16 28-26 34-10-6-20-18-26-34z" fill="#fff"/>
+  <text x="50" y="82" font-family="'Arial Black', sans-serif" font-weight="900" font-size="12" fill="#fff" text-anchor="middle">BULLS</text>
+</svg>

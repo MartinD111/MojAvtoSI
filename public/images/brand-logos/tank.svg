@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16.72 12.56 66.56 74.88" fill="currentColor">
+  <!-- GWM Tank emblem: bold angular T in shield -->
+  <polygon points="50,14 82,30 82,70 50,86 18,70 18,30" fill="none" stroke="currentColor" stroke-width="6"/>
+  <path d="M30 32h40v12H58v30H42V44H30z" fill="currentColor"/>
+</svg>

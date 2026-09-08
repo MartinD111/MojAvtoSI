@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <polygon points="50,6 90,22 84,74 50,94 16,74 10,22" fill="#09090b" stroke="#ef4444" stroke-width="2"/>
+  <polygon points="26,26 74,26 66,36 56,36 56,76 44,76 44,36 34,36" fill="#f8fafc"/>
+  <polygon points="50,28 62,34 50,72 38,34" fill="#dc2626"/>
+  <text x="50" y="88" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="8" fill="#f8fafc" text-anchor="middle" letter-spacing="3">TRION</text>
+</svg>

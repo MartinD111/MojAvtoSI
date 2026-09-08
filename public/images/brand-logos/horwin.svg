@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0f172a"/>
+  <!-- Horwin curved wing -->
+  <path d="M24 45c16-16 36-16 52 0-14 6-34 4-52 0z" fill="#0d9488"/>
+  <text x="50" y="74" font-family="'Arial Black', sans-serif" font-weight="900" font-size="12" fill="#fff" text-anchor="middle" letter-spacing="1">HORWIN</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-17.04 -15.04 158.02 53.99" fill="currentColor">
+  <!-- Tohatsu iconic blue/red dual wings -->
+  <g transform="translate(20, 25)">
+    <circle cx="0" cy="0" r="14" fill="#0369a1"/>
+    <path d="M-8 0c4-6 12-6 16 0-4 6-12 6-16 0z" fill="#dc2626"/>
+  </g>
+  <text x="42" y="33" font-family="'Arial Black', sans-serif" font-weight="900" font-size="16" letter-spacing="1.5" fill="currentColor">TOHATSU</text>
+</svg>

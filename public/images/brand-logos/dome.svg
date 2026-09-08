@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 70">
+  <rect width="140" height="70" rx="8" fill="#09090b"/>
+  <g transform="translate(-10, 4) skewX(-14)">
+    <path d="M26 12 h20 c14 0 22 7 22 17 s-8 17-22 17 H26 Z m14 9 v16 h5 c6 0 9-3 9-8 s-3-8-9-8 Z" fill="#ffffff"/>
+    <ellipse cx="80" cy="29" rx="14" ry="17" fill="none" stroke="#ffffff" stroke-width="9"/>
+    <polygon points="100,12 108,12 118,32 128,12 136,12 136,46 128,46 128,24 120,41 116,41 108,24 108,46 100,46" fill="#ffffff"/>
+    <path d="M142 12 h20 v8 h-12 v4 h10 v7 h-10 v5 h12 v8 h-20 Z" fill="#ffffff"/>
+    <rect x="26" y="49" width="136" height="4" fill="#e11d48"/>
+  </g>
+</svg>

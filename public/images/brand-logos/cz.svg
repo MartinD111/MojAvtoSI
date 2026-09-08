@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#dc2626"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="3"/>
+  <!-- ČZ Gun barrel circle with CZ -->
+  <circle cx="50" cy="50" r="28" fill="none" stroke="#fff" stroke-width="4"/>
+  <text x="44" y="58" font-family="'Arial Black', sans-serif" font-weight="900" font-size="24" fill="#fff" text-anchor="middle">Č</text>
+  <text x="62" y="58" font-family="'Arial Black', sans-serif" font-weight="900" font-size="24" fill="#fff" text-anchor="middle">Z</text>
+</svg>

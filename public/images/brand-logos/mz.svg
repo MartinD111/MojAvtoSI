@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#047857"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="3"/>
+  <text x="50" y="58" font-family="'Arial Black', sans-serif" font-weight="900" font-size="30" fill="#fff" text-anchor="middle">MZ</text>
+  <text x="50" y="78" font-family="sans-serif" font-weight="800" font-size="7" fill="#a7f3d0" text-anchor="middle" letter-spacing="1">MOTORRAD</text>
+</svg>

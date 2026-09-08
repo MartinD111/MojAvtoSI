@@ -12,7 +12,7 @@
 .lp-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 1.5rem 1.25rem 3rem;
+    padding: 0.75rem 1.25rem 3rem;
 }
 
 /* ── Breadcrumb ─────────────────────────────────────────────────────────────*/
@@ -22,8 +22,8 @@
     gap: 0.4rem;
     font-size: 0.82rem;
     color: #94a3b8;
-    margin-top: 1rem;
-    margin-bottom: 0.4rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.85rem;
     flex-wrap: wrap;
 }
 
@@ -249,23 +249,41 @@ body.dark-mode .lp-sale-price {
         position: static !important;
     }
 
-    .lp-sidebar-card {
-        width: 100%;
+    .lp-sidebar-card,
+    .lp-header-price,
+    .lp-title-card {
+        width: 100% !important;
         box-sizing: border-box;
     }
 
     .lp-section {
-        margin-bottom: 0.25rem !important;
+        margin-bottom: 1.25rem !important;
     }
 
-    .lp-main>*,
-    .lp-sidebar>* {
-        margin-bottom: 0.25rem !important;
+    .lp-main > * {
+        margin-bottom: 1.25rem !important;
         margin-top: 0 !important;
     }
 
-    /* Compact closed accordion trigger */
-    .adv-accordion .adv-acc-trigger {
+    .lp-sidebar > * {
+        margin-bottom: 0.85rem !important;
+        margin-top: 0 !important;
+    }
+
+    .lp-title-card {
+        margin-bottom: 0.65rem !important;
+    }
+
+    .lp-header-price {
+        margin-bottom: 0.65rem !important;
+    }
+
+    .lp-action-row.lp-sidebar-actions {
+        margin-bottom: 1.25rem !important;
+    }
+
+    /* Compact closed accordion trigger (excluding seller trigger) */
+    .adv-accordion .adv-acc-trigger:not(.lp-seller-trigger) {
         padding: 0.65rem 1.1rem !important;
     }
 
@@ -279,22 +297,30 @@ body.dark-mode .lp-sale-price {
     margin-bottom: 1.25rem;
 }
 
-/* Interior / exterior toggle (inline in meta-row) */
+/* Interior / exterior toggle placed under gallery */
+.lp-gallery-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 0.65rem;
+}
+
 .lp-view-toggle {
     display: inline-flex;
     gap: 0.25rem;
     background: rgba(37, 99, 235, 0.07);
+    border: 1px solid rgba(37, 99, 235, 0.12);
     border-radius: 999px;
-    padding: 0.2rem;
+    padding: 0.25rem;
 }
 
 .lp-view-btn {
-    padding: 0.25rem 0.75rem;
+    padding: 0.35rem 0.95rem;
     border-radius: 999px;
     border: none;
     background: transparent;
     color: #64748b;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
@@ -545,78 +571,125 @@ body.dark-mode .lp-description {
     gap: 0.75rem;
 }
 
+.lp-specs-container .adv-accordion {
+    margin-bottom: 0 !important;
+}
+
 .lp-key-specs-box {
     background: var(--bg-glass);
     border: var(--border-glass);
     border-radius: 1.25rem;
-    padding: 1.5rem;
+    padding: 1.6rem 2rem;
     box-shadow: var(--shadow-glass);
     backdrop-filter: blur(12px);
     position: relative;
     overflow: hidden;
 }
 
-.lp-key-specs-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--color-primary-start);
-    opacity: 0.8;
+.lp-specs-grid-9 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem 2.2rem;
 }
 
-.lp-key-specs-grid {
+.lp-spec-card-item {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    align-items: center;
     gap: 1rem;
+    min-width: 0;
 }
 
-.lp-key-spec-item {
-    flex: 0 1 calc(33.333% - 0.75rem);
-    min-width: 110px;
+.lp-spec-icon-box {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.55rem 1rem;
-    background: rgba(37, 99, 235, 0.07);
-    border: 1px solid rgba(37, 99, 235, 0.18);
-    border-radius: 2rem;
+    color: #526071;
 }
 
-@media (max-width: 768px) {
-    .lp-key-spec-item {
-        flex: 0 1 auto;
-        min-width: 0;
-        width: auto;
+.lp-spec-icon-box svg {
+    width: 26px;
+    height: 26px;
+    stroke: currentColor;
+    display: block;
+}
+
+.lp-spec-text-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    min-width: 0;
+}
+
+.lp-spec-item-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #64748b;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lp-spec-item-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+    word-break: break-word;
+}
+
+body.dark-mode .lp-spec-item-label {
+    color: #94a3b8;
+}
+
+body.dark-mode .lp-spec-item-value {
+    color: #f8fafc;
+}
+
+body.dark-mode .lp-spec-icon-box {
+    color: #94a3b8;
+}
+
+@media (max-width: 860px) {
+    .lp-specs-grid-9 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem 1.4rem;
+    }
+    .lp-key-specs-box {
+        padding: 1.35rem 1.35rem;
     }
 }
 
-.lp-key-spec-icon {
-    width: 16px !important;
-    height: 16px !important;
-    flex-shrink: 0;
-    color: var(--color-primary-start);
-}
-
-.lp-key-spec-value {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #1e293b;
-    white-space: nowrap;
-}
-
-body.dark-mode .lp-key-spec-value {
-    color: #e2e8f0;
-}
-
-body.dark-mode .lp-key-spec-item {
-    background: rgba(96, 165, 250, 0.1);
-    border-color: rgba(96, 165, 250, 0.22);
+@media (max-width: 540px) {
+    .lp-specs-grid-9 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.15rem 0.85rem;
+    }
+    .lp-key-specs-box {
+        padding: 1.15rem 1rem;
+        border-radius: 1.15rem;
+    }
+    .lp-spec-card-item {
+        gap: 0.65rem;
+    }
+    .lp-spec-icon-box {
+        width: 34px;
+        height: 34px;
+        color: #526071;
+    }
+    .lp-spec-icon-box svg {
+        width: 23px;
+        height: 23px;
+    }
+    .lp-spec-item-label {
+        font-size: 0.76rem;
+    }
+    .lp-spec-item-value {
+        font-size: 0.95rem;
+    }
 }
 
 /* ── Secondary Specs (Accordion) ─────────────────────────────────────────── */
@@ -675,13 +748,14 @@ body.dark-mode .lp-specs-summary {
     transform: rotate(180deg);
 }
 
+.adv-accordion .lp-specs-content,
 .lp-specs-content {
-    padding: 0 1.25rem 1.25rem;
+    padding: 0 0.5rem 0.5rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem 2rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
-    padding-top: 1.25rem;
+    gap: 0.5rem 2.5rem;
+    border-top: none !important;
+    padding-top: 0 !important;
 }
 
 .lp-spec-item {
@@ -806,7 +880,7 @@ body.dark-mode .lp-eq-chip {
     flex-direction: column;
     gap: 1rem;
     position: sticky;
-    top: 90px;
+    top: 85px;
 }
 
 .lp-sidebar-card {
@@ -816,6 +890,127 @@ body.dark-mode .lp-eq-chip {
     box-shadow: var(--shadow-glass);
     backdrop-filter: blur(12px);
     padding: 1.25rem;
+}
+
+/* ── Title Card (in sidebar above price) ────────────────────────────────────*/
+.lp-title-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.15rem 1.35rem;
+    width: 340px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    background:
+        radial-gradient(ellipse at 92% 50%, rgba(var(--brand-rgb, 100, 116, 139), 0.22) 0%, rgba(var(--brand-rgb, 100, 116, 139), 0.08) 55%, transparent 85%),
+        linear-gradient(to left, rgba(var(--brand-rgb, 100, 116, 139), 0.16) 0%, rgba(var(--brand-rgb, 100, 116, 139), 0.04) 50%, transparent 85%),
+        var(--bg-glass);
+    border: 1px solid rgba(var(--brand-rgb, 226, 232, 240), 0.35);
+    box-shadow: 0 4px 18px -2px rgba(var(--brand-rgb, 15, 23, 42), 0.08), var(--shadow-glass);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+body.dark-mode .lp-title-card {
+    background:
+        radial-gradient(ellipse at 92% 50%, rgba(var(--brand-rgb, 100, 116, 139), 0.30) 0%, rgba(var(--brand-rgb, 100, 116, 139), 0.10) 55%, transparent 85%),
+        linear-gradient(to left, rgba(var(--brand-rgb, 100, 116, 139), 0.22) 0%, rgba(var(--brand-rgb, 100, 116, 139), 0.05) 50%, transparent 85%),
+        var(--bg-glass);
+    border: 1px solid rgba(var(--brand-rgb, 148, 163, 184), 0.28);
+    box-shadow: 0 4px 22px -2px rgba(0, 0, 0, 0.3), var(--shadow-glass);
+}
+
+.lp-title-card-content {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.lp-title-card .lp-title {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.4rem;
+    row-gap: 0.15rem;
+    align-items: baseline;
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.2rem;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    word-break: break-word;
+}
+
+.lp-title-make {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.lp-title-model {
+    display: inline-block;
+}
+
+.lp-title--stacked .lp-title-model {
+    display: block;
+    width: 100%;
+}
+
+body.dark-mode .lp-title-card .lp-title {
+    color: #f1f5f9;
+}
+
+.lp-title-card .lp-subtitle {
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+    line-height: 1.25;
+}
+
+body.dark-mode .lp-title-card .lp-subtitle {
+    color: #94a3b8;
+}
+
+.lp-title-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.lp-title-card-logo {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 2;
+    width: 76px;
+    height: 52px;
+}
+
+.lp-title-card-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: 50px;
+    object-fit: contain;
+    opacity: 1;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+    transition: transform 0.25s ease;
+}
+
+.lp-title-card:hover .lp-title-card-logo img {
+    transform: scale(1.05);
+}
+
+body.dark-mode .lp-title-card-logo img {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
 }
 
 .lp-sidebar-title {
@@ -981,45 +1176,776 @@ body.dark-mode .lp-bh-time {
 .lp-seller-note-block {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem;
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.07);
-    border-radius: 0.75rem;
+    gap: 1rem;
+    padding: 1.25rem 1.4rem;
+    background: var(--bg-glass);
+    border: var(--border-glass);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-glass);
+    backdrop-filter: blur(12px);
+    box-sizing: border-box;
 }
 
-.lp-seller-note-block i {
+.lp-seller-note-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--color-primary-start, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.lp-seller-note-icon i,
+.lp-seller-note-icon svg {
     width: 18px;
     height: 18px;
-    flex-shrink: 0;
-    margin-top: 2px;
-    color: #94a3b8;
+}
+
+.lp-seller-note-content {
+    flex: 1;
+    min-width: 0;
 }
 
 .lp-seller-note-label {
     display: block;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #94a3b8;
-    margin-bottom: 0.3rem;
+    color: #64748b;
+    margin-bottom: 0.35rem;
 }
 
 .lp-seller-note-text {
     margin: 0;
-    font-size: 0.88rem;
-    color: #334155;
-    line-height: 1.5;
+    font-size: 0.94rem;
+    color: #1e293b;
+    line-height: 1.55;
+    font-weight: 500;
 }
 
-body.dark-mode .lp-seller-note-block {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.07);
+body.dark-mode .lp-seller-note-icon {
+    background: rgba(37, 99, 235, 0.18);
+    color: #60a5fa;
+}
+
+body.dark-mode .lp-seller-note-label {
+    color: #94a3b8;
 }
 
 body.dark-mode .lp-seller-note-text {
+    color: #e2e8f0;
+}
+
+/* ── Seller Section & Accordion ─────────────────────────────────────────────*/
+.lp-seller-section {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+}
+
+.lp-seller-card--private,
+.lp-seller-accordion {
+    margin-bottom: 0 !important;
+    border-radius: 1.25rem !important;
+    overflow: hidden;
+}
+
+.lp-seller-trigger,
+.lp-seller-static-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.15rem 1.5rem;
+    gap: 1rem;
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.lp-seller-trigger {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.lp-seller-trigger:hover {
+    background: rgba(0, 0, 0, 0.015);
+}
+
+body.dark-mode .lp-seller-trigger:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.lp-seller-pill-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.lp-seller-pill-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(234, 88, 12, 0.25));
+    color: #ea580c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.lp-seller-pill-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.lp-seller-pill-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.lp-seller-pill-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+}
+
+body.dark-mode .lp-seller-pill-name {
+    color: #f8fafc;
+}
+
+.lp-seller-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.lp-seller-pill-badge i {
+    width: 13px;
+    height: 13px;
+}
+
+.lp-seller-pill-badge--dealer {
+    background: rgba(249, 115, 22, 0.1);
+    color: #ea580c;
+    border: 1px solid rgba(249, 115, 22, 0.22);
+}
+
+.lp-seller-pill-badge--private {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+body.dark-mode .lp-seller-pill-badge--dealer {
+    background: rgba(249, 115, 22, 0.18);
+    color: #fb923c;
+    border-color: rgba(249, 115, 22, 0.35);
+}
+
+body.dark-mode .lp-seller-pill-badge--private {
+    background: rgba(148, 163, 184, 0.15);
     color: #cbd5e1;
+    border-color: rgba(148, 163, 184, 0.25);
+}
+
+/* Dedicated contacts bar below header row */
+.lp-seller-contacts-bar {
+    padding: 0.85rem 1.5rem 0.95rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(0, 0, 0, 0.012);
+}
+
+body.dark-mode .lp-seller-contacts-bar {
+    border-top-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.lp-seller-pill-contacts {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    font-size: 0.86rem;
+}
+
+.lp-seller-pill-link,
+.lp-seller-pill-loc {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #475569;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+    white-space: nowrap;
+}
+
+.lp-seller-pill-link:hover {
+    color: #ea580c;
+}
+
+.lp-seller-pill-link i,
+.lp-seller-pill-loc i {
+    width: 15px;
+    height: 15px;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+body.dark-mode .lp-seller-pill-link,
+body.dark-mode .lp-seller-pill-loc {
+    color: #94a3b8;
+}
+
+body.dark-mode .lp-seller-pill-link:hover {
+    color: #fb923c;
+}
+
+.lp-seller-pill-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.lp-seller-more-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(249, 115, 22, 0.08);
+    color: #ea580c;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.lp-seller-trigger:hover .lp-seller-more-badge {
+    background: rgba(249, 115, 22, 0.15);
+}
+
+body.dark-mode .lp-seller-more-badge {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+/* Mobile seller pill & note enhancements */
+@media (max-width: 640px) {
+    .lp-seller-note-block {
+        padding: 1.1rem 1.2rem;
+        gap: 0.85rem;
+    }
+
+    .lp-seller-trigger,
+    .lp-seller-static-pill {
+        padding: 1rem 1.15rem !important;
+        gap: 0.75rem;
+    }
+
+    .lp-seller-pill-left {
+        gap: 0.85rem;
+    }
+
+    .lp-seller-pill-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .lp-seller-pill-info {
+        gap: 0.2rem;
+    }
+
+    .lp-seller-pill-name {
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+
+    .lp-seller-pill-badge {
+        padding: 0.15rem 0.55rem;
+        font-size: 0.7rem;
+    }
+
+    .lp-seller-more-badge {
+        display: none !important;
+    }
+
+    .lp-seller-trigger .adv-acc-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.04);
+        flex-shrink: 0;
+        transition: background 0.15s;
+    }
+
+    body.dark-mode .lp-seller-trigger .adv-acc-right {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .lp-seller-trigger .adv-acc-right .adv-acc-chevron {
+        width: 18px;
+        height: 18px;
+        color: #64748b;
+        transition: transform 0.25s ease;
+    }
+
+    body.dark-mode .lp-seller-trigger .adv-acc-right .adv-acc-chevron {
+        color: #94a3b8;
+    }
+
+    .lp-seller-contacts-bar {
+        padding: 0.75rem 1.15rem 0.85rem;
+    }
+
+    .lp-seller-pill-contacts {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.55rem;
+        font-size: 0.84rem;
+    }
+
+    .lp-seller-pill-link,
+    .lp-seller-pill-loc {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .lp-seller-pill-link span,
+    .lp-seller-pill-loc span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .lp-seller-pill-link[href^="tel"] {
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    body.dark-mode .lp-seller-pill-link[href^="tel"] {
+        color: #f1f5f9;
+    }
+
+    .lp-seller-pill-link[href^="tel"] i {
+        color: #ea580c;
+    }
+
+    .lp-report-text-btn {
+        padding: 0.45rem;
+        width: 34px;
+        height: 34px;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.04);
+        flex-shrink: 0;
+    }
+
+    body.dark-mode .lp-report-text-btn {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .lp-report-text-btn .lp-report-text {
+        display: none;
+    }
+}
+
+/* ── Dealership Dropdown Body ───────────────────────────────────────────────*/
+.lp-dealer-dropdown-body {
+    padding: 1.6rem 2rem !important;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+body.dark-mode .lp-dealer-dropdown-body {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.lp-dealer-action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.85rem;
+}
+
+.lp-dealer-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.9rem 1.15rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.lp-dealer-btn i {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.lp-dealer-btn-sub {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+}
+
+.lp-dealer-btn-main {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.lp-dealer-btn--call {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+
+.lp-dealer-btn--call:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.lp-dealer-btn--mail {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.25);
+}
+
+.lp-dealer-btn--mail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(249, 115, 22, 0.35);
+}
+
+.lp-dealer-btn--web {
+    background: rgba(0, 0, 0, 0.04);
+    color: #1e293b;
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.lp-dealer-btn--web:hover {
+    background: rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.lp-dealer-btn--stock {
+    background: rgba(59, 130, 246, 0.08);
+    color: #2563eb;
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.lp-dealer-btn--stock:hover {
+    background: rgba(59, 130, 246, 0.15);
+    transform: translateY(-2px);
+}
+
+body.dark-mode .lp-dealer-btn--web {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .lp-dealer-btn--web:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .lp-dealer-btn--stock {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* 3-column registration info grid */
+.lp-dealer-details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+    .lp-dealer-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.lp-dealer-col {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 1rem;
+    padding: 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+body.dark-mode .lp-dealer-col {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.lp-dealer-col-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #ea580c;
+}
+
+.lp-dealer-col-header i {
+    width: 16px;
+    height: 16px;
+}
+
+.lp-dealer-hours-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.84rem;
+}
+
+.lp-bh-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.06);
+}
+
+.lp-bh-row:last-child {
+    border-bottom: none;
+}
+
+.lp-bh-day {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.lp-bh-time {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.lp-bh-row.closed .lp-bh-time {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+body.dark-mode .lp-bh-day {
+    color: #94a3b8;
+}
+
+body.dark-mode .lp-bh-time {
+    color: #f1f5f9;
+}
+
+body.dark-mode .lp-bh-row.closed .lp-bh-time {
+    color: #64748b;
+}
+
+.lp-dealer-address-text {
+    margin: 0 0 0.75rem;
+    font-size: 0.88rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+body.dark-mode .lp-dealer-address-text {
+    color: #cbd5e1;
+}
+
+.lp-dealer-map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.lp-dealer-map-link:hover {
+    text-decoration: underline;
+}
+
+.lp-dealer-company-data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.84rem;
+}
+
+.lp-dealer-data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.lp-dealer-data-lbl {
+    color: #64748b;
+}
+
+.lp-dealer-data-val {
+    color: #0f172a;
+    text-align: right;
+}
+
+body.dark-mode .lp-dealer-data-lbl {
+    color: #94a3b8;
+}
+
+body.dark-mode .lp-dealer-data-val {
+    color: #f1f5f9;
+}
+
+.lp-dealer-verified-badge {
+    margin-top: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #059669;
+}
+
+.lp-dealer-verified-badge i {
+    width: 14px;
+    height: 14px;
+}
+
+/* About & Services */
+.lp-dealer-about-box {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 1rem;
+    padding: 1.15rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+body.dark-mode .lp-dealer-about-box {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.lp-dealer-desc-text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #334155;
+}
+
+body.dark-mode .lp-dealer-desc-text {
+    color: #cbd5e1;
+}
+
+.lp-dealer-services-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.lp-dealer-service-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(249, 115, 22, 0.08);
+    color: #ea580c;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.lp-dealer-service-chip i {
+    width: 13px;
+    height: 13px;
+}
+
+body.dark-mode .lp-dealer-service-chip {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+}
+
+.lp-dealer-dropdown-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .lp-dealer-dropdown-footer {
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.lp-report-text-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.5rem;
+    font-family: inherit;
+    transition: color 0.15s;
+}
+
+.lp-report-text-btn:hover {
+    color: #ef4444;
+}
+
+.lp-report-text-btn i {
+    width: 13px;
+    height: 13px;
 }
 
 .lp-seller-actions {

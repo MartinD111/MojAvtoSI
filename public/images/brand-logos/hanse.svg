@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12.47 -13.02 128.39 52.9" fill="currentColor">
+  <!-- Hanse red crowned heraldic sea monster -->
+  <g transform="translate(18, 25)">
+    <rect x="-10" y="-12" width="20" height="24" rx="3" fill="#dc2626"/>
+    <path d="M-4 -6h8v12h-8z" fill="#fff"/>
+  </g>
+  <text x="38" y="33" font-family="'Helvetica Neue', sans-serif" font-weight="900" font-size="19" letter-spacing="2" fill="currentColor">Hanse</text>
+</svg>

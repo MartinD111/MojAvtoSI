@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14.98 -9.01 155.19 52.32" fill="currentColor">
+  <!-- Cranchi historic Italian crown & flag -->
+  <g transform="translate(20, 24)">
+    <path d="M-12 8L-8 -8L0 0L8 -8L12 8Z" fill="#b91c1c"/>
+    <circle cx="0" cy="2" r="3" fill="#fff"/>
+  </g>
+  <text x="42" y="32" font-family="'Didot', 'Times New Roman', serif" font-weight="800" font-size="17" letter-spacing="2" fill="currentColor">CRANCHI</text>
+  <text x="44" y="41" font-family="sans-serif" font-weight="600" font-size="6" letter-spacing="3" fill="#b91c1c">YACHTS 1870</text>
+</svg>

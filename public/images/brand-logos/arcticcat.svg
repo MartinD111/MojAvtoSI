@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#15803d"/>
+  <!-- Cat head / claws -->
+  <path d="M30 40l10-18 6 8 6-8 10 18-16-4z" fill="#facc15"/>
+  <text x="75" y="34" font-family="'Arial Black', sans-serif" font-weight="900" font-size="10" fill="#fff">ARCTIC</text>
+  <text x="75" y="48" font-family="'Arial Black', sans-serif" font-weight="900" font-size="12" fill="#facc15">CAT</text>
+</svg>

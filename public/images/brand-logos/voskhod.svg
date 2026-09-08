@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#c2410c"/>
+  <!-- Running Hare of Voskhod / Kovrov -->
+  <path d="M32 50c4-8 12-12 20-8 4 2 8 6 12 4-2 6-8 10-14 10H32z" fill="#fff"/>
+  <text x="50" y="76" font-family="sans-serif" font-weight="900" font-size="9" fill="#fff" text-anchor="middle" letter-spacing="1">VOSKHOD</text>
+</svg>

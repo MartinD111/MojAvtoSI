@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 65">
+  <rect width="120" height="65" rx="12" fill="#1e1e1e"/>
+  <ellipse cx="60" cy="32" rx="52" ry="24" fill="none" stroke="#d4af37" stroke-width="2.5"/>
+  <text x="60" y="38" font-family="'Brush Script MT', cursive, serif" font-weight="bold" font-style="italic" font-size="22" fill="#d4af37" text-anchor="middle">Velocette</text>
+</svg>

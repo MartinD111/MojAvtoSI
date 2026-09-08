@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0284c7"/>
+  <path d="M34 26h18c8 0 14 4 14 11s-5 10-10 11c6 1 12 5 12 12s-6 13-16 13H34V26zm11 16h7c3 0 5-1.5 5-4s-2-4-5-4h-7v8zm0 18h8c3.5 0 6-1.5 6-4.5s-2.5-4.5-6-4.5h-8V60z" fill="#fff"/>
+  <text x="50" y="88" font-family="sans-serif" font-weight="900" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1">BERGAMONT</text>
+</svg>

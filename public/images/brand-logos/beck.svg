@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70">
+  <ellipse cx="60" cy="35" rx="56" ry="30" fill="#14532d" stroke="#e2e8f0" stroke-width="2.5"/>
+  <ellipse cx="60" cy="35" rx="52" ry="26" fill="none" stroke="#facc15" stroke-width="1"/>
+  <text x="60" y="44" font-family="'Brush Script MT', 'Dancing Script', cursive, serif" font-weight="bold" font-size="30" fill="#ffffff" text-anchor="middle" font-style="italic">Beck</text>
+</svg>

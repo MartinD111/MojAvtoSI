@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#0369a1"/>
+  <text x="55" y="36" font-family="'Arial Black', sans-serif" font-weight="900" font-size="13" fill="#fff" text-anchor="middle">METRO</text>
+  <text x="55" y="48" font-family="sans-serif" font-weight="800" font-size="7" fill="#7dd3fc" text-anchor="middle" letter-spacing="1">MOBILITY</text>
+</svg>

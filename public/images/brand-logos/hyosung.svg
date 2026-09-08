@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 65">
+  <rect width="120" height="65" rx="10" fill="#dc2626"/>
+  <!-- Winged modern H -->
+  <path d="M26 20h10v10h12V20h10v26H48V36H36v10H26V20z" fill="#fff"/>
+  <text x="82" y="38" font-family="'Arial Black', sans-serif" font-weight="900" font-size="14" fill="#fff" text-anchor="middle">HYOSUNG</text>
+  <text x="82" y="50" font-family="sans-serif" font-weight="700" font-size="8" fill="#fee2e2" text-anchor="middle">MOTORS</text>
+</svg>

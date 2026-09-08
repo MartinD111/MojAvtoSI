@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#0369a1"/>
+  <text x="55" y="38" font-family="'Arial Black', sans-serif" font-weight="900" font-style="italic" font-size="15" fill="#fff" text-anchor="middle">CORRATEC</text>
+  <path d="M25 44c20 6 40 6 60 0" stroke="#38bdf8" stroke-width="3" fill="none"/>
+</svg>

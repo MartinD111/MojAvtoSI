@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#15803d"/>
+  <!-- Merida green M wave -->
+  <path d="M22 68V32l28 28 28-28v36h-8V44L50 64 30 44v24z" fill="#fff"/>
+</svg>

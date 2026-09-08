@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-23.48 -15.02 180.89 53.02" fill="currentColor">
+  <!-- Bayliner dual curved wave rings -->
+  <g transform="translate(24, 25)">
+    <circle cx="-6" cy="0" r="14" fill="none" stroke="#0284c7" stroke-width="4"/>
+    <circle cx="6" cy="0" r="14" fill="none" stroke="#0369a1" stroke-width="4"/>
+  </g>
+  <text x="52" y="32" font-family="'Montserrat', sans-serif" font-weight="800" font-size="16" letter-spacing="1.5" fill="currentColor">BAYLINER</text>
+</svg>

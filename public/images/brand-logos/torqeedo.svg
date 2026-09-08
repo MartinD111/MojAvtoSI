@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.85 -15.04 148.34 54.04" fill="currentColor">
+  <!-- Torqeedo iconic orange electric swirl -->
+  <g transform="translate(20, 25)">
+    <circle cx="0" cy="0" r="14" fill="#f97316"/>
+    <circle cx="0" cy="0" r="6" fill="#fff"/>
+    <path d="M-10 0A10 10 0 0 1 0 -10L0 -6A6 6 0 0 0 -6 0Z" fill="#1e293b"/>
+  </g>
+  <text x="42" y="33" font-family="'Helvetica Neue', sans-serif" font-weight="900" font-size="16" letter-spacing="1" fill="currentColor">torqeedo</text>
+</svg>

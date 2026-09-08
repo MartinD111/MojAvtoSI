@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#15803d"/>
+  <circle cx="50" cy="50" r="32" fill="none" stroke="#fff" stroke-width="6"/>
+  <circle cx="50" cy="50" r="14" fill="#fff"/>
+  <text x="50" y="86" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="2">SILENCE</text>
+</svg>

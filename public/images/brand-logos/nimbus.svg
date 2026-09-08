@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.68 -14.99 139.37 51.66" fill="currentColor">
+  <!-- Nimbus crown and anchor -->
+  <g transform="translate(18, 25)">
+    <circle cx="0" cy="0" r="14" fill="#0f172a"/>
+    <path d="M-6 -4h12l-2 8h-8z" fill="#c49a45"/>
+  </g>
+  <text x="40" y="32" font-family="'Didot', serif" font-weight="900" font-size="17" letter-spacing="2" fill="currentColor">NIMBUS</text>
+</svg>

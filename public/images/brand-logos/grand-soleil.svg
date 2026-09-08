@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-17.75 -15.07 194.79 55.62" fill="currentColor">
+  <!-- Grand Soleil sun emblem -->
+  <g transform="translate(18, 25)">
+    <circle cx="0" cy="0" r="7" fill="#f59e0b"/>
+    <path d="M0 -14v4M0 10v4M-14 0h4M10 0h4M-10 -10l3 3M7 7l3 3M-10 10l3 -3M7 -7l3 -3" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <text x="40" y="27" font-family="'Didot', serif" font-weight="800" font-size="12" letter-spacing="2" fill="currentColor">GRAND SOLEIL</text>
+  <text x="41" y="38" font-family="sans-serif" font-weight="600" font-size="7" letter-spacing="3" fill="#64748b">CANTIERE DEL PARDO</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 65">
+  <rect width="120" height="65" rx="10" fill="#15803d"/>
+  <text x="60" y="38" font-family="'Arial Black', sans-serif" font-weight="900" font-size="12" fill="#fff" text-anchor="middle" letter-spacing="1">BROMPTON</text>
+  <circle cx="36" cy="48" r="4" fill="#fff"/>
+  <circle cx="84" cy="48" r="4" fill="#fff"/>
+  <path d="M36 48h48" stroke="#fff" stroke-width="2"/>
+</svg>

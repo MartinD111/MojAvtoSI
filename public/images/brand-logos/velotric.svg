@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#111"/>
+  <path d="M30 30l20 32 20-32h-10L50 48 40 30z" fill="#06b6d4"/>
+  <text x="50" y="82" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="1.5">VELOTRIC</text>
+</svg>

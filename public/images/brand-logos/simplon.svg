@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#991b1b"/>
+  <!-- Mountain S -->
+  <polygon points="50,22 72,60 28,60" fill="none" stroke="#fff" stroke-width="5"/>
+  <text x="50" y="82" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="2">SIMPLON</text>
+</svg>

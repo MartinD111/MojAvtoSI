@@ -1,4 +1,4 @@
-﻿// Sample vessel listings — MojaNavtika (demo/fallback data, mirrors sampleCars shape
+// Sample vessel listings — MojaNavtika (demo/fallback data, mirrors sampleCars shape
 // plus vessel-specific fields: lengthM, beamM, draftM, engineHours, hullMaterial,
 // engineMountType, cabins, berths, ceCategory, listingType/isRental, rentalPricing).
 
@@ -14,6 +14,31 @@ export const sampleBoats = [
         seller: 'Adria Marine',
         sellerImage: 'https://i.pravatar.cc/150?u=adriamarine',
         sellerType: 'dealer',
+        contact: {
+            phone: '+386 5 674 82 00',
+            email: 'info@adria-marine.si'
+        },
+        dealerDetails: {
+            companyName: 'Adria Marine d.o.o., Marina Portorož',
+            taxNumber: 'SI 41928374',
+            regNumber: '5829104000',
+            address: 'Cesta solinarjev 8, 6320 Portorož',
+            phone: '+386 5 674 82 00',
+            email: 'info@adria-marine.si',
+            website: 'https://www.adria-marine.si',
+            authorizedBrands: ['Beneteau', 'Jeanneau', 'Bavaria'],
+            services: ['Prodaja novih in rabljenih plovil', 'Zimovanje in hramba plovil', 'Pooblaščeni navtični servis', 'Prevoz plovil'],
+            description: 'Vodilni navtični center na slovenski obali. Uradni zastopnik in serviser za vrhunska motorna plovila in jadrnice.',
+            workingHours: {
+                mon: { from: '08:00', to: '17:00' },
+                tue: { from: '08:00', to: '17:00' },
+                wed: { from: '08:00', to: '17:00' },
+                thu: { from: '08:00', to: '17:00' },
+                fri: { from: '08:00', to: '17:00' },
+                sat: { from: '08:00', to: '13:00' },
+                sun: null
+            }
+        },
         category: 'colni',
         subcategory: 'motorni-coln',
         bodyType: 'KabinskiColn',

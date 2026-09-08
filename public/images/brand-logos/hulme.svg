@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10.6 10.36 72.8 85.28">
+  <path d="M18 12 H82 V58 C82 76 50 94 50 94 C50 94 18 76 18 58 Z" fill="#09090b" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="50" y="26" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="8.5" fill="#ffffff" text-anchor="middle" letter-spacing="2">HULME</text>
+  <path d="M68 44 C62 38 52 38 46 42 C38 40 32 46 32 54 C32 64 42 70 52 70 C60 70 66 64 68 56 Z" fill="#f8fafc"/>
+  <path d="M32 50 C24 48 16 46 12 44" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="44" cy="44" r="2" fill="#09090b"/>
+</svg>

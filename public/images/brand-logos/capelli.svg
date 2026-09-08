@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.84 -15.02 147.75 52.97" fill="currentColor">
+  <g transform="translate(18, 25)">
+    <circle cx="0" cy="0" r="14" fill="#0f172a"/>
+    <path d="M-6 -8C2 -8 8 -2 8 6" stroke="#e11d48" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <circle cx="-2" cy="2" r="3" fill="#fff"/>
+  </g>
+  <text x="42" y="32" font-family="'Montserrat', sans-serif" font-weight="800" font-size="16" letter-spacing="1.5" fill="currentColor">CAPELLI</text>
+</svg>

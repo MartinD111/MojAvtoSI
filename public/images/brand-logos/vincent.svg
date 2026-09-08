@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 65">
+  <rect width="120" height="65" rx="12" fill="#000"/>
+  <!-- Vincent HRD ribbon -->
+  <path d="M15 32h90" stroke="#f59e0b" stroke-width="2"/>
+  <text x="60" y="28" font-family="serif" font-weight="900" font-size="16" fill="#f59e0b" text-anchor="middle" letter-spacing="2">VINCENT</text>
+  <text x="60" y="48" font-family="sans-serif" font-weight="900" font-size="11" fill="#fff" text-anchor="middle" letter-spacing="4">HRD</text>
+</svg>

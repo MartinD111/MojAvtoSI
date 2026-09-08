@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 65">
+  <rect width="120" height="65" rx="12" fill="#111"/>
+  <path d="M20 20h22v16H32v10h12l4 4H20V20z" fill="#e11d48"/>
+  <text x="75" y="38" font-family="'Arial Black', sans-serif" font-weight="900" font-size="16" fill="#fff" text-anchor="middle">QJMOTOR</text>
+</svg>

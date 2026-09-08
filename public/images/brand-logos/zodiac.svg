@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.83 -15.05 147.35 54.68" fill="currentColor">
+  <!-- Zodiac iconic red bullseye symbol -->
+  <g transform="translate(20, 25)">
+    <circle cx="0" cy="0" r="14" fill="#dc2626"/>
+    <circle cx="0" cy="0" r="9" fill="#fff"/>
+    <circle cx="0" cy="0" r="4" fill="#dc2626"/>
+  </g>
+  <text x="42" y="33" font-family="'Arial Black', sans-serif" font-weight="900" font-size="18" letter-spacing="1.5" fill="currentColor">ZODIAC</text>
+</svg>

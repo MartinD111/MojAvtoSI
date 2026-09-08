@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-19.07 -11.93 159.85 48.17" fill="currentColor">
+  <!-- Sunseeker double interlocking S -->
+  <g transform="translate(18, 25)">
+    <circle cx="-5" cy="0" r="11" fill="none" stroke="#0f172a" stroke-width="3"/>
+    <circle cx="5" cy="0" r="11" fill="none" stroke="#0f172a" stroke-width="3"/>
+  </g>
+  <text x="42" y="32" font-family="'Century Gothic', sans-serif" font-weight="800" font-size="15" letter-spacing="2" fill="currentColor">SUNSEEKER</text>
+</svg>

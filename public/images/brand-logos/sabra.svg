@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#1e40af"/>
+  <circle cx="50" cy="50" r="43" fill="#ffffff"/>
+  <circle cx="50" cy="50" r="38" fill="#1e3a8a"/>
+  <ellipse cx="50" cy="54" rx="8" ry="14" fill="#65a30d"/>
+  <ellipse cx="38" cy="46" rx="7" ry="10" transform="rotate(-25 38 46)" fill="#84cc16"/>
+  <ellipse cx="62" cy="46" rx="7" ry="10" transform="rotate(25 62 46)" fill="#84cc16"/>
+  <ellipse cx="50" cy="36" rx="6" ry="8" fill="#a3e635"/>
+  <circle cx="34" cy="38" r="2" fill="#f59e0b"/>
+  <circle cx="66" cy="38" r="2" fill="#f59e0b"/>
+  <circle cx="50" cy="28" r="2.5" fill="#f59e0b"/>
+  <text x="50" y="80" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="9" fill="#ffffff" text-anchor="middle" letter-spacing="3">SABRA</text>
+</svg>

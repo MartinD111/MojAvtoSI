@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#1e293b"/>
+  <!-- Winged M -->
+  <path d="M18 45c10-10 22-8 32 0 10-8 22-10 32 0-8 12-20 10-32 2-12 8-24 10-32-2z" fill="#f59e0b"/>
+  <text x="50" y="52" font-family="'Times New Roman', serif" font-weight="bold" font-size="28" fill="#fff" text-anchor="middle">M</text>
+  <text x="50" y="78" font-family="sans-serif" font-weight="800" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1">MATCHLESS</text>
+</svg>

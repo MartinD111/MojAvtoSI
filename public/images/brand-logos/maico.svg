@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="12" fill="#dc2626"/>
+  <ellipse cx="55" cy="32" rx="46" ry="22" fill="#fff"/>
+  <text x="55" y="39" font-family="'Arial Black', Impact, sans-serif" font-weight="900" font-style="italic" font-size="22" fill="#dc2626" text-anchor="middle">MAICO</text>
+</svg>

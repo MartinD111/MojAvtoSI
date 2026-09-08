@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.19 -15.06 166.02 55.34" fill="currentColor">
+  <!-- Volvo Penta iron mark -->
+  <g transform="translate(20, 25)">
+    <circle cx="0" cy="0" r="13" fill="none" stroke="#003057" stroke-width="3"/>
+    <path d="M8 -8l6 -6M9 -14h5v5" stroke="#003057" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <text x="42" y="27" font-family="'Century Gothic', sans-serif" font-weight="900" font-size="13" letter-spacing="1.5" fill="currentColor">VOLVO PENTA</text>
+  <text x="43" y="38" font-family="sans-serif" font-weight="700" font-size="6" letter-spacing="3" fill="#003057">MARINE ENGINES</text>
+</svg>

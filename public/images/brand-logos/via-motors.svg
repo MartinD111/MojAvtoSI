@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70">
+  <rect width="120" height="70" rx="10" fill="#0f172a"/>
+  <polygon points="26,16 42,16 60,48 78,16 94,16 68,58 52,58" fill="#38bdf8"/>
+  <polygon points="46,16 56,16 60,24 64,16 74,16 60,38" fill="#4ade80"/>
+  <text x="60" y="66" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="6.5" fill="#f8fafc" text-anchor="middle" letter-spacing="2">VIA MOTORS</text>
+</svg>

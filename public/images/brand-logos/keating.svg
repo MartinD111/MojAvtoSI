@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70">
+  <rect width="120" height="70" rx="10" fill="#0b0f19"/>
+  <path d="M12 30 C28 20 45 22 55 35 C42 36 26 38 12 44 Z" fill="#cbd5e1"/>
+  <path d="M108 30 C92 20 75 22 65 35 C78 36 94 38 108 44 Z" fill="#cbd5e1"/>
+  <path d="M48 20 H72 V48 C72 58 60 66 60 66 C60 66 48 58 48 48 Z" fill="#7f1d1d" stroke="#f59e0b" stroke-width="1.5"/>
+  <polygon points="60,26 64,36 70,36 65,40 67,48 60,43 53,48 55,40 50,36 56,36" fill="#fbbf24"/>
+  <text x="60" y="60" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="5.5" fill="#f8fafc" text-anchor="middle" letter-spacing="1.5">KEATING</text>
+</svg>

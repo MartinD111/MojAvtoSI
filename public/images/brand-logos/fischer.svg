@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0f172a"/>
+  <path d="M32 28h36v8H42v10h22v8H42v18H32z" fill="#ef4444"/>
+  <text x="50" y="84" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="2">FISCHER</text>
+</svg>

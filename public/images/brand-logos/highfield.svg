@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12.82 -13.06 146.59 55.35" fill="currentColor">
+  <!-- Highfield shield with mountain peaks -->
+  <g transform="translate(18, 25)">
+    <path d="M-10 -12h20l-10 24z" fill="#dc2626"/>
+    <path d="M-6 -8h12l-6 15z" fill="#0f172a"/>
+  </g>
+  <text x="38" y="28" font-family="'Arial Black', sans-serif" font-weight="900" font-size="13" letter-spacing="1.5" fill="currentColor">HIGHFIELD</text>
+  <text x="39" y="39" font-family="sans-serif" font-weight="800" font-size="7" letter-spacing="3" fill="#dc2626">BOATS</text>
+</svg>

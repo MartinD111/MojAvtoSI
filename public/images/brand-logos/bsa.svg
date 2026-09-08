@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#c00"/>
+  <circle cx="50" cy="50" r="40" fill="#fff"/>
+  <path d="M50 18v64M32 30l36 40M68 30L32 70" stroke="#c00" stroke-width="6" stroke-linecap="round"/>
+  <text x="50" y="58" font-family="sans-serif" font-weight="900" font-size="28" fill="#111" text-anchor="middle">BSA</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#15803d"/>
+  <circle cx="50" cy="50" r="41" fill="#166534"/>
+  <path d="M50 20 C66 20 74 34 70 52 C66 70 50 76 34 76 C28 60 34 32 50 20 Z" fill="#86efac"/>
+  <path d="M38 72 C46 58 54 44 64 32" stroke="#166534" stroke-width="3" stroke-linecap="round"/>
+  <text x="50" y="90" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="7.5" fill="#f8fafc" text-anchor="middle" letter-spacing="1">SUNGREEN</text>
+</svg>

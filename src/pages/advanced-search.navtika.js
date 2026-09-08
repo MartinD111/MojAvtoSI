@@ -466,21 +466,52 @@ function loadBrands(catSlug) {
 
 // ── Accordions (reuse the existing styling) ──────────────────────────────────────
 function bindAccordions() {
-    document.querySelectorAll('.adv-acc-trigger').forEach(trig => {
-        trig.addEventListener('click', () => {
-            const body = trig.closest('.adv-accordion')?.querySelector('.adv-acc-body');
+    const accordions = document.querySelectorAll('.adv-accordion');
+    accordions.forEach(acc => {
+        const trig = acc.querySelector('.adv-acc-trigger');
+        if (!trig) return;
+
+        if (trig.dataset.accordionBound) return;
+        trig.dataset.accordionBound = 'true';
+
+        const isPersistent = acc.classList.contains('persistent-open');
+        const body = acc.querySelector('.adv-acc-body');
+
+        const toggleAccordion = () => {
+            if (isPersistent) return;
             const open = trig.getAttribute('aria-expanded') === 'true';
-            trig.setAttribute('aria-expanded', String(!open));
-            if (body) body.style.display = open ? 'none' : 'flex';
+            const ns = !open;
+            trig.setAttribute('aria-expanded', String(ns));
+            acc.setAttribute('aria-expanded', String(ns));
+            if (body) body.style.display = ns ? 'flex' : 'none';
+        };
+
+        trig.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleAccordion();
         });
+
+        const header = acc.querySelector('.adv-acc-header');
+        if (header && !isPersistent) {
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', (e) => {
+                if (e.target.closest('.remember-toggle')) return;
+                if (e.target.closest('.adv-acc-trigger')) return;
+                toggleAccordion();
+            });
+        }
     });
 
     // Handle "Zapomni si" toggles
     document.querySelectorAll('.remember-check').forEach(chk => {
         if (chk.id === 'rentalToggleInput' || chk.id === 'searchProdajaToggle' || chk.id === 'searchNajemToggle') return; // skip rental/sale toggle
+        if (chk.dataset.rememberBound) return;
+        chk.dataset.rememberBound = 'true';
         const cat = chk.getAttribute('data-category');
-        if (localStorage.getItem(`remember_${cat}`) === 'true') chk.checked = true;
-        chk.addEventListener('change', () => localStorage.setItem(`remember_${cat}`, chk.checked));
+        if (cat && localStorage.getItem(`remember_${cat}`) === 'true') chk.checked = true;
+        chk.addEventListener('change', () => {
+            if (cat) localStorage.setItem(`remember_${cat}`, chk.checked);
+        });
     });
 }
 

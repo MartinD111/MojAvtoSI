@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#dc2626"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="3"/>
+  <path d="M32 28h18c8 0 14 4 14 11s-5 11-12 11l14 18H52L40 52h-8v16H22V28h10zm0 16h6c3.5 0 5-1.5 5-4s-1.5-4-5-4h-6v8z" fill="#fff"/>
+  <text x="50" y="84" font-family="sans-serif" font-weight="900" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1">ROMET</text>
+</svg>

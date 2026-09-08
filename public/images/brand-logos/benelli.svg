@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#005a36"/>
+  <circle cx="50" cy="50" r="42" fill="#fff"/>
+  <circle cx="50" cy="50" r="38" fill="#005a36"/>
+  <path d="M35 32l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6zM50 26l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6zM65 32l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6z" fill="#ffc72c"/>
+  <text x="50" y="68" font-family="sans-serif" font-weight="900" font-size="13" fill="#fff" text-anchor="middle" letter-spacing="1">Benelli</text>
+</svg>

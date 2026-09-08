@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#006633"/>
+  <circle cx="50" cy="50" r="40" fill="#fff"/>
+  <path d="M50 14A36 36 0 0 1 86 50H50V14zM14 50a36 36 0 0 1 36-36v36H14z" fill="#006633"/>
+  <circle cx="50" cy="50" r="22" fill="#fff"/>
+  <text x="50" y="56" font-family="sans-serif" font-weight="900" font-size="13" fill="#006633" text-anchor="middle">PUCH</text>
+</svg>

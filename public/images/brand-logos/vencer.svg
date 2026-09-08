@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70">
+  <rect width="120" height="70" rx="12" fill="#0f172a"/>
+  <path d="M30 20 L60 52 L90 20 L76 20 L60 38 L44 20 Z" fill="#f8fafc"/>
+  <polygon points="60,38 76,20 68,20 60,30" fill="#94a3b8"/>
+  <polygon points="60,38 44,20 52,20 60,30" fill="#cbd5e1"/>
+  <text x="60" y="63" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="7" fill="#cbd5e1" text-anchor="middle" letter-spacing="3">VENCER</text>
+</svg>

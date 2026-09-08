@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.9 -0.79 150.68 41.02" fill="currentColor">
+  <!-- 4 flags / stepped stripes -->
+  <g transform="translate(14, 14)">
+    <rect x="0" y="0" width="7" height="22" fill="#dc2626"/>
+    <rect x="9" y="4" width="7" height="18" fill="#1e3a8a"/>
+    <rect x="18" y="8" width="7" height="14" fill="#0284c7"/>
+  </g>
+  <text x="46" y="27" font-family="'Arial Black', sans-serif" font-weight="900" font-size="13" letter-spacing="0.5" fill="currentColor">FOUR WINNS</text>
+  <text x="47" y="38" font-family="sans-serif" font-weight="700" font-size="7" letter-spacing="2" fill="#dc2626">BOATS</text>
+</svg>

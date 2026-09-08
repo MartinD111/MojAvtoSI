@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-15.02 -12.44 157.18 48.8" fill="currentColor">
+  <!-- Princess Yachts crown -->
+  <g transform="translate(20, 24)">
+    <path d="M-12 6L-8 -8L0 -1L8 -8L12 6Z" fill="#1e3a8a"/>
+    <circle cx="-8" cy="-10" r="1.5" fill="#d97706"/>
+    <circle cx="0" cy="-3" r="1.5" fill="#d97706"/>
+    <circle cx="8" cy="-10" r="1.5" fill="#d97706"/>
+  </g>
+  <text x="40" y="32" font-family="'Cinzel', 'Times New Roman', serif" font-weight="700" font-size="16" letter-spacing="2.5" fill="currentColor">PRINCESS</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-17.22 -14.99 167.56 51.4" fill="currentColor">
+  <!-- Jeanneau iconic compass rose with dynamic three-pointed star -->
+  <g transform="translate(20, 25)">
+    <circle cx="0" cy="0" r="14" fill="none" stroke="#003366" stroke-width="2"/>
+    <path d="M0 -14L4 0L14 4L0 0L-14 -4L0 0Z" fill="#dc2626"/>
+    <path d="M0 14L-4 0L-14 -4L0 0L14 4L0 0Z" fill="#003366"/>
+  </g>
+  <text x="44" y="32" font-family="'Cinzel', 'Trajan', serif" font-weight="800" font-size="16" letter-spacing="2" fill="currentColor">JEANNEAU</text>
+</svg>

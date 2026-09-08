@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#1e293b"/>
+  <!-- Kalkhoff bird / K -->
+  <path d="M32 26v48h10V54l18 20h14L52 48l20-22H58L42 42V26H32z" fill="#38bdf8"/>
+  <text x="50" y="86" font-family="sans-serif" font-weight="900" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1.5">KALKHOFF</text>
+</svg>

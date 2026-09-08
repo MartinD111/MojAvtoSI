@@ -297,40 +297,54 @@ function bindStickyMobileBar() {
 }
 
 function bindAccordions() {
-    const triggers = document.querySelectorAll('.adv-acc-trigger');
-    triggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-            const body = trigger.closest('.adv-accordion').querySelector('.adv-acc-body');
+    const accordions = document.querySelectorAll('.adv-accordion');
+    accordions.forEach(acc => {
+        const trigger = acc.querySelector('.adv-acc-trigger');
+        if (!trigger) return;
+
+        // Prevent duplicate listener registration on HMR or re-initialization
+        if (trigger.dataset.accordionBound) return;
+        trigger.dataset.accordionBound = 'true';
+
+        const isPersistent = acc.classList.contains('persistent-open');
+        const body = acc.querySelector('.adv-acc-body');
+
+        const toggleAccordion = () => {
+            if (isPersistent) return;
             const isOpen = trigger.getAttribute('aria-expanded') === 'true';
-            if (!isOpen) {
-                triggers.forEach(o => {
-                    const acc = o.closest('.adv-accordion');
-                    if (o !== trigger && !acc.classList.contains('persistent-open')) {
-                        o.setAttribute('aria-expanded', 'false');
-                        const b = acc.querySelector('.adv-acc-body');
-                        if (b) b.style.display = 'none';
-                    }
-                });
-            }
             const ns = !isOpen;
             trigger.setAttribute('aria-expanded', String(ns));
-            if (body) body.style.display = ns ? 'flex' : 'none';
-            // Auto-scroll: lock the accordion header to top of viewport on open
-            if (ns) {
-                requestAnimationFrame(() => {
-                    const header = trigger.closest('.adv-accordion').querySelector('.adv-acc-header');
-                    if (header) {
-                        const top = header.getBoundingClientRect().top + window.scrollY - 12;
-                        window.scrollTo({ top, behavior: 'smooth' });
-                    }
-                });
+            acc.setAttribute('aria-expanded', String(ns));
+            if (body) {
+                body.style.display = ns ? 'flex' : 'none';
             }
+        };
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleAccordion();
         });
+
+        // Make the entire header row clickable (excluding remember toggle)
+        const header = acc.querySelector('.adv-acc-header');
+        if (header && !isPersistent) {
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', (e) => {
+                if (e.target.closest('.remember-toggle')) return;
+                if (e.target.closest('.adv-acc-trigger')) return; // already handled by trigger
+                toggleAccordion();
+            });
+        }
     });
+
     document.querySelectorAll('.remember-check').forEach(chk => {
+        if (chk.dataset.rememberBound) return;
+        chk.dataset.rememberBound = 'true';
         const cat = chk.getAttribute('data-category');
-        if (localStorage.getItem(`remember_${cat}`) === 'true') chk.checked = true;
-        chk.addEventListener('change', () => localStorage.setItem(`remember_${cat}`, chk.checked));
+        if (cat && localStorage.getItem(`remember_${cat}`) === 'true') chk.checked = true;
+        chk.addEventListener('change', () => {
+            if (cat) localStorage.setItem(`remember_${cat}`, chk.checked);
+        });
     });
 }
 

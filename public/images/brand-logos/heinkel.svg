@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#dc2626"/>
+  <!-- Winged H -->
+  <path d="M22 50c12-10 24-8 28 0-4 10-16 12-28 0zm56 0c-12-10-24-8-28 0 4 10 16 12 28 0z" fill="#fff"/>
+  <text x="50" y="56" font-family="'Arial Black', sans-serif" font-weight="900" font-size="20" fill="#fff" text-anchor="middle">H</text>
+  <text x="50" y="82" font-family="sans-serif" font-weight="900" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1">HEINKEL</text>
+</svg>

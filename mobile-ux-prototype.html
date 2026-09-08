@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="sl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AutoHub — mobilni UX prototip</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #68748a;
+      --line: #dce5f2;
+      --bg: #edf6ff;
+      --card: #ffffff;
+      --primary: #4169e8;
+      --primary-dark: #2f53cf;
+      --orange: #ee7b31;
+      --green: #108967;
+      --danger: #d64c4c;
+      --shadow: 0 12px 30px rgba(38, 73, 120, .12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: #dce9f7;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .phone {
+      width: min(100%, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--bg);
+      overflow: hidden;
+      position: relative;
+    }
+    .topbar {
+      height: 64px;
+      padding: 11px 16px;
+      background: rgba(255,255,255,.92);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(220,229,242,.75);
+      backdrop-filter: blur(12px);
+    }
+    .brand { font-size: 22px; font-weight: 900; letter-spacing: -.06em; }
+    .brand span { color: var(--primary); }
+    .round-button, .icon-button {
+      width: 42px; height: 42px; border: 0; background: #f3f6fb; color: var(--ink);
+      display: inline-grid; place-items: center; border-radius: 50%; font-size: 19px;
+    }
+    .screen { display: none; padding: 16px 16px 96px; }
+    .screen.active { display: block; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 24px; letter-spacing: -.04em; margin-bottom: 4px; }
+    h2 { font-size: 18px; letter-spacing: -.025em; }
+    .subtle { color: var(--muted); font-size: 14px; }
+    .search {
+      display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line);
+      padding: 8px 8px 8px 14px; border-radius: 16px; box-shadow: var(--shadow); margin: 10px 0 12px;
+    }
+    .search input { border: 0; background: transparent; min-width: 0; flex: 1; outline: 0; color: var(--ink); }
+    .search button { border: 0; color: #fff; background: var(--primary); height: 40px; width: 42px; border-radius: 12px; font-size: 18px; }
+    .toolbar { display: grid; grid-template-columns: 1fr 1fr 44px; gap: 8px; margin-bottom: 14px; }
+    .toolbar button, .segmented button, .filter-chip {
+      min-height: 44px; border-radius: 13px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-weight: 750;
+    }
+    .toolbar .filter { color: var(--primary-dark); border-color: #becdfb; }
+    .filter-count { display: inline-grid; place-items: center; margin-left: 4px; width: 21px; height: 21px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 12px; }
+    .active-filters { display: flex; gap: 8px; overflow: auto; scrollbar-width: none; margin: 0 -16px 14px; padding: 0 16px; }
+    .filter-chip { min-height: 34px; white-space: nowrap; padding: 0 11px; font-size: 13px; color: #385071; }
+    .filter-chip b { color: var(--primary); margin-left: 4px; }
+    .results-heading { display: flex; align-items: baseline; justify-content: space-between; margin: 4px 0 10px; }
+    .results-heading h1 { margin: 0; }
+    .results-heading .subtle { font-weight: 700; }
+    .listing {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin: 12px 0;
+      box-shadow: 0 7px 16px rgba(40, 70, 106, .06); position: relative;
+    }
+    .listing-main { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 12px; padding: 10px; }
+    .listing img { width: 132px; height: 108px; display: block; object-fit: cover; border-radius: 12px; }
+    .save { position: absolute; top: 16px; right: 16px; border: 0; background: rgba(255,255,255,.92); border-radius: 50%; width: 34px; height: 34px; }
+    .badge { display: inline-block; background: #eef2ff; color: var(--primary-dark); padding: 3px 7px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+    .listing h2 { font-size: 16px; line-height: 1.18; margin: 5px 32px 5px 0; }
+    .price { color: var(--primary-dark); font-size: 20px; font-weight: 900; letter-spacing: -.035em; }
+    .facts { color: #536179; font-size: 13px; line-height: 1.45; }
+    .listing-footer { display: flex; justify-content: space-between; gap: 8px; padding: 9px 12px; border-top: 1px solid #edf1f7; color: var(--muted); font-size: 12px; }
+    .auction-ribbon { display: flex; justify-content: space-between; align-items: center; background: #fff5ef; color: #a84813; padding: 8px 12px; font-size: 13px; font-weight: 800; }
+    .auction-ribbon .timer { color: var(--danger); }
+    .bottom-nav {
+      position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 430px); z-index: 12;
+      height: 72px; display: grid; grid-template-columns: repeat(3, 1fr); padding: 7px 12px env(safe-area-inset-bottom);
+      background: rgba(255,255,255,.96); border-top: 1px solid var(--line); backdrop-filter: blur(12px);
+    }
+    .bottom-nav button { border: 0; background: transparent; color: #7a879a; font-size: 11px; font-weight: 750; }
+    .bottom-nav button.active { color: var(--primary); }
+    .bottom-nav span { display: block; font-size: 20px; margin-bottom: 2px; }
+    .sheet-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,29,49,.42); z-index: 20; }
+    .sheet-backdrop.open { display: block; }
+    .filter-sheet {
+      position: absolute; inset: auto 0 0; max-height: 91%; padding: 16px 16px 94px; overflow: auto; background: #f7fbff;
+      border-radius: 24px 24px 0 0; transform: translateY(102%); transition: transform .25s ease;
+    }
+    .sheet-backdrop.open .filter-sheet { transform: translateY(0); }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .sheet-head h2 { margin: 0; }
+    .text-button { background: none; border: 0; color: var(--primary-dark); font-weight: 800; padding: 8px; }
+    .filter-group { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin: 10px 0; }
+    .filter-group h3 { margin: 0 0 11px; font-size: 15px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    label { display: grid; gap: 6px; color: #536179; font-size: 12px; font-weight: 700; }
+    select, .fake-input { width: 100%; min-height: 44px; border: 1px solid var(--line); background: #fff; border-radius: 11px; color: var(--ink); padding: 0 10px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pills button { min-height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: #4b5d77; font-weight: 700; }
+    .pills button.selected { background: #edf1ff; color: var(--primary-dark); border-color: #b9c8fb; }
+    .sheet-action { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 16px max(12px, env(safe-area-inset-bottom)); background: rgba(255,255,255,.96); border-top: 1px solid var(--line); }
+    .primary { width: 100%; min-height: 52px; border: 0; border-radius: 14px; background: var(--primary); color: #fff; font-weight: 850; font-size: 16px; }
+    .detail-hero { margin: -16px -16px 16px; position: relative; background: #0e1422; }
+    .detail-hero img { display: block; width: 100%; height: 280px; object-fit: cover; }
+    .hero-actions { position: absolute; inset: 12px 12px auto; display: flex; justify-content: space-between; }
+    .hero-actions button { background: rgba(20,30,48,.74); color: #fff; border: 0; width: 42px; height: 42px; border-radius: 50%; font-size: 18px; }
+    .photo-count { position: absolute; right: 14px; bottom: 13px; background: rgba(15,24,39,.8); color: #fff; padding: 7px 10px; border-radius: 999px; font-size: 13px; font-weight: 800; }
+    .deal { padding: 0 0 12px; border-bottom: 1px solid var(--line); }
+    .deal h1 { margin-bottom: 3px; }
+    .deal .price { font-size: 29px; margin-top: 10px; }
+    .trust { display: flex; align-items: center; gap: 7px; color: var(--green); font-size: 13px; font-weight: 800; margin-top: 5px; }
+    .key-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 14px 0; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+    .key { min-height: 72px; padding: 12px; background: #fff; }
+    .key .label { color: var(--muted); display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+    .key strong { font-size: 14px; }
+    .section-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 15px; margin: 12px 0; }
+    .section-card h2 { margin-bottom: 7px; }
+    .seller { display: flex; align-items: center; gap: 11px; }
+    .avatar { width: 45px; height: 45px; border-radius: 50%; display: grid; place-items: center; background: #e9efff; color: var(--primary-dark); font-weight: 900; }
+    .sticky-actions {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%, 430px); z-index: 12;
+      display: grid; grid-template-columns: 1fr 1.35fr; gap: 8px; padding: 10px 16px max(10px, env(safe-area-inset-bottom)); background: rgba(255,255,255,.97); border-top: 1px solid var(--line);
+    }
+    .secondary-action { border: 1px solid #b5c5f7; color: var(--primary-dark); background: #fff; border-radius: 13px; font-weight: 850; min-height: 50px; }
+    .auction-panel { background: #14203b; color: #fff; padding: 16px; border-radius: 18px; margin: 12px 0; }
+    .auction-panel .eyebrow { color: #b9c9ff; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .auction-panel .timer-big { font-size: 27px; font-weight: 950; letter-spacing: -.04em; margin: 5px 0; }
+    .bid-summary { display: flex; gap: 18px; border-top: 1px solid rgba(255,255,255,.16); border-bottom: 1px solid rgba(255,255,255,.16); margin: 13px 0; padding: 12px 0; }
+    .bid-summary span { display: block; color: #b9c2d6; font-size: 11px; }
+    .bid-summary strong { display: block; font-size: 18px; margin-top: 2px; }
+    .fee-note { font-size: 12px; color: #b9c2d6; line-height: 1.4; }
+    .auction-panel .primary { background: var(--orange); margin-top: 14px; }
+    .demo-note { background: #fff7df; color: #765414; margin: 0 0 14px; border: 1px solid #f2d789; border-radius: 13px; padding: 10px 12px; font-size: 13px; }
+    @media (min-width: 700px) { body { padding: 20px; } .phone { border-radius: 28px; box-shadow: 0 25px 70px rgba(18,45,80,.22); min-height: calc(100vh - 40px); } }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <header class="topbar">
+      <button class="round-button" aria-label="Odpri meni">☰</button>
+      <div class="brand">AutoHub<span>.si</span></div>
+      <button class="round-button" aria-label="Odpri profil">◌</button>
+    </header>
+
+    <main id="results" class="screen active">
+      <div class="demo-note">Interaktivni prototip: odprite filtre, oglas ali dražbo s spodnjo navigacijo.</div>
+      <div class="search">
+        <span aria-hidden="true">⌕</span>
+        <input aria-label="Išči vozilo" placeholder="Išči znamko, model ali ključno besedo">
+        <button aria-label="Začni iskanje">→</button>
+      </div>
+      <div class="toolbar">
+        <button class="filter" id="openFilters">☷ Filtri <span class="filter-count">3</span></button>
+        <button>Privzeto ▾</button>
+        <button aria-label="Spremeni pogled">▤</button>
+      </div>
+      <div class="active-filters" aria-label="Aktivni filtri">
+        <button class="filter-chip">Audi <b>×</b></button>
+        <button class="filter-chip">2018–2024 <b>×</b></button>
+        <button class="filter-chip">do 30.000 € <b>×</b></button>
+      </div>
+      <div class="results-heading">
+        <h1>1.471 oglasov</h1>
+        <span class="subtle">Posodobljeno zdaj</span>
+      </div>
+
+      <article class="listing" data-open="detail">
+        <div class="listing-main">
+          <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=500&q=85" alt="Audi A4 Avant v sivi barvi">
+          <div>
+            <span class="badge">Preverjen prodajalec</span>
+            <button class="save" aria-label="Shrani oglas">♡</button>
+            <h2>Audi A4 Avant 2.0 TDI S line</h2>
+            <div class="price">24.500 €</div>
+            <div class="facts">2019 · 125.000 km<br>Dizel · Avtomatski</div>
+          </div>
+        </div>
+        <div class="listing-footer"><span>Avto Center Novak · Ljubljana</span><span>✓ Servisna zgodovina</span></div>
+      </article>
+
+      <article class="listing" data-open="detail">
+        <div class="listing-main">
+          <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=500&q=85" alt="Mercedes-Benz C razred v črni barvi">
+          <div>
+            <button class="save" aria-label="Shrani oglas">♡</button>
+            <h2>Mercedes-Benz C 220 d AMG Line</h2>
+            <div class="price">38.700 €</div>
+            <div class="facts">2022 · 35.000 km<br>Dizel · Avtomatski</div>
+          </div>
+        </div>
+        <div class="listing-footer"><span>Avtohiša Kovač · Maribor</span><span>Ocena cene: dobra</span></div>
+      </article>
+    </main>
+
+    <main id="detail" class="screen">
+      <div class="detail-hero">
+        <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1000&q=88" alt="Audi A4 Avant v sivi barvi">
+        <div class="hero-actions"><button data-back aria-label="Nazaj">‹</button><button aria-label="Deli oglas">↗</button></div>
+        <span class="photo-count">▧ 1 / 24</span>
+      </div>
+      <section class="deal">
+        <span class="badge">Preverjen prodajalec</span>
+        <h1>Audi A4 Avant 2.0 TDI S line</h1>
+        <div class="subtle">2019 · 125.000 km · Ljubljana</div>
+        <div class="price">24.500 €</div>
+        <div class="trust">✓ Cena v pričakovanem tržnem razponu</div>
+      </section>
+      <section class="key-grid" aria-label="Ključni podatki vozila">
+        <div class="key"><span class="label">Kilometrina</span><strong>125.000 km</strong></div>
+        <div class="key"><span class="label">Moč</span><strong>140 kW / 190 KM</strong></div>
+        <div class="key"><span class="label">Gorivo</span><strong>Dizel</strong></div>
+        <div class="key"><span class="label">Menjalnik</span><strong>Avtomatski</strong></div>
+        <div class="key"><span class="label">Prva registracija</span><strong>04/2019</strong></div>
+        <div class="key"><span class="label">Pogon</span><strong>Prednji</strong></div>
+      </section>
+      <section class="section-card">
+        <div class="seller"><div class="avatar">AN</div><div><strong>Avto Center Novak</strong><br><span class="subtle">★ 4,8 · odziv v manj kot 1 uri</span></div></div>
+      </section>
+      <section class="section-card"><h2>O vozilu</h2><p class="subtle">Redno servisirano vozilo z digitalno servisno zgodovino. Oprema vključuje LED žaromete, navigacijo, parkirne senzorje in ogrevane sedeže.</p><button class="text-button">Prikaži vse podatke in opremo</button></section>
+    </main>
+
+    <main id="auction" class="screen">
+      <div class="search"><span aria-hidden="true">⌕</span><input aria-label="Išči dražbo" placeholder="Išči dražbe"><button aria-label="Začni iskanje">→</button></div>
+      <div class="toolbar"><button class="filter" id="openAuctionFilters">☷ Filtri <span class="filter-count">2</span></button><button>Konča se najprej ▾</button><button aria-label="Spremeni pogled">▤</button></div>
+      <div class="results-heading"><h1>Aktivne dražbe</h1><span class="subtle">38 vozil</span></div>
+      <article class="listing" data-open="auctionDetail">
+        <div class="auction-ribbon"><span>● ŽIVA DRAŽBA · 18 ponudb</span><span class="timer">⏱ 02:14:38</span></div>
+        <div class="listing-main">
+          <img src="https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=500&q=85" alt="BMW M2 v modri barvi">
+          <div><button class="save" aria-label="Shrani dražbo">♡</button><h2>BMW M2 Competition</h2><div class="subtle">Trenutna ponudba</div><div class="price">42.800 €</div><div class="facts">2020 · 42.000 km<br>Minimalna cena dosežena</div></div>
+        </div>
+      </article>
+      <article class="listing"><div class="auction-ribbon"><span>◐ PRED-DRAŽBA</span><span>Začne se jutri</span></div><div class="listing-main"><img src="https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=500&q=85" alt="Porsche 911 v rumeni barvi"><div><h2>Porsche 911 Carrera 4S</h2><div class="subtle">Izklicna cena</div><div class="price">92.000 €</div><div class="facts">2018 · 28.500 km<br>Ogled možen po dogovoru</div></div></div></article>
+    </main>
+
+    <main id="auctionDetail" class="screen">
+      <div class="detail-hero"><img src="https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1000&q=88" alt="BMW M2 Competition v modri barvi"><div class="hero-actions"><button data-back aria-label="Nazaj">‹</button><button aria-label="Shrani dražbo">♡</button></div><span class="photo-count">▧ 1 / 31</span></div>
+      <h1>BMW M2 Competition</h1><p class="subtle">2020 · 42.000 km · Maribor</p>
+      <section class="auction-panel">
+        <div class="eyebrow">Živa dražba se zaključi čez</div><div class="timer-big">02:14:38</div>
+        <div class="bid-summary"><div><span>Trenutna ponudba</span><strong>42.800 €</strong></div><div><span>Naslednja ponudba</span><strong>43.000 €</strong></div><div><span>Ponudbe</span><strong>18</strong></div></div>
+        <div class="fee-note">✓ Minimalna cena dosežena<br>Kupčeva premija: 3 % (največ 1.200 €). Pred potrditvijo boste videli celoten končni znesek.</div>
+        <button class="primary" onclick="alert('V pravem produktu tu odprete varno potrditveno okno z zneskom, premijo in zavezo k nakupu.')">Oddaj ponudbo 43.000 €</button>
+      </section>
+      <section class="key-grid"><div class="key"><span class="label">Moč</span><strong>302 kW / 410 KM</strong></div><div class="key"><span class="label">Gorivo</span><strong>Bencin</strong></div><div class="key"><span class="label">Menjalnik</span><strong>Samodejni</strong></div><div class="key"><span class="label">Pogon</span><strong>Zadnji</strong></div></section>
+      <section class="section-card"><h2>Kako poteka?</h2><p class="subtle">Če vas nekdo prehiti, vas obvestimo. Ponudba v zadnjih treh minutah dražbo podaljša za pet minut.</p><button class="text-button">Napredne možnosti licitiranja</button></section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Glavna navigacija">
+      <button class="active" data-screen="results"><span>⌕</span>Oglasi</button>
+      <button data-screen="auction"><span>⚒</span>Dražbe</button>
+      <button><span>♡</span>Shranjeno</button>
+    </nav>
+    <div id="filters" class="sheet-backdrop" role="dialog" aria-modal="true" aria-label="Filtri iskanja">
+      <section class="filter-sheet">
+        <div class="sheet-head"><h2>Filtri</h2><button class="text-button close-sheet">Zapri</button></div>
+        <div class="filter-group"><h3>Osnovno</h3><div class="two-col"><label>Znamka<select><option>Audi</option><option>Vse znamke</option></select></label><label>Model<select><option>Vsi modeli</option><option>A4</option></select></label><label>Letnik od<select><option>2018</option></select></label><label>Letnik do<select><option>2024</option></select></label></div></div>
+        <div class="filter-group"><h3>Cena in kilometri</h3><div class="two-col"><label>Cena do<div class="fake-input">30.000 €</div></label><label>Km do<div class="fake-input">150.000 km</div></label></div></div>
+        <div class="filter-group"><h3>Gorivo</h3><div class="pills"><button class="selected">Dizel</button><button>Bencin</button><button>Hibrid</button><button>Elektrika</button></div></div>
+        <div class="filter-group"><h3>Več filtrov</h3><p class="subtle">Menjalnik, pogon, oprema, ponudnik in lokacija se odprejo šele, ko jih uporabnik potrebuje.</p></div>
+        <div class="sheet-action"><button class="primary close-sheet">Prikaži 124 oglasov</button></div>
+      </section>
+    </div>
+    <div class="sticky-actions" id="detailActions" hidden><button class="secondary-action">♡ Shrani</button><button class="primary">☎ Pokliči prodajalca</button></div>
+  </div>
+  <script>
+    const screens = document.querySelectorAll('.screen');
+    const nav = document.querySelector('.bottom-nav');
+    const detailActions = document.getElementById('detailActions');
+    function showScreen(id) {
+      screens.forEach(s => s.classList.toggle('active', s.id === id));
+      nav.hidden = id === 'detail' || id === 'auctionDetail';
+      detailActions.hidden = id !== 'detail';
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    document.querySelectorAll('[data-screen]').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('[data-screen]').forEach(b => b.classList.remove('active'));
+      button.classList.add('active'); showScreen(button.dataset.screen);
+    }));
+    document.querySelectorAll('[data-open]').forEach(card => card.addEventListener('click', event => {
+      if (!event.target.closest('.save')) showScreen(card.dataset.open);
+    }));
+    document.querySelectorAll('[data-back]').forEach(button => button.addEventListener('click', () => showScreen('results')));
+    const sheet = document.getElementById('filters');
+    document.getElementById('openFilters').addEventListener('click', () => sheet.classList.add('open'));
+    document.getElementById('openAuctionFilters').addEventListener('click', () => sheet.classList.add('open'));
+    document.querySelectorAll('.close-sheet').forEach(button => button.addEventListener('click', () => sheet.classList.remove('open')));
+    sheet.addEventListener('click', event => { if (event.target === sheet) sheet.classList.remove('open'); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#09090b" stroke="#d4af37" stroke-width="2"/>
+  <path d="M46 32 H28 V68 H46 V52 H38" fill="none" stroke="#d4af37" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M54 32 L60 68 L68 48 L76 68 L82 32" fill="none" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="50" y="84" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="5" fill="#f8fafc" text-anchor="middle" letter-spacing="1.5">GUNTHER WERKS</text>
+</svg>

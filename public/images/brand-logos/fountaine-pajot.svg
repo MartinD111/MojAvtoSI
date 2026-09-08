@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-13.82 -13.03 198.47 53.48" fill="currentColor">
+  <!-- Fountaine Pajot twin hulls -->
+  <g transform="translate(18, 25)">
+    <path d="M-10 10C-5 -5 2 -12 8 -12c-2 8-5 16-10 22h-8z" fill="#0284c7"/>
+    <path d="M-2 10C3 -2 8 -8 13 -8c-1 6-3 12-7 18h-6z" fill="#38bdf8"/>
+  </g>
+  <text x="40" y="27" font-family="'Inter', sans-serif" font-weight="800" font-size="12" letter-spacing="1" fill="currentColor">FOUNTAINE PAJOT</text>
+  <text x="41" y="38" font-family="sans-serif" font-weight="600" font-size="7" letter-spacing="3" fill="#0284c7">CATAMARANS</text>
+</svg>

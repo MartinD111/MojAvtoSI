@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#111"/>
+  <!-- Iconic Handlebar Moustache -->
+  <path d="M50 48c-6-10-18-12-26-4-6 6-2 16 6 12 8-4 14-8 20-8s12 4 20 8c8 4 12-6 6-12-8-8-20-6-26 4z" fill="#fff"/>
+  <text x="50" y="78" font-family="sans-serif" font-weight="900" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1">MOUSTACHE</text>
+</svg>

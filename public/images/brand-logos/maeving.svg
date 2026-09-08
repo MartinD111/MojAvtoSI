@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0f172a"/>
+  <circle cx="50" cy="50" r="38" fill="none" stroke="#d4af37" stroke-width="2"/>
+  <text x="50" y="58" font-family="serif" font-weight="bold" font-size="28" fill="#d4af37" text-anchor="middle">M</text>
+  <text x="50" y="78" font-family="sans-serif" font-weight="800" font-size="7" fill="#fff" text-anchor="middle" letter-spacing="1">MAEVING</text>
+</svg>

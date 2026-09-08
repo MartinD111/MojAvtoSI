@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#111"/>
+  <!-- Stark Varg gold angular logo -->
+  <path d="M50 18L72 64H58L50 46 42 64H28z" fill="#eab308"/>
+  <text x="50" y="82" font-family="'Arial Black', sans-serif" font-weight="900" font-size="11" fill="#fff" text-anchor="middle" letter-spacing="3">STARK</text>
+</svg>

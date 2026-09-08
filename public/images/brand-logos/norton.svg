@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#111"/>
+  <circle cx="50" cy="50" r="42" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <!-- Iconic curly Norton script N extending over wordmark -->
+  <path d="M22 62V35c0-4 3-7 7-7h14c6 0 10 3 10 7s-4 7-10 7H29v20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <text x="58" y="56" font-family="serif" font-weight="bold" font-style="italic" font-size="14" fill="#fff">orton</text>
+</svg>

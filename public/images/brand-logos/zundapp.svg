@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#000"/>
+  <circle cx="50" cy="50" r="41" fill="#f59e0b"/>
+  <circle cx="50" cy="50" r="38" fill="#000"/>
+  <!-- Winged Z -->
+  <path d="M22 50h18l10-18 10 18h18c-8 6-18 10-28 10s-20-4-28-10z" fill="#f59e0b"/>
+  <text x="50" y="48" font-family="'Arial Black', sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle">Z</text>
+  <text x="50" y="78" font-family="sans-serif" font-weight="900" font-size="8" fill="#fff" text-anchor="middle" letter-spacing="1">ZÜNDAPP</text>
+</svg>

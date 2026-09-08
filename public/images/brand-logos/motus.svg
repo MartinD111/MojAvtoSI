@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 65">
+  <rect width="110" height="65" rx="10" fill="#991b1b"/>
+  <!-- Motus V4 badge -->
+  <path d="M30 20l25 15 25-15v12L55 47 30 32z" fill="#fff"/>
+  <text x="55" y="56" font-family="'Arial Black', sans-serif" font-weight="900" font-size="9" fill="#fff" text-anchor="middle" letter-spacing="2">MOTUS</text>
+</svg>

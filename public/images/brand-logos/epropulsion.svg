@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16.36 -14.07 174.47 55.41" fill="currentColor">
+  <!-- ePropulsion electric prop -->
+  <g transform="translate(20, 25)">
+    <circle cx="0" cy="0" r="13" fill="#06b6d4"/>
+    <path d="M0 -9C5 -9 9 -5 9 0S5 9 0 9s-9-5-9-9 4-9 9-9z" fill="#fff"/>
+  </g>
+  <text x="40" y="28" font-family="'Montserrat', sans-serif" font-weight="900" font-size="13" letter-spacing="1" fill="currentColor">ePROPULSION</text>
+  <text x="41" y="39" font-family="sans-serif" font-weight="700" font-size="6" letter-spacing="2" fill="#06b6d4">ELECTRIC OUTBOARDS</text>
+</svg>

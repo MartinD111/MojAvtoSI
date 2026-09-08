@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#0284c7"/>
+  <polygon points="50,18 78,34 78,66 50,82 22,66 22,34" fill="none" stroke="#fff" stroke-width="6"/>
+  <text x="50" y="60" font-family="'Arial Black', sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle">T</text>
+</svg>
