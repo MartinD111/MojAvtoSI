@@ -616,6 +616,19 @@ body.dark-mode .custom-dropdown-btn {
     border-color: rgba(255,255,255,0.1);
     color: #f8fafc;
 }
+.custom-dropdown-btn.brand-selected {
+    background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.25) 0%, rgba(var(--brand-rgb), 0.05) 100%) !important;
+    border-color: rgba(var(--brand-rgb), 0.45) !important;
+}
+.custom-dropdown-btn.brand-selected .custom-select-brand-name {
+    color: rgb(var(--brand-rgb)) !important;
+    font-weight: 600;
+}
+body.dark-mode .custom-dropdown-btn.brand-selected {
+    background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.45) 0%, rgba(var(--brand-rgb), 0.08) 100%) !important;
+    border-color: rgba(var(--brand-rgb), 0.55) !important;
+}
+
 body.dark-mode .custom-dropdown-list {
     background: #1e293b;
     border-color: rgba(255,255,255,0.1);

@@ -88,7 +88,8 @@ export function filterBusinesses(businesses, filters, userLocation) {
         // 2. Brand filter (OR within selected brands — checks both authorizedBrands and supportedBrands)
         if (filters.brands && filters.brands.length > 0) {
             const allBiz = [...b.authorizedBrands, ...b.supportedBrands];
-            if (!filters.brands.some(brand => allBiz.includes(brand))) return false;
+            const supportsAll = allBiz.some(brand => brand && (brand.toLowerCase() === 'all brands' || brand.toLowerCase() === 'vse znamke'));
+            if (!supportsAll && !filters.brands.some(brand => allBiz.includes(brand))) return false;
         }
 
         // 3. Authorized only

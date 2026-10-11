@@ -1847,5 +1847,10 @@
   "auction_subscribed_ok": "✓ You are subscribed to alerts.",
   "auction_subscribed_err": "Error subscribing.",
   "auctions_count": "auctions",
-  "total_from": "Total from"
+  "total_from": "Total from",
+  "mobile_view_mode_title": "Listings view",
+  "mobile_view_default": "Default",
+  "mobile_view_compact": "Compact",
+  "search_results_title": "Search Results",
+  "vehicles_count_suffix": "vehicles"
 }

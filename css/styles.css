@@ -204,11 +204,18 @@ body.dark-mode .body-type-card {
   color: #cbd5e1 !important;
 }
 
-body.dark-mode .body-type-card:hover,
-body.dark-mode .body-type-card.active {
-  background: rgba(37, 99, 235, 0.2) !important;
-  border-color: rgba(37, 99, 235, 0.5) !important;
+body.dark-mode .body-type-card:hover {
+  background: rgba(37, 99, 235, 0.15) !important;
+  border-color: rgba(37, 99, 235, 0.4) !important;
   color: #ffffff !important;
+}
+
+body.dark-mode .body-type-card.active {
+  background: rgba(79, 70, 229, 0.28) !important;
+  border: 2px solid var(--color-primary-start, #6366f1) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4) !important;
 }
 
 body.dark-mode .body-type-card i {
@@ -442,9 +449,15 @@ body {
 
 
 /* ── Header ──────────────────────────────────────────────────────────────── */
+#header,
+header {
+  position: relative;
+  z-index: 2000;
+  width: 100%;
+}
+
 .sticky-nav {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 2000;
   /* significantly higher to clear maps */
   width: 100%;
@@ -1725,9 +1738,11 @@ body.dark-mode .page-container p {
     display: block;
   }
 
+  #header,
   header {
     position: sticky;
     top: 0;
+    z-index: 2000;
   }
 
   /* Tighten the top bar so logo + actions + burger fit small screens */
@@ -3255,12 +3270,13 @@ body.dark-mode .legal-doc h2 {
 }
 
 .body-type-card.active {
-  background: rgba(79, 70, 229, 0.05);
+  background: rgba(79, 70, 229, 0.1) !important;
   /* very light primary tint */
-  border: 2px solid var(--color-primary-start);
-  color: var(--color-primary-start);
+  border: 2px solid var(--color-primary-start, #4f46e5) !important;
+  color: var(--color-primary-start, #4f46e5) !important;
+  font-weight: 600;
   transform: scale(1.02);
-  box-shadow: 0 0 15px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 15px rgba(79, 70, 229, 0.25) !important;
 }
 
 .body-type-card i {
@@ -4346,6 +4362,217 @@ body.dark-mode #rot-next-btn {
   color: #fff;
 }
 
+/* ── Color Pills (Zunanjost / Barva zunanjosti) ─────────────────── */
+.adv-chip-color,
+.adv-chip:has(input[name="color"]) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Bela / White */
+.adv-color-bela,
+.adv-chip:has(input[name="color"][value="Bela"]) {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+.adv-color-bela:hover,
+.adv-chip:has(input[name="color"][value="Bela"]):hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  transform: translateY(-1px);
+}
+
+/* Črna / Black */
+.adv-color-crna,
+.adv-chip:has(input[name="color"][value="Črna"]) {
+  background: #18181b !important;
+  color: #ffffff !important;
+  border: 1.5px solid #3f3f46 !important;
+}
+.adv-color-crna:hover,
+.adv-chip:has(input[name="color"][value="Črna"]):hover {
+  background: #27272a !important;
+  border-color: #52525b !important;
+  transform: translateY(-1px);
+}
+
+/* Siva / Gray */
+.adv-color-siva,
+.adv-chip:has(input[name="color"][value="Siva"]) {
+  background: #64748b !important;
+  color: #ffffff !important;
+  border: 1.5px solid #475569 !important;
+}
+.adv-color-siva:hover,
+.adv-chip:has(input[name="color"][value="Siva"]):hover {
+  background: #475569 !important;
+  border-color: #334155 !important;
+  transform: translateY(-1px);
+}
+
+/* Srebrna / Silver */
+.adv-color-srebrna,
+.adv-chip:has(input[name="color"][value="Srebrna"]) {
+  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%) !important;
+  color: #0f172a !important;
+  border: 1.5px solid #94a3b8 !important;
+}
+.adv-color-srebrna:hover,
+.adv-chip:has(input[name="color"][value="Srebrna"]):hover {
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%) !important;
+  border-color: #64748b !important;
+  transform: translateY(-1px);
+}
+
+/* Rdeča / Red */
+.adv-color-rdeca,
+.adv-chip:has(input[name="color"][value="Rdeča"]) {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border: 1.5px solid #b91c1c !important;
+}
+.adv-color-rdeca:hover,
+.adv-chip:has(input[name="color"][value="Rdeča"]):hover {
+  background: #b91c1c !important;
+  border-color: #991b1b !important;
+  transform: translateY(-1px);
+}
+
+/* Modra / Blue */
+.adv-color-modra,
+.adv-chip:has(input[name="color"][value="Modra"]) {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border: 1.5px solid #1d4ed8 !important;
+}
+.adv-color-modra:hover,
+.adv-chip:has(input[name="color"][value="Modra"]):hover {
+  background: #1d4ed8 !important;
+  border-color: #1e40af !important;
+  transform: translateY(-1px);
+}
+
+/* Zelena / Green */
+.adv-color-zelena,
+.adv-chip:has(input[name="color"][value="Zelena"]) {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  border: 1.5px solid #15803d !important;
+}
+.adv-color-zelena:hover,
+.adv-chip:has(input[name="color"][value="Zelena"]):hover {
+  background: #15803d !important;
+  border-color: #166534 !important;
+  transform: translateY(-1px);
+}
+
+/* Rjava / Brown */
+.adv-color-rjava,
+.adv-chip:has(input[name="color"][value="Rjava"]) {
+  background: #78350f !important;
+  color: #ffffff !important;
+  border: 1.5px solid #451a03 !important;
+}
+.adv-color-rjava:hover,
+.adv-chip:has(input[name="color"][value="Rjava"]):hover {
+  background: #92400e !important;
+  border-color: #78350f !important;
+  transform: translateY(-1px);
+}
+
+/* Rumena / Yellow */
+.adv-color-rumena,
+.adv-chip:has(input[name="color"][value="Rumena"]) {
+  background: #facc15 !important;
+  color: #0f172a !important;
+  border: 1.5px solid #d97706 !important;
+}
+.adv-color-rumena:hover,
+.adv-chip:has(input[name="color"][value="Rumena"]):hover {
+  background: #f59e0b !important;
+  border-color: #b45309 !important;
+  transform: translateY(-1px);
+}
+
+/* Oranžna / Orange */
+.adv-color-oranzna,
+.adv-chip:has(input[name="color"][value="Oranžna"]) {
+  background: #ea580c !important;
+  color: #ffffff !important;
+  border: 1.5px solid #c2410c !important;
+}
+.adv-color-oranzna:hover,
+.adv-chip:has(input[name="color"][value="Oranžna"]):hover {
+  background: #c2410c !important;
+  border-color: #9a3412 !important;
+  transform: translateY(-1px);
+}
+
+/* Vijolična / Purple */
+.adv-color-vijolicna,
+.adv-chip:has(input[name="color"][value="Vijolična"]) {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  border: 1.5px solid #6d28d9 !important;
+}
+.adv-color-vijolicna:hover,
+.adv-chip:has(input[name="color"][value="Vijolična"]):hover {
+  background: #6d28d9 !important;
+  border-color: #5b21b6 !important;
+  transform: translateY(-1px);
+}
+
+/* Zlata / Gold */
+.adv-color-zlata,
+.adv-chip:has(input[name="color"][value="Zlata"]) {
+  background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%) !important;
+  color: #451a03 !important;
+  border: 1.5px solid #ca8a04 !important;
+}
+
+/* Bronasta / Bronze */
+.adv-color-bronasta,
+.adv-chip:has(input[name="color"][value="Bronasta"]) {
+  background: #b45309 !important;
+  color: #ffffff !important;
+  border: 1.5px solid #78350f !important;
+}
+
+/* Checked / Selected State for color chips */
+.adv-chip-color:has(input:checked),
+.adv-chip:has(input[name="color"]:checked) {
+  outline: 3px solid var(--color-primary-start, #2563eb) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22) !important;
+  transform: translateY(-1px) scale(1.02);
+}
+
+.adv-chip-color:has(input:checked)::before,
+.adv-chip:has(input[name="color"]:checked)::before {
+  content: "✓";
+  display: inline-block;
+  font-weight: 800;
+  font-size: 0.85em;
+  margin-right: 0.3rem;
+  line-height: 1;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .adv-color-crna,
+body.dark-mode .adv-chip:has(input[name="color"][value="Črna"]) {
+  background: #09090b !important;
+  border-color: #71717a !important;
+}
+
+body.dark-mode .adv-chip-color:has(input:checked),
+body.dark-mode .adv-chip:has(input[name="color"]:checked) {
+  outline: 3px solid #60a5fa !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+}
+
 .adv-chip-large {
   padding: 0.75rem 1.5rem;
   font-size: 0.9rem;
@@ -4897,172 +5124,6 @@ body.dark-mode .vehicle-title-variant {
   margin-left: auto;
 }
 
-.spec-row.secondary .spec-pill {
-  background: rgba(241, 245, 249, 0.6);
-  border-color: transparent;
-  color: #64748b;
-  font-weight: 600;
-  box-shadow: none;
-  transition: all 0.3s ease;
-}
-
-.spec-row.secondary .spec-pill i {
-  color: #94a3b8;
-  transition: color 0.3s ease;
-}
-
-/* ── Technical Pill Themes ──────────────────────────────────── */
-
-/* Fuel Pills */
-.fuel-coded.fuel-pill-P {
-  background: rgba(37, 99, 235, 0.1) !important;
-  color: #2563eb !important;
-}
-
-.fuel-coded.fuel-pill-P i {
-  color: #2563eb !important;
-}
-
-.fuel-coded.fuel-pill-D {
-  background: rgba(51, 65, 85, 0.1) !important;
-  color: #334155 !important;
-}
-
-.fuel-coded.fuel-pill-D i {
-  color: #334155 !important;
-}
-
-.fuel-coded.fuel-pill-E {
-  background: rgba(16, 185, 129, 0.1) !important;
-  color: #059669 !important;
-}
-
-.fuel-coded.fuel-pill-E i {
-  color: #059669 !important;
-}
-
-.fuel-coded.fuel-pill-H {
-  background: rgba(20, 184, 166, 0.1) !important;
-  color: #0d9488 !important;
-}
-
-.fuel-coded.fuel-pill-H i {
-  color: #0d9488 !important;
-}
-
-.fuel-coded.fuel-pill-HB {
-  background: rgba(79, 70, 229, 0.1) !important;
-  color: #4f46e5 !important;
-}
-
-.fuel-coded.fuel-pill-HB i {
-  color: #4f46e5 !important;
-}
-
-.fuel-coded.fuel-pill-LPG {
-  background: rgba(245, 158, 11, 0.1) !important;
-  color: #d97706 !important;
-}
-
-.fuel-coded.fuel-pill-LPG i {
-  color: #d97706 !important;
-}
-
-/* Transmission Pills */
-.transmission-pill.type-auto {
-  background: rgba(249, 115, 22, 0.1) !important;
-  color: #ea580c !important;
-}
-
-.transmission-pill.type-auto i {
-  color: #ea580c !important;
-}
-
-.transmission-pill.type-manual {
-  background: rgba(100, 116, 139, 0.1) !important;
-  color: #475569 !important;
-}
-
-.transmission-pill.type-manual i {
-  color: #475569 !important;
-}
-
-/* Motorcycle Stroke & Type Pills */
-.stroke-pill {
-  background: rgba(14, 165, 233, 0.08) !important;
-  border-color: rgba(14, 165, 233, 0.25) !important;
-  color: #0284c7 !important;
-}
-
-.stroke-pill i {
-  color: #0284c7 !important;
-}
-
-body.dark-mode .stroke-pill {
-  background: rgba(56, 189, 248, 0.12) !important;
-  border-color: rgba(56, 189, 248, 0.4) !important;
-  color: #38bdf8 !important;
-}
-
-/* Engine/type badge on listing cards — .spec-pill.type-pill only, not map filter buttons */
-.spec-pill.type-pill {
-  background: rgba(139, 92, 246, 0.08) !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
-  color: #7c3aed !important;
-}
-
-.spec-pill.type-pill i {
-  color: #7c3aed !important;
-}
-
-body.dark-mode .spec-pill.type-pill {
-  background: rgba(167, 139, 250, 0.12) !important;
-  border-color: rgba(167, 139, 250, 0.4) !important;
-  color: #a78bfa !important;
-}
-
-/* Consumption Pills (Status) */
-.status-low {
-  background: rgba(16, 185, 129, 0.1) !important;
-  color: #059669 !important;
-}
-
-/* Green - Efficient / Long Range */
-.status-low i {
-  color: #059669 !important;
-}
-
-.status-medium {
-  background: rgba(245, 158, 11, 0.1) !important;
-  color: #d97706 !important;
-}
-
-/* Amber - Mid */
-.status-medium i {
-  color: #d97706 !important;
-}
-
-.status-high {
-  background: rgba(239, 68, 68, 0.1) !important;
-  color: #dc2626 !important;
-}
-
-/* Red - High consumption / Low Range (for range we flip logic in JS) */
-.status-high i {
-  color: #dc2626 !important;
-}
-
-/* Special case for EV Blue if range is in the middle */
-.consumption-pill.status-medium:has([data-lucide="battery-charging"]),
-.consumption-pill.status-medium[title*="Domet"] {
-  background: rgba(14, 165, 233, 0.1) !important;
-  color: #0284c7 !important;
-}
-
-.consumption-pill.status-medium:has([data-lucide="battery-charging"]) i,
-.consumption-pill.status-medium[title*="Domet"] i {
-  color: #0284c7 !important;
-}
 
 .seller-note-card {
   width: fit-content;
@@ -5404,259 +5465,95 @@ body.dark-mode .spec-pill:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Unified Colorful Spec Pills for MojAvto (Listings & Sponsored) */
-
-.spec-pill.year-pill,
-.spec-pill.year-pill span {
-  background: #818cf8 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.year-pill i,
-.spec-pill.year-pill svg {
-  color: #ffffff !important;
-}
-.spec-pill.year-pill:hover {
-  background: #818cf8 !important;
-}
-
-.spec-pill.km-pill,
-.spec-pill.km-pill span {
-  background: #2dd4bf !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.km-pill i,
-.spec-pill.km-pill svg {
-  color: #ffffff !important;
-}
-.spec-pill.km-pill:hover {
-  background: #2dd4bf !important;
-}
-
-.spec-pill.power-pill,
-.spec-pill.power-pill span {
-  background: #8b5cf6 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.power-pill i,
-.spec-pill.power-pill svg {
-  color: #ffffff !important;
-}
-.spec-pill.power-pill:hover {
-  background: #8b5cf6 !important;
-}
-
-.spec-pill.displacement-pill,
-.spec-pill.displacement-pill span {
-  background: #94a3b8 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.displacement-pill i,
-.spec-pill.displacement-pill svg {
-  color: #ffffff !important;
-}
-.spec-pill.displacement-pill:hover {
-  background: #94a3b8 !important;
-}
-
-.spec-pill.fuel-coded.fuel-pill-P,
-.spec-pill.fuel-coded.fuel-pill-P span {
-  background: #60a5fa !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.fuel-coded.fuel-pill-P i,
-.spec-pill.fuel-coded.fuel-pill-P svg {
-  color: #ffffff !important;
-}
-.spec-pill.fuel-coded.fuel-pill-P:hover {
-  background: #60a5fa !important;
-}
-
-.spec-pill.fuel-coded.fuel-pill-D,
-.spec-pill.fuel-coded.fuel-pill-D span {
-  background: #34d399 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.fuel-coded.fuel-pill-D i,
-.spec-pill.fuel-coded.fuel-pill-D svg {
-  color: #ffffff !important;
-}
-.spec-pill.fuel-coded.fuel-pill-D:hover {
-  background: #34d399 !important;
-}
-
-.spec-pill.fuel-coded.fuel-pill-H,
-.spec-pill.fuel-coded.fuel-pill-H span {
-  background: #06b6d4 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.fuel-coded.fuel-pill-H i,
-.spec-pill.fuel-coded.fuel-pill-H svg {
-  color: #ffffff !important;
-}
-.spec-pill.fuel-coded.fuel-pill-H:hover {
-  background: #06b6d4 !important;
-}
-
-.spec-pill.fuel-coded.fuel-pill-HB,
-.spec-pill.fuel-coded.fuel-pill-HB span {
-  background: #6366f1 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.fuel-coded.fuel-pill-HB i,
-.spec-pill.fuel-coded.fuel-pill-HB svg {
-  color: #ffffff !important;
-}
-.spec-pill.fuel-coded.fuel-pill-HB:hover {
-  background: #6366f1 !important;
-}
-
-.spec-pill.fuel-coded.fuel-pill-E,
-.spec-pill.fuel-coded.fuel-pill-E span {
-  background: #10b981 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.fuel-coded.fuel-pill-E i,
-.spec-pill.fuel-coded.fuel-pill-E svg {
-  color: #ffffff !important;
-}
-.spec-pill.fuel-coded.fuel-pill-E:hover {
-  background: #10b981 !important;
-}
-
-.spec-pill.fuel-coded.fuel-pill-LPG,
-.spec-pill.fuel-coded.fuel-pill-LPG span {
-  background: #fb923c !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.fuel-coded.fuel-pill-LPG i,
-.spec-pill.fuel-coded.fuel-pill-LPG svg {
-  color: #ffffff !important;
-}
-.spec-pill.fuel-coded.fuel-pill-LPG:hover {
-  background: #fb923c !important;
-}
-
-.spec-pill.transmission-pill,
-.spec-pill.transmission-pill span,
-.spec-pill.transmission-pill.type-auto,
-.spec-pill.transmission-pill.type-auto span {
-  background: #fb923c !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.transmission-pill i,
-.spec-pill.transmission-pill svg,
-.spec-pill.transmission-pill.type-auto i,
-.spec-pill.transmission-pill.type-auto svg {
-  color: #ffffff !important;
-}
-.spec-pill.transmission-pill:hover,
-.spec-pill.transmission-pill.type-auto:hover {
-  background: #fb923c !important;
-}
-
-.spec-pill.transmission-pill.type-manual,
-.spec-pill.transmission-pill.type-manual span {
-  background: #94a3b8 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.transmission-pill.type-manual i,
-.spec-pill.transmission-pill.type-manual svg {
-  color: #ffffff !important;
-}
-.spec-pill.transmission-pill.type-manual:hover {
-  background: #94a3b8 !important;
-}
-
+/* Unified Modern Spec Pills for MojAvto - completely uniform across all cards and specs */
+.spec-pill,
+.spec-pill.fuel-coded,
+.spec-pill[class*="fuel-pill-"],
 .spec-pill.consumption-pill,
-.spec-pill.consumption-pill span,
-.spec-pill.consumption-pill.status-medium,
-.spec-pill.consumption-pill.status-medium span {
-  background: #fbbf24 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.consumption-pill i,
-.spec-pill.consumption-pill svg,
-.spec-pill.consumption-pill.status-medium i,
-.spec-pill.consumption-pill.status-medium svg {
-  color: #ffffff !important;
-}
-.spec-pill.consumption-pill:hover,
-.spec-pill.consumption-pill.status-medium:hover {
-  background: #fbbf24 !important;
-}
-
-.spec-pill.consumption-pill.status-low,
-.spec-pill.consumption-pill.status-low span {
-  background: #10b981 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.consumption-pill.status-low i,
-.spec-pill.consumption-pill.status-low svg {
-  color: #ffffff !important;
-}
-.spec-pill.consumption-pill.status-low:hover {
-  background: #10b981 !important;
-}
-
-.spec-pill.consumption-pill.status-high,
-.spec-pill.consumption-pill.status-high span {
-  background: #ef4444 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.consumption-pill.status-high i,
-.spec-pill.consumption-pill.status-high svg {
-  color: #ffffff !important;
-}
-.spec-pill.consumption-pill.status-high:hover {
-  background: #ef4444 !important;
-}
-
-.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]),
-.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) span,
-.spec-pill.consumption-pill.status-medium[title*="Domet"],
-.spec-pill.consumption-pill.status-medium[title*="Domet"] span,
-.spec-pill.consumption-pill.status-medium[title*="Doseg"],
-.spec-pill.consumption-pill.status-medium[title*="Doseg"] span {
-  background: #0ea5e9 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) i,
-.spec-pill.consumption-pill.status-medium[title*="Domet"] i,
-.spec-pill.consumption-pill.status-medium[title*="Doseg"] i,
-.spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) svg,
-.spec-pill.consumption-pill.status-medium[title*="Domet"] svg,
-.spec-pill.consumption-pill.status-medium[title*="Doseg"] svg {
-  color: #ffffff !important;
-}
-
+.spec-pill.transmission-pill,
 .spec-pill.battery-pill,
-.spec-pill.battery-pill span {
-  background: #10b981 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
+.spec-pill.stroke-pill,
+.spec-pill.type-pill,
+.spec-pill.power-pill,
+.spec-pill.engine-size-pill,
+.spec-pill.status-low,
+.spec-pill.status-medium,
+.spec-pill.status-high,
+.spec-pill.type-auto,
+.spec-pill.type-manual {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  padding: 0.35rem 0.65rem !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+  box-shadow: none !important;
+  transition: all 0.15s ease;
 }
-.spec-pill.battery-pill i,
-.spec-pill.battery-pill svg {
-  color: #ffffff !important;
+
+.spec-pill span,
+.spec-pill strong,
+.spec-pill b {
+  background: transparent !important;
+  color: inherit !important;
+  font-weight: 600 !important;
 }
-.spec-pill.battery-pill:hover {
-  background: #10b981 !important;
+
+.spec-pill i,
+.spec-pill svg {
+  color: #64748b !important;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0;
+}
+
+.spec-pill:hover {
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.dark-mode .spec-pill,
+body.dark-mode .spec-pill.fuel-coded,
+body.dark-mode .spec-pill[class*="fuel-pill-"],
+body.dark-mode .spec-pill.consumption-pill,
+body.dark-mode .spec-pill.transmission-pill,
+body.dark-mode .spec-pill.battery-pill,
+body.dark-mode .spec-pill.stroke-pill,
+body.dark-mode .spec-pill.type-pill,
+body.dark-mode .spec-pill.power-pill,
+body.dark-mode .spec-pill.engine-size-pill,
+body.dark-mode .spec-pill.status-low,
+body.dark-mode .spec-pill.status-medium,
+body.dark-mode .spec-pill.status-high,
+body.dark-mode .spec-pill.type-auto,
+body.dark-mode .spec-pill.type-manual,
+body.dark-mode .listing-card .spec-pill,
+body.dark-mode .sponsored-mini-card .spec-pill {
+  background: rgba(30, 41, 59, 0.7) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .spec-pill span,
+body.dark-mode .spec-pill strong,
+body.dark-mode .spec-pill b {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .spec-pill i,
+body.dark-mode .spec-pill svg {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .spec-pill:hover {
+  background: rgba(51, 65, 85, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* Solid Location Pill */
@@ -5789,185 +5686,7 @@ body.dark-mode .action-pill-btn.contact-btn:hover {
   font-size: 0.72rem !important;
 }
 
-.spec-pill i {
-  width: 14px;
-  height: 14px;
-  color: var(--color-primary-start);
-}
 
-/* Fuel Pill Colors */
-.fuel-coded {
-  border-width: 1.5px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.02em;
-}
-
-.fuel-pill-P {
-  background: rgba(37, 99, 235, 0.08);
-  border-color: rgba(37, 99, 235, 0.35);
-  color: #1d4ed8;
-}
-
-.fuel-pill-D {
-  background: rgba(71, 85, 105, 0.08);
-  border-color: rgba(71, 85, 105, 0.35);
-  color: #334155;
-}
-
-.fuel-pill-H {
-  background: rgba(124, 58, 237, 0.08);
-  border-color: rgba(124, 58, 237, 0.35);
-  color: #6d28d9;
-}
-
-.fuel-pill-HB {
-  background: rgba(219, 39, 119, 0.08);
-  border-color: rgba(219, 39, 119, 0.35);
-  color: #be185d;
-}
-
-.fuel-pill-E {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: rgba(16, 185, 129, 0.35);
-  color: #059669;
-}
-
-.fuel-pill-LPG {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(245, 158, 11, 0.35);
-  color: #d97706;
-}
-
-/* Consumption & Tech Pills */
-.consumption-pill {
-  background: rgba(14, 165, 233, 0.08);
-  border-color: rgba(14, 165, 233, 0.3);
-  color: #0369a1;
-}
-
-.consumption-pill.status-low {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: #059669;
-}
-
-.consumption-pill.status-medium {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #d97706;
-}
-
-.consumption-pill.status-high {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #dc2626;
-}
-
-.transmission-pill.type-auto {
-  background: rgba(99, 102, 241, 0.08);
-  border-color: rgba(99, 102, 241, 0.25);
-  color: #4f46e5;
-}
-
-.transmission-pill.type-manual {
-  background: rgba(100, 116, 139, 0.08);
-  border-color: rgba(100, 116, 139, 0.25);
-  color: #475569;
-}
-
-/* Dark Mode Overrides for Listing Cards */
-body.dark-mode .listing-card {
-  background: #0f172a !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6) !important;
-}
-
-body.dark-mode .listing-card:hover {
-  background: #1e293b !important;
-  border-color: var(--color-primary-start) !important;
-}
-
-body.dark-mode .listing-card-title {
-  color: #ffffff !important;
-}
-
-body.dark-mode .listing-card .spec-pill {
-  background: rgba(30, 41, 59, 0.6);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #cbd5e1;
-}
-
-body.dark-mode .fuel-pill-P {
-  background: rgba(59, 130, 246, 0.12) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  color: #60a5fa !important;
-}
-
-body.dark-mode .fuel-pill-D {
-  background: rgba(148, 163, 184, 0.12) !important;
-  border-color: rgba(148, 163, 184, 0.4) !important;
-  color: #cbd5e1 !important;
-}
-
-body.dark-mode .fuel-pill-H {
-  background: rgba(167, 139, 250, 0.12) !important;
-  border-color: rgba(167, 139, 250, 0.4) !important;
-  color: #a78bfa !important;
-}
-
-body.dark-mode .fuel-pill-HB {
-  background: rgba(244, 114, 182, 0.12) !important;
-  border-color: rgba(244, 114, 182, 0.4) !important;
-  color: #f472b6 !important;
-}
-
-body.dark-mode .fuel-pill-E {
-  background: rgba(52, 211, 153, 0.12) !important;
-  border-color: rgba(52, 211, 153, 0.4) !important;
-  color: #34d399 !important;
-}
-
-body.dark-mode .fuel-pill-LPG {
-  background: rgba(251, 191, 36, 0.12) !important;
-  border-color: rgba(251, 191, 36, 0.4) !important;
-  color: #fbbf24 !important;
-}
-
-body.dark-mode .consumption-pill {
-  background: rgba(56, 189, 248, 0.1) !important;
-  border-color: rgba(56, 189, 248, 0.35) !important;
-  color: #38bdf8 !important;
-}
-
-body.dark-mode .consumption-pill.status-low {
-  background: rgba(52, 211, 153, 0.12) !important;
-  border-color: rgba(52, 211, 153, 0.4) !important;
-  color: #34d399 !important;
-}
-
-body.dark-mode .consumption-pill.status-medium {
-  background: rgba(251, 191, 36, 0.12) !important;
-  border-color: rgba(251, 191, 36, 0.4) !important;
-  color: #fbbf24 !important;
-}
-
-body.dark-mode .consumption-pill.status-high {
-  background: rgba(248, 113, 113, 0.12) !important;
-  border-color: rgba(248, 113, 113, 0.4) !important;
-  color: #f87171 !important;
-}
-
-body.dark-mode .transmission-pill.type-auto {
-  background: rgba(129, 140, 248, 0.12) !important;
-  border-color: rgba(129, 140, 248, 0.4) !important;
-  color: #818cf8 !important;
-}
-
-body.dark-mode .transmission-pill.type-manual {
-  background: rgba(148, 163, 184, 0.12) !important;
-  border-color: rgba(148, 163, 184, 0.4) !important;
-  color: #94a3b8 !important;
-}
 
 body.dark-mode .price-value {
   color: #f1f5f9;
@@ -6016,8 +5735,8 @@ body.dark-mode .seller-note-card {
   border-radius: 1.5rem;
   padding: 1.5rem;
   position: sticky;
-  top: 6rem;
-  max-height: calc(100vh - 8rem);
+  top: 1.5rem;
+  max-height: calc(100vh - 3rem);
   overflow-y: auto;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
@@ -6245,198 +5964,547 @@ body.dark-mode .as-sidebar-panel input[type="number"] {
   display: none;
 }
 
-/* ── Oglasi: stack to single column on phones and tablets ──────────────
-   Up to tablet width the filter sidebar collapses into the same mobile
-   filter toggle used on phones; the listing cards keep their desktop
-   horizontal layout (that restyle stays at max-width: 768px below). */
+/* ── Mobile Floating Split Pill & Bottom Sheets (Hidden on desktop) ── */
+.mobile-split-pill,
+.mobile-sheet-backdrop,
+.mobile-bottom-sheet,
+.mobile-sheet-handle,
+.mobile-sheet-header,
+.mobile-filter-footer {
+  display: none;
+}
+
+/* Prevent background scroll when bottom sheet is open */
+body.mobile-sheet-lock {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+/* ── Oglasi: Mobile Layout & Floating Split Pill ─────────────────────── */
 @media (max-width: 1024px) {
   .oglasi-layout {
     flex-direction: column;
-    margin: 1rem auto;
+    margin: 0.75rem auto;
     padding: 0 1rem;
-    gap: 1rem;
+    gap: 0.75rem;
     width: calc(100% - 2rem);
   }
 
-  /* ── Sidebar: unified pill → squircle container, same width as nav bar ── */
-  .oglasi-sidebar {
-    width: calc(100% + 2rem);
-    margin-left: -1rem;
-    box-sizing: border-box;
-    border-radius: 1.25rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: #ffffff;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
-    transition: border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Add clearance at bottom so floating pill doesn't block listings or pagination */
+  .oglasi-main {
+    padding-bottom: 5.5rem !important;
   }
 
-  body.dark-mode .oglasi-sidebar {
-    background: #1e293b;
-    border-color: rgba(255, 255, 255, 0.1);
+  /* Hide old mobile filter toggle and sort row on phones — replaced by bottom split pill */
+  .mobile-filter-toggle,
+  .sort-wrap {
+    display: none !important;
   }
 
-  .oglasi-sidebar.filters-open {
-    border-radius: 1.25rem;
-  }
-
-  /* Toggle button: borderless — outer .oglasi-sidebar provides the pill shape */
-  .mobile-filter-toggle {
-    display: flex;
+  /* ── 1. Floating Split Pill (Alarm-style) ────────────────────────── */
+  .mobile-split-pill {
+    position: fixed;
+    bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 16px) + 0.75rem));
+    left: 50%;
+    transform: translateX(-50%) translateY(0) scale(1);
+    z-index: 990;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.6rem;
-    width: 100%;
-    height: 44px;
-    padding: 0 1.1rem;
+    height: 52px;
+    border-radius: 9999px;
+    background: rgba(15, 23, 42, 0.90);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.25);
+    padding: 0 0.35rem;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  body:not(.dark-mode) .mobile-split-pill {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  body:not(.dark-mode) .split-pill-item {
+    color: #0f172a;
+  }
+
+  body:not(.dark-mode) .split-pill-item:active {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  body:not(.dark-mode) .split-pill-divider {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .mobile-split-pill.pill-hidden {
+    transform: translateX(-50%) translateY(28px) scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .split-pill-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0 1.25rem;
+    height: 100%;
+    background: transparent;
     border: none;
-    border-radius: 0;
-    background: transparent;
-    color: #1e293b;
+    color: #f8fafc;
     font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-size: 0.92rem;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: none;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .mobile-filter-toggle .mft-chevron {
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-
-  body.dark-mode .mobile-filter-toggle {
-    background: transparent;
-    color: #e2e8f0;
-  }
-
-  .mobile-filter-toggle .mft-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    flex-shrink: 0;
+    border-radius: 9999px;
+    transition: background 0.2s ease, transform 0.15s ease, opacity 0.15s ease;
     white-space: nowrap;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .mobile-filter-toggle .mft-active-pills {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    flex: 1;
-    min-width: 0;
+  .split-pill-item:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  .mobile-filter-toggle .mft-active-pills::-webkit-scrollbar {
-    display: none;
+  .split-pill-item svg,
+  .split-pill-item i {
+    width: 17px;
+    height: 17px;
+    stroke-width: 2.2;
+    flex-shrink: 0;
   }
 
-  .mft-pill {
+  .split-pill-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+  }
+
+  .split-pill-badge {
     display: inline-flex;
     align-items: center;
-    padding: 0.18rem 0.6rem;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
     border-radius: 999px;
     background: #2563eb;
     color: #ffffff;
     font-size: 0.72rem;
-    font-weight: 600;
-    white-space: nowrap;
-    flex-shrink: 0;
-    border: none;
+    font-weight: 700;
+    line-height: 1;
+    margin-left: 0.1rem;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
   }
 
-  body.dark-mode .mft-pill {
+  /* ── 2. Backdrop Overlay ────────────────────────────────────────── */
+  .mobile-sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mobile-sheet-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ── 3. Shared Bottom Sheet Styles (Handle, Header, Close) ────────── */
+  .mobile-sheet-handle {
+    display: block;
+    width: 38px;
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.25);
+    margin: 10px auto 4px auto;
+    flex-shrink: 0;
+  }
+
+  body:not(.dark-mode) .mobile-sheet-handle {
+    background: rgba(0, 0, 0, 0.18);
+  }
+
+  .mobile-sheet-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.25rem 0.65rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    min-height: 52px;
+  }
+
+  body:not(.dark-mode) .mobile-sheet-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .mobile-sheet-title {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f8fafc;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  body:not(.dark-mode) .mobile-sheet-title {
+    color: #0f172a;
+  }
+
+  .mobile-sheet-title svg,
+  .mobile-sheet-title i {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.2;
+    color: #2563eb;
+  }
+
+  body.dark-mode .mobile-sheet-title svg,
+  body.dark-mode .mobile-sheet-title i {
+    color: #38bdf8;
+  }
+
+  .mobile-sheet-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
     background: #2563eb;
     color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
   }
 
-  /* Filter card: slide in below the toggle */
-  .oglasi-sidebar-card {
-    position: static;
-    top: auto;
-    padding: 0 1.25rem;
-    max-height: none;
-    overflow-y: visible;
-    border-top: 1px solid rgba(0, 0, 0, 0.07) !important;
-    border-left: none !important;
-    border-right: none !important;
+  .mobile-sheet-close {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body:not(.dark-mode) .mobile-sheet-close {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #64748b;
+  }
+
+  body:not(.dark-mode) .mobile-sheet-close:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+
+  /* ── 4. Filter Bottom Sheet (.oglasi-sidebar on mobile) ───────────── */
+  .oglasi-sidebar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    max-height: 88vh !important;
+    height: 88vh !important;
+    z-index: 1001 !important;
+    border-radius: 1.75rem 1.75rem 0 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-bottom: none !important;
-    border-radius: 0 !important;
+    background: #0f172a !important;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.6) !important;
+    transform: translateY(105%) !important;
+    transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  body:not(.dark-mode) .oglasi-sidebar {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .oglasi-sidebar.sheet-open {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .oglasi-sidebar-card {
+    position: static !important;
+    padding: 0.75rem 1.25rem 1rem 1.25rem !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border: none !important;
     background: transparent !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 
-  body.dark-mode .oglasi-sidebar-card {
-    border-top-color: rgba(255, 255, 255, 0.07) !important;
-  }
-
-  /* Hide the filter card content until open — animate with grid-template-rows */
   .oglasi-sidebar #filtersCard {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    transition:
-      grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 0.3s ease,
-      padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .oglasi-sidebar.filters-open #filtersCard {
-    grid-template-rows: 1fr;
-    opacity: 1;
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
-    margin-top: 0;
+    display: block !important;
+    opacity: 1 !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    margin-top: 0 !important;
   }
 
   .sidebar-filters-header {
     display: none !important;
   }
 
-  /* Results header stacks; sort row goes full width */
+  /* Filter Sheet Footer: Sticky Action Bar */
+  .mobile-filter-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem max(1rem, env(safe-area-inset-bottom, 16px));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: #0f172a;
+    flex-shrink: 0;
+  }
+
+  body:not(.dark-mode) .mobile-filter-footer {
+    border-top-color: rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+  }
+
+  .mobile-filter-footer-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0 1rem;
+    height: 46px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  body:not(.dark-mode) .mobile-filter-footer-reset {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  .mobile-filter-footer-apply {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 46px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.94rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    transition: all 0.2s;
+  }
+
+  /* ── 5. Sort Bottom Sheet ────────────────────────────────────────── */
+  .mobile-bottom-sheet {
+    display: flex;
+  }
+
+  .mobile-sort-sheet {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 75vh !important;
+    z-index: 1001 !important;
+    border-radius: 1.75rem 1.75rem 0 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: none !important;
+    background: #0f172a !important;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.6) !important;
+    transform: translateY(105%) !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 16px)) !important;
+  }
+
+  body:not(.dark-mode) .mobile-sort-sheet {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .mobile-sort-sheet.sheet-open {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .mobile-sort-list {
+    padding: 0.75rem 1rem 0.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-sort-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body:not(.dark-mode) .mobile-sort-item {
+    background: #f8fafc;
+  }
+
+  .mobile-sort-item:hover,
+  .mobile-sort-item:active {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  body:not(.dark-mode) .mobile-sort-item:hover,
+  body:not(.dark-mode) .mobile-sort-item:active {
+    background: #f1f5f9;
+  }
+
+  .mobile-sort-item.active {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.35);
+  }
+
+  body:not(.dark-mode) .mobile-sort-item.active {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+
+  .msi-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .msi-label {
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+
+  body:not(.dark-mode) .msi-label {
+    color: #0f172a;
+  }
+
+  .mobile-sort-item.active .msi-label {
+    color: #38bdf8;
+  }
+
+  body:not(.dark-mode) .mobile-sort-item.active .msi-label {
+    color: #2563eb;
+  }
+
+  .msi-desc {
+    font-size: 0.76rem;
+    color: #94a3b8;
+  }
+
+  body:not(.dark-mode) .msi-desc {
+    color: #64748b;
+  }
+
+  .msi-check {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
+    color: #38bdf8;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  body:not(.dark-mode) .msi-check {
+    color: #2563eb;
+  }
+
+  .mobile-sort-item.active .msi-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Results header on mobile */
   .results-header {
     flex-direction: column;
-    align-items: stretch;
-    gap: 0.85rem;
+    align-items: flex-start;
+    gap: 0.35rem;
+    margin-bottom: 0.25rem;
   }
 
   .results-header h1 {
-    font-size: 1.25rem;
-  }
-
-  .sort-wrap {
-    width: 100%;
-    height: 44px;
-    flex-wrap: nowrap;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
-  .sort-wrap .sort-label {
-    order: 1;
-    flex-shrink: 0;
-  }
-
-  .sort-wrap .pill-select-wrapper {
-    order: 2;
-    flex: 1;
-    min-width: 0;
-    max-width: none;
-    height: 100%;
-  }
-
-  .sort-wrap .legend-btn {
-    order: 3;
-    flex-shrink: 0;
+    font-size: 1.35rem;
+    margin: 0;
   }
 }
 
@@ -6620,17 +6688,312 @@ body.dark-mode .view-toggle-btn:hover {
   }
 }
 
-@media (max-width: 480px) {
-  .listing-card-img {
-    width: 130px !important;
-    height: 130px !important;
+/* Hide compact footer by default (only visible in compact-view) */
+.compact-footer-row {
+  display: none !important;
+}
+
+/* ── Mobile Compact View Mode (matches skeleton loading state) ────── */
+@media (max-width: 1024px) {
+  #carListingsContainer.compact-view {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
   }
 
-  .spec-pill {
-    font-size: 0.6rem !important;
-    padding: 0.18rem 0.38rem !important;
+#carListingsContainer.compact-view .listing-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  height: 136px !important;
+  min-height: 136px !important;
+  max-height: 136px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  position: relative !important;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+body.dark-mode #carListingsContainer.compact-view .listing-card {
+  background: #131d31 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Compact image */
+#carListingsContainer.compact-view .listing-card-img {
+  width: 125px !important;
+  min-width: 125px !important;
+  max-width: 125px !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 16px 0 0 16px !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  align-self: stretch !important;
+}
+
+#carListingsContainer.compact-view .listing-card-img img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Hide gallery buttons, dots, badges in compact view */
+#carListingsContainer.compact-view .card-gallery-arrow,
+#carListingsContainer.compact-view .card-gallery-dots,
+#carListingsContainer.compact-view .badge-new-pill,
+#carListingsContainer.compact-view .condition-overlay-badge,
+#carListingsContainer.compact-view .drazba-card-timer,
+#carListingsContainer.compact-view .drazba-card-live,
+#carListingsContainer.compact-view .card-img-fav-btn {
+  display: none !important;
+}
+
+/* Compact Content Body */
+#carListingsContainer.compact-view .listing-card-content {
+  padding: 10px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  gap: 4px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Hide non-compact sections */
+#carListingsContainer.compact-view .listing-card-specs,
+#carListingsContainer.compact-view .listing-card-footer,
+#carListingsContainer.compact-view .note-contact-row,
+#carListingsContainer.compact-view .drazba-badges,
+#carListingsContainer.compact-view .star-rating-badge,
+#carListingsContainer.compact-view .star-rating-card-row,
+#carListingsContainer.compact-view .discount-tag-icon,
+#carListingsContainer.compact-view .listing-card-header .car-price-box,
+#carListingsContainer.compact-view .listing-card-action-bar {
+  display: none !important;
+}
+
+/* Header & Title */
+#carListingsContainer.compact-view .listing-card-header {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#carListingsContainer.compact-view .car-info {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#carListingsContainer.compact-view .listing-card-title {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  margin: 0 !important;
+  padding: 2px 0 0 0 !important;
+  color: #0f172a !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+}
+
+body.dark-mode #carListingsContainer.compact-view .listing-card-title {
+  color: #f8fafc !important;
+}
+
+#carListingsContainer.compact-view .vehicle-title-make-model {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  display: inline !important;
+}
+
+#carListingsContainer.compact-view .vehicle-title-variant {
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  margin-top: 1px !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+}
+
+body.dark-mode #carListingsContainer.compact-view .vehicle-title-variant {
+  color: #94a3b8 !important;
+}
+
+/* Primary Specs Row */
+#carListingsContainer.compact-view .primary-specs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  justify-content: flex-start !important;
+}
+
+#carListingsContainer.compact-view .primary-specs .spec-pill {
+  font-size: 0.72rem !important;
+  padding: 2px 6px !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.dark-mode #carListingsContainer.compact-view .primary-specs .spec-pill {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+#carListingsContainer.compact-view .primary-specs .power-pill,
+#carListingsContainer.compact-view .primary-specs .length-pill,
+#carListingsContainer.compact-view .primary-specs .hours-pill {
+  display: none !important;
+}
+
+/* Footer Row: Price + Actions */
+#carListingsContainer.compact-view .compact-footer-row,
+#carListingsContainer.compact-view .compact-bottom-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin-top: auto !important;
+  gap: 8px !important;
+}
+
+#carListingsContainer.compact-view .compact-price-wrap {
+  min-width: 0;
+  flex: 1;
+}
+
+#carListingsContainer.compact-view .compact-price-value {
+  display: block !important;
+  font-size: 1.12rem !important;
+  font-weight: 800 !important;
+  color: #0284c7 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+}
+
+body.dark-mode #carListingsContainer.compact-view .compact-price-value {
+  color: #38bdf8 !important;
+}
+
+#carListingsContainer.compact-view .compact-actions-wrap,
+#carListingsContainer.compact-view .listing-card-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+#carListingsContainer.compact-view .compact-actions-wrap .action-pill-btn,
+#carListingsContainer.compact-view .listing-card-actions .action-pill-btn {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #64748b !important;
+  cursor: pointer;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode #carListingsContainer.compact-view .compact-actions-wrap .action-pill-btn,
+body.dark-mode #carListingsContainer.compact-view .listing-card-actions .action-pill-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #94a3b8 !important;
+}
+
+#carListingsContainer.compact-view .compact-actions-wrap .action-pill-btn i,
+#carListingsContainer.compact-view .compact-actions-wrap .action-pill-btn svg,
+#carListingsContainer.compact-view .listing-card-actions .action-pill-btn i,
+#carListingsContainer.compact-view .listing-card-actions .action-pill-btn svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+#carListingsContainer.compact-view .listing-fav-btn.active {
+  background: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  color: #ef4444 !important;
+}
+
+#carListingsContainer.compact-view .contact-btn {
+  background: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+  color: #10b981 !important;
+}
+
+@media (max-width: 380px) {
+  #carListingsContainer.compact-view .listing-card {
+    height: 126px !important;
+    min-height: 126px !important;
+    max-height: 126px !important;
+  }
+  #carListingsContainer.compact-view .listing-card-img {
+    width: 110px !important;
+    min-width: 110px !important;
+    max-width: 110px !important;
+  }
+  #carListingsContainer.compact-view .listing-card-title {
+    font-size: 0.88rem !important;
+  }
+  #carListingsContainer.compact-view .compact-price-value {
+    font-size: 1rem !important;
   }
 }
+}
+
 
 .legend-overlay {
   position: fixed;
@@ -9365,114 +9728,439 @@ body.dark-mode .catalog-offers-title {
 }
 
 @media (max-width: 768px) {
-  /* ── Card layout: image on top, centered info below ── */
-  .listing-card {
-    flex-direction: column !important;
-    height: auto !important;
+  /* ── Mobile Floating Pill Navbar (Desktop Style adapted for phone) ── */
+  #header,
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
   }
-
-  .listing-card-img {
+  body.dark-mode #header,
+  body.dark-mode header {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    width: 100%;
+    display: flex !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: max(8px, env(safe-area-inset-top, 8px)) 14px 6px 14px !important;
+    box-sizing: border-box !important;
+    pointer-events: none;
+  }
+  body.dark-mode .sticky-nav {
+    background: transparent !important;
+    border: none !important;
+  }
+  .sticky-nav .nav-container {
     width: 100% !important;
-    height: 200px !important;
-    margin: 0 !important;
-    border-radius: 1.25rem 1.25rem 0 0 !important;
-    flex-shrink: 0;
+    max-width: 100% !important;
+    pointer-events: none;
   }
-
-  .listing-card-content {
-    padding: 0.875rem 1rem 1rem !important;
-    gap: 0.4rem !important;
-    justify-content: flex-start !important;
+  .sticky-nav .nav-inner {
+    pointer-events: auto !important;
+    display: flex !important;
     align-items: center !important;
-    text-align: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    padding: 0 12px 0 8px !important;
+    border-radius: 9999px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+    box-sizing: border-box !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-
-  /* Header stacks vertically, centered */
-  .listing-card-header {
-    flex-direction: column !important;
+  body.dark-mode .sticky-nav .nav-inner {
+    background: rgba(18, 32, 58, 0.88) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  }
+  .sticky-nav .nav-left {
+    display: flex !important;
+    align-items: center !important;
+  }
+  .sticky-nav .nav-left .burger-btn {
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.4rem !important;
-    width: 100% !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    background: transparent !important;
+    color: #334155 !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    transition: background-color 0.15s ease !important;
+  }
+  .sticky-nav .nav-left .burger-btn:active {
+    background: rgba(0, 0, 0, 0.06) !important;
+  }
+  body.dark-mode .sticky-nav .nav-left .burger-btn {
+    color: #cbd5e1 !important;
+  }
+  body.dark-mode .sticky-nav .nav-left .burger-btn:active {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+  .sticky-nav .nav-left .burger-btn i,
+  .sticky-nav .nav-left .burger-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .sticky-nav .nav-left .logo-text {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    height: 32px !important;
+    width: auto !important;
+    max-width: calc(100% - 110px) !important;
+    margin: 0 !important;
+    text-decoration: none !important;
+  }
+  .sticky-nav .nav-left .logo-text .site-logo {
+    height: 28px !important;
+    max-height: 28px !important;
+    width: auto !important;
+    max-width: 135px !important;
+    object-fit: contain !important;
+  }
+  .sticky-nav .nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .sticky-nav .mobile-profile-wrap {
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+  }
+  .sticky-nav .nav-avatar-mobile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 50% !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    transition: background-color 0.15s ease !important;
+  }
+  .sticky-nav .nav-avatar-mobile:active {
+    background: #e2e8f0 !important;
+  }
+  body.dark-mode .sticky-nav .nav-avatar-mobile {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #cbd5e1 !important;
+  }
+  body.dark-mode .sticky-nav .nav-avatar-mobile:active {
+    background: rgba(51, 65, 85, 0.9) !important;
+  }
+  .sticky-nav .nav-avatar-mobile i,
+  .sticky-nav .nav-avatar-mobile svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .sticky-nav nav#navLinks {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 2px !important;
+    right: 2px !important;
+    border-radius: 20px !important;
+    pointer-events: auto !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    z-index: 2010 !important;
+  }
+  body.dark-mode .sticky-nav nav#navLinks {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6) !important;
+  }
+  .sticky-nav .mobile-profile-dropdown {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    left: auto !important;
+    border-radius: 20px !important;
+    pointer-events: auto !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    z-index: 2010 !important;
+  }
+  body.dark-mode .sticky-nav .mobile-profile-dropdown {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6) !important;
   }
 
-  .car-info {
+  /* ── Refined Mobile Spacing for Page Containers ── */
+  .oglasi-layout {
+    margin: 0.5rem auto 1.5rem auto !important;
+    padding: 0 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .results-header {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+    padding: 0 2px !important;
+  }
+  .results-header h1 {
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+  }
+  .page-container {
+    padding-top: 0.5rem !important;
+  }
+
+  /* ── Default Card layout (Non-compact): image on top, clean left-aligned info below ── */
+  #carListingsContainer:not(.compact-view) .listing-card {
+    flex-direction: column !important;
+    height: auto !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    margin-bottom: 1rem !important;
+  }
+
+  body.dark-mode #carListingsContainer:not(.compact-view) .listing-card {
+    background: #131d31 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .listing-card-img {
+    width: 100% !important;
+    height: 210px !important;
+    margin: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+    flex-shrink: 0;
+    position: relative !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .listing-card-content {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 1.15rem 1rem !important;
+    gap: 0.6rem !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ── 1. Header: centered title, variant, price, stars ── */
+  #carListingsContainer:not(.compact-view) .listing-card-header {
+    order: 1 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-  }
-
-  .car-price-box {
-    align-items: center !important;
-  }
-
-  .listing-card-title {
-    font-size: 1rem !important;
-    line-height: 1.3 !important;
+    justify-content: center !important;
+    gap: 0.3rem !important;
+    width: 100% !important;
     text-align: center !important;
   }
 
-  .price-value {
-    font-size: 1.2rem !important;
-  }
-
-  .price-rating {
-    padding: 0.2rem 0.5rem !important;
-    font-size: 0.65rem !important;
-  }
-
-  .spec-pill {
-    padding: 0.38rem 0.7rem !important;
-    font-size: 0.78rem !important;
-  }
-
-  .spec-pill i {
-    width: 14px !important;
-    height: 14px !important;
-    margin-right: 3px !important;
-  }
-
-  /* Primary specs centered */
-  .primary-specs {
+  #carListingsContainer:not(.compact-view) .car-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
     justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    gap: 0.15rem !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .listing-card-title {
+    font-size: 1.25rem !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    font-weight: 800 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.15rem !important;
+    margin: 0 !important;
     width: 100% !important;
   }
 
-  .spec-row {
-    min-height: auto !important;
-    gap: 0.3rem !important;
-    justify-content: center !important;
+  #carListingsContainer:not(.compact-view) .vehicle-title-make-model {
+    display: block !important;
+    text-align: center !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: var(--text-dark, #0f172a) !important;
   }
 
-  .spec-group-left {
-    gap: 0.3rem !important;
-    justify-content: center !important;
+  body.dark-mode #carListingsContainer:not(.compact-view) .vehicle-title-make-model {
+    color: #f8fafc !important;
   }
 
-  /* ── Flatten action-bar so actions can be ordered below specs ── */
-  .listing-card-action-bar {
+  #carListingsContainer:not(.compact-view) .vehicle-title-variant {
+    display: block !important;
+    text-align: center !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+  }
+
+  body.dark-mode #carListingsContainer:not(.compact-view) .vehicle-title-variant {
+    color: #94a3b8 !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .car-price-box {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    margin-top: 0.2rem !important;
+    gap: 0.25rem !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .car-price-box > div {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .price-value {
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
+    color: #0284c7 !important;
+    text-align: center !important;
+  }
+
+  body.dark-mode #carListingsContainer:not(.compact-view) .price-value {
+    color: #38bdf8 !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .price-rating {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    align-self: center !important;
+    text-align: center !important;
+    margin: 0.15rem auto 0 auto !important;
+    padding: 0.2rem 0.6rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .price-rating-stars {
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+  }
+
+  /* ── Unwrap action bar into parent flex container ── */
+  #carListingsContainer:not(.compact-view) .listing-card-action-bar {
     display: contents !important;
   }
 
-  /* ── Actions row: after secondary specs, circular buttons ── */
-  .listing-card-actions {
-    order: 10 !important;
+  /* ── 2. Primary specs (Letnik, KM, Moč) centered ── */
+  #carListingsContainer:not(.compact-view) .primary-specs {
+    order: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+    margin: 0.35rem 0 0.15rem 0 !important;
+  }
+
+  /* ── 3. Secondary specs (Prostornina, Gorivo, Menjalnik, Poraba) directly under primary specs ── */
+  #carListingsContainer:not(.compact-view) .listing-card-specs {
+    order: 3 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin: 0 0 0.35rem 0 !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .spec-row,
+  #carListingsContainer:not(.compact-view) .spec-row.secondary,
+  #carListingsContainer:not(.compact-view) .spec-group-left {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  #carListingsContainer:not(.compact-view) .spec-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.3rem 0.55rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  /* ── 4. Action buttons (Heart, Scale, Phone) centered below specs ── */
+  #carListingsContainer:not(.compact-view) .listing-card-actions {
+    order: 4 !important;
     width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 1.25rem !important;
     border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
-    padding-top: 0.75rem !important;
-    margin-top: 0.25rem !important;
+    padding-top: 0.85rem !important;
+    margin-top: 0.35rem !important;
   }
 
-  body.dark-mode .listing-card-actions {
-    border-top-color: rgba(255, 255, 255, 0.07) !important;
+  body.dark-mode #carListingsContainer:not(.compact-view) .listing-card-actions {
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
   }
 
   /* Circular buttons */
-  .action-pill-btn {
+  #carListingsContainer:not(.compact-view) .action-pill-btn {
     width: 44px !important;
     height: 44px !important;
     min-width: 44px !important;
@@ -9485,27 +10173,28 @@ body.dark-mode .catalog-offers-title {
     align-self: center !important;
     margin: 0 !important;
     padding: 0 !important;
-    position: static !important;
-    top: auto !important;
   }
 
-  .action-pill-btn i,
-  .action-pill-btn svg {
+  #carListingsContainer:not(.compact-view) .action-pill-btn i,
+  #carListingsContainer:not(.compact-view) .action-pill-btn svg {
     width: 18px !important;
     height: 18px !important;
     display: block !important;
   }
 
-  /* All action buttons: no lift, same baseline */
-  .action-pill-btn,
-  .action-pill-btn.accent,
-  #carListingsContainer .grid-contact-btn,
-  #carListingsContainer.grid-layout .grid-contact-btn {
+  #carListingsContainer:not(.compact-view) .action-pill-btn,
+  #carListingsContainer:not(.compact-view) .action-pill-btn.accent,
+  #carListingsContainer:not(.compact-view) .grid-contact-btn {
     box-shadow: none !important;
     transform: none !important;
   }
 
-  /* Condition badge: hidden on mobile in content, shown on image */
+  /* Unused footer elements hidden */
+  #carListingsContainer:not(.compact-view) .listing-card-footer {
+    display: none !important;
+  }
+
+  /* Condition badge on image */
   .condition-pill {
     display: none !important;
   }
@@ -9513,21 +10202,18 @@ body.dark-mode .catalog-offers-title {
   .condition-overlay-badge {
     display: inline-flex !important;
     position: absolute !important;
-    top: 1.25rem !important;
-    left: 1.25rem !important;
+    top: 1rem !important;
+    left: 1rem !important;
     background: #1e293b !important;
     color: #fff !important;
     font-size: 0.7rem !important;
     font-weight: 700 !important;
     padding: 3px 8px !important;
     border-radius: 999px !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
     letter-spacing: 0.02em !important;
     z-index: 3 !important;
     opacity: 1 !important;
   }
-  /* Per-condition color palette — fully opaque */
   .condition-overlay-badge[data-condition="Novo"] { background: #16a34a !important; }
   .condition-overlay-badge[data-condition="Rabljeno"] { background: #1e293b !important; }
   .condition-overlay-badge[data-condition="Razstavno"],
@@ -9537,12 +10223,12 @@ body.dark-mode .catalog-offers-title {
   .condition-overlay-badge[data-condition="Poškodovano"] { background: #dc2626 !important; }
 
   /* Hide the note+phone row */
-  .note-contact-row {
+  #carListingsContainer:not(.compact-view) .note-contact-row {
     display: none !important;
   }
 
   /* Always show phone in the actions row */
-  .grid-contact-btn {
+  #carListingsContainer:not(.compact-view) .grid-contact-btn {
     display: flex !important;
   }
 
@@ -10256,399 +10942,46 @@ body.dark-mode .news-article-body .nb-article-divider { border-color: #374151; }
 body.dark-mode .news-article-body .nb-article-quote { background: #1a1830; }
 body.dark-mode .news-article-body .nb-article-source { background: #374151; color: #e5e7eb; }
 
-/* ── Final Solid Overrides for MojAvto Pills (Listings & Sponsored) ── */
-
-/* 1. Year Pill */
-body .spec-pill.year-pill,
-body.dark-mode .spec-pill.year-pill,
-body .sponsored-mini-card .spec-pill.year-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.year-pill {
-  background: #818cf8 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.year-pill *,
-body.dark-mode .spec-pill.year-pill *,
-body .sponsored-mini-card .spec-pill.year-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.year-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.year-pill:hover,
-body.dark-mode .spec-pill.year-pill:hover {
-  background: #818cf8 !important;
+/* ── Unified Elegant Badges for MojAvto Pills (Listings & Sponsored) ── */
+body .spec-pill,
+body.dark-mode .spec-pill,
+body .sponsored-mini-card .spec-pill,
+body.dark-mode .sponsored-mini-card .spec-pill {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
 }
 
-/* 2. Km Pill */
-body .spec-pill.km-pill,
-body.dark-mode .spec-pill.km-pill,
-body .sponsored-mini-card .spec-pill.km-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.km-pill {
-  background: #2dd4bf !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.km-pill *,
-body.dark-mode .spec-pill.km-pill *,
-body .sponsored-mini-card .spec-pill.km-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.km-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.km-pill:hover,
-body.dark-mode .spec-pill.km-pill:hover {
-  background: #2dd4bf !important;
+body .spec-pill *,
+body.dark-mode .spec-pill *,
+body .sponsored-mini-card .spec-pill *,
+body.dark-mode .sponsored-mini-card .spec-pill * {
+  color: inherit !important;
 }
 
-/* 3. Power Pill */
-body .spec-pill.power-pill,
-body.dark-mode .spec-pill.power-pill,
-body .sponsored-mini-card .spec-pill.power-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.power-pill {
-  background: #8b5cf6 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.power-pill *,
-body.dark-mode .spec-pill.power-pill *,
-body .sponsored-mini-card .spec-pill.power-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.power-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.power-pill:hover,
-body.dark-mode .spec-pill.power-pill:hover {
-  background: #8b5cf6 !important;
+body .spec-pill i,
+body .spec-pill svg,
+body .sponsored-mini-card .spec-pill i,
+body .sponsored-mini-card .spec-pill svg {
+  color: #64748b !important;
 }
 
-/* 4. Displacement Pill */
-body .spec-pill.displacement-pill,
-body.dark-mode .spec-pill.displacement-pill,
-body .sponsored-mini-card .spec-pill.displacement-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.displacement-pill {
-  background: #94a3b8 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.displacement-pill *,
-body.dark-mode .spec-pill.displacement-pill *,
-body .sponsored-mini-card .spec-pill.displacement-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.displacement-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.displacement-pill:hover,
-body.dark-mode .spec-pill.displacement-pill:hover {
-  background: #94a3b8 !important;
+body.dark-mode .spec-pill,
+body.dark-mode .sponsored-mini-card .spec-pill {
+  background: rgba(30, 41, 59, 0.7) !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* 5. Fuel P (Petrol) */
-body .spec-pill.fuel-coded.fuel-pill-P,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-P,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P {
-  background: #60a5fa !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-P *,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-P *,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P *,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-P * {
-  color: #ffffff !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-P:hover,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-P:hover {
-  background: #60a5fa !important;
+body.dark-mode .spec-pill i,
+body.dark-mode .spec-pill svg,
+body.dark-mode .sponsored-mini-card .spec-pill i,
+body.dark-mode .sponsored-mini-card .spec-pill svg {
+  color: #94a3b8 !important;
 }
 
-/* 6. Fuel D (Diesel) */
-body .spec-pill.fuel-coded.fuel-pill-D,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-D,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D {
-  background: #34d399 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-D *,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-D *,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D *,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-D * {
-  color: #ffffff !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-D:hover,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-D:hover {
-  background: #34d399 !important;
-}
 
-/* 7. Fuel H (Hybrid) */
-body .spec-pill.fuel-coded.fuel-pill-H,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-H,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H {
-  background: #06b6d4 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-H *,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-H *,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H *,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-H * {
-  color: #ffffff !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-H:hover,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-H:hover {
-  background: #06b6d4 !important;
-}
-
-/* 8. Fuel HB (Plug-in Hybrid) */
-body .spec-pill.fuel-coded.fuel-pill-HB,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-HB,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB {
-  background: #6366f1 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-HB *,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-HB *,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB *,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-HB * {
-  color: #ffffff !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-HB:hover,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-HB:hover {
-  background: #6366f1 !important;
-}
-
-/* 9. Fuel E (Electric) */
-body .spec-pill.fuel-coded.fuel-pill-E,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-E,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E {
-  background: #10b981 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-E *,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-E *,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E *,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-E * {
-  color: #ffffff !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-E:hover,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-E:hover {
-  background: #10b981 !important;
-}
-
-/* 10. Fuel LPG */
-body .spec-pill.fuel-coded.fuel-pill-LPG,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-LPG,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG {
-  background: #fb923c !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-LPG *,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-LPG *,
-body .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG *,
-body.dark-mode .sponsored-mini-card .spec-pill.fuel-coded.fuel-pill-LPG * {
-  color: #ffffff !important;
-}
-body .spec-pill.fuel-coded.fuel-pill-LPG:hover,
-body.dark-mode .spec-pill.fuel-coded.fuel-pill-LPG:hover {
-  background: #fb923c !important;
-}
-
-/* 11. Transmission (Automatic type-auto) */
-body .spec-pill.transmission-pill,
-body.dark-mode .spec-pill.transmission-pill,
-body .spec-pill.transmission-pill.type-auto,
-body.dark-mode .spec-pill.transmission-pill.type-auto,
-body .sponsored-mini-card .spec-pill.transmission-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill,
-body .sponsored-mini-card .spec-pill.transmission-pill.type-auto,
-body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill.type-auto {
-  background: #fb923c !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.transmission-pill *,
-body.dark-mode .spec-pill.transmission-pill *,
-body .sponsored-mini-card .spec-pill.transmission-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.transmission-pill:hover,
-body.dark-mode .spec-pill.transmission-pill:hover,
-body .spec-pill.transmission-pill.type-auto:hover,
-body.dark-mode .spec-pill.transmission-pill.type-auto:hover {
-  background: #fb923c !important;
-}
-
-/* 12. Transmission (Manual type-manual) */
-body .spec-pill.transmission-pill.type-manual,
-body.dark-mode .spec-pill.transmission-pill.type-manual,
-body .sponsored-mini-card .spec-pill.transmission-pill.type-manual,
-body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill.type-manual {
-  background: #94a3b8 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.transmission-pill.type-manual *,
-body.dark-mode .spec-pill.transmission-pill.type-manual *,
-body .sponsored-mini-card .spec-pill.transmission-pill.type-manual *,
-body.dark-mode .sponsored-mini-card .spec-pill.transmission-pill.type-manual * {
-  color: #ffffff !important;
-}
-body .spec-pill.transmission-pill.type-manual:hover,
-body.dark-mode .spec-pill.transmission-pill.type-manual:hover {
-  background: #94a3b8 !important;
-}
-
-/* 13. Consumption (Low status-low) */
-body .spec-pill.consumption-pill.status-low,
-body.dark-mode .spec-pill.consumption-pill.status-low,
-body .sponsored-mini-card .spec-pill.consumption-pill.status-low,
-body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-low {
-  background: #10b981 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.consumption-pill.status-low *,
-body.dark-mode .spec-pill.consumption-pill.status-low *,
-body .sponsored-mini-card .spec-pill.consumption-pill.status-low *,
-body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-low * {
-  color: #ffffff !important;
-}
-body .spec-pill.consumption-pill.status-low:hover,
-body.dark-mode .spec-pill.consumption-pill.status-low:hover {
-  background: #10b981 !important;
-}
-
-/* 14. Consumption (Medium status-medium) */
-body .spec-pill.consumption-pill,
-body.dark-mode .spec-pill.consumption-pill,
-body .spec-pill.consumption-pill.status-medium,
-body.dark-mode .spec-pill.consumption-pill.status-medium,
-body .sponsored-mini-card .spec-pill.consumption-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill,
-body .sponsored-mini-card .spec-pill.consumption-pill.status-medium,
-body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-medium {
-  background: #fbbf24 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.consumption-pill *,
-body.dark-mode .spec-pill.consumption-pill *,
-body .sponsored-mini-card .spec-pill.consumption-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.consumption-pill:hover,
-body.dark-mode .spec-pill.consumption-pill:hover,
-body .spec-pill.consumption-pill.status-medium:hover,
-body.dark-mode .spec-pill.consumption-pill.status-medium:hover {
-  background: #fbbf24 !important;
-}
-
-/* 15. Consumption (High status-high) */
-body .spec-pill.consumption-pill.status-high,
-body.dark-mode .spec-pill.consumption-pill.status-high,
-body .sponsored-mini-card .spec-pill.consumption-pill.status-high,
-body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-high {
-  background: #ef4444 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.consumption-pill.status-high *,
-body.dark-mode .spec-pill.consumption-pill.status-high *,
-body .sponsored-mini-card .spec-pill.consumption-pill.status-high *,
-body.dark-mode .sponsored-mini-card .spec-pill.consumption-pill.status-high * {
-  color: #ffffff !important;
-}
-body .spec-pill.consumption-pill.status-high:hover,
-body.dark-mode .spec-pill.consumption-pill.status-high:hover {
-  background: #ef4444 !important;
-}
-
-/* 16. EV Range (Blue status-medium battery/doseg) */
-body .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]),
-body.dark-mode .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]),
-body .spec-pill.consumption-pill.status-medium[title*="Domet"],
-body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Domet"],
-body .spec-pill.consumption-pill.status-medium[title*="Doseg"],
-body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Doseg"] {
-  background: #0ea5e9 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) *,
-body.dark-mode .spec-pill.consumption-pill.status-medium:has([data-lucide="battery-charging"]) *,
-body .spec-pill.consumption-pill.status-medium[title*="Domet"] *,
-body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Domet"] *,
-body .spec-pill.consumption-pill.status-medium[title*="Doseg"] *,
-body.dark-mode .spec-pill.consumption-pill.status-medium[title*="Doseg"] * {
-  color: #ffffff !important;
-}
-
-/* 17. Battery Pill */
-body .spec-pill.battery-pill,
-body.dark-mode .spec-pill.battery-pill,
-body .sponsored-mini-card .spec-pill.battery-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.battery-pill {
-  background: #10b981 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.battery-pill *,
-body.dark-mode .spec-pill.battery-pill *,
-body .sponsored-mini-card .spec-pill.battery-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.battery-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.battery-pill:hover,
-body.dark-mode .spec-pill.battery-pill:hover {
-  background: #10b981 !important;
-}
-
-/* 18. Motorcycle Stroke Pill */
-body .spec-pill.stroke-pill,
-body.dark-mode .spec-pill.stroke-pill,
-body .sponsored-mini-card .spec-pill.stroke-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.stroke-pill {
-  background: #0ea5e9 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.stroke-pill *,
-body.dark-mode .spec-pill.stroke-pill *,
-body .sponsored-mini-card .spec-pill.stroke-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.stroke-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.stroke-pill:hover,
-body.dark-mode .spec-pill.stroke-pill:hover {
-  background: #0ea5e9 !important;
-}
-
-/* 19. Motorcycle Engine Type/Configuration Pill */
-body .spec-pill.type-pill,
-body.dark-mode .spec-pill.type-pill,
-body .sponsored-mini-card .spec-pill.type-pill,
-body.dark-mode .sponsored-mini-card .spec-pill.type-pill {
-  background: #8b5cf6 !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-}
-body .spec-pill.type-pill *,
-body.dark-mode .spec-pill.type-pill *,
-body .sponsored-mini-card .spec-pill.type-pill *,
-body.dark-mode .sponsored-mini-card .spec-pill.type-pill * {
-  color: #ffffff !important;
-}
-body .spec-pill.type-pill:hover,
-body.dark-mode .spec-pill.type-pill:hover {
-  background: #8b5cf6 !important;
-}
 
 
 /* Brand Select Dropdowns */
@@ -10846,15 +11179,63 @@ body.dark-mode .custom-select-option.brand-option.selected {
 
 .custom-select-trigger.brand-selected {
   border-radius: 99px !important;
-  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.25) 0%, rgba(var(--brand-rgb), 0.05) 100%);
-  border-color: rgba(var(--brand-rgb), 0.4);
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.25) 0%, rgba(var(--brand-rgb), 0.05) 100%) !important;
+  border-color: rgba(var(--brand-rgb), 0.45) !important;
 }
 
 .custom-select-trigger.brand-selected .custom-select-brand-name {
-  color: rgb(var(--brand-rgb));
+  color: rgb(var(--brand-rgb)) !important;
   font-weight: 600;
 }
 
-body.dark-mode .custom-select-trigger.brand-selected {
-  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.35) 0%, rgba(var(--brand-rgb), 0.05) 100%);
+.custom-select-trigger.brand-selected:hover,
+.custom-select-trigger.brand-selected.open {
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.32) 0%, rgba(var(--brand-rgb), 0.08) 100%) !important;
+  border-color: rgba(var(--brand-rgb), 0.6) !important;
 }
+
+body.dark-mode .custom-select-trigger.brand-selected,
+body.platform-navtika.dark-mode .custom-select-trigger.brand-selected {
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.45) 0%, rgba(var(--brand-rgb), 0.08) 100%) !important;
+  border-color: rgba(var(--brand-rgb), 0.55) !important;
+}
+
+body.dark-mode .custom-select-trigger.brand-selected:hover,
+body.dark-mode .custom-select-trigger.brand-selected.open,
+body.platform-navtika.dark-mode .custom-select-trigger.brand-selected:hover,
+body.platform-navtika.dark-mode .custom-select-trigger.brand-selected.open {
+  background: linear-gradient(90deg, rgba(var(--brand-rgb), 0.55) 0%, rgba(var(--brand-rgb), 0.12) 100%) !important;
+  border-color: rgba(var(--brand-rgb), 0.75) !important;
+}
+
+.custom-select-trigger.country-selected {
+  border-radius: 99px !important;
+  background: linear-gradient(90deg, rgba(var(--country-rgb), 0.25) 0%, rgba(var(--country-rgb), 0.05) 100%) !important;
+  border-color: rgba(var(--country-rgb), 0.45) !important;
+}
+
+.custom-select-trigger.country-selected .custom-select-country-name {
+  color: rgb(var(--country-rgb)) !important;
+  font-weight: 600;
+}
+
+.custom-select-trigger.country-selected:hover,
+.custom-select-trigger.country-selected.open {
+  background: linear-gradient(90deg, rgba(var(--country-rgb), 0.32) 0%, rgba(var(--country-rgb), 0.08) 100%) !important;
+  border-color: rgba(var(--country-rgb), 0.6) !important;
+}
+
+body.dark-mode .custom-select-trigger.country-selected,
+body.platform-navtika.dark-mode .custom-select-trigger.country-selected {
+  background: linear-gradient(90deg, rgba(var(--country-rgb), 0.45) 0%, rgba(var(--country-rgb), 0.08) 100%) !important;
+  border-color: rgba(var(--country-rgb), 0.55) !important;
+}
+
+body.dark-mode .custom-select-trigger.country-selected:hover,
+body.dark-mode .custom-select-trigger.country-selected.open,
+body.platform-navtika.dark-mode .custom-select-trigger.country-selected:hover,
+body.platform-navtika.dark-mode .custom-select-trigger.country-selected.open {
+  background: linear-gradient(90deg, rgba(var(--country-rgb), 0.55) 0%, rgba(var(--country-rgb), 0.12) 100%) !important;
+  border-color: rgba(var(--country-rgb), 0.75) !important;
+}
+

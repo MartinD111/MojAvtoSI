@@ -12,6 +12,9 @@ import {
     getTypeLabels
 } from '../services/businessService.js';
 import { allBrands, serviceLabels } from '../data/businesses.js';
+import { getBrandLogo, getBrandInitial, isBrandMonochrome } from '../data/brandLogos.js';
+import { getBrandRgb } from '../data/brandColors.js';
+import { t } from '../core/i18n.js';
 import { PLATFORM } from '../config/platform.js';
 import '../../css/map.css';
 import { navigateTo } from '../router.js';
@@ -262,9 +265,17 @@ function setupFilters() {
     const brandPillsEl = document.getElementById('brandSelectedPills');
     function renderBrandPills() {
         if (!brandPillsEl) return;
-        brandPillsEl.innerHTML = selectedBrands.map((b, i) =>
-            `<span class="brand-selected-pill">${b}<button type="button" class="brand-pill-remove" data-idx="${i}">&times;</button></span>`
-        ).join('');
+        brandPillsEl.innerHTML = selectedBrands.map((b, i) => {
+            const logoUrl = getBrandLogo(b);
+            const rgb = getBrandRgb(b);
+            const initial = getBrandInitial(b);
+            const isAdaptive = isBrandMonochrome(b);
+            const adaptiveClass = isAdaptive ? 'logo-adaptive' : '';
+            const logoHtml = logoUrl
+                ? `<img src="${logoUrl}" class="brand-pill-logo ${adaptiveClass}" alt="" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';" /><span class="brand-pill-badge" style="display:none;">${initial}</span>`
+                : `<span class="brand-pill-badge">${initial}</span>`;
+            return `<span class="brand-selected-pill" style="--brand-rgb: ${rgb};">${logoHtml}<span>${escHtml(b)}</span><button type="button" class="brand-pill-remove" data-idx="${i}" aria-label="Odstrani">&times;</button></span>`;
+        }).join('');
         brandPillsEl.querySelectorAll('.brand-pill-remove').forEach(btn => {
             btn.addEventListener('click', () => {
                 selectedBrands.splice(+btn.dataset.idx, 1);
@@ -289,12 +300,27 @@ function setupFilters() {
 
         brandSelect.addEventListener('change', () => {
             const val = brandSelect.value;
-            if (!val || selectedBrands.includes(val)) { brandSelect.value = ''; return; }
+            if (!val || selectedBrands.includes(val)) {
+                brandSelect.value = '';
+                const trigger = brandSelect.parentElement?.querySelector('.custom-select-trigger');
+                if (trigger) {
+                    trigger.classList.remove('brand-selected');
+                    trigger.style.removeProperty('--brand-rgb');
+                    const triggerVal = trigger.querySelector('.custom-select-value');
+                    if (triggerVal) triggerVal.textContent = brandSelect.options[0]?.text || t('map_select_brand', 'Izberite znamko...');
+                }
+                return;
+            }
             selectedBrands.push(val);
             brandSelect.value = '';
-            // Reset trigger display text
-            const trigger = brandSelect.parentElement?.querySelector('.custom-select-value');
-            if (trigger) trigger.textContent = 'Izberi znamko...';
+            // Reset trigger display text and styles
+            const trigger = brandSelect.parentElement?.querySelector('.custom-select-trigger');
+            if (trigger) {
+                trigger.classList.remove('brand-selected');
+                trigger.style.removeProperty('--brand-rgb');
+                const triggerVal = trigger.querySelector('.custom-select-value');
+                if (triggerVal) triggerVal.textContent = brandSelect.options[0]?.text || t('map_select_brand', 'Izberite znamko...');
+            }
             renderBrandPills();
             store.updateFilters({ brands: [...selectedBrands] });
             scheduleFilterUpdate();
@@ -369,9 +395,21 @@ function resetFilters() {
     store.updateFilters({ types: ['dealer', 'service', 'vulcanizer', 'tuner', 'detailing', 'carwash'], brands: [], authorized: false, leasing: false, tyreStorage: false, dryStorage: false, minRating: 0, radius: 20 });
 
     document.querySelectorAll('.type-pill').forEach(p => p.classList.add('active'));
-    // Reset brand dropdown pills
+    // Reset brand dropdown pills and select trigger
+    selectedBrands = [];
     const brandPillsReset = document.getElementById('brandSelectedPills');
     if (brandPillsReset) brandPillsReset.innerHTML = '';
+    const brandSelectReset = document.getElementById('brandSelect');
+    if (brandSelectReset) {
+        brandSelectReset.value = '';
+        const trigger = brandSelectReset.parentElement?.querySelector('.custom-select-trigger');
+        if (trigger) {
+            trigger.classList.remove('brand-selected');
+            trigger.style.removeProperty('--brand-rgb');
+            const triggerVal = trigger.querySelector('.custom-select-value');
+            if (triggerVal) triggerVal.textContent = brandSelectReset.options[0]?.text || t('map_select_brand', 'Izberite znamko...');
+        }
+    }
     const filterAuthorized = document.getElementById('filterAuthorized');
     const filterLeasing = document.getElementById('filterLeasing');
     const filterTyre = document.getElementById('filterTyre');

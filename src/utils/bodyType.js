@@ -22,6 +22,23 @@ export const BODY_TYPE_MAP = {
     'sportni': 'Sportni', 'sports': 'Sportni', 'sport': 'Sportni',
     'pick-up': 'Pick-up', 'pickup': 'Pick-up', 'pick up': 'Pick-up',
     'oldtimer': 'Oldtimer', 'classic': 'Oldtimer',
+
+    // Moto types
+    'sportnimotor': 'SportniMotor', 'sportnitourer': 'SportniTourer', 'adventure': 'Adventure',
+    'nakedbike': 'NakedBike', 'enduro': 'Enduro', 'chopper': 'Chopper', 'tourer': 'Tourer',
+    'supermoto': 'Supermoto', 'trial': 'Trial', 'cross': 'Cross', 'skuter': 'Skuter',
+    'minimoto': 'Minimoto', 'cruiser': 'Cruiser', 'moped': 'Moped', 'motornesani': 'MotorneSani',
+    'evozila': 'EVozila', 'atv': 'ATV', 'utv': 'UTV', 'trikolesnik': 'Trikolesnik', 'gocart': 'Gocart',
+
+    // Prosti čas types
+    'avtodom': 'Avtodom', 'pocitniiskaprikolica': 'PocitniiskaPrikolica', 'pocitniska prikolica': 'PocitniiskaPrikolica',
+    'mobilnahisica': 'MobilnaHisica', 'mobilna hisica': 'MobilnaHisica',
+    'snemljivbivalnik': 'SnemljivBivalnik', 'sotorskaprikolica': 'SotorskaPrikolica',
+
+    // Commercial types
+    'dostavna': 'Dostavna', 'tovorna': 'Tovorna', 'avtobusi': 'Avtobusi', 'prikolice': 'Prikolice',
+    'kmetijska': 'Kmetijska', 'gradbena': 'Gradbena', 'vilicari': 'Vilicari', 'gozdarska': 'Gozdarska',
+    'komunalna': 'Komunalna', 'ostalo': 'Ostalo'
 };
 
 /**
@@ -29,13 +46,12 @@ export const BODY_TYPE_MAP = {
  */
 export function normalizeBodyType(raw) {
     if (!raw || typeof raw !== 'string') return '';
-    return BODY_TYPE_MAP[raw.trim().toLowerCase()] || '';
+    return BODY_TYPE_MAP[raw.trim().toLowerCase()] || raw.trim();
 }
 
 /**
  * Reads the model-level body_type from a brands/models taxonomy object.
- * Only object-form models ({ body_type, variants }) carry a body_type;
- * plain-array models return '' so callers fall back to manual selection.
+ * Checks .body_type, .type, .bodyType, .vehicleType across object or array forms.
  *
  * @param {Object} data  — the loaded brands_models_*.json object
  * @param {string} make
@@ -45,10 +61,22 @@ export function normalizeBodyType(raw) {
 export function getModelBodyType(data, make, model) {
     if (!data || !make || !model) return '';
     const modelData = data[make];
-    if (!modelData || Array.isArray(modelData)) return '';
+    if (!modelData) return '';
     const entry = modelData[model];
-    if (entry && !Array.isArray(entry) && typeof entry === 'object') {
-        return normalizeBodyType(entry.body_type);
+    if (!entry) return '';
+    if (typeof entry === 'object' && !Array.isArray(entry)) {
+        return normalizeBodyType(entry.body_type || entry.type || entry.bodyType || entry.vehicleType);
+    }
+    if (Array.isArray(entry)) {
+        for (const item of entry) {
+            if (item && typeof item === 'object') {
+                const val = item.body_type || item.type || item.bodyType || item.vehicleType;
+                if (val) {
+                    const res = normalizeBodyType(val);
+                    if (res) return res;
+                }
+            }
+        }
     }
     return '';
 }

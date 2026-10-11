@@ -20,6 +20,8 @@ import {
     timeSlots,
     unavailableSlots,
 } from '../data/bookingData.js';
+import { getBrandLogo, getBrandInitial, isBrandMonochrome } from '../data/brandLogos.js';
+import { getBrandRgb } from '../data/brandColors.js';
 import { store } from '../store/store.js';
 import QRCode from 'qrcode';
 import { buildGoogleCalendarUrl } from '../services/googleCalendarService.js';
@@ -340,9 +342,17 @@ function buildStep1() {
 
     const years = Array.from({ length: 26 }, (_, i) => 2025 - i);
 
-    const brandOptionItems = carBrands.map(b =>
-        `<div class="custom-dropdown-option" data-value="${b}">${b}</div>`
-    ).join('');
+    const brandOptionItems = carBrands.map(b => {
+        const logoUrl = getBrandLogo(b);
+        const rgb = getBrandRgb(b);
+        const initial = getBrandInitial(b);
+        const isAdaptive = isBrandMonochrome(b);
+        const adaptiveClass = isAdaptive ? 'logo-adaptive' : '';
+        const watermarkHtml = logoUrl
+            ? `<div class="custom-select-brand-watermark"><img src="${logoUrl}" class="custom-select-brand-logo ${adaptiveClass}" alt="" loading="lazy" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';" /><span class="custom-select-brand-badge" style="display:none;">${initial}</span></div>`
+            : `<div class="custom-select-brand-watermark"><span class="custom-select-brand-badge">${initial}</span></div>`;
+        return `<div class="custom-dropdown-option brand-option" data-value="${b}" style="--brand-rgb: ${rgb};"><div class="custom-select-brand-item"><span class="custom-select-brand-name">${b}</span>${watermarkHtml}</div></div>`;
+    }).join('');
 
     const yearOptionItems = years.map(y =>
         `<div class="custom-dropdown-option" data-value="${y}">${y}</div>`
@@ -435,9 +445,25 @@ function bindStep1() {
             const opt = e.target.closest('.custom-dropdown-option');
             if (!opt) return;
             const val = opt.dataset.value;
-            const label = opt.textContent;
+            const label = opt.querySelector('.custom-select-brand-name')?.textContent || opt.textContent;
             btn.dataset.value = val;
-            btn.querySelector('.dd-label').textContent = label;
+            if (wrapperId === 'ddBrand' && val) {
+                const logoUrl = getBrandLogo(val);
+                const rgb = getBrandRgb(val);
+                const initial = getBrandInitial(val);
+                const isAdaptive = isBrandMonochrome(val);
+                const adaptiveClass = isAdaptive ? 'logo-adaptive' : '';
+                btn.style.setProperty('--brand-rgb', rgb);
+                btn.classList.add('brand-selected');
+                const triggerItemHtml = logoUrl
+                    ? `<div class="custom-select-brand-item trigger-item" style="--brand-rgb: ${rgb};"><span class="custom-select-brand-name">${label}</span><div class="custom-select-brand-watermark"><img src="${logoUrl}" class="custom-select-brand-logo ${adaptiveClass}" alt="" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';" /><span class="custom-select-brand-badge" style="display:none;">${initial}</span></div></div>`
+                    : `<div class="custom-select-brand-item trigger-item" style="--brand-rgb: ${rgb};"><span class="custom-select-brand-name">${label}</span><div class="custom-select-brand-watermark"><span class="custom-select-brand-badge">${initial}</span></div></div>`;
+                btn.querySelector('.dd-label').innerHTML = triggerItemHtml;
+            } else {
+                btn.style.removeProperty('--brand-rgb');
+                btn.classList.remove('brand-selected');
+                btn.querySelector('.dd-label').textContent = label;
+            }
             btn.classList.remove('placeholder');
             list.querySelectorAll('.custom-dropdown-option').forEach(o => o.classList.remove('selected'));
             opt.classList.add('selected');

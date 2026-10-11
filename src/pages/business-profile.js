@@ -1,6 +1,3 @@
-// business-profile.js — Business Profile Page — MojAvto.si
-// Renders full business profile: hero, info bar, tabs (oglasi/storitve/ocene/o podjetju)
-
 import { escHtml } from '../utils/escHtml.js';
 import { navigateTo } from '../router.js';
 import '../../css/business-profile.css';
@@ -8,6 +5,8 @@ import { getBusinessById, getTypeLabels, getBusinessTypeInfo } from '../services
 import { serviceLabels } from '../data/businesses.js';
 import { SAMPLE_LISTINGS as sampleCars } from '../data/sampleListings.js'; // Reuse platform listings
 import { renderCarCard, bindCardEvents } from './oglasi.js';
+import { getBrandLogo, getBrandInitial, isBrandMonochrome } from '../data/brandLogos.js';
+import { getBrandRgb } from '../data/brandColors.js';
 
 // ── Helpers ──────────────────────────────────────────────────
 function getStars(rating) {
@@ -64,13 +63,28 @@ function buildHero(biz) {
     });
 }
 
+// ── Helper to render brand tags with logos and colors ───────────
+function renderBrandTag(b, isAuthorized = false) {
+    const logoUrl = getBrandLogo(b);
+    const rgb = getBrandRgb(b);
+    const initial = getBrandInitial(b);
+    const isAdaptive = isBrandMonochrome(b);
+    const adaptiveClass = isAdaptive ? 'logo-adaptive' : '';
+    const logoHtml = logoUrl
+        ? `<img src="${logoUrl}" class="biz-brand-tag-logo ${adaptiveClass}" alt="" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='inline-flex';" /><span class="biz-brand-tag-badge" style="display:none;">${initial}</span>`
+        : `<span class="biz-brand-tag-badge">${initial}</span>`;
+    const authCls = isAuthorized ? ' authorized' : '';
+    const authTitle = isAuthorized ? ' title="Pooblaščen"' : '';
+    return `<span class="biz-brand-tag${authCls}" style="--brand-rgb: ${rgb};"${authTitle}>${logoHtml}<span>${escHtml(b)}</span></span>`;
+}
+
 // ── Build Info Bar ────────────────────────────────────────────
 function buildInfoBar(biz) {
     const brands = [...new Set([...biz.authorizedBrands, ...biz.supportedBrands])];
     const brandsHtml = brands.length > 0
         ? `<div class="biz-brands-row">
-            ${biz.authorizedBrands.map(b => `<span class="biz-brand-tag authorized" title="Pooblaščen">${b}</span>`).join('')}
-            ${biz.supportedBrands.filter(b => !biz.authorizedBrands.includes(b)).map(b => `<span class="biz-brand-tag">${b}</span>`).join('')}
+            ${biz.authorizedBrands.map(b => renderBrandTag(b, true)).join('')}
+            ${biz.supportedBrands.filter(b => !biz.authorizedBrands.includes(b)).map(b => renderBrandTag(b, false)).join('')}
            </div>`
         : '';
 
@@ -384,7 +398,7 @@ function buildAboutTab(biz) {
             <div class="biz-about-section">
                 <h3><i data-lucide="award"></i>Pooblaščene znamke</h3>
                 <div class="biz-brands-row">
-                    ${biz.authorizedBrands.map(b => `<span class="biz-brand-tag authorized">${escHtml(b)}</span>`).join('')}
+                    ${biz.authorizedBrands.map(b => renderBrandTag(b, true)).join('')}
                 </div>
             </div>
         `);

@@ -116,6 +116,10 @@ export function createCustomSelect(select) {
                           select.id === 'sidebarMake' ||
                           select.id === 'eval-make' ||
                           select.id === 'fMake' ||
+                          select.id === 'brandSelect' ||
+                          select.id === 'brand' ||
+                          select.name === 'brand' ||
+                          select.id === 'vf-make' ||
                           select.name === 'engineMake' ||
                           select.id === 'advEngineMake' ||
                           select.id === 'sidebarEngineMake' ||

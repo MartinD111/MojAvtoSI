@@ -1847,5 +1847,10 @@
   "auction_subscribed_ok": "✓ Prijavljeni ste na obvestila.",
   "auction_subscribed_err": "Napaka pri prijavi.",
   "auctions_count": "dražb",
-  "total_from": "Skupaj od"
+  "total_from": "Skupaj od",
+  "mobile_view_mode_title": "Prikaz oglasov",
+  "mobile_view_default": "Privzeti",
+  "mobile_view_compact": "Kompaktni",
+  "search_results_title": "Rezultati iskanja",
+  "vehicles_count_suffix": "vozil"
 }

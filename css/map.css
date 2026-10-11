@@ -179,25 +179,40 @@
 .brand-selected-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.2rem 0.55rem 0.2rem 0.65rem;
+    gap: 0.4rem;
+    padding: 0.25rem 0.6rem 0.25rem 0.5rem;
     border-radius: 9999px;
-    background: #eff6ff;
-    border: 1.5px solid var(--color-primary-start);
-    color: var(--color-primary-start);
-    font-size: 0.72rem;
+    background: rgba(var(--brand-rgb, 37, 99, 235), 0.1);
+    border: 1.5px solid rgba(var(--brand-rgb, 37, 99, 235), 0.35);
+    color: rgb(var(--brand-rgb, 37, 99, 235));
+    font-size: 0.75rem;
     font-weight: 700;
     font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.brand-selected-pill .brand-pill-logo {
+    width: 18px;
+    height: 14px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.brand-selected-pill .brand-pill-badge {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: rgb(var(--brand-rgb, 37, 99, 235));
+    line-height: 1;
 }
 
 .brand-pill-remove {
     background: none;
     border: none;
-    color: var(--color-primary-start);
+    color: rgb(var(--brand-rgb, 37, 99, 235));
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     line-height: 1;
-    padding: 0;
+    padding: 0 0 0 2px;
     display: flex;
     align-items: center;
     opacity: 0.7;
@@ -206,6 +221,16 @@
 
 .brand-pill-remove:hover {
     opacity: 1;
+}
+
+body.dark-mode .brand-selected-pill {
+    background: rgba(var(--brand-rgb, 37, 99, 235), 0.2);
+    border-color: rgba(var(--brand-rgb, 37, 99, 235), 0.5);
+    color: #f8fafc;
+}
+
+body.dark-mode .brand-selected-pill .brand-pill-remove {
+    color: #cbd5e1;
 }
 
 /* Toggle switches */

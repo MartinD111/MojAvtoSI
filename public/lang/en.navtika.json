@@ -232,5 +232,8 @@
   "auction_subscribed_err": "Error subscribing.",
   "auction_empty_title": "🔨 Currently there are no active auctions for selected filters.",
   "auction_empty_sub": "Subscribe to alerts below and we will notify you when an auction opens.",
-  "auction_not_found": "Auction not found."
+  "auction_not_found": "Auction not found.",
+  "mobile_view_mode_title": "Listings view",
+  "mobile_view_default": "Default",
+  "mobile_view_compact": "Compact"
 }

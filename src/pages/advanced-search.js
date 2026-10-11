@@ -29,46 +29,53 @@ import {
 let searchMode = 'oglasi';
 
 export function initAdvancedSearchPage() {
-    console.log('[AdvancedSearchPage] init');
-    // Honor an incoming ?mode=drazbe so deep links land on the right pill.
-    const modeParam = parseHashParams().get('mode');
-    searchMode = modeParam === 'drazbe' ? 'drazbe' : 'oglasi';
+    try {
+        console.log('[AdvancedSearchPage] init');
+        // Honor an incoming ?mode=drazbe so deep links land on the right pill.
+        const modeParam = parseHashParams().get('mode');
+        searchMode = modeParam === 'drazbe' ? 'drazbe' : 'oglasi';
 
-    // MojaNavtika uses a dedicated vessel/engine search controller + view.
-    if (PLATFORM.id === 'navtika') {
-        import('./advanced-search.navtika.js').then(m => m.initNavtikaSearchPage());
-        return;
-    }
+        // MojaNavtika uses a dedicated vessel/engine search controller + view.
+        if (PLATFORM.id === 'navtika') {
+            import('./advanced-search.navtika.js').then(m => m.initNavtikaSearchPage());
+            return;
+        }
 
-    initCustomSelects();
+        initCustomSelects();
 
-    // Parse category params from current hash
-    const params = parseHashParams();
-    const catContext = {
-        cat: params.get('cat') || '',
-        sub: params.get('sub') || '',
-        searchType: params.get('searchType') || '',
-        vtype: params.get('vtype') || params.get('bodyType') || params.get('bodyTypes') || '',
-        najem: params.get('najem') || '',
-    };
+        // Parse category params from current hash
+        const params = parseHashParams();
+        const catContext = {
+            cat: params.get('cat') || '',
+            sub: params.get('sub') || '',
+            searchType: params.get('searchType') || '',
+            vtype: params.get('vtype') || params.get('bodyType') || params.get('bodyTypes') || '',
+            najem: params.get('najem') || '',
+        };
+        console.log('[AdvancedSearchPage] vtype is ' + catContext.vtype);
 
-    injectRentalToggle(catContext);
-    populateEquipmentChips(catContext.cat || 'avto');
-    applyCategoryContext(catContext);
-    bindAccordions();
-    bindSearchLogic(catContext);
-    bindHybridSubOptions();
+        injectRentalToggle(catContext);
+        populateEquipmentChips(catContext.cat || 'avto');
+        applyCategoryContext(catContext);
+        console.log('[AdvancedSearchPage] after applyCategoryContext bodyTypeHidden: ' + document.getElementById('bodyTypeHidden')?.value);
+        bindAccordions();
+        bindSearchLogic(catContext);
+        console.log('[AdvancedSearchPage] after bindSearchLogic bodyTypeHidden: ' + document.getElementById('bodyTypeHidden')?.value);
+        bindHybridSubOptions();
 
-    bindStickyMobileBar();
-    
-    // Setup numeric formatters
-    document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
+        bindStickyMobileBar();
+        
+        // Setup numeric formatters
+        document.querySelectorAll('.js-format-number').forEach(input => setupNumericFormatter(input));
 
-    if (window.lucide) window.lucide.createIcons();
-    translateAdvancedSearchPage(document.querySelector('.search-container') || document);
-    if (!window.__advancedSearchI18nBound) {
-        document.addEventListener('langChanged', () => translateAdvancedSearchPage(document.querySelector('.search-container') || document));
-        window.__advancedSearchI18nBound = true;
+        if (window.lucide) window.lucide.createIcons();
+        translateAdvancedSearchPage(document.querySelector('.search-container') || document);
+        if (!window.__advancedSearchI18nBound) {
+            document.addEventListener('langChanged', () => translateAdvancedSearchPage(document.querySelector('.search-container') || document));
+            window.__advancedSearchI18nBound = true;
+        }
+    } catch (err) {
+        console.error('[AdvancedSearchPage] init ERROR: ' + err.message + '\n' + err.stack);
     }
 }
 
@@ -237,12 +244,15 @@ function applyCategoryContext(ctx) {
     // Done synchronously (before bindSearchLogic runs) so the initial brand fetch
     // already sees the active card and filters the leisure list by vrsta vozila.
     if (ctx.vtype) {
-        const card = document.querySelector(`.body-type-card[data-value="${ctx.vtype}"]`);
-        if (card) {
-            card.classList.add('active');
-            const bodyTypeHidden = document.getElementById('bodyTypeHidden');
-            if (bodyTypeHidden) bodyTypeHidden.value = ctx.vtype;
-        }
+        const types = ctx.vtype.split(',').map(s => s.trim()).filter(Boolean);
+        types.forEach(val => {
+            const card = document.querySelector(`.body-type-card[data-value="${val}"]`);
+            if (card) {
+                card.classList.add('active');
+            }
+        });
+        const bodyTypeHidden = document.getElementById('bodyTypeHidden');
+        if (bodyTypeHidden) bodyTypeHidden.value = ctx.vtype;
     }
 
     // ── Restore remembered search state ──
@@ -1020,15 +1030,32 @@ function bindSearchLogic(catContext) {
 
     // ── Auto-select the matching VRSTA VOZILA card when a known model is chosen ──
     function autoSelectBodyType(mk, md) {
-        if (activeTab !== 'avto') return;
         const canonical = getModelBodyType(window._brandModelData, mk, md);
         if (!canonical) return; // unknown → leave the user's manual selection untouched
-        const target = document.querySelector(`#grid-cars .body-type-card[data-value="${canonical}"]`);
-        if (!target) return;
-        allBodyTypeCards.forEach(c => c.classList.remove('active'));
-        target.classList.add('active');
-        if (bodyTypeHidden) bodyTypeHidden.value = canonical;
-        updateLiveCount();
+
+        let gridSelector = '#grid-cars';
+        if (activeTab === 'moto') gridSelector = '#grid-motorbikes';
+        else if (activeTab === 'prosti-cas') gridSelector = '#grid-leisure';
+        else if (activeTab === 'gospodarska') gridSelector = '#grid-commercial';
+
+        const target = document.querySelector(`${gridSelector} .body-type-card[data-value="${canonical}"]`);
+        if (target) {
+            document.querySelectorAll(`${gridSelector} .body-type-card`).forEach(c => c.classList.remove('active'));
+            target.classList.add('active');
+            if (bodyTypeHidden) bodyTypeHidden.value = canonical;
+            if (activeTab === 'prosti-cas') {
+                applyLeisureFieldVisibility();
+            }
+            updateLiveCount();
+        } else if (activeTab === 'moto' && ['ATV', 'UTV', 'Trikolesnik', 'Gocart'].includes(canonical)) {
+            if (motoGroupSelector) {
+                motoGroupSelector.drillInto();
+                const subTarget = document.querySelector(`#motoSubGrid .body-type-card[data-value="${canonical}"]`);
+                if (subTarget && !subTarget.classList.contains('active')) {
+                    subTarget.click();
+                }
+            }
+        }
     }
 
     function resetSelectors() {
@@ -1309,11 +1336,48 @@ bindCardDrag(excludedVehicleCardsEl);
         if (window.lucide) window.lucide.createIcons();
     }
 
-    allBodyTypeCards.forEach(card => card.addEventListener('click', () => {
+    const standardBodyCards = document.querySelectorAll(
+        '#grid-cars .body-type-card, #motoMainGrid .body-type-card:not([data-group]), #grid-leisure .body-type-card'
+    );
+
+    function getActiveBodyTypes() {
+        if (activeTab === 'moto') {
+            const mainActive = Array.from(document.querySelectorAll('#motoMainGrid .body-type-card.active:not([data-group])'))
+                .map(c => c.getAttribute('data-value'))
+                .filter(Boolean);
+            const subActive = Array.from(document.querySelectorAll('#motoSubGrid .body-type-card.active'))
+                .map(c => c.getAttribute('data-value'))
+                .filter(Boolean);
+            return [...mainActive, ...subActive];
+        }
+        if (activeTab === 'gospodarska') {
+            return bodyTypeHidden ? bodyTypeHidden.value.split(',').filter(Boolean) : [];
+        }
+        if (activeTab === 'prosti-cas') {
+            return Array.from(document.querySelectorAll('#grid-leisure .body-type-card.active'))
+                .map(c => c.getAttribute('data-value'))
+                .filter(Boolean);
+        }
+        // Default 'avto'
+        return Array.from(document.querySelectorAll('#grid-cars .body-type-card.active'))
+            .map(c => c.getAttribute('data-value'))
+            .filter(Boolean);
+    }
+
+    // Sync bodyTypeHidden on init
+    if (bodyTypeHidden) {
+        const activeTypes = getActiveBodyTypes();
+        if (activeTypes.length > 0) {
+            bodyTypeHidden.value = activeTypes.join(',');
+        } else if (catContext.vtype) {
+            bodyTypeHidden.value = catContext.vtype;
+        }
+    }
+
+    standardBodyCards.forEach(card => card.addEventListener('click', () => {
         if (card.dataset.group) return; // group cards are handled by their own selector
         card.classList.toggle('active');
-        const activeValues = Array.from(allBodyTypeCards).filter(btn => btn.classList.contains('active')).map(btn => btn.getAttribute('data-value'));
-        if (bodyTypeHidden) bodyTypeHidden.value = activeValues.join(',');
+        if (bodyTypeHidden) bodyTypeHidden.value = getActiveBodyTypes().join(',');
         // Prosti-čas: the vrsta-vozila cards also narrow the brand/model lists by type
         // and toggle engine-related fields (towed/static types have no motor).
         if (activeTab === 'prosti-cas') {
@@ -1324,18 +1388,42 @@ bindCardDrag(excludedVehicleCardsEl);
     }));
 
     // ── Moto 4/3-wheel group drill-down ──
-    const motoGroupSelector = setupMotoGroupSelector({ bodyTypeHidden, onChange: () => updateLiveCount() });
+    const motoGroupSelector = setupMotoGroupSelector({ bodyTypeHidden, getActiveTab: () => activeTab, onChange: () => updateLiveCount() });
 
     // ── Commercial (Gospodarska) two-level drill-down: Vrsta → Kategorije ──
     const hiddenVType = document.getElementById('hiddenVType');
     const commercialSelector = setupCommercialSelector({
         bodyTypeHidden,
         hiddenVType,
+        getActiveTab: () => activeTab,
         onChange: () => { applyRelevance(); updateLiveCount(); },
     });
-    // Pre-select a vrsta if the URL carried one (e.g. ?vtype=Kmetijska)
-    if (activeTab === 'gospodarska' && catContext.vtype && COMMERCIAL_BY_KEY[catContext.vtype]) {
-        commercialSelector.drillInto(catContext.vtype);
+    // Pre-select a vrsta or category if the URL carried one (e.g. ?vtype=Kmetijska or ?vtype=Dostavna)
+    if (activeTab === 'gospodarska' && catContext.vtype) {
+        const rawTypes = catContext.vtype.split(',').map(s => s.trim()).filter(Boolean);
+        for (const raw of rawTypes) {
+            if (COMMERCIAL_BY_KEY[raw]) {
+                commercialSelector.drillInto(raw);
+                break;
+            }
+            const matchingVrsta = COMMERCIAL_TAXONOMY.find(v =>
+                v.categories.some(c => (typeof c === 'object' ? c.value : c) === raw)
+            );
+            if (matchingVrsta) {
+                commercialSelector.drillInto(matchingVrsta.key);
+                const catCard = document.querySelector(`.commercial-cat-card[data-value="${raw}"]`);
+                if (catCard && !catCard.classList.contains('active')) {
+                    catCard.click();
+                }
+                break;
+            }
+        }
+    }
+    if (activeTab === 'moto' && catContext.vtype) {
+        const rawTypes = catContext.vtype.split(',').map(s => s.trim()).filter(Boolean);
+        if (rawTypes.some(t => ['ATV', 'UTV', 'Trikolesnik', 'Gocart'].includes(t))) {
+            motoGroupSelector.drillInto();
+        }
     }
 
     // ── Power Unit Toggle Logic ──
@@ -1737,19 +1825,29 @@ function matchesFilters(l, filters) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // Moto 4/3-wheel group selector — drill-down from group card into sub-types
 // ═══════════════════════════════════════════════════════════════════════════════
-function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
+function setupMotoGroupSelector({ bodyTypeHidden, getActiveTab, onChange }) {
     const mainGrid = document.getElementById('motoMainGrid');
     const subGrid = document.getElementById('motoSubGrid');
     const header = document.getElementById('motoDrillHeader');
     const title = document.getElementById('motoDrillTitle');
     const backBtn = document.getElementById('motoBackBtn');
     const groupCard = document.querySelector('.moto-group-card[data-group="4in3kolesa"]');
-    if (!mainGrid || !subGrid || !groupCard) return;
+    if (!mainGrid || !subGrid || !groupCard) return { reset() {}, drillInto() {} };
 
     const selected = new Set();
 
+    // Check initially active cards
+    subGrid.querySelectorAll('.body-type-card.active').forEach(card => {
+        if (card.dataset.value) selected.add(card.dataset.value);
+    });
+    if (selected.size > 0) {
+        groupCard.classList.add('active');
+    }
+
     function writeFilter() {
         if (!bodyTypeHidden) return;
+        const tab = getActiveTab ? getActiveTab() : '';
+        if (tab !== 'moto') return;
         const existing = bodyTypeHidden.value
             ? bodyTypeHidden.value.split(',').filter(v => !['ATV','UTV','Trikolesnik','Gocart'].includes(v))
             : [];
@@ -1769,9 +1867,24 @@ function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
         subGrid.style.display = 'none';
         mainGrid.style.display = 'flex';
         if (header) header.style.display = 'none';
-        selected.clear();
+        const grp = document.querySelector('.moto-group-card[data-group="4in3kolesa"]');
+        if (grp) {
+            if (selected.size > 0) grp.classList.add('active');
+            else grp.classList.remove('active');
+        }
         writeFilter();
         if (onChange) onChange();
+    }
+
+    function reset() {
+        selected.clear();
+        subGrid.querySelectorAll('.body-type-card').forEach(c => c.classList.remove('active'));
+        const grp = document.querySelector('.moto-group-card[data-group="4in3kolesa"]');
+        if (grp) grp.classList.remove('active');
+        subGrid.style.display = 'none';
+        mainGrid.style.display = 'flex';
+        if (header) header.style.display = 'none';
+        writeFilter();
     }
 
     groupCard.addEventListener('click', showSub);
@@ -1779,8 +1892,18 @@ function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
     subGrid.querySelectorAll('.body-type-card').forEach(card => {
         card.addEventListener('click', () => {
             const val = card.dataset.value;
-            if (selected.has(val)) { selected.delete(val); card.classList.remove('active'); }
-            else { selected.add(val); card.classList.add('active'); }
+            if (selected.has(val)) {
+                selected.delete(val);
+                card.classList.remove('active');
+            } else {
+                selected.add(val);
+                card.classList.add('active');
+            }
+            const grp = document.querySelector('.moto-group-card[data-group="4in3kolesa"]');
+            if (grp) {
+                if (selected.size > 0) grp.classList.add('active');
+                else grp.classList.remove('active');
+            }
             writeFilter();
             if (onChange) onChange();
         });
@@ -1788,7 +1911,7 @@ function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
 
     if (backBtn) backBtn.addEventListener('click', showMain);
 
-    return { reset: showMain };
+    return { reset, drillInto: showSub };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1797,7 +1920,7 @@ function setupMotoGroupSelector({ bodyTypeHidden, onChange }) {
 // vrsta's kategorije, with a back button. Selecting kategorije toggles them as
 // active filters; with none selected the vrsta itself is used as the filter.
 // ═══════════════════════════════════════════════════════════════════════════════
-function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
+function setupCommercialSelector({ bodyTypeHidden, hiddenVType, getActiveTab, onChange }) {
     const grid = document.getElementById('commercialGrid');
     const header = document.getElementById('commercialDrillHeader');
     const title = document.getElementById('commercialDrillTitle');
@@ -1813,6 +1936,8 @@ function setupCommercialSelector({ bodyTypeHidden, hiddenVType, onChange }) {
 
     function writeFilter() {
         if (!bodyTypeHidden) return;
+        const tab = getActiveTab ? getActiveTab() : '';
+        if (tab !== 'gospodarska') return;
         if (selected.size > 0) {
             bodyTypeHidden.value = [...selected].join(',');
         } else if (currentVrsta) {

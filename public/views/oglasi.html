@@ -121,7 +121,7 @@
                 }
             }
 
-            /* Active filter summary badge on collapsed accordions */
+            /* Active filter summary badge on accordions */
             #sidebarFiltersForm .adv-acc-trigger {
                 flex-wrap: wrap !important;
                 row-gap: 0.25rem !important;
@@ -129,29 +129,58 @@
             .acc-filter-summary {
                 display: inline-flex;
                 align-items: center;
+                gap: 0.3rem;
+                flex-wrap: wrap;
                 width: 100%;
                 justify-content: center;
-                font-size: 0.72rem;
-                font-weight: 600;
-                color: #ffffff;
-                background: #2563eb;
-                border: 1px solid #1d4ed8;
-                border-radius: 999px;
-                padding: 0.2rem 0.55rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                pointer-events: none;
-                max-width: fit-content;
-                margin: 0 auto;
+                pointer-events: auto !important;
+                margin-top: 0.25rem;
+            }
+            .acc-filter-summary:empty {
+                display: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .acc-filter-summary .sidebar-active-pill {
+                padding: 0.15rem 0.45rem 0.15rem 0.55rem !important;
+                font-size: 0.7rem !important;
+                gap: 0.25rem !important;
+                cursor: default;
+                pointer-events: auto !important;
+            }
+            .acc-filter-summary .sidebar-pill-remove {
+                cursor: pointer;
+                padding: 0 0.15rem;
+                font-weight: 700;
+                font-size: 0.85rem;
+                line-height: 1;
+                opacity: 0.8;
+                transition: opacity 0.15s;
+                pointer-events: auto !important;
+            }
+            .acc-filter-summary .sidebar-pill-remove:hover {
+                opacity: 1;
             }
         </style>
 
-        <!-- Mobile-only: toggle to reveal/collapse the filter panel -->
-        <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle">
+        <!-- Mobile-only: toggle replaced by bottom floating split pill -->
+        <button type="button" id="mobileFilterToggle" class="mobile-filter-toggle" style="display: none !important;">
             <span class="mft-label"><i data-lucide="sliders-horizontal"></i> <span data-i18n-key="sidebar_filters_title">Filtri</span></span>
             <i data-lucide="chevron-down" class="mft-chevron"></i>
         </button>
+
+        <!-- Mobile Bottom Sheet Handle & Header -->
+        <div class="mobile-sheet-handle"></div>
+        <div class="mobile-sheet-header">
+            <div class="mobile-sheet-title">
+                <i data-lucide="sliders-horizontal"></i>
+                <span data-i18n-key="sidebar_filters_title">Filtri</span>
+                <span class="mobile-sheet-count-badge" id="mobileFilterHeaderBadge" style="display:none;">0</span>
+            </div>
+            <button type="button" class="mobile-sheet-close" id="mobileFilterCloseBtn" aria-label="Zapri">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
 
         <div class="oglasi-sidebar-card glass-card" id="filtersCard">
             <div class="filters-card-inner" style="min-height: 0; overflow: hidden;">
@@ -229,6 +258,7 @@
                                 <option value="Kombi">Kombi / Dostavnik</option>
                                 <option value="Drugo">Drugo</option>
                             </select>
+                            <div class="sidebar-active-pills" id="activeBodyType"></div>
                         </div>
 
                         <!-- Toggles -->
@@ -272,6 +302,7 @@
                         <div class="form-group" style="display:flex; flex-direction:column; gap:0.4rem;">
                             <label style="font-size:0.85rem; font-weight:600; color:var(--text-dark);">Cena do (€)</label>
                             <input type="text" id="sidebarPriceTo" name="priceTo" placeholder="npr. 20.000 €" class="pill-input js-format-number" style="width:100%; box-sizing:border-box;" inputmode="numeric">
+                            <div class="sidebar-active-pills" id="activeCenaLetnik"></div>
                         </div>
                         </div><!-- /adv-acc-body-inner -->
                     </div>
@@ -339,6 +370,7 @@
                                     <option value="RWD">Zadnji pogon (RWD)</option>
                                     <option value="AWD">Štirikolesni pogon (AWD / 4x4)</option>
                                 </select>
+                                <div class="sidebar-active-pills" id="activeDriveType"></div>
                             </div>
 
                             <!-- Konfiguracija motorja -->
@@ -436,6 +468,7 @@
                                 <option value="Oranžna">Oranžna</option>
                                 <option value="Drugo">Drugo</option>
                             </select>
+                            <div class="sidebar-active-pills" id="activeColor"></div>
                         </div>
                         </div><!-- /adv-acc-body-inner -->
                     </div>
@@ -460,6 +493,7 @@
                                 <option value="private">Fizična oseba (privat)</option>
                                 <option value="dealer">Trgovec (Avtohiša)</option>
                             </select>
+                            <div class="sidebar-active-pills" id="activeSellerType"></div>
                         </div>
 
                         <!-- Lokacija: Država + Regija -->
@@ -473,6 +507,10 @@
                                     <option value="">Vse regije</option>
                                 </select>
                             </div>
+                            <div style="display:flex; flex-wrap:wrap; gap:0.25rem; justify-content:center; width:100%;">
+                                <div class="sidebar-active-pills" id="activeCountry"></div>
+                                <div class="sidebar-active-pills" id="activeRegion"></div>
+                            </div>
                         </div>
                         </div><!-- /adv-acc-body-inner -->
                     </div>
@@ -485,6 +523,16 @@
                 </div>
             </form>
             </div>
+        </div>
+
+        <!-- Mobile Filter Sheet Sticky Footer -->
+        <div class="mobile-filter-footer" id="mobileFilterFooter">
+            <button type="button" class="mobile-filter-footer-reset" id="mobileFilterResetBtn">
+                <i data-lucide="rotate-ccw"></i> Počisti
+            </button>
+            <button type="button" class="mobile-filter-footer-apply" id="mobileFilterApplyBtn">
+                Prikaži (<span id="mobileFilterCountBadge">0</span>)
+            </button>
         </div>
     </aside>
 
@@ -534,10 +582,77 @@
                 <span class="page-dots">...</span>
                 <button class="page-btn">48</button>
                 <button class="page-btn page-btn-glass"><i data-lucide="chevron-right"></i></button>
-            </div>
         </div>
     </main>
 </div>
+
+    <!-- Mobile Floating Split Pill (Filter & Sort) -->
+    <div class="mobile-split-pill" id="mobileSplitPill">
+        <button type="button" class="split-pill-item split-pill-filter" id="mobilePillFilterBtn" aria-label="Filtri">
+            <i data-lucide="sliders-horizontal"></i>
+            <span>Filtri</span>
+            <span class="split-pill-badge" id="mobileFilterBadge" style="display:none;">0</span>
+        </button>
+        <div class="split-pill-divider"></div>
+        <button type="button" class="split-pill-item split-pill-sort" id="mobilePillSortBtn" aria-label="Razvrsti">
+            <i data-lucide="arrow-up-down"></i>
+            <span id="mobilePillSortLabel">Razvrsti</span>
+        </button>
+    </div>
+
+    <!-- Backdrop Overlay for Mobile Bottom Sheets -->
+    <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop"></div>
+
+    <!-- Mobile Sort Bottom Sheet -->
+    <div class="mobile-bottom-sheet mobile-sort-sheet" id="mobileSortSheet" aria-hidden="true">
+        <div class="mobile-sheet-handle"></div>
+        <div class="mobile-sheet-header">
+            <div class="mobile-sheet-title">
+                <i data-lucide="arrow-up-down"></i>
+                <span>Razvrsti</span>
+            </div>
+            <button type="button" class="mobile-sheet-close" id="mobileSortCloseBtn" aria-label="Zapri">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="mobile-sort-list">
+            <button type="button" class="mobile-sort-item active" data-value="">
+                <div class="msi-text">
+                    <span class="msi-label">Privzeto</span>
+                    <span class="msi-desc">Zadnji dodani oglasi</span>
+                </div>
+                <i data-lucide="check" class="msi-check"></i>
+            </button>
+            <button type="button" class="mobile-sort-item" data-value="price-asc">
+                <div class="msi-text">
+                    <span class="msi-label">Cena: najnižja</span>
+                    <span class="msi-desc">Najprej ugodnejša vozila</span>
+                </div>
+                <i data-lucide="check" class="msi-check"></i>
+            </button>
+            <button type="button" class="mobile-sort-item" data-value="price-desc">
+                <div class="msi-text">
+                    <span class="msi-label">Cena: najvišja</span>
+                    <span class="msi-desc">Najprej dražja vozila</span>
+                </div>
+                <i data-lucide="check" class="msi-check"></i>
+            </button>
+            <button type="button" class="mobile-sort-item" data-value="year-desc">
+                <div class="msi-text">
+                    <span class="msi-label">Letnik: najnovejši</span>
+                    <span class="msi-desc">Novejša vozila najprej</span>
+                </div>
+                <i data-lucide="check" class="msi-check"></i>
+            </button>
+            <button type="button" class="mobile-sort-item" data-value="km-asc">
+                <div class="msi-text">
+                    <span class="msi-label">Kilometrina: najnižja</span>
+                    <span class="msi-desc">Manj prevoženih kilometrov</span>
+                </div>
+                <i data-lucide="check" class="msi-check"></i>
+            </button>
+        </div>
+    </div>
 
 <!-- Legend popup (icons reference) -->
 <div class="legend-overlay" id="legendOverlay">

@@ -232,5 +232,8 @@
   "auction_subscribed_err": "Napaka pri prijavi.",
   "auction_empty_title": "🔨 Trenutno ni aktivnih dražb za izbrane filtre.",
   "auction_empty_sub": "Prijavite se na obvestila spodaj in sporočili vam bomo, ko se odpre dražba.",
-  "auction_not_found": "Dražba ni najdena."
+  "auction_not_found": "Dražba ni najdena.",
+  "mobile_view_mode_title": "Prikaz oglasov",
+  "mobile_view_default": "Privzeti",
+  "mobile_view_compact": "Kompaktni"
 }

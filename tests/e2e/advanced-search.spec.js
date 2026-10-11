@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
+    page.on('pageerror', err => console.log('PAGE ERROR:', err.message, err.stack));
     page.on('requestfailed', request => {
         console.log('REQUEST FAILED:', request.url(), request.failure()?.errorText);
     });
@@ -11,13 +12,11 @@ test.beforeEach(async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify([]),
     }));
-    await page.goto('/');
-    await page.waitForFunction(() => typeof window.navigateTo === 'function', { timeout: 10_000 });
 });
 
 test('advanced search to listings vehicle type filter works', async ({ page }) => {
     // Navigate to advanced search
-    await page.evaluate(() => window.navigateTo('/iskanje'));
+    await page.goto('/iskanje');
     await expect(page.locator('#advancedSearchForm')).toBeVisible();
 
     // Click 'Limuzina'
@@ -36,4 +35,42 @@ test('advanced search to listings vehicle type filter works', async ({ page }) =
 
     // Check sidebar filter matches (using auto-waiting assertion)
     await expect(page.locator('#sidebarBodyType')).toHaveValue('Limuzina');
+});
+
+test('advanced search preselects vehicle type from URL query', async ({ page }) => {
+    await page.goto('/iskanje?cat=avto&vtype=Karavan');
+    await expect(page.locator('#advancedSearchForm')).toBeVisible();
+
+    const karavanCard = page.locator('#grid-cars .body-type-card[data-value="Karavan"]');
+    await expect(karavanCard).toHaveClass(/active/);
+    await expect(page.locator('#bodyTypeHidden')).toHaveValue('Karavan');
+});
+
+test('advanced search moto category selection and 4/3-wheel drill-down', async ({ page }) => {
+    await page.goto('/iskanje?cat=moto');
+    await expect(page.locator('#advancedSearchForm')).toBeVisible();
+
+    // Moto grid should be visible
+    await expect(page.locator('#grid-motorbikes')).toBeVisible();
+
+    // Click Enduro
+    const enduroCard = page.locator('#motoMainGrid .body-type-card[data-value="Enduro"]');
+    await enduroCard.click();
+    await expect(enduroCard).toHaveClass(/active/);
+    await expect(page.locator('#bodyTypeHidden')).toHaveValue('Enduro');
+
+    // Click 4in3kolesa group card to drill down
+    const groupCard = page.locator('.moto-group-card[data-group="4in3kolesa"]');
+    await groupCard.click();
+    await expect(page.locator('#motoSubGrid')).toBeVisible();
+
+    // Click ATV card
+    const atvCard = page.locator('#motoSubGrid .body-type-card[data-value="ATV"]');
+    await atvCard.click();
+    await expect(atvCard).toHaveClass(/active/);
+
+    // Back to main grid
+    await page.click('#motoBackBtn');
+    await expect(page.locator('#motoMainGrid')).toBeVisible();
+    await expect(groupCard).toHaveClass(/active/);
 });

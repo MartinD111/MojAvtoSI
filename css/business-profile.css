@@ -217,18 +217,37 @@
 }
 
 .biz-brand-tag {
-    padding: 0.2rem 0.6rem;
-    border-radius: 0.4rem;
-    background: #f1f5f9;
-    font-size: 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem 0.25rem 0.5rem;
+    border-radius: 9999px;
+    background: rgba(var(--brand-rgb, 100, 116, 139), 0.1);
+    border: 1px solid rgba(var(--brand-rgb, 100, 116, 139), 0.25);
+    font-size: 0.75rem;
     font-weight: 700;
-    color: #475569;
+    color: rgb(var(--brand-rgb, 100, 116, 139));
+    transition: all 0.2s ease;
+}
+
+.biz-brand-tag .biz-brand-tag-logo {
+    width: 18px;
+    height: 14px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.biz-brand-tag .biz-brand-tag-badge {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: rgb(var(--brand-rgb, 100, 116, 139));
+    line-height: 1;
 }
 
 .biz-brand-tag.authorized {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
+    background: linear-gradient(135deg, rgba(var(--brand-rgb, 37, 99, 235), 0.15) 0%, rgba(var(--brand-rgb, 37, 99, 235), 0.05) 100%);
+    border: 1.5px solid rgba(var(--brand-rgb, 37, 99, 235), 0.45);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Tabs ────────────────────────────────────────────────── */
@@ -616,7 +635,16 @@ body.dark-mode .biz-about-section h3,
 body.dark-mode .biz-rating-big { color: #f8fafc; }
 body.dark-mode .biz-hero-name { color: white; }
 body.dark-mode .biz-back-btn { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.1); color: #94a3b8; }
-body.dark-mode .biz-brand-tag { background: rgba(30,41,59,0.6); color: #94a3b8; }
+body.dark-mode .biz-brand-tag {
+    background: rgba(var(--brand-rgb, 100, 116, 139), 0.2);
+    border-color: rgba(var(--brand-rgb, 100, 116, 139), 0.4);
+    color: #f1f5f9;
+}
+
+body.dark-mode .biz-brand-tag.authorized {
+    background: linear-gradient(135deg, rgba(var(--brand-rgb, 37, 99, 235), 0.3) 0%, rgba(var(--brand-rgb, 37, 99, 235), 0.1) 100%);
+    border-color: rgba(var(--brand-rgb, 37, 99, 235), 0.6);
+}
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 640px) {

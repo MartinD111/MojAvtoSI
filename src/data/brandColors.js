@@ -14,9 +14,13 @@ const BRAND_COLORS_RGB = {
   // German brands
   "Mercedes-Benz": "100, 116, 139",  // Silver / Slate
   "Mercedes": "100, 116, 139",
+  "Mercedes-AMG": "100, 116, 139",
+  "AMG": "100, 116, 139",
   "Benz": "100, 116, 139",
   "Auto Union": "100, 116, 139",
   "BMW": "37, 99, 235",              // Bavarian Blue
+  "BMW M": "37, 99, 235",
+  "BMW Motorrad": "37, 99, 235",
   "Audi": "100, 116, 139",           // Silver / Graphite Rings
   "Volkswagen": "2, 132, 199",       // VW Blue
   "VW": "2, 132, 199",
@@ -266,6 +270,7 @@ const BRAND_COLORS_RGB = {
   "Torqeedo": "249, 115, 22",
   "Evinrude": "220, 38, 38",
   "Volvo Penta": "0, 48, 87",
+  "Yanmar": "220, 38, 38",
   "Selva": "2, 132, 199",
   "ePropulsion": "6, 182, 212",
   "Parsun": "30, 58, 138",

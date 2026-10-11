@@ -52,12 +52,19 @@
             }
             body.dark-mode #sidebarFiltersForm .adv-acc-body-inner { border-top-color: rgba(255,255,255,0.04); }
             .acc-filter-summary {
-                display: inline-flex; align-items: center; width: 100%; justify-content: center;
-                font-size: 0.72rem; font-weight: 600; color: #ffffff;
-                background: #2563eb; border: 1px solid #1d4ed8; border-radius: 999px;
-                padding: 0.2rem 0.55rem; white-space: nowrap; overflow: hidden;
-                text-overflow: ellipsis; pointer-events: none; max-width: fit-content; margin: 0 auto;
+                display: inline-flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; width: 100%; justify-content: center;
+                pointer-events: auto !important; margin-top: 0.25rem;
             }
+            .acc-filter-summary:empty { display: none !important; margin: 0 !important; padding: 0 !important; }
+            .acc-filter-summary .sidebar-active-pill {
+                padding: 0.15rem 0.45rem 0.15rem 0.55rem !important; font-size: 0.7rem !important; gap: 0.25rem !important;
+                cursor: default; pointer-events: auto !important;
+            }
+            .acc-filter-summary .sidebar-pill-remove {
+                cursor: pointer; padding: 0 0.15rem; font-weight: 700; font-size: 0.85rem; line-height: 1;
+                opacity: 0.8; transition: opacity 0.15s; pointer-events: auto !important;
+            }
+            .acc-filter-summary .sidebar-pill-remove:hover { opacity: 1; }
             #sidebarFiltersForm .year-selects-wrapper .custom-select-container { width: 75px !important; min-width: 75px !important; flex: none !important; }
             #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger { justify-content: center !important; padding: 0 5px !important; }
             #sidebarFiltersForm .year-selects-wrapper .custom-select-trigger .select-icon { display: none !important; }
@@ -204,6 +211,10 @@
                                 <div style="display:flex; gap:0.4rem; width:100%;">
                                     <select id="sidebarCountry" name="country" class="glass-select" style="flex:1; min-width:0;"><option value="">Vse države</option></select>
                                     <select id="sidebarRegion" name="region" class="glass-select" style="flex:1; min-width:0;"><option value="">Vse regije</option></select>
+                                </div>
+                                <div style="display:flex; flex-wrap:wrap; gap:0.25rem; justify-content:center; width:100%;">
+                                    <div class="sidebar-active-pills" id="activeCountry"></div>
+                                    <div class="sidebar-active-pills" id="activeRegion"></div>
                                 </div>
                             </div>
                         </div>

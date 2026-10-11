@@ -15,6 +15,8 @@ function cleanKey(str) {
 const ALIASES = {
   'mercedes': 'mercedesbenz',
   'mercedesamg': 'mercedesbenz',
+  'mercedes-amg': 'mercedesbenz',
+  'amg': 'mercedesbenz',
   'benz': 'mercedesbenz',
   'carlbenz': 'mercedesbenz',
   'bmwmotorrad': 'bmw',

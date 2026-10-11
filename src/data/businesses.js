@@ -745,7 +745,7 @@ const _ACTIVE_BUSINESSES = _PLATFORM.id === 'navtika' ? mockBusinessesNavtika : 
 
 // All unique brands across the active platform's businesses
 export const allBrands = [...new Set(
-    _ACTIVE_BUSINESSES.flatMap(b => [...b.authorizedBrands, ...b.supportedBrands]).filter(b => b && b !== 'vse znamke')
+    _ACTIVE_BUSINESSES.flatMap(b => [...b.authorizedBrands, ...b.supportedBrands]).filter(b => b && b.toLowerCase() !== 'vse znamke' && b.toLowerCase() !== 'all brands' && b.toLowerCase() !== 'all')
 )].sort();
 
 // All unique services

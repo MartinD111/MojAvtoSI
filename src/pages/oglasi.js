@@ -493,11 +493,13 @@ function renderActiveFilterChips() {
     
     // We can show chips for interesting parameters
     const ignoreParams = ['cat', 'sort', 'mode'];
+    let activeFilterCount = 0;
     for (const [key, value] of params.entries()) {
         if (!ignoreParams.includes(key) && value) {
             // Split comma values
             value.split(',').forEach(val => {
                 if (val.trim()) {
+                    activeFilterCount++;
                     chipsHtml += `<span class="active-filter-chip" data-key="${key}" data-val="${val}">
                         ${escHtml(val)} <i class="close" title="Odstrani"></i>
                     </span>`;
@@ -509,6 +511,26 @@ function renderActiveFilterChips() {
         chipsHtml += `<span class="active-filter-clear-all">Počisti vse</span>`;
     }
     container.innerHTML = chipsHtml;
+
+    // Update mobile split pill badge & header badge
+    const mobileBadge = document.getElementById('mobileFilterBadge');
+    if (mobileBadge) {
+        if (activeFilterCount > 0) {
+            mobileBadge.textContent = activeFilterCount;
+            mobileBadge.style.display = 'inline-flex';
+        } else {
+            mobileBadge.style.display = 'none';
+        }
+    }
+    const headerBadge = document.getElementById('mobileFilterHeaderBadge');
+    if (headerBadge) {
+        if (activeFilterCount > 0) {
+            headerBadge.textContent = activeFilterCount;
+            headerBadge.style.display = 'inline-flex';
+        } else {
+            headerBadge.style.display = 'none';
+        }
+    }
 
     // Bind events
     container.onclick = (e) => {
@@ -914,7 +936,104 @@ export function initOglasiPage() {
         });
     }
 
+    // Mobile Floating Split Pill & Bottom Sheets (Alarm-style)
+    setupMobileSplitPillAndSheets();
+
     if (window.lucide) window.lucide.createIcons();
+}
+
+function setupMobileSplitPillAndSheets() {
+    const splitPill = document.getElementById('mobileSplitPill');
+    const filterBtn = document.getElementById('mobilePillFilterBtn');
+    const sortBtn = document.getElementById('mobilePillSortBtn');
+    const backdrop = document.getElementById('mobileSheetBackdrop');
+    const sidebar = document.querySelector('.oglasi-sidebar');
+    const sortSheet = document.getElementById('mobileSortSheet');
+    const filterCloseBtn = document.getElementById('mobileFilterCloseBtn');
+    const sortCloseBtn = document.getElementById('mobileSortCloseBtn');
+    const filterApplyBtn = document.getElementById('mobileFilterApplyBtn');
+    const filterResetBtn = document.getElementById('mobileFilterResetBtn');
+    const sortItems = document.querySelectorAll('.mobile-sort-item');
+    const sortSelect = document.getElementById('sortSelect') || document.getElementById('drazbeSortSelect');
+    const sortLabel = document.getElementById('mobilePillSortLabel');
+
+    if (!splitPill) return;
+
+    function openFilterSheet() {
+        if (sortSheet) sortSheet.classList.remove('sheet-open');
+        if (sidebar) sidebar.classList.add('sheet-open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.classList.add('mobile-sheet-lock');
+        splitPill.classList.add('pill-hidden');
+    }
+
+    function openSortSheet() {
+        if (sidebar) sidebar.classList.remove('sheet-open');
+        if (sortSheet) sortSheet.classList.add('sheet-open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.classList.add('mobile-sheet-lock');
+        splitPill.classList.add('pill-hidden');
+    }
+
+    function closeAllSheets() {
+        if (sidebar) sidebar.classList.remove('sheet-open');
+        if (sortSheet) sortSheet.classList.remove('sheet-open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.classList.remove('mobile-sheet-lock');
+        splitPill.classList.remove('pill-hidden');
+    }
+
+    filterBtn?.addEventListener('click', openFilterSheet);
+    sortBtn?.addEventListener('click', openSortSheet);
+    backdrop?.addEventListener('click', closeAllSheets);
+    filterCloseBtn?.addEventListener('click', closeAllSheets);
+    sortCloseBtn?.addEventListener('click', closeAllSheets);
+    filterApplyBtn?.addEventListener('click', closeAllSheets);
+    filterResetBtn?.addEventListener('click', () => {
+        clearAllSidebarFilters();
+        closeAllSheets();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAllSheets();
+    });
+
+    // Handle sort options selection
+    sortItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const val = item.getAttribute('data-value');
+            sortItems.forEach(i => i.classList.toggle('active', i === item));
+            
+            if (sortSelect) {
+                sortSelect.value = val;
+                sortSelect.dispatchEvent(new Event('change'));
+            }
+
+            if (sortLabel) {
+                if (!val) {
+                    sortLabel.textContent = 'Razvrsti';
+                } else if (val === 'price-asc') {
+                    sortLabel.textContent = 'Cena ↑';
+                } else if (val === 'price-desc') {
+                    sortLabel.textContent = 'Cena ↓';
+                } else if (val === 'year-desc') {
+                    sortLabel.textContent = 'Letnik ↓';
+                } else if (val === 'km-asc') {
+                    sortLabel.textContent = 'Kilometri ↑';
+                }
+            }
+
+            setTimeout(closeAllSheets, 180);
+        });
+    });
+
+    // Sync active state of sort options with current sortSelect value
+    if (sortSelect) {
+        const currentVal = sortSelect.value || '';
+        sortItems.forEach(item => {
+            item.classList.toggle('active', item.getAttribute('data-value') === currentVal);
+        });
+    }
 }
 
 // ── Sidebar dynamic filtering implementation ──────────────────────────────────
@@ -1330,7 +1449,10 @@ function bindSidebarAccordions() {
             }
         }
 
-        trigger.addEventListener('click', () => {
+        trigger.addEventListener('click', (e) => {
+            if (e.target.closest('.sidebar-pill-remove') || e.target.closest('.sidebar-active-pill')) {
+                return;
+            }
             const isOpen = trigger.getAttribute('aria-expanded') === 'true';
             const ns = !isOpen;
             trigger.setAttribute('aria-expanded', String(ns));
@@ -1348,12 +1470,6 @@ function bindSidebarAccordions() {
                         body.style.opacity = '0';
                     }));
                 }
-            }
-
-            // Show/hide the summary badge based on open state
-            const summary = trigger.querySelector('.acc-filter-summary');
-            if (summary && summary.textContent) {
-                summary.style.display = ns ? 'none' : '';
             }
         });
     });
@@ -1651,14 +1767,17 @@ function applySidebarFilters() {
     renderListings(filtered);
     const countEl = document.querySelector(".results-header h1 span");
     if (countEl) countEl.textContent = `(${filtered.length} vozil)`;
+    const mobileCount = document.getElementById('mobileFilterCountBadge');
+    if (mobileCount) mobileCount.textContent = filtered.length;
     updateAccordionSummaries();
+    updateFiltersUI();
 }
 
 function getSidebarFormState() {
     const params = parseHashParams();
     const fields = [
         'yearFrom', 'yearTo', 'priceTo', 'bodyType', 'driveType', 
-        'engineType', 'engineStroke', 'color', 'sellerType', 'region', 
+        'engineType', 'engineStroke', 'color', 'sellerType', 'country', 'region', 
         'powerFrom', 'powerTo'
     ];
     
@@ -1693,13 +1812,26 @@ function renderActivePills(containerId, values, onRemove) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
+    if (!values || values.length === 0) return;
     values.forEach(val => {
+        const label = typeof val === 'object' ? val.label : val;
+        if (!label) return;
         const pill = document.createElement('span');
         pill.className = 'sidebar-active-pill';
-        pill.innerHTML = `${escHtml(val)} <button type="button" class="sidebar-pill-remove" aria-label="Odstrani">&times;</button>`;
-        pill.querySelector('.sidebar-pill-remove').addEventListener('click', (e) => {
+        pill.innerHTML = `${escHtml(label)} <span role="button" tabindex="0" class="sidebar-pill-remove" aria-label="Odstrani">&times;</span>`;
+        const removeBtn = pill.querySelector('.sidebar-pill-remove');
+        const handleRemove = (e) => {
             e.preventDefault();
-            onRemove(val);
+            e.stopPropagation();
+            if (typeof val === 'object' && typeof val.onRemove === 'function') {
+                val.onRemove();
+            } else if (onRemove) {
+                onRemove(typeof val === 'object' ? val.value || label : val);
+            }
+        };
+        removeBtn.addEventListener('click', handleRemove);
+        removeBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') handleRemove(e);
         });
         container.appendChild(pill);
     });
@@ -1721,70 +1853,278 @@ function updateAccordionSummaries() {
     const params = parseHashParams();
 
     // Osnovni podatki: make, model, variant, bodyType, onlySale
-    const makes = params.get('make') ? params.get('make').split(',').filter(Boolean) : [];
-    const models = params.get('model') ? params.get('model').split(',').filter(Boolean) : [];
-    const variants = params.get('variant') ? params.get('variant').split(',').filter(Boolean) : [];
-    const bodyType = document.getElementById('sidebarBodyType')?.value || '';
+    const selectedMakes = params.get('make') ? params.get('make').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedModels = params.get('model') ? params.get('model').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedVariants = params.get('variant') ? params.get('variant').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const selectedLines = params.get('line') ? params.get('line').split(',').map(s => s.trim()).filter(Boolean) : [];
+    const bodyTypeEl = document.getElementById('sidebarBodyType');
+    const bodyType = bodyTypeEl?.value || '';
     const onlySale = document.getElementById('sidebarOnlySale')?.checked;
-    const osnovniParts = [...makes, ...models, ...variants];
-    if (bodyType) osnovniParts.push(bodyType);
-    if (onlySale) osnovniParts.push('Akcija');
-    _setAccSummary('summaryOsnovni', document.querySelector('[id="summaryOsnovni"]')?.closest('.adv-accordion')?.querySelector('.adv-acc-trigger'), osnovniParts);
+    
+    const osnovniItems = [];
+    selectedMakes.forEach(mk => {
+        osnovniItems.push({
+            label: mk,
+            onRemove: () => {
+                const updated = selectedMakes.filter(x => x !== mk);
+                const data = window._sidebarBrandModelData;
+                const remainingModels = selectedModels.filter(m => updated.some(k => data?.[k]?.[m]));
+                updateUrlParams(updated, remainingModels, selectedVariants, selectedLines);
+            }
+        });
+    });
+    selectedModels.forEach(md => {
+        osnovniItems.push({
+            label: md,
+            onRemove: () => {
+                updateUrlParams(selectedMakes, selectedModels.filter(x => x !== md), selectedVariants, selectedLines);
+            }
+        });
+    });
+    selectedVariants.forEach(vr => {
+        osnovniItems.push({
+            label: vr,
+            onRemove: () => {
+                updateUrlParams(selectedMakes, selectedModels, selectedVariants.filter(x => x !== vr), selectedLines);
+            }
+        });
+    });
+    selectedLines.forEach(ln => {
+        osnovniItems.push({
+            label: ln,
+            onRemove: () => {
+                updateUrlParams(selectedMakes, selectedModels, selectedVariants, selectedLines.filter(x => x !== ln));
+            }
+        });
+    });
+    if (bodyType) {
+        osnovniItems.push({
+            label: bodyType,
+            onRemove: () => {
+                if (bodyTypeEl) {
+                    bodyTypeEl.value = '';
+                    bodyTypeEl.dispatchEvent(new Event('change'));
+                }
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    if (onlySale) {
+        osnovniItems.push({
+            label: 'Akcija',
+            onRemove: () => {
+                const saleEl = document.getElementById('sidebarOnlySale');
+                if (saleEl) saleEl.checked = false;
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    _setAccSummary('summaryOsnovni', null, osnovniItems);
 
     // Cena in letnik: yearFrom, yearTo, priceTo
-    const cenaParts = [];
-    const yearFrom = document.getElementById('sidebarYearFrom')?.value;
-    const yearTo = document.getElementById('sidebarYearTo')?.value;
-    const priceTo = document.getElementById('sidebarPriceTo')?.value;
-    if (yearFrom || yearTo) cenaParts.push(`${yearFrom || '…'}–${yearTo || '…'}`);
-    if (priceTo) cenaParts.push(`do ${priceTo} €`);
-    _setAccSummary('summaryCena', null, cenaParts);
+    const cenaItems = [];
+    const yearFromEl = document.getElementById('sidebarYearFrom');
+    const yearToEl = document.getElementById('sidebarYearTo');
+    const priceToEl = document.getElementById('sidebarPriceTo');
+    const yearFrom = yearFromEl?.value;
+    const yearTo = yearToEl?.value;
+    const priceTo = priceToEl?.value;
+    if (yearFrom || yearTo) {
+        cenaItems.push({
+            label: `${yearFrom || '…'}–${yearTo || '…'}`,
+            onRemove: () => {
+                if (yearFromEl) yearFromEl.value = '';
+                if (yearToEl) yearToEl.value = '';
+                if (yearFromEl) yearFromEl.dispatchEvent(new Event('change'));
+                if (yearToEl) yearToEl.dispatchEvent(new Event('change'));
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    if (priceTo) {
+        cenaItems.push({
+            label: `do ${priceTo} €`,
+            onRemove: () => {
+                if (priceToEl) priceToEl.value = '';
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    _setAccSummary('summaryCena', null, cenaItems);
 
-    // Motor in pogon: fuel checkboxes, transmission, driveType, power
-    const motorParts = [];
+    // Motor in pogon: fuel checkboxes, transmission, driveType, power, color
+    const motorItems = [];
     const form = document.getElementById('sidebarFiltersForm');
     if (form) {
-        const fd = new FormData(form);
-        const fuels = fd.getAll('fuel').filter(Boolean);
-        const trans = fd.getAll('transmission').filter(Boolean);
-        motorParts.push(...fuels, ...trans);
+        const fuelCbs = form.querySelectorAll('input[name="fuel"]:checked');
+        fuelCbs.forEach(cb => {
+            motorItems.push({
+                label: cb.value,
+                onRemove: () => {
+                    cb.checked = false;
+                    applySidebarFilters();
+                    updateUrlParamsFromInputs();
+                    updateFiltersUI();
+                }
+            });
+        });
+        const transCbs = form.querySelectorAll('input[name="transmission"]:checked');
+        transCbs.forEach(cb => {
+            motorItems.push({
+                label: cb.value,
+                onRemove: () => {
+                    cb.checked = false;
+                    applySidebarFilters();
+                    updateUrlParamsFromInputs();
+                    updateFiltersUI();
+                }
+            });
+        });
     }
-    const driveType = document.getElementById('sidebarDriveType')?.value;
-    const powerFrom = document.getElementById('sidebarPowerFrom')?.value;
-    const powerTo = document.getElementById('sidebarPowerTo')?.value;
-    const color = document.getElementById('sidebarColor')?.value;
-    if (driveType) motorParts.push(driveType);
-    if (powerFrom || powerTo) motorParts.push(`${powerFrom || '0'}–${powerTo || '∞'} kW`);
-    if (color) motorParts.push(color);
-    _setAccSummary('summaryMotor', null, motorParts);
+    const driveTypeEl = document.getElementById('sidebarDriveType');
+    if (driveTypeEl?.value) {
+        motorItems.push({
+            label: driveTypeEl.value,
+            onRemove: () => {
+                driveTypeEl.value = '';
+                driveTypeEl.dispatchEvent(new Event('change'));
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    const powerFromEl = document.getElementById('sidebarPowerFrom');
+    const powerToEl = document.getElementById('sidebarPowerTo');
+    if (powerFromEl?.value || powerToEl?.value) {
+        motorItems.push({
+            label: `${powerFromEl?.value || '0'}–${powerToEl?.value || '∞'} kW`,
+            onRemove: () => {
+                if (powerFromEl) powerFromEl.value = '';
+                if (powerToEl) powerToEl.value = '';
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    const colorEl = document.getElementById('sidebarColor');
+    if (colorEl?.value) {
+        motorItems.push({
+            label: colorEl.value,
+            onRemove: () => {
+                colorEl.value = '';
+                colorEl.dispatchEvent(new Event('change'));
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    _setAccSummary('summaryMotor', null, motorItems);
 
     // Prodajalec: sellerType, country, region
-    const prodParts = [];
-    const sellerType = document.getElementById('sidebarSellerType')?.value;
-    const countryCode = document.getElementById('sidebarCountry')?.value;
-    const region = document.getElementById('sidebarRegion')?.value;
-    if (sellerType) prodParts.push(sellerType === 'private' ? 'Privat' : 'Trgovec');
+    const prodItems = [];
+    const sellerTypeEl = document.getElementById('sidebarSellerType');
+    const countryEl = document.getElementById('sidebarCountry');
+    const regionEl = document.getElementById('sidebarRegion');
+    const sellerType = sellerTypeEl?.value;
+    const countryCode = countryEl?.value;
+    const region = regionEl?.value;
+
+    if (sellerType) {
+        prodItems.push({
+            label: sellerType === 'private' ? 'Privat' : 'Trgovec',
+            onRemove: () => {
+                if (sellerTypeEl) {
+                    sellerTypeEl.value = '';
+                    sellerTypeEl.dispatchEvent(new Event('change'));
+                }
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
     if (countryCode) {
         const countryLabel = COUNTRIES.find(c => c.code === countryCode)?.label || countryCode;
-        prodParts.push(countryLabel);
+        prodItems.push({
+            label: countryLabel,
+            onRemove: () => {
+                if (countryEl) {
+                    countryEl.value = '';
+                    localStorage.setItem(lsKey('filterCountry'), '');
+                    localStorage.setItem(lsKey('filterRegion'), '');
+                    if (regionEl) {
+                        regionEl.value = '';
+                        regionEl.disabled = true;
+                        regionEl.innerHTML = '<option value="">Vse regije</option>';
+                        regionEl.dispatchEvent(new Event('change'));
+                    }
+                    countryEl.dispatchEvent(new Event('change'));
+                }
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
     }
-    if (region) prodParts.push(region);
-    _setAccSummary('summaryProdajalec', null, prodParts);
+    if (region) {
+        prodItems.push({
+            label: region,
+            onRemove: () => {
+                if (regionEl) {
+                    regionEl.value = '';
+                    localStorage.setItem(lsKey('filterRegion'), '');
+                    regionEl.dispatchEvent(new Event('change'));
+                }
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    _setAccSummary('summaryProdajalec', null, prodItems);
 }
 
 function _setAccSummary(id, _unused, parts) {
+    const list = Array.isArray(parts) ? parts : (Array.isArray(_unused) ? _unused : []);
     const el = document.getElementById(id);
     if (!el) return;
-    const trigger = el.closest('.adv-acc-trigger');
-    const isOpen = trigger?.getAttribute('aria-expanded') === 'true';
-    if (parts.length === 0) {
+    el.innerHTML = '';
+    if (!list || list.length === 0) {
         el.style.display = 'none';
-        el.textContent = '';
-    } else {
-        el.textContent = parts.join(', ');
-        // Show only when accordion is closed
-        el.style.display = isOpen ? 'none' : '';
+        return;
     }
+    el.style.display = 'inline-flex';
+    list.forEach(item => {
+        const label = typeof item === 'object' ? item.label : item;
+        if (!label) return;
+        const pill = document.createElement('span');
+        pill.className = 'sidebar-active-pill acc-summary-pill';
+        pill.innerHTML = `${escHtml(label)} <span role="button" tabindex="0" class="sidebar-pill-remove" aria-label="Odstrani">&times;</span>`;
+        const removeBtn = pill.querySelector('.sidebar-pill-remove');
+        const handleRemove = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof item === 'object' && typeof item.onRemove === 'function') {
+                item.onRemove();
+            }
+        };
+        removeBtn.addEventListener('click', handleRemove);
+        removeBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') handleRemove(e);
+        });
+        el.appendChild(pill);
+    });
 }
 
 function updateFiltersUI() {
@@ -1812,6 +2152,121 @@ function updateFiltersUI() {
 
     renderActivePills('activeLine', selectedLines, (val) => {
         updateUrlParams(selectedMakes, selectedModels, selectedVariants, selectedLines.filter(x => x !== val));
+    });
+
+    // Body type (Oblika)
+    const bodyTypeEl = document.getElementById('sidebarBodyType');
+    renderActivePills('activeBodyType', bodyTypeEl && bodyTypeEl.value ? [bodyTypeEl.value] : [], () => {
+        bodyTypeEl.value = '';
+        bodyTypeEl.dispatchEvent(new Event('change'));
+        applySidebarFilters();
+        updateUrlParamsFromInputs();
+        updateFiltersUI();
+    });
+
+    // Cena & Letnik
+    const cenaPills = [];
+    const yFromEl = document.getElementById('sidebarYearFrom');
+    const yToEl = document.getElementById('sidebarYearTo');
+    const pToEl = document.getElementById('sidebarPriceTo');
+    if (yFromEl?.value || yToEl?.value) {
+        cenaPills.push({
+            label: `${yFromEl?.value || '…'}–${yToEl?.value || '…'}`,
+            onRemove: () => {
+                if (yFromEl) yFromEl.value = '';
+                if (yToEl) yToEl.value = '';
+                if (yFromEl) yFromEl.dispatchEvent(new Event('change'));
+                if (yToEl) yToEl.dispatchEvent(new Event('change'));
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    if (pToEl?.value) {
+        cenaPills.push({
+            label: `do ${pToEl.value} €`,
+            onRemove: () => {
+                pToEl.value = '';
+                applySidebarFilters();
+                updateUrlParamsFromInputs();
+                updateFiltersUI();
+            }
+        });
+    }
+    renderActivePills('activeCenaLetnik', cenaPills);
+
+    // Drive type (Pogon)
+    const driveTypeEl = document.getElementById('sidebarDriveType');
+    renderActivePills('activeDriveType', driveTypeEl && driveTypeEl.value ? [driveTypeEl.value] : [], () => {
+        driveTypeEl.value = '';
+        driveTypeEl.dispatchEvent(new Event('change'));
+        applySidebarFilters();
+        updateUrlParamsFromInputs();
+        updateFiltersUI();
+    });
+
+    // Color (Barva)
+    const colorEl = document.getElementById('sidebarColor');
+    renderActivePills('activeColor', colorEl && colorEl.value ? [colorEl.value] : [], () => {
+        colorEl.value = '';
+        colorEl.dispatchEvent(new Event('change'));
+        applySidebarFilters();
+        updateUrlParamsFromInputs();
+        updateFiltersUI();
+    });
+
+    // Seller type (Tip prodajalca)
+    const sellerTypeEl = document.getElementById('sidebarSellerType');
+    const sVal = sellerTypeEl?.value;
+    const sLabel = sVal ? (sVal === 'private' ? 'Fizična oseba' : 'Trgovec') : null;
+    renderActivePills('activeSellerType', sLabel ? [sLabel] : [], () => {
+        sellerTypeEl.value = '';
+        sellerTypeEl.dispatchEvent(new Event('change'));
+        applySidebarFilters();
+        updateUrlParamsFromInputs();
+        updateFiltersUI();
+    });
+
+    // Country (Država)
+    const countryEl = document.getElementById('sidebarCountry');
+    const cVal = countryEl?.value;
+    const cLabel = cVal ? (COUNTRIES.find(c => c.code === cVal)?.label || cVal) : null;
+    renderActivePills('activeCountry', cLabel ? [cLabel] : [], () => {
+        countryEl.value = '';
+        localStorage.setItem(lsKey('filterCountry'), '');
+        localStorage.setItem(lsKey('filterRegion'), '');
+        const rEl = document.getElementById('sidebarRegion');
+        if (rEl) {
+            rEl.value = '';
+            rEl.disabled = true;
+            rEl.innerHTML = '<option value="">Vse regije</option>';
+            rEl.dispatchEvent(new Event('change'));
+        }
+        countryEl.dispatchEvent(new Event('change'));
+        applySidebarFilters();
+        updateUrlParamsFromInputs();
+        updateFiltersUI();
+    });
+
+    // Region (Regija)
+    const regionEl = document.getElementById('sidebarRegion');
+    renderActivePills('activeRegion', regionEl && regionEl.value ? [regionEl.value] : [], () => {
+        regionEl.value = '';
+        localStorage.setItem(lsKey('filterRegion'), '');
+        regionEl.dispatchEvent(new Event('change'));
+        applySidebarFilters();
+        updateUrlParamsFromInputs();
+        updateFiltersUI();
+    });
+
+    // Keep open accordions unclipped
+    document.querySelectorAll('#sidebarFiltersForm .adv-accordion').forEach(acc => {
+        const trigger = acc.querySelector('.adv-acc-trigger');
+        const body = acc.querySelector('.adv-acc-body');
+        if (trigger?.getAttribute('aria-expanded') === 'true' && body) {
+            body.style.maxHeight = 'none';
+        }
     });
 
     const modelSelect = document.getElementById("sidebarModel");
