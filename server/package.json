@@ -29,7 +29,7 @@
     "fastify": "^5.1.0",
     "fastify-raw-body": "^5.0.0",
     "jose": "^5.9.6",
-    "posthog-node": "^4.2.1",
+    "posthog-node": "^5.38.2",
     "resend": "^4.0.1",
     "stripe": "^17.7.0",
     "typesense": "^1.8.2",
